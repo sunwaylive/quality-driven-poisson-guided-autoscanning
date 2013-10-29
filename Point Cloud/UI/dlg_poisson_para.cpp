@@ -57,6 +57,9 @@ void PoissonParaDlg::initConnects()
 
   connect(ui->pushButton_compute_confidence_original,SIGNAL(clicked()),this,SLOT(computeOriginalConfidence()));
   connect(ui->pushButton_compute_confidence_samples,SIGNAL(clicked()),this,SLOT(computeSamplesConfidence()));
+  connect(ui->pushButton_compute_confidence_iso,SIGNAL(clicked()),this,SLOT(computeIsoConfidence()));
+
+
 }
 
 // 
@@ -292,6 +295,14 @@ void PoissonParaDlg::computeSamplesConfidence()
   area->runPoisson();
   global_paraMgr.poisson.setValue("Compute Sample Confidence", BoolValue(false));  
 }
+
+void PoissonParaDlg::computeIsoConfidence()
+{
+  global_paraMgr.poisson.setValue("Compute ISO Confidence", BoolValue(true));  
+  area->runPoisson();
+  global_paraMgr.poisson.setValue("Compute ISO Confidence", BoolValue(false));  
+}
+
 
 
 PoissonParaDlg::~PoissonParaDlg()

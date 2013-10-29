@@ -78,6 +78,11 @@ bool DataMgr::isIsoPointsEmpty()
   return iso_points.vert.empty();
 }
 
+bool DataMgr::isFieldPointsEmpty()
+{
+  return field_points.vert.empty();
+}
+
 bool DataMgr::isScannedMeshEmpty()
 {
   return current_scanned_mesh.vert.empty();
@@ -304,6 +309,21 @@ CMesh* DataMgr::getCurrentIsoPoints()
   }
 
   return & iso_points;
+}
+
+CMesh* DataMgr::getCurrentFieldPoints()
+{
+  if(&field_points == NULL)
+  {
+    return NULL;
+  }
+
+  if(field_points.vert.empty())
+  {
+    return & field_points;
+  }
+
+  return & field_points;
 }
 
 
@@ -664,6 +684,7 @@ void DataMgr::clearData()
 	clearCMesh(original);
 	clearCMesh(samples);
   clearCMesh(iso_points);
+  clearCMesh(field_points);
 
   clearCMesh(model);  
   clearCMesh(current_scanned_mesh);
@@ -855,9 +876,11 @@ void DataMgr::saveSkeletonAsSkel(QString fileName)
 
 void DataMgr::loadSkeletonFromSkel(QString fileName)
 {
-	clearCMesh(samples);
-	clearCMesh(original);
-  clearCMesh(iso_points);
+  clearData();
+	//clearCMesh(samples);
+	//clearCMesh(original);
+ // clearCMesh(iso_points);
+ // clearCMesh(field_points);
 
 	skeleton.clear();
 

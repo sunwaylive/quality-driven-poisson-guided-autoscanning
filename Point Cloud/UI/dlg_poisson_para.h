@@ -54,6 +54,8 @@ private slots:
   void useConfidence4(bool _val);
   void computeOriginalConfidence();
   void computeSamplesConfidence();
+  void computeIsoConfidence();
+
 
 
 

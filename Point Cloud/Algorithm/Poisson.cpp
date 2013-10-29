@@ -12,6 +12,7 @@
 Poisson::Poisson(RichParameterSet* _para)
 {
 	samples = NULL; original = NULL; iso_points = NULL; slices = NULL;
+  field_points = NULL;
 	para = _para;
 
 }
@@ -19,6 +20,7 @@ Poisson::Poisson(RichParameterSet* _para)
 Poisson::~Poisson(void)
 {
 	samples = NULL; original = NULL; iso_points = NULL; slices = NULL;
+  field_points = NULL;
 }
 
 void Poisson::setInput(DataMgr* pData)
@@ -42,6 +44,7 @@ void Poisson::setInput(DataMgr* pData)
     samples = pData->getCurrentSamples();
     iso_points = pData->getCurrentIsoPoints();
     slices = pData->getCurrentSlices();
+    field_points = pData->getCurrentFieldPoints();
 	}
 	else
 	{
@@ -97,6 +100,12 @@ void Poisson::run()
   if (para->getBool("Compute Sample Confidence"))
   {
     runComputeSampleConfidence();
+    return;
+  }
+
+  if (para->getBool("Compute ISO Confidence"))
+  {
+    runComputeIsoConfidence();
     return;
   }
 
@@ -522,7 +531,7 @@ void Poisson::runPoisson()
   }
   else
   {
-    global_paraMgr.glarea.setValue("Show ISO Points", BoolValue(false));
+    //global_paraMgr.glarea.setValue("Show ISO Points", BoolValue(false));
     //global_paraMgr.poisson.setValue("Show Slices Mode", BoolValue(true));
 
     int res;
@@ -536,7 +545,7 @@ void Poisson::runPoisson()
     Point3f center_p(tree_center.coords[0], tree_center.coords[1], tree_center.coords[2]);
 
     int index = 0;
-    iso_points->vert.clear();
+    field_points->vert.clear();
     int res2 = res * res;
     for (int i = 0; i < res; i++)
     {
@@ -551,12 +560,12 @@ void Poisson::runPoisson()
           new_v.m_index = index;
           new_v.eigen_confidence = float( grid_values[i + j * res + k * res2] );          
           index++;
-          iso_points->vert.push_back(new_v);
-          iso_points->bbox.Add(new_v.P());
+          field_points->vert.push_back(new_v);
+          field_points->bbox.Add(new_v.P());
         }
       }
     }
-    iso_points->vn = iso_points->vert.size();
+    field_points->vn = field_points->vert.size();
 
   }
 
@@ -564,7 +573,7 @@ void Poisson::runPoisson()
 
 void Poisson::runSlice()
 {
-  int iso_num = iso_points->vert.size();
+  int iso_num = field_points->vert.size();
 
   int res = 0;
   for (; res < iso_num; res++)
@@ -588,7 +597,7 @@ void Poisson::runSlice()
       {
         for (int k = 0; k < res; k++)
         {      
-          (*slices)[0].slice_nodes.push_back(iso_points->vert[i * res2 + j * res + k]);
+          (*slices)[0].slice_nodes.push_back(field_points->vert[i * res2 + j * res + k]);
         }
       }
     }
@@ -607,7 +616,7 @@ void Poisson::runSlice()
       {
         for (int k = 0; k < res; k++)
         {      
-          (*slices)[1].slice_nodes.push_back(iso_points->vert[i * res2 + j * res + k]);
+          (*slices)[1].slice_nodes.push_back(field_points->vert[i * res2 + j * res + k]);
         }
       }
     }
@@ -626,7 +635,7 @@ void Poisson::runSlice()
       {
         for (int k = slice_k_num; k < slice_k_num+1; k++)
         {      
-          (*slices)[2].slice_nodes.push_back(iso_points->vert[i * res2 + j * res + k]);
+          (*slices)[2].slice_nodes.push_back(field_points->vert[i * res2 + j * res + k]);
         }
       }
     }
@@ -841,8 +850,6 @@ void Poisson::runComputeSampleConfidence()
         original->bbox);
     }
 
-    //double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
-    //double sigma_threshold = pow(max(1e-8,1-cos(sigma/180.0*3.1415926)), 2);
 
     float min_confidence = GlobalFun::getDoubleMAXIMUM();
     float max_confidence = 0;
@@ -877,11 +884,6 @@ void Poisson::runComputeSampleConfidence()
       //cout << "proj confidences:  " << confidences[i][curr] << endl;
     }
     curr++;
-  }
-
-  if (para->getBool("Use Confidence 4"))
-  {
-
   }
 
   if (para->getBool("Use Sort Confidence Combination"))
@@ -951,6 +953,146 @@ void Poisson::runComputeSampleConfidence()
     }
   }
 
+
+  if (para->getBool("Use Confidence 4"))
+  {
+    normalizeConfidence(samples->vert, 0);
+    vector<float> confidences_temp;
+    for (int i = 0; i < samples->vn; i++)
+    {
+      confidences_temp.push_back(samples->vert[i].eigen_confidence);
+    }
+
+    if (iso_points->vert.empty())
+    {
+      cout << "need iso points" << endl;
+      return;
+    }
+
+    //double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
+    double sigma = 45;
+    double sigma_threshold = pow(max(1e-8,1-cos(sigma/180.0*3.1415926)), 2);
+
+    GlobalFun::computeBallNeighbors(samples, iso_points, 
+      radius, 
+      iso_points->bbox);
+
+    for (int i = 0; i < samples->vn; i++)
+    {
+      CVertex& v = samples->vert[i];
+
+      float positive_sum = 0.0;
+      float negative_sum = 0.0;
+      float positive_w_sum = 0.0;
+      float negative_w_sum = 0.0;
+      //int positive_cnt = 0;
+      //int negative_cnt = 0;
+
+      for (int j = 0; j < v.original_neighbors.size(); j++)
+      {
+        int index = v.original_neighbors[j];
+        CVertex& t = iso_points->vert[index];
+
+        Point3f diff = t.P() - v.P();
+        float proj = diff * v.N();
+
+        float dist2  = diff.SquaredNorm();
+        float w1 = exp(dist2 * iradius16);
+        float w2 = exp(-pow(1-v.N()*t.N(), 2)/sigma_threshold);
+        float w = w1 * w2;
+
+        if (proj > 0)
+        {
+          positive_sum += w * t.eigen_confidence;
+          positive_w_sum += w;
+        }
+        else
+        {
+          negative_sum += w * t.eigen_confidence;
+          negative_w_sum += w;
+        }
+      }
+
+      v.eigen_confidence = abs(positive_sum / positive_w_sum - negative_sum / negative_w_sum);
+    }
+
+    normalizeConfidence(samples->vert, -0.5);
+  }
+
+}
+
+void Poisson::runComputeIsoConfidence()
+{
+  //normalizeConfidence(iso_points->vert, 0);
+  vector<float> confidences_temp;
+  iso_points->vn = iso_points->vert.size();
+  for (int i = 0; i < iso_points->vn; i++)
+  {
+    confidences_temp.push_back(iso_points->vert[i].eigen_confidence);
+  }
+
+  if (field_points->vert.empty())
+  {
+    cout << "need field points" << endl;
+    return;
+  }
+
+  double radius = para->getDouble("CGrid Radius");
+
+  double radius2 = radius * radius;
+  double iradius16 = -4.0 / radius2;
+
+  //double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
+  double sigma = 35;
+  double sigma_threshold = pow(max(1e-8,1-cos(sigma/180.0*3.1415926)), 2);
+
+  GlobalFun::computeBallNeighbors(iso_points, field_points, 
+    radius, 
+    field_points->bbox);
+
+  for (int i = 0; i < iso_points->vn; i++)
+  {
+    CVertex& v = iso_points->vert[i];
+
+    float positive_sum = 0.0;
+    float negative_sum = 0.0;
+    float positive_w_sum = 0.0;
+    float negative_w_sum = 0.0;
+    //int positive_cnt = 0;
+    //int negative_cnt = 0;
+
+    for (int j = 0; j < v.original_neighbors.size(); j++)
+    {
+      int index = v.original_neighbors[j];
+      CVertex& t = field_points->vert[index];
+
+      Point3f diff = t.P() - v.P();
+      float proj = diff * v.N();
+
+      float dist2  = diff.SquaredNorm();
+      float w1 = exp(dist2 * iradius16);
+      float w2 = exp(-pow(1-v.N()*t.N(), 2)/sigma_threshold);
+      float w = w1 * w2;
+
+      if (proj > 0)
+      {
+        positive_sum += w * t.eigen_confidence;
+        positive_w_sum += w;
+      }
+      else
+      {
+        negative_sum += w * t.eigen_confidence;
+        negative_w_sum += w;
+      }
+    }
+
+    if (positive_w_sum > 0 && negative_w_sum > 0)
+    {
+      v.eigen_confidence = abs(positive_sum / positive_w_sum - negative_sum / negative_w_sum);
+    }
+  }
+
+  normalizeConfidence(iso_points->vert, -0.5);
 }
 
 void Poisson::normalizeConfidence(vector<CVertex>& vertexes, float delta)

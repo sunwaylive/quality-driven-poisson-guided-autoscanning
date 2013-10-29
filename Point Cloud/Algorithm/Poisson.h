@@ -35,6 +35,7 @@ private:
   void runSlice();
   void runComputeOriginalConfidence();
   void runComputeSampleConfidence();
+  void runComputeIsoConfidence();
   void normalizeConfidence(vector<CVertex>& vertexes, float delta);
 
 private:
@@ -42,9 +43,9 @@ private:
 	CMesh* original;
   CMesh* iso_points;
   CMesh* view_candidates;
+  CMesh* field_points;
   Slices* slices;
   
-
 	RichParameterSet* para;
 	Box3f m_box;
 };
