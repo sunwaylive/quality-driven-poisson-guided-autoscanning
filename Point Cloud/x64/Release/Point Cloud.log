@@ -1,0 +1,105 @@
+﻿生成启动时间为 2013/10/29 10:44:25。
+     1>项目“D:\point_cloud\Point Cloud\Point Cloud.vcxproj”在节点 2 上(build 个目标)。
+     1>InitializeBuildStatus:
+         正在创建“x64\Release\Point Cloud.unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+       CustomBuild:
+         所有输出均为最新。
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\x86_amd64\CL.exe /c /I.\GeneratedFiles /I"D:\QT-64\include" /I.\GeneratedFiles\Release /I"D:\QT-64\include\qtmain" /I"D:\QT-64\include\QtCore" /I"D:\QT-64\include\QtGui" /I"D:\QT-64\include\QtOpenGL" /I. /I"D:\QT-64\include\QtTest" /I.\Poisson /Zi /nologo /W1 /WX- /O2 /D CODE_ANALYSIS /D UNICODE /D WIN32 /D QT_LARGEFILE_SUPPORT /D QT_NO_DEBUG /D NDEBUG /D QT_CORE_LIB /D QT_GUI_LIB /D QT_OPENGL_LIB /D QT_DLL /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t- /Zc:forScope /Fo"x64\Release\\" /Fd"x64\Release\vc100.pdb" /Gd /TP /analyze /errorReport:prompt mainwindow.cpp /MP 
+     1>cl : 命令行 warning D9040: 忽略“/analyze”选项；“代码分析”警告在此版本的编译器中不可用
+         mainwindow.cpp
+     1>d:\point_cloud\point cloud\includelib\vcglib\vcg\math\deprecated_matrix44.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+     1>d:\point_cloud\point cloud\includelib\vcglib\vcg\math\deprecated_matrix44.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+     1>d:\point_cloud\point cloud\includelib\vcglib\vcg\math\deprecated_matrix44.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+     1>d:\point_cloud\point cloud\includelib\vcglib\vcg\math\deprecated_matrix44.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+     1>d:\point_cloud\point cloud\includelib\vcglib\vcg\math\deprecated_matrix44.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+     1>d:\point_cloud\point cloud\includelib\vcglib\vcg\math\deprecated_matrix44.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+     1>d:\point_cloud\point cloud\includelib\vcglib\vcg\math\deprecated_matrix44.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+     1>D:\point_cloud\Point Cloud\IncludeLib\vcglib\vcg/container/simple_temporary_data.h(157): warning C4003: “max”宏的实参不足
+     1>D:\point_cloud\Point Cloud\IncludeLib\vcglib\vcg/complex/trimesh/allocate.h(636): warning C4003: “max”宏的实参不足
+     1>D:\point_cloud\Point Cloud\IncludeLib\vcglib\vcg/complex/trimesh/allocate.h(677): warning C4003: “max”宏的实参不足
+     1>D:\point_cloud\Point Cloud\IncludeLib\vcglib\vcg/space/sphere3.h(188): warning C4002: “max”宏的实参太多
+     1>D:\point_cloud\Point Cloud\IncludeLib\vcglib\vcg/space/sphere3.h(189): warning C4002: “min”宏的实参太多
+     1>D:\point_cloud\Point Cloud\IncludeLib\vcglib\vcg/complex/trimesh/bitquad_support.h(231): warning C4003: “max”宏的实参不足
+     1>D:\point_cloud\Point Cloud\IncludeLib\vcglib\vcg/complex/trimesh/bitquad_support.h(273): warning C4003: “max”宏的实参不足
+     1>D:\point_cloud\Point Cloud\IncludeLib\vcglib\vcg/simplex/face/component_ocf.h(209): warning C4003: “max”宏的实参不足
+     1>D:\point_cloud\Point Cloud\IncludeLib\vcglib\vcg/simplex/face/distance.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+     1>D:\point_cloud\Point Cloud\IncludeLib\vcglib\vcg/space/distance3.h(409): warning C4003: “max”宏的实参不足
+     1>D:\point_cloud\Point Cloud\IncludeLib\vcglib\vcg/space/distance3.h(469): warning C4003: “max”宏的实参不足
+     1>D:\point_cloud\Point Cloud\IncludeLib\vcglib\vcg/space/index/space_iterators.h(113): warning C4003: “min”宏的实参不足
+     1>D:\point_cloud\Point Cloud\IncludeLib\vcglib\vcg/simplex/face/distance.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+     1>D:\point_cloud\Point Cloud\IncludeLib\vcglib\vcg/complex/trimesh/update/color.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+     1>D:\point_cloud\Point Cloud\IncludeLib\vcglib\vcg/math/histogram.h(123): warning C4003: “max”宏的实参不足
+     1>D:\point_cloud\Point Cloud\IncludeLib\vcglib\vcg/math/histogram.h(124): warning C4003: “max”宏的实参不足
+     1>D:\point_cloud\Point Cloud\IncludeLib\vcglib\vcg/math/histogram.h(288): warning C4003: “max”宏的实参不足
+     1>D:\point_cloud\Point Cloud\IncludeLib\vcglib\vcg/math/histogram.h(289): warning C4003: “max”宏的实参不足
+     1>D:\point_cloud\Point Cloud\IncludeLib\vcglib\vcg/math/histogram.h(320): warning C4003: “max”宏的实参不足
+     1>D:\point_cloud\Point Cloud\IncludeLib\vcglib\vcg/math/histogram.h(321): warning C4003: “max”宏的实参不足
+     1>D:\point_cloud\Point Cloud\IncludeLib\vcglib\vcg/complex/trimesh/stat.h(72): warning C4003: “max”宏的实参不足
+     1>D:\point_cloud\Point Cloud\IncludeLib\vcglib\vcg/complex/trimesh/stat.h(72): warning C4003: “max”宏的实参不足
+     1>D:\point_cloud\Point Cloud\IncludeLib\vcglib\vcg/complex/trimesh/stat.h(86): warning C4003: “max”宏的实参不足
+     1>D:\point_cloud\Point Cloud\IncludeLib\vcglib\vcg/complex/trimesh/stat.h(86): warning C4003: “max”宏的实参不足
+     1>D:\point_cloud\Point Cloud\IncludeLib\vcglib\vcg/complex/trimesh/update/color.h(343): warning C4003: “max”宏的实参不足
+     1>D:\point_cloud\Point Cloud\IncludeLib\vcglib\vcg/complex/trimesh/update/color.h(344): warning C4003: “max”宏的实参不足
+         所有输出均为最新。
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"D:\point_cloud\\Point Cloud.exe" /NOLOGO /LIBPATH:"D:\QT-64\lib" qtmain.lib QtCore4.lib QtGui4.lib QtOpenGL4.lib QtTest4.lib ANN.lib glut64.lib glew32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"x64\Release\Point Cloud.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /PDB:"D:\point_cloud\Point Cloud.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\point_cloud\Point Cloud.lib" /MACHINE:X64 /PROFILE x64\Release\Camera.obj
+         x64\Release\NormalSmoother.obj
+         x64\Release\Poisson.obj
+         x64\Release\Skeleton.obj
+         x64\Release\Skeletonization.obj
+         x64\Release\Upsampler.obj
+         x64\Release\WLOP.obj
+         x64\Release\calculationthread.obj
+         x64\Release\Console.obj
+         x64\Release\coordinateframe.obj
+         x64\Release\DataMgr.obj
+         x64\Release\qrc_mainwindow.obj
+         x64\Release\moc_calculationthread.obj
+         x64\Release\moc_dlg_camera_para.obj
+         x64\Release\moc_dlg_normal_para.obj
+         x64\Release\moc_dlg_poisson_para.obj
+         x64\Release\moc_dlg_skeleton_para.obj
+         x64\Release\moc_dlg_upsampling_para.obj
+         x64\Release\moc_dlg_wlop_para.obj
+         x64\Release\moc_GLArea.obj
+         x64\Release\moc_mainwindow.obj
+         x64\Release\moc_std_para_dlg.obj
+         x64\Release\GLArea.obj
+         x64\Release\GLDrawer.obj
+         x64\Release\GlobalFunction.obj
+         x64\Release\grid.obj
+         x64\Release\main.obj
+         x64\Release\mainwindow.obj
+         x64\Release\Parameter.obj
+         x64\Release\ParameterMgr.obj
+         x64\Release\plylib.obj
+         x64\Release\Factor.obj
+         x64\Release\Geometry.obj
+         x64\Release\MarchingCubes.obj
+         x64\Release\MultiGridOctest.obj
+         x64\Release\PlyFile.obj
+         x64\Release\trackball.obj
+         x64\Release\trackmode.obj
+         x64\Release\dlg_camera_para.obj
+         x64\Release\dlg_normal_para.obj
+         x64\Release\dlg_poisson_para.obj
+         x64\Release\dlg_skeleton_para.obj
+         x64\Release\dlg_upsampling_para.obj
+         x64\Release\dlg_wlop_para.obj
+         x64\Release\std_para_dlg.obj
+         Point Cloud.vcxproj -> D:\point_cloud\Point Cloud.exe
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"D:\point_cloud\\Point Cloud.exe;#1" /manifest "x64\Release\Point Cloud.exe.intermediate.manifest"
+       RunCodeAnalysis:
+         正在运行代码分析...
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\FxCopCmd.exe  /outputCulture:2052 /out:"D:\point_cloud\Point Cloud.exe.CodeAnalysisLog.xml" /file:"D:\point_cloud\Point Cloud.exe" /ruleSet:"=AllRules.ruleset" /rulesetdirectory:"C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets" /rule:"-C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules" /searchgac /ignoreinvalidtargets /forceoutput /successfile /ignoregeneratedcode /saveMessagesToReport:Active /timeout:120 
+         代码分析完成 -- 0 个错误，0 个警告
+       FinalizeBuildStatus:
+         正在删除文件“x64\Release\Point Cloud.unsuccessfulbuild”。
+         正在对“x64\Release\Point Cloud.lastbuildstate”执行 Touch 任务。
+     1>已完成生成项目“D:\point_cloud\Point Cloud\Point Cloud.vcxproj”(build 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:06.36
