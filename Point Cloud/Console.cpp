@@ -4,7 +4,7 @@
 #include <iomanip>
 #include "Console.h"
 
-
+  
 CConsoleOutput* CConsoleOutput::m_instance = NULL;
 CConsoleOutput::CConsoleOutput()
 {
