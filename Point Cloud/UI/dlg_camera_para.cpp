@@ -216,6 +216,7 @@ void CameraParaDlg::showSelectedScannedMesh(QModelIndex index)
 void CameraParaDlg::mergeScannedMeshWithOriginal()
 {
   QModelIndexList sil = ui->tableView_scan_results->selectionModel()->selectedRows();
+  if (sil.isEmpty()) return;
 
   CMesh* original = area->dataMgr.getCurrentOriginal();
   vector<CMesh* > *scanned_results = area->dataMgr.getScannedResults();
