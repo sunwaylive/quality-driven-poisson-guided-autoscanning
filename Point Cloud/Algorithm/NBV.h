@@ -5,6 +5,7 @@
 
 using std::cout;
 using std::endl;
+using vcg::Point3f;
 
 class NBV : public PointCloudAlgorithm
 {
@@ -23,5 +24,6 @@ private:
 
 private:
   RichParameterSet *para;
+  CMesh            *model;
   CMesh            *original;
 };
