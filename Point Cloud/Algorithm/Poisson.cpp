@@ -1038,17 +1038,15 @@ void Poisson::runComputeIsoConfidence()
   }
 
   double radius = para->getDouble("CGrid Radius");
-
   double radius2 = radius * radius;
   double iradius16 = -4.0 / radius2;
 
-  //double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
-  double sigma = 35;
+  double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
+  //double sigma = 35;
   double sigma_threshold = pow(max(1e-8,1-cos(sigma/180.0*3.1415926)), 2);
 
   GlobalFun::computeBallNeighbors(iso_points, field_points, 
-    radius, 
-    field_points->bbox);
+                                  radius, field_points->bbox);
 
   for (int i = 0; i < iso_points->vn; i++)
   {
@@ -1058,8 +1056,6 @@ void Poisson::runComputeIsoConfidence()
     float negative_sum = 0.0;
     float positive_w_sum = 0.0;
     float negative_w_sum = 0.0;
-    //int positive_cnt = 0;
-    //int negative_cnt = 0;
 
     for (int j = 0; j < v.original_neighbors.size(); j++)
     {
@@ -1067,11 +1063,27 @@ void Poisson::runComputeIsoConfidence()
       CVertex& t = field_points->vert[index];
 
       Point3f diff = t.P() - v.P();
+      Point3f vn = v.N();
       float proj = diff * v.N();
 
       float dist2  = diff.SquaredNorm();
       float w1 = exp(dist2 * iradius16);
-      float w2 = exp(-pow(1-v.N()*t.N(), 2)/sigma_threshold);
+      float w2 = 1.0;
+      if (!para->getBool("Use Confidence 4"))
+      {
+        if (proj > 0)
+        {
+          w2 = exp(-pow(1-vn*diff.Normalize(), 2)/sigma_threshold); 
+        }
+        else
+        {
+          vn *= -1;
+          w2 = exp(-pow(1-vn*diff.Normalize(), 2)/sigma_threshold); 
+        }
+        
+      }
+
+
       float w = w1 * w2;
 
       if (proj > 0)
@@ -1089,10 +1101,11 @@ void Poisson::runComputeIsoConfidence()
     if (positive_w_sum > 0 && negative_w_sum > 0)
     {
       v.eigen_confidence = abs(positive_sum / positive_w_sum - negative_sum / negative_w_sum);
+      cout << v.eigen_confidence << endl;
     }
   }
 
-  normalizeConfidence(iso_points->vert, -0.5);
+  normalizeConfidence(iso_points->vert, 0);
 }
 
 void Poisson::normalizeConfidence(vector<CVertex>& vertexes, float delta)
