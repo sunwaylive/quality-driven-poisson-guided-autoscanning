@@ -354,6 +354,7 @@ void ParameterMgr::initPoissonParameter()
   poisson.addParam(new RichBool("Use Confidence 4", false));
   poisson.addParam(new RichBool("Compute Original Confidence", false));
   poisson.addParam(new RichBool("Compute Sample Confidence", false));
+  poisson.addParam(new RichBool("Compute ISO Confidence", false));
   poisson.addParam(new RichBool("Use Sort Confidence Combination", true));
 }
 
