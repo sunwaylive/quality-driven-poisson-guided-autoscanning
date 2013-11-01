@@ -27,6 +27,7 @@ void CameraParaDlg::initConnects()
   connect(ui->tableView_scan_candidates, SIGNAL(clicked(QModelIndex)), this, SLOT(showSelectedScannCandidates(QModelIndex)));
   connect(ui->tableView_scan_results, SIGNAL(clicked(QModelIndex)), this, SLOT(showSelectedScannedMesh(QModelIndex)));
   connect(ui->pushButton_merge, SIGNAL(clicked()), this, SLOT(mergeScannedMeshWithOriginal()));
+  connect(ui->pushButton_build_grid, SIGNAL(clicked()), this, SLOT(buildGrid()));
 }
 
 bool CameraParaDlg::initWidgets()
@@ -276,4 +277,10 @@ void CameraParaDlg::getCameraMaxDist(double _val)
 void CameraParaDlg::getCameraDistToModel(double _val)
 {
   global_paraMgr.camera.setValue("Camera Dist To Model", DoubleValue(_val));
+}
+
+void
+CameraParaDlg::buildGrid()
+{
+
 }

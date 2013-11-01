@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -337,6 +337,32 @@
     <attribute name="title">
      <string>NBV</string>
     </attribute>
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>221</width>
+       <height>161</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>preprocess</string>
+     </property>
+     <widget class="QPushButton" name="pushButton_build_grid">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>20</y>
+        <width>181</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Build Grid</string>
+      </property>
+     </widget>
+    </widget>
    </widget>
   </widget>
  </widget>
