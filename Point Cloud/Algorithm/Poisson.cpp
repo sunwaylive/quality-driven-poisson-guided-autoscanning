@@ -1023,7 +1023,10 @@ void Poisson::runComputeSampleConfidence()
 
 void Poisson::runComputeIsoConfidence()
 {
-  //normalizeConfidence(iso_points->vert, 0);
+  if (para->getBool("Use Confidence 4"))
+  {
+    normalizeConfidence(iso_points->vert, 0);
+  }
   vector<float> confidences_temp;
   iso_points->vn = iso_points->vert.size();
   for (int i = 0; i < iso_points->vn; i++)
@@ -1069,7 +1072,7 @@ void Poisson::runComputeIsoConfidence()
       float dist2  = diff.SquaredNorm();
       float w1 = exp(dist2 * iradius16);
       float w2 = 1.0;
-      if (!para->getBool("Use Confidence 4"))
+      if (1)
       {
         if (proj > 0)
         {
@@ -1079,11 +1082,8 @@ void Poisson::runComputeIsoConfidence()
         {
           vn *= -1;
           w2 = exp(-pow(1-vn*diff.Normalize(), 2)/sigma_threshold); 
-        }
-        
+        } 
       }
-
-
       float w = w1 * w2;
 
       if (proj > 0)
@@ -1101,11 +1101,32 @@ void Poisson::runComputeIsoConfidence()
     if (positive_w_sum > 0 && negative_w_sum > 0)
     {
       v.eigen_confidence = abs(positive_sum / positive_w_sum - negative_sum / negative_w_sum);
-      cout << v.eigen_confidence << endl;
+      //cout << v.eigen_confidence << endl;
+    }
+  }
+  normalizeConfidence(iso_points->vert, 0);
+
+  if (para->getBool("Use Confidence 4"))
+  {
+    for (int i = 0; i < iso_points->vn; i++)
+    {
+      CVertex& v = iso_points->vert[i];
+      float temp_confidence = confidences_temp[i];
+      v.eigen_confidence *= temp_confidence;
+    }
+
+    normalizeConfidence(iso_points->vert, 0);
+  }
+
+  if (para->getBool("Use Confidence 3"))
+  {
+    for (int i = 0; i < iso_points->vn; i++)
+    {
+      CVertex& v = iso_points->vert[i];
+      v.eigen_confidence = 0;
     }
   }
 
-  normalizeConfidence(iso_points->vert, 0);
 }
 
 void Poisson::normalizeConfidence(vector<CVertex>& vertexes, float delta)
