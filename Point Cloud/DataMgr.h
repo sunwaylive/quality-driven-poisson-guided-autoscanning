@@ -42,6 +42,7 @@ public:
   bool      isOriginalEmpty();
   bool      isSkeletonEmpty();
   bool      isIsoPointsEmpty();
+  bool      isFieldPointsEmpty();
   bool      isViewCandidatesEmpty();
   bool      isScannedMeshEmpty();
   bool      isScannedResultsEmpty();
@@ -50,6 +51,7 @@ public:
 	CMesh*    getCurrentSamples();
 	CMesh*    getCurrentOriginal();
   CMesh*    getCurrentIsoPoints();
+  CMesh*    getCurrentFieldPoints();
   Slices*   getCurrentSlices();
 	Skeleton* getCurrentSkeleton();
 
@@ -94,7 +96,9 @@ public:
   CMesh                  original;
   CMesh                  samples;
   CMesh                  iso_points;
+  CMesh                  field_points;
   CMesh                  camera_model;
+
   Point3f                camera_pos;
   Point3f                camera_direction;
   double                 camera_horizon_dist;

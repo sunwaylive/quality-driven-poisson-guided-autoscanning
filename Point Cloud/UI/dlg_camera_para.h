@@ -37,10 +37,10 @@ private slots:
 	void getCameraVerticalDist(double _val);
   void getCameraMaxDist(double _val);
   void getCameraDistToModel(double _val);
+  void buildGrid();
 
 private:
 	Ui::camera_paras * ui;
 	ParameterMgr * m_paras;
 	GLArea * area;
-
 };

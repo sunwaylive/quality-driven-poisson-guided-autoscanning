@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -106,13 +106,6 @@
       <string>GroupBox</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
-      <item>
-       <widget class="QPushButton" name="pushButton_label_iso_points">
-        <property name="text">
-         <string>Label ISO points</string>
-        </property>
-       </widget>
-      </item>
       <item>
        <widget class="QPushButton" name="pushButton_label_smooth">
         <property name="text">
@@ -399,6 +392,32 @@
      </property>
      <property name="text">
       <string>Compute Confidence on Samples</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_compute_confidence_iso">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>250</y>
+       <width>201</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Compute Confidence on ISO</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_label_iso_points">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>310</y>
+       <width>221</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Label ISO points</string>
      </property>
     </widget>
    </widget>

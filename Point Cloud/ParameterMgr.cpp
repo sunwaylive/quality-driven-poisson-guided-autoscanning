@@ -25,6 +25,7 @@ ParameterMgr::ParameterMgr(void)
 	initUpsamplingParameter();
   initPoissonParameter();
   initCameraParameter();
+  initNBVParameter();
 }
 
 ParameterMgr::~ParameterMgr(void)
@@ -353,6 +354,7 @@ void ParameterMgr::initPoissonParameter()
   poisson.addParam(new RichBool("Use Confidence 4", false));
   poisson.addParam(new RichBool("Compute Original Confidence", false));
   poisson.addParam(new RichBool("Compute Sample Confidence", false));
+  poisson.addParam(new RichBool("Compute ISO Confidence", false));
   poisson.addParam(new RichBool("Use Sort Confidence Combination", true));
 }
 
@@ -368,4 +370,10 @@ void ParameterMgr::initCameraParameter()
   camera.addParam(new RichDouble("Camera Vertical Dist", 0.6f));
   camera.addParam(new RichDouble("Camera Dist To Model", 1.0f));
   camera.addParam(new RichBool("Is Init Camera Show", false));
+}
+
+void
+ParameterMgr::initNBVParameter()
+{
+  nbv.addParam(new RichBool("Run Build Grid", false));
 }
