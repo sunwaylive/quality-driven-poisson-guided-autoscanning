@@ -25,6 +25,7 @@ ParameterMgr::ParameterMgr(void)
 	initUpsamplingParameter();
   initPoissonParameter();
   initCameraParameter();
+  initNBVParameter();
 }
 
 ParameterMgr::~ParameterMgr(void)
@@ -368,4 +369,10 @@ void ParameterMgr::initCameraParameter()
   camera.addParam(new RichDouble("Camera Vertical Dist", 0.6f));
   camera.addParam(new RichDouble("Camera Dist To Model", 1.0f));
   camera.addParam(new RichBool("Is Init Camera Show", false));
+}
+
+void
+ParameterMgr::initNBVParameter()
+{
+  nbv.addParam(new RichBool("Run Build Grid", false));
 }
