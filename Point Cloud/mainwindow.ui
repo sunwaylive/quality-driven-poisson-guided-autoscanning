@@ -200,6 +200,7 @@
     <addaction name="menuShow_Neighbor_Size"/>
     <addaction name="menuPick_Point"/>
     <addaction name="actionCamera"/>
+    <addaction name="actionShow_NBV_Grids"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuAlgorithom"/>
@@ -261,6 +262,7 @@
    <addaction name="actionShow_Samples"/>
    <addaction name="actionShow_Skeleton"/>
    <addaction name="actionShow_ISO"/>
+   <addaction name="actionShow_NBV_Grids"/>
    <addaction name="actionShow_Scan_Candidates"/>
    <addaction name="actionShow_Current_Scanned_Mesh"/>
    <addaction name="separator"/>
@@ -812,6 +814,17 @@
    </property>
    <property name="text">
     <string>Show Confidence Color</string>
+   </property>
+  </action>
+  <action name="actionShow_NBV_Grids">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show NBV Grids</string>
    </property>
   </action>
  </widget>

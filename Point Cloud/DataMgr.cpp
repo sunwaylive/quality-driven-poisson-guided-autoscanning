@@ -93,6 +93,12 @@ bool DataMgr::isScannedResultsEmpty()
   return scanned_results.empty();
 }
 
+bool
+DataMgr::isAllNBVGridCenterEmpty()
+{
+  return all_nbv_gird_centers.vert.empty();
+}
+
 void DataMgr::loadPlyToModel(QString fileName)
 {
   clearCMesh(model);
@@ -437,6 +443,17 @@ vector<CMesh* >* DataMgr::getScannedResults()
   return &scanned_results;
 }
 
+CMesh*
+DataMgr::getAllNBVGridCenters()
+{
+  return &all_nbv_gird_centers;
+}
+
+vector<NBVGrid> * 
+DataMgr::getAllNBVGrids()
+{
+  return &all_nbv_grids;
+}
 Slices* DataMgr::getCurrentSlices()
 {
   return &slices;
