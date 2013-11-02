@@ -24,13 +24,14 @@
 #include "GLDrawer.h"
 #include "CMesh.h"
 #include "ParameterMgr.h"
+#include "wrap/gui/coordinateframe.h"
 #include "Algorithm/PointCloudAlgorithm.h"
 #include "Algorithm/WLOP.h"
 #include "Algorithm/Skeletonization.h"
 #include "Algorithm/Upsampler.h"
 #include "Algorithm/Poisson.h"
-#include "wrap/gui/coordinateframe.h"
 #include "Algorithm/Camera.h"
+#include "Algorithm/NBV.h"
 
 //#include "Poisson/Geometry.h"
 //#include "Poisson/PoissonParam.h"
@@ -77,6 +78,7 @@ public:
 	void runUpsampling();
   void runPoisson();
   void runCamera();
+  void runNBV();
 
 	void cleanPickPoints();
 
@@ -184,6 +186,7 @@ public:
   Upsampler         upsampler;
   Poisson           poisson;
   vcc::Camera       camera;
+  NBV               nbv;
 
 	RichParameterSet* para;
 };

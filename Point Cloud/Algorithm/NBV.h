@@ -1,7 +1,9 @@
 #pragma once
 #include "PointCloudAlgorithm.h"
 #include "GlobalFunction.h"
+#include "NBVGrid.h"
 #include <iostream>
+
 
 using std::cout;
 using std::endl;
@@ -26,4 +28,6 @@ private:
   RichParameterSet *para;
   CMesh            *model;
   CMesh            *original;
+  CMesh            *all_nbv_grid_centers;
+  std::vector<NBVGrid>  *all_nbv_grids; //grids in all the space
 };

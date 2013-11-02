@@ -16,6 +16,7 @@ public:
 	RichParameterSet* getUpsamplingParameterSet()      { return &upsampling; }
   RichParameterSet* getPoissonParameterSet()         { return &poisson; }
   RichParameterSet* getCameraParameterSet()          { return &camera; }
+  RichParameterSet* getNBVParameterSet()             { return &nbv;   }
 
 	void setGlobalParameter(QString paraName,Value& val);
 	typedef enum {GLAREA, DATA, DRAWER, WLOP, NOR_SMOOTH, SKELETON, UPSAMPLING, POISSON}ParaType;

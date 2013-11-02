@@ -282,5 +282,7 @@ void CameraParaDlg::getCameraDistToModel(double _val)
 void
 CameraParaDlg::buildGrid()
 {
-
+  global_paraMgr.nbv.setValue("Run Build Grid", BoolValue(true));
+  area->runNBV();
+  global_paraMgr.nbv.setValue("Run Build Grid", BoolValue(false));
 }
