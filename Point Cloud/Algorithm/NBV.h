@@ -22,12 +22,14 @@ public:
   void clear();
 
 private:
-  void runBuildGrid();
+  void buildGrid();
+  void propogate();
 
 private:
   RichParameterSet *para;
   CMesh            *model;
   CMesh            *original;
+  CMesh            *iso_points;
   CMesh            *all_nbv_grid_centers;
   std::vector<NBVGrid>  *all_nbv_grids; //grids in all the space
 };
