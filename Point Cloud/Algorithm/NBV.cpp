@@ -5,11 +5,15 @@ NBV::NBV(RichParameterSet *_para)
   cout<<"NBV constructed!"<<endl;
   para = _para;
   original = NULL;
+  iso_points = NULL;
+  model = NULL;
 }
 
 NBV::~NBV()
 {
-
+  original = NULL;
+  iso_points = NULL;
+  model = NULL;
 }
 
 void
@@ -17,7 +21,7 @@ NBV::run()
 {
   if (para->getBool("Run Build Grid"))
   {
-    runBuildGrid();
+    buildGrid();
     return;
   }
 }
@@ -49,6 +53,7 @@ NBV::setInput(DataMgr *pData)
 
   all_nbv_grid_centers = pData->getAllNBVGridCenters();
   all_nbv_grids = pData->getAllNBVGrids();
+  iso_points = pData->getCurrentIsoPoints();
 }
 
 void
@@ -58,7 +63,7 @@ NBV::clear()
 }
 
 void
-NBV::runBuildGrid()
+NBV::buildGrid()
 {
    Point3f bbox_max = model->bbox.max;
    Point3f bbox_min = model->bbox.min;
@@ -104,4 +109,19 @@ NBV::runBuildGrid()
        }
      }
    }
+}
+
+void
+NBV::propogate()
+{
+  //traverse all points on the iso surface
+  for (int i = 0; i < iso_points->vert.size(); ++i)
+  {
+    CVertex &t = iso_points->vert[i];
+    //1. for each point, propogate to all discrete directions
+
+    //2. compute the next grid indexes
+
+    //3.record the values and count the direction bins
+  }
 }
