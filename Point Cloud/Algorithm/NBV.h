@@ -24,6 +24,7 @@ public:
 private:
   void buildGrid();
   void propogate();
+  int getStep(double s);
 
 private:
   RichParameterSet *para;
@@ -31,5 +32,8 @@ private:
   CMesh            *original;
   CMesh            *iso_points;
   CMesh            *all_nbv_grid_centers;
+  double           grid_resolution;
+  Point3f          whole_space_box_max;
+  Point3f          whole_space_box_min;
   std::vector<NBVGrid>  *all_nbv_grids; //grids in all the space
 };
