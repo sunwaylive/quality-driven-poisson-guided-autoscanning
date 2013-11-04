@@ -5,6 +5,7 @@
 #include "PointCloudAlgorithm.h"
 #include <fstream>
 
+
 using namespace vcg;
 using namespace std;
 
@@ -44,6 +45,7 @@ private:
   CMesh* iso_points;
   CMesh* view_candidates;
   CMesh* field_points;
+  CMesh* model;
   Slices* slices;
   
 	RichParameterSet* para;

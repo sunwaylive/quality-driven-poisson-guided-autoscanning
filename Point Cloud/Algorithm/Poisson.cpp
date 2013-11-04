@@ -8,6 +8,7 @@
 #include "Poisson/SparseMatrix.h"
 #include "Poisson/Ply.h"
 #include "Poisson/MultiGridOctreeData.h"
+#include "vcg/complex/algorithms/point_sampling.h"
 
 Poisson::Poisson(RichParameterSet* _para)
 {
@@ -45,6 +46,7 @@ void Poisson::setInput(DataMgr* pData)
     iso_points = pData->getCurrentIsoPoints();
     slices = pData->getCurrentSlices();
     field_points = pData->getCurrentFieldPoints();
+    model = pData->getCurrentModel();
 	}
 	else
 	{
@@ -646,86 +648,101 @@ void Poisson::runSlice()
 
 void Poisson::runComputeOriginalConfidence()
 {
-  vector< vector<float>>confidences;
-  
-  int factors = 0;
-  if (para->getBool("Use Confidence 1")) factors++;
-  if (para->getBool("Use Confidence 2")) factors++;
-  if (para->getBool("Use Confidence 3")) factors++;
-  if (para->getBool("Use Confidence 4")) factors++;
+  vector<Point3f> result;
+  float result_radius;
+  tri::PoissonSampling(*model, result, 2000, result_radius);
 
-  if (factors == 0)
+  iso_points->vert.clear();
+  for (int i = 0; i < result.size(); i++)
   {
-    return;
+    CVertex new_v;
+    new_v.m_index = i; 
+    new_v.is_iso = true;
+    new_v.P() = result[i];
+    iso_points->vert.push_back(new_v);
   }
-  
-  vector<float> temp(factors, 0);
-  confidences.assign(original->vn, temp);
-  
-  double radius = para->getDouble("CGrid Radius");
-  GlobalFun::computeBallNeighbors(original, NULL, 
-                                  radius, 
-                                  original->bbox);
-  double radius2 = radius * radius;
-  double iradius16 = -4.0 / radius2;
+  iso_points->vn = iso_points->vert.size();
 
-  int curr = 0;
-  if (para->getBool("Use Confidence 1"))
-  {
-    //float sum_confidence = 0;
-    float min_confidence = GlobalFun::getDoubleMAXIMUM();
-    float max_confidence = 0;
-    for (int i = 0; i < original->vert.size(); i++)
-    {
-      confidences[i][curr] = 1;
-      CVertex& v = original->vert[i];
-      vector<int>* neighbors = &v.neighbors;
-      for (int j = 0; j < v.neighbors.size(); j++)
-      {
-        CVertex& t = original->vert[(*neighbors)[j]];
-        float dist2  = (v.P() - t.P()).SquaredNorm();
-        float den = exp(dist2*iradius16);
+  //vector< vector<float>>confidences;
+  //
+  //int factors = 0;
+  //if (para->getBool("Use Confidence 1")) factors++;
+  //if (para->getBool("Use Confidence 2")) factors++;
+  //if (para->getBool("Use Confidence 3")) factors++;
+  //if (para->getBool("Use Confidence 4")) factors++;
 
-        confidences[i][curr] += den;
-      }
-      min_confidence = (std::min)(min_confidence, confidences[i][curr]);
-      max_confidence = (std::max)(max_confidence, confidences[i][curr]);
-    }
+  //if (factors == 0)
+  //{
+  //  return;
+  //}
+  //
+  //vector<float> temp(factors, 0);
+  //confidences.assign(original->vn, temp);
+  //
+  //double radius = para->getDouble("CGrid Radius");
+  //GlobalFun::computeBallNeighbors(original, NULL, 
+  //                                radius, 
+  //                                original->bbox);
+  //double radius2 = radius * radius;
+  //double iradius16 = -4.0 / radius2;
 
-    float space = max_confidence - min_confidence;
-    for (int i = 0; i < original->vert.size(); i++)
-    {
-      confidences[i][curr] = (confidences[i][curr] - min_confidence) / space;
-      confidences[i][curr] -= 0.5;
-    }
-  }
+  //int curr = 0;
+  //if (para->getBool("Use Confidence 1"))
+  //{
+  //  //float sum_confidence = 0;
+  //  float min_confidence = GlobalFun::getDoubleMAXIMUM();
+  //  float max_confidence = 0;
+  //  for (int i = 0; i < original->vert.size(); i++)
+  //  {
+  //    confidences[i][curr] = 1;
+  //    CVertex& v = original->vert[i];
+  //    vector<int>* neighbors = &v.neighbors;
+  //    for (int j = 0; j < v.neighbors.size(); j++)
+  //    {
+  //      CVertex& t = original->vert[(*neighbors)[j]];
+  //      float dist2  = (v.P() - t.P()).SquaredNorm();
+  //      float den = exp(dist2*iradius16);
 
-  if (para->getBool("Use Confidence 2"))
-  {
+  //      confidences[i][curr] += den;
+  //    }
+  //    min_confidence = (std::min)(min_confidence, confidences[i][curr]);
+  //    max_confidence = (std::max)(max_confidence, confidences[i][curr]);
+  //  }
 
-  }
+  //  float space = max_confidence - min_confidence;
+  //  for (int i = 0; i < original->vert.size(); i++)
+  //  {
+  //    confidences[i][curr] = (confidences[i][curr] - min_confidence) / space;
+  //    confidences[i][curr] -= 0.5;
+  //  }
+  //}
 
-  if (para->getBool("Use Confidence 3"))
-  {
+  //if (para->getBool("Use Confidence 2"))
+  //{
 
-  }
+  //}
 
-  if (para->getBool("Use Confidence 4"))
-  {
+  //if (para->getBool("Use Confidence 3"))
+  //{
 
-  }
+  //}
 
-  for (int i = 0; i < original->vn; i++)
-  {
-    CVertex& v = original->vert[i];
-    float sum_confidences = 0;
-    for (int j = 0; j < factors; j++)
-    {
-      sum_confidences += confidences[i][j];
-    }
+  //if (para->getBool("Use Confidence 4"))
+  //{
 
-    v.eigen_confidence = sum_confidences / factors;
-  }
+  //}
+
+  //for (int i = 0; i < original->vn; i++)
+  //{
+  //  CVertex& v = original->vert[i];
+  //  float sum_confidences = 0;
+  //  for (int j = 0; j < factors; j++)
+  //  {
+  //    sum_confidences += confidences[i][j];
+  //  }
+
+  //  v.eigen_confidence = sum_confidences / factors;
+  //}
 
 }
 

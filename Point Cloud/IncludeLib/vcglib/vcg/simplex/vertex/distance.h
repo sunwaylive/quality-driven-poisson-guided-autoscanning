@@ -62,12 +62,12 @@ template <class SCALARTYPE>
 			const Point3<typename VERTEXTYPE::ScalarType> fp = Point3<typename VERTEXTYPE::ScalarType>::Construct(p);
 
 			typename VERTEXTYPE::ScalarType md;		// distance between v and fp
-			md = (v.P() - fp).Norm();
+			md = (v.cP() - fp).Norm();
 
 			if (md <= minDist) 
 			{
 				minDist = (SCALARTYPE)(md);		// minDist is updated to the closest distance
-				q = v.P();						// q is the current closest point
+				q = v.cP();						// q is the current closest point
 
 				return true;
 			}
@@ -104,6 +104,54 @@ class PointNormalDistanceFunctor {
 			return false;
 		}
 	};
+
+template <class VERTEXYPE>
+class PointScaledDistanceFunctor {
+	public:
+		typedef typename VERTEXYPE::ScalarType ScalarType;
+		typedef Point3<ScalarType> QueryType;
+		static inline const Point3<ScalarType> &  Pos(const QueryType & qt)  {return qt;}
+
+		static Point3<ScalarType> & Cen(){static Point3<ScalarType> cen(0,0,0); return cen;}
+
+		 
+		inline bool operator () (const VERTEXYPE & p, const QueryType & qp, ScalarType & minDist, Point3<ScalarType> & q) {
+
+			Point3<ScalarType> ed = (qp-p.P());
+			Point3<ScalarType> dir = (p.P()-Cen()).Normalize();
+			Point3<ScalarType> odir =  (dir^((ed)^dir)).Normalize();
+			ScalarType d = fabs(ed * dir) + fabs(ed  *odir);
+			
+			if(d < minDist){
+				minDist = d;
+				q = p.P();
+				return true;
+			}
+			return false;
+		}
+	};
+
+template <class VertexType>
+class ApproximateGeodesicDistanceFunctor {
+  public:
+    typedef typename VertexType::ScalarType ScalarType;
+    static inline const Point3<ScalarType> &  Pos(const VertexType & qt)  {return qt.P();}
+
+    inline bool operator () (const VertexType & v, const VertexType & vp, ScalarType & minDist, Point3<ScalarType> & q) {
+      ScalarType gd = ApproximateGeodesicDistance(v.cP(),v.cN(),vp.cP(),vp.cN());
+      if (gd <= minDist)
+      {
+        minDist =gd;		// minDist is updated to the closest distance
+        q = v.P();						// q is the current closest point
+        return true;
+      }
+      return false;
+    }
+    inline ScalarType operator () (const Point3<ScalarType>& p0, const Point3<ScalarType>& n0,
+                                   const Point3<ScalarType>& p1, const Point3<ScalarType>& n1) {
+      return  ApproximateGeodesicDistance(p0,n0,p1,n1);
+    }
+  };
 
 }	 // end namespace vertex
 	

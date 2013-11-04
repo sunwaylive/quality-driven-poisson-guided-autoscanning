@@ -172,7 +172,20 @@ public:
 		_v[1] = P3ScalarType(b[1]);
 		_v[2] = P3ScalarType(b[2]);
 	}
-
+	template <class EigenVector>
+	inline void FromEigenVector( const EigenVector & b )
+	{
+		_v[0] = P3ScalarType(b[0]);
+		_v[1] = P3ScalarType(b[1]);
+		_v[2] = P3ScalarType(b[2]);
+	}
+	template <class EigenVector>
+	inline void ToEigenVector( EigenVector & b ) const
+	{
+		b[0]=_v[0] ;
+		b[1]=_v[1] ;
+		b[2]=_v[2] ;
+	}
   template <class Q> 
   static inline Point3 Construct( const Point3<Q> & b )
   {
@@ -355,8 +368,8 @@ public:
 	/**
 	 * Convert from polar coordinates to cartesian coordinates.
 	 *
-	 * Theta is the azimuth angle and ranges between [0, 2PI) degrees.
-	 * Phi is the elevation angle (not the polar angle) and ranges between [-90, 90] degrees.
+	 * Theta is the azimuth angle and ranges between [0, 2PI) radians.
+	 * Phi is the elevation angle (not the polar angle) and ranges between [-PI/2, PI/2] radians.
 	 *
 	 * \note Note that instead of the classical polar angle, which ranges between 
 	 *       0 and PI degrees, we opt for the elevation angle to obtain a more 
@@ -474,6 +487,21 @@ inline P3ScalarType SquaredDistance( Point3<P3ScalarType> const & p1,Point3<P3Sc
 {
     return (p1-p2).SquaredNorm();
 }
+
+template <class P3ScalarType>
+P3ScalarType ApproximateGeodesicDistance(const Point3<P3ScalarType>& p0, const Point3<P3ScalarType>& n0,
+                                       const Point3<P3ScalarType>& p1, const Point3<P3ScalarType>& n1)
+{
+    Point3<P3ScalarType> V(p0-p1);
+    V.Normalize();
+    const P3ScalarType C0 = V*n0;
+    const P3ScalarType C1 = V*n1;
+    const P3ScalarType De = Distance(p0,p1);
+    if(fabs(C0-C1)<0.0001) return De/sqrt(1-C0*C1);
+    const P3ScalarType Dg = ((asin(C0) - asin(C1))/(C0-C1));
+    return Dg*De;
+}
+
 
 	// Dot product preciso numericamente (solo double!!)
 	// Implementazione: si sommano i prodotti per ordine di esponente
