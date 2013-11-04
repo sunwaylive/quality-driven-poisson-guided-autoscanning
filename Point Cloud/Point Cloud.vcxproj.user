@@ -58,21 +58,21 @@
     <LocalDebuggerEnvironment>PATH=$(QTDIR)\bin%3b$(PATH)</LocalDebuggerEnvironment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LocalDebuggerEnvironment>PATH=$(QTDIR)\bin%3b"$(QTDIR)\bin%3b$(PATH)</LocalDebuggerEnvironment>
+    <LocalDebuggerEnvironment>PATH="$(QTDIR)\bin%3b$(PATH)</LocalDebuggerEnvironment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerEnvironment>PATH=$(QTDIR)\bin%3b"$(QTDIR)\bin%3b$(PATH)</LocalDebuggerEnvironment>
+    <LocalDebuggerEnvironment>PATH="$(QTDIR)\bin%3b$(PATH)</LocalDebuggerEnvironment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_debug|Win32'">
-    <LocalDebuggerEnvironment>PATH=$(QTDIR)\bin%3b"$(QTDIR)\bin%3b$(PATH)</LocalDebuggerEnvironment>
+    <LocalDebuggerEnvironment>PATH="$(QTDIR)\bin%3b$(PATH)</LocalDebuggerEnvironment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_debug|x64'">
-    <LocalDebuggerEnvironment>PATH=$(QTDIR)\bin%3b"$(QTDIR)\bin%3b$(PATH)</LocalDebuggerEnvironment>
+    <LocalDebuggerEnvironment>PATH="$(QTDIR)\bin%3b$(PATH)</LocalDebuggerEnvironment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LocalDebuggerEnvironment>PATH=$(QTDIR)\bin%3b"$(QTDIR)\bin%3b$(PATH)</LocalDebuggerEnvironment>
+    <LocalDebuggerEnvironment>PATH="$(QTDIR)\bin%3b$(PATH)</LocalDebuggerEnvironment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LocalDebuggerEnvironment>PATH=$(QTDIR)\bin%3b"$(QTDIR)\bin%3b$(PATH)</LocalDebuggerEnvironment>
+    <LocalDebuggerEnvironment>PATH="$(QTDIR)\bin%3b$(PATH)</LocalDebuggerEnvironment>
   </PropertyGroup>
 </Project>
