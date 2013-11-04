@@ -920,7 +920,8 @@ void Poisson::runComputeSampleConfidence()
       //v.eigen_confidence -= 0.5;
     }
 
-    normalizeConfidence(samples->vert, -0.5);
+    //normalizeConfidence(samples->vert, -0.5);
+    normalizeConfidence(samples->vert, 0);
 
   }
   else
@@ -948,75 +949,9 @@ void Poisson::runComputeSampleConfidence()
       CVertex& v = samples->vert[i];
       v.eigen_confidence = (v.eigen_confidence - min_confidence) / space;
 
-      v.eigen_confidence -= 0.5;
+      v.eigen_confidence -= 0;
       //cout << "combine confidence" << v.eigen_confidence << endl;
     }
-  }
-
-
-  if (para->getBool("Use Confidence 4"))
-  {
-    normalizeConfidence(samples->vert, 0);
-    vector<float> confidences_temp;
-    for (int i = 0; i < samples->vn; i++)
-    {
-      confidences_temp.push_back(samples->vert[i].eigen_confidence);
-    }
-
-    if (iso_points->vert.empty())
-    {
-      cout << "need iso points" << endl;
-      return;
-    }
-
-    //double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
-    double sigma = 45;
-    double sigma_threshold = pow(max(1e-8,1-cos(sigma/180.0*3.1415926)), 2);
-
-    GlobalFun::computeBallNeighbors(samples, iso_points, 
-      radius, 
-      iso_points->bbox);
-
-    for (int i = 0; i < samples->vn; i++)
-    {
-      CVertex& v = samples->vert[i];
-
-      float positive_sum = 0.0;
-      float negative_sum = 0.0;
-      float positive_w_sum = 0.0;
-      float negative_w_sum = 0.0;
-      //int positive_cnt = 0;
-      //int negative_cnt = 0;
-
-      for (int j = 0; j < v.original_neighbors.size(); j++)
-      {
-        int index = v.original_neighbors[j];
-        CVertex& t = iso_points->vert[index];
-
-        Point3f diff = t.P() - v.P();
-        float proj = diff * v.N();
-
-        float dist2  = diff.SquaredNorm();
-        float w1 = exp(dist2 * iradius16);
-        float w2 = exp(-pow(1-v.N()*t.N(), 2)/sigma_threshold);
-        float w = w1 * w2;
-
-        if (proj > 0)
-        {
-          positive_sum += w * t.eigen_confidence;
-          positive_w_sum += w;
-        }
-        else
-        {
-          negative_sum += w * t.eigen_confidence;
-          negative_w_sum += w;
-        }
-      }
-
-      v.eigen_confidence = abs(positive_sum / positive_w_sum - negative_sum / negative_w_sum);
-    }
-
-    normalizeConfidence(samples->vert, -0.5);
   }
 
 }
@@ -1118,14 +1053,7 @@ void Poisson::runComputeIsoConfidence()
     normalizeConfidence(iso_points->vert, 0);
   }
 
-  if (para->getBool("Use Confidence 3"))
-  {
-    for (int i = 0; i < iso_points->vn; i++)
-    {
-      CVertex& v = iso_points->vert[i];
-      v.eigen_confidence = 0;
-    }
-  }
+
 
 }
 

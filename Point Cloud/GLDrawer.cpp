@@ -238,7 +238,7 @@ GLColor GLDrawer::getColorByType(const CVertex& v)
 
   if (bUseConfidenceColor && v.is_iso)
   {
-    return isoValue2color(v.eigen_confidence, cofidence_color_scale, iso_value_shift, false);
+    return isoValue2color(v.eigen_confidence, cofidence_color_scale, iso_value_shift, true);
   }
 	if (bUseIndividualColor && v.is_iso)
 	{

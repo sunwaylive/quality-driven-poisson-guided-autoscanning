@@ -1625,7 +1625,7 @@ void GLArea::wheelEvent(QWheelEvent *e)
 
 	if( (e->modifiers() & Qt::AltModifier) && (e->modifiers() & Qt::ControlModifier) )
 	{
-    if (para->getBool("Show ISO Points") && para->getBool("Show Samples"))
+    if ((para->getBool("Show ISO Points") || para->getBool("Show Samples")) && !para->getBool("Show Normal"))
     {
       size_temp = global_paraMgr.glarea.getDouble("ISO Value Shift");
       if(e->delta() < 0)
