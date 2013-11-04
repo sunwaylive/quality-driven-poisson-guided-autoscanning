@@ -65,7 +65,7 @@ public:
 	void drawPickPoint(CMesh* samples, vector<int>& pickList, bool bShow_as_dot);
 	void setRGBNormals(vector<Point3f>& normals){RGB_normals = normals; }
 
-  GLColor isoValue2color(double value, double scale_threshold);
+  GLColor isoValue2color(double value, double scale_threshold, double shift, bool need_negative);
   //cut from private
   void glDrawLine(Point3f& p0, Point3f& p1, GLColor color, double width);
   void drawSphere(const CVertex& v);
@@ -115,6 +115,7 @@ private:
   double slice_color_scale;
   double iso_step_size;
   double cofidence_color_scale;
+  double iso_value_shift;
 
 	QColor original_color;
 	QColor sample_color;

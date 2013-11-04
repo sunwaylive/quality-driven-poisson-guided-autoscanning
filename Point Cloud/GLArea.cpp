@@ -1393,6 +1393,7 @@ void GLArea::saveView(QString fileName)
   outfile << global_paraMgr.glarea.getDouble("Slice Color Scale") << endl;
   outfile << global_paraMgr.glarea.getDouble("ISO Interval Size") << endl;
   outfile << global_paraMgr.glarea.getDouble("Confidence Color Scale") << endl;
+  outfile << global_paraMgr.glarea.getDouble("ISO Value Shift") << endl;
 
 
 	outfile.close();
@@ -1523,6 +1524,8 @@ void GLArea::loadView(QString fileName)
   infile >> temp;
   global_paraMgr.glarea.setValue("Confidence Color Scale", DoubleValue(temp));
 
+  infile >> temp;
+  global_paraMgr.glarea.setValue("ISO Value Shift", DoubleValue(temp));
 
 	infile.close();
 	emit needUpdateStatus();
@@ -1622,8 +1625,26 @@ void GLArea::wheelEvent(QWheelEvent *e)
 
 	if( (e->modifiers() & Qt::AltModifier) && (e->modifiers() & Qt::ControlModifier) )
 	{
-		size_temp = global_paraMgr.drawer.getDouble("Normal Line Length");
-		global_paraMgr.drawer.setValue("Normal Line Length", DoubleValue(size_temp * change));
+    if (para->getBool("Show ISO Points") && para->getBool("Show Samples"))
+    {
+      size_temp = global_paraMgr.glarea.getDouble("ISO Value Shift");
+      if(e->delta() < 0)
+      {
+        size_temp += 0.02;
+      }
+      else
+      {
+        size_temp -= 0.02;
+      }
+      global_paraMgr.glarea.setValue("ISO Value Shift", DoubleValue(size_temp));
+      cout << "ISO Value Shift" << size_temp << endl;
+    }
+    else
+    {
+      size_temp = global_paraMgr.drawer.getDouble("Normal Line Length");
+      global_paraMgr.drawer.setValue("Normal Line Length", DoubleValue(size_temp * change));
+    }
+
 	}
 	else if( (e->modifiers() & Qt::ShiftModifier) && (e->modifiers() & Qt::ControlModifier) )
 	{

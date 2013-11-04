@@ -120,6 +120,7 @@ void ParameterMgr::initGlareaParameter()
   glarea.addParam(new RichDouble("Slice Color Scale", 1));
   glarea.addParam(new RichDouble("ISO Interval Size", 50));
   glarea.addParam(new RichDouble("Confidence Color Scale", 0.5));
+  glarea.addParam(new RichDouble("ISO Value Shift", 0.00));
 
 	glarea.addParam(new RichBool("SnapShot Each Iteration", false));
 	glarea.addParam(new RichBool("No Snap Radius", false));
@@ -328,7 +329,8 @@ void ParameterMgr::initPoissonParameter()
   poisson.addParam(new RichBool("Run Extract MC Points", false));
 
   poisson.addParam(new RichBool("Run Poisson On Original", true));
-  poisson.addParam(new RichBool("Run Poisson On Samples", false));  poisson.addParam(new RichBool("Run Label ISO Points", false));
+  poisson.addParam(new RichBool("Run Poisson On Samples", false));  
+  poisson.addParam(new RichBool("Run Label ISO Points", false));
   poisson.addParam(new RichBool("Run Label Smooth", false));
   poisson.addParam(new RichBool("Run Label Boundary Points", false));
   poisson.addParam(new RichBool("Run Compute View Candidates", false));

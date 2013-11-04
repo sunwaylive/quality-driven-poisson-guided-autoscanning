@@ -44,6 +44,7 @@ void GLDrawer::updateDrawer(vector<int>& pickList)
   bUseIsoInteral = global_paraMgr.glarea.getBool("Use ISO Interval");
   bUseConfidenceColor = global_paraMgr.drawer.getBool("Show Confidence Color");
   cofidence_color_scale = global_paraMgr.glarea.getDouble("Confidence Color Scale");
+  iso_value_shift = global_paraMgr.glarea.getDouble("ISO Value Shift");
 
 	if (!pickList.empty())
 	{
@@ -118,8 +119,13 @@ bool GLDrawer::isCanSee(const Point3f& pos, const Point3f& normal)
 	return  ( (view_point - pos) * normal >= 0 );
 }
 
-GLColor GLDrawer::isoValue2color(double iso_value, double scale_threshold)
+GLColor GLDrawer::isoValue2color(double iso_value, 
+                                 double scale_threshold,
+                                 double shift,
+                                 bool need_negative)
 {
+  iso_value += shift;
+
   if (scale_threshold <= 0)
   {
     scale_threshold = 1;
@@ -130,7 +136,14 @@ GLColor GLDrawer::isoValue2color(double iso_value, double scale_threshold)
   bool is_inside = true;
   if (iso_value < 0)
   {
-    iso_value /= -scale_threshold;
+    if (!need_negative)
+    {
+      iso_value = 0;
+    }
+    else
+    {
+      iso_value /= -scale_threshold;
+    }
   }
   else
   {
@@ -147,23 +160,7 @@ GLColor GLDrawer::isoValue2color(double iso_value, double scale_threshold)
   }
   Point3f mixed_color;
 
-  //if (is_inside)
-  //{
-  //  base_colors[4] = Point3f(0.0, 0.0, 1.0);
-  //  base_colors[3] = Point3f(0.0, 0.7, 1.0);
-  //  base_colors[2] = Point3f(0.0, 1.0, 1.0);
-  //  base_colors[1] = Point3f(0.0, 1.0, 0.7);
-  //  base_colors[0] = Point3f(0.0, 1.0, 0.0);
-  //}
-  //else
-  //{
-  //  base_colors[4] = Point3f(1.0, 0.0, 0.0);
-  //  base_colors[3] = Point3f(1.0, 0.7, 0.0);
-  //  base_colors[2] = Point3f(1.0, 1.0, 0.0);
-  //  base_colors[1] = Point3f(0.7, 1.0, 0.0);
-  //  base_colors[0] = Point3f(0.0, 1.0, 0.0);
-  //}
-  if (is_inside)
+  if (is_inside && need_negative)
   {
     base_colors[4] = Point3f(0.0, 0.0, 1.0);
     base_colors[3] = Point3f(0.0, 0.7, 1.0);
@@ -204,7 +201,7 @@ GLColor GLDrawer::getColorByType(const CVertex& v)
 	{
     if (bUseConfidenceColor && v.eigen_confidence >= -0.5)
     {
-      return isoValue2color(v.eigen_confidence, cofidence_color_scale);
+      return isoValue2color(v.eigen_confidence, cofidence_color_scale, iso_value_shift, true);
     }
 		return original_color;
 	}
@@ -236,12 +233,12 @@ GLColor GLDrawer::getColorByType(const CVertex& v)
 
   if (bUseConfidenceColor && !v.is_iso && v.eigen_confidence >= -0.5)
   {
-    return isoValue2color(v.eigen_confidence, cofidence_color_scale);
+    return isoValue2color(v.eigen_confidence, cofidence_color_scale, iso_value_shift, true);
   }
 
   if (bUseConfidenceColor && v.is_iso)
   {
-    return isoValue2color(v.eigen_confidence, cofidence_color_scale);
+    return isoValue2color(v.eigen_confidence, cofidence_color_scale, iso_value_shift, false);
   }
 	if (bUseIndividualColor && v.is_iso)
 	{
@@ -251,7 +248,7 @@ GLColor GLDrawer::getColorByType(const CVertex& v)
     }
 		//Color4b c = v.C();
   //  return GLColor((255 - slice_color_scale * c.X())/255., c.Y()/255., c.Z()/255., 1.);
-    return isoValue2color(v.eigen_confidence, slice_color_scale);
+    return isoValue2color(v.eigen_confidence, slice_color_scale, iso_value_shift, true);
 	}
   else if (v.is_iso)
   {
@@ -787,10 +784,10 @@ void GLDrawer::drawSlice(Slice& slice, double trans_val)
       //GLColor c2 = getColorByType(v2);
       //GLColor c3 = getColorByType(v3);
 
-      GLColor c0 = isoValue2color(v0.eigen_confidence, slice_color_scale);
-      GLColor c1 = isoValue2color(v1.eigen_confidence, slice_color_scale);
-      GLColor c2 = isoValue2color(v2.eigen_confidence, slice_color_scale);
-      GLColor c3 = isoValue2color(v3.eigen_confidence, slice_color_scale);
+      GLColor c0 = isoValue2color(v0.eigen_confidence, slice_color_scale, iso_value_shift, true);
+      GLColor c1 = isoValue2color(v1.eigen_confidence, slice_color_scale, iso_value_shift, true);
+      GLColor c2 = isoValue2color(v2.eigen_confidence, slice_color_scale, iso_value_shift, true);
+      GLColor c3 = isoValue2color(v3.eigen_confidence, slice_color_scale, iso_value_shift, true);
       glBegin(GL_QUADS);
       glColor4f(c0.r, c0.g, c0.b, trans_val); glVertex3f(v0.P().X(), v0.P().Y(), v0.P().Z());
       glColor4f(c1.r, c1.g, c1.b, trans_val); glVertex3f(v1.P().X(), v1.P().Y(), v1.P().Z());
