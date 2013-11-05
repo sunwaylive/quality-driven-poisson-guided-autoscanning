@@ -47,6 +47,7 @@ private:
   CMesh* field_points;
   CMesh* model;
   Slices* slices;
+  CMesh tentative_mesh;
   
 	RichParameterSet* para;
 	Box3f m_box;
