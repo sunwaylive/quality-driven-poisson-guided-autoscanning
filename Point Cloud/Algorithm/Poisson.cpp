@@ -8,7 +8,166 @@
 #include "Poisson/SparseMatrix.h"
 #include "Poisson/Ply.h"
 #include "Poisson/MultiGridOctreeData.h"
-#include "vcg/complex/algorithms/point_sampling.h"
+#include "vcg/complex/trimesh/point_sampling.h"
+
+class BaseSampler
+{
+public:
+  BaseSampler(CMesh* _m){m=_m; uvSpaceFlag = false; qualitySampling=false; tex=0;};
+  CMesh *m;
+  QImage* tex;
+  int texSamplingWidth;
+  int texSamplingHeight;
+  bool uvSpaceFlag;
+  bool qualitySampling;
+
+  void AddVert(const CMesh::VertexType &p) 
+  {
+    tri::Allocator<CMesh>::AddVertices(*m,1);
+    m->vert.back().ImportData(p);
+  }
+
+  void AddFace(const CMesh::FaceType &f, CMesh::CoordType p) 
+  {
+    tri::Allocator<CMesh>::AddVertices(*m,1);
+    m->vert.back().P() = f.P(0)*p[0] + f.P(1)*p[1] +f.P(2)*p[2];
+    m->vert.back().N() = f.V(0)->N()*p[0] + f.V(1)->N()*p[1] + f.V(2)->N()*p[2];
+
+    if (qualitySampling)	
+      m->vert.back().Q() = f.V(0)->Q()*p[0] + f.V(1)->Q()*p[1] + f.V(2)->Q()*p[2];
+  }
+  void AddTextureSample(const CMesh::FaceType &f, const CMesh::CoordType &p, const Point2i &tp, float edgeDist)
+  {
+    if (edgeDist != .0) return;
+
+    tri::Allocator<CMesh>::AddVertices(*m,1);
+
+    if(uvSpaceFlag) m->vert.back().P() = Point3f(float(tp[0]),float(tp[1]),0); 
+    else m->vert.back().P() = f.P(0)*p[0] + f.P(1)*p[1] +f.P(2)*p[2];
+
+    m->vert.back().N() = f.V(0)->N()*p[0] + f.V(1)->N()*p[1] +f.V(2)->N()*p[2];
+    if(tex)
+    {
+      QRgb val;
+      // Computing normalized texels position
+      int xpos = (int)(tex->width()  * (float(tp[0])/texSamplingWidth)) % tex->width();
+      int ypos = (int)(tex->height() * (1.0- float(tp[1])/texSamplingHeight)) % tex->height();
+
+      if (xpos < 0) xpos += tex->width();
+      if (ypos < 0) ypos += tex->height();
+
+      val = tex->pixel(xpos,ypos);
+      m->vert.back().C().SetRGB(qRed(val),qGreen(val),qBlue(val));
+    }
+
+  }
+}; // end class BaseSampler
+
+
+///* This sampler is used to transfer the detail of a mesh onto another one. 
+// * It keep internally the spatial indexing structure used to find the closest point 
+// */
+//class RedetailSampler
+//{
+//	typedef GridStaticPtr<CMesh::FaceType, CMesh::ScalarType > MetroMeshGrid;
+//	typedef GridStaticPtr<CMesh::VertexType, CMesh::ScalarType > VertexMeshGrid;
+//
+//public:
+//
+//	RedetailSampler()
+//	{
+//		m=0;		
+//	};
+// 
+//	CMesh *m;           /// the source mesh for which we search the closest points (e.g. the mesh from which we take colors etc). 
+//	CallBackPos *cb;
+//	int sampleNum;  // the expected number of samples. Used only for the callback
+//	int sampleCnt;
+//	MetroMeshGrid   unifGridFace;
+//	VertexMeshGrid   unifGridVert;
+//	bool useVertexSampling;
+//
+//	// Parameters
+//		typedef tri::FaceTmark<CMesh> MarkerFace;
+//		MarkerFace markerFunctor;
+//	
+//	bool coordFlag;
+//	bool colorFlag;
+//	bool normalFlag;
+//	bool qualityFlag;
+//  bool selectionFlag;
+//	bool storeDistanceAsQualityFlag;
+//	float dist_upper_bound;
+// 	void init(CMesh *_m, CallBackPos *_cb=0, int targetSz=0)
+//	{
+//		coordFlag=false;
+//		colorFlag=false;
+//		qualityFlag=false;
+//    selectionFlag=false;
+//		storeDistanceAsQualityFlag=false;
+//		m=_m;
+//		if(m) 
+//		{
+//			tri::UpdateNormals<CMesh>::PerFaceNormalized(*m);
+//			tri::UpdateFlags<CMesh>::FaceProjection(*m);
+//			if(m->fn==0) useVertexSampling = true;
+//							else useVertexSampling = false;
+//							
+//			if(useVertexSampling) unifGridVert.Set(m->vert.begin(),m->vert.end());
+//											else  unifGridFace.Set(m->face.begin(),m->face.end());
+//			markerFunctor.SetMesh(m);
+//		}
+//		// sampleNum and sampleCnt are used only for the progress callback.
+//		cb=_cb;
+//		sampleNum = targetSz; 
+//		sampleCnt=0;
+//	}
+//// this function is called for each vertex of the target mesh.
+//// and retrieve the closest point on the source mesh.
+//void AddVert(CMesh::VertexType &p) 
+//{
+//		assert(m);
+//		// the results
+//		Point3f       closestPt,      normf, bestq, ip;
+//		float dist = dist_upper_bound;
+//		const CMesh::CoordType &startPt= p.cP();
+//		// compute distance between startPt and the mesh S2
+//		if(useVertexSampling)
+//			{
+//				CMesh::VertexType   *nearestV=0;
+//				nearestV =  tri::GetClosestVertex<CMesh,VertexMeshGrid>(*m,unifGridVert,startPt,dist_upper_bound,dist); //(PDistFunct,markerFunctor,startPt,dist_upper_bound,dist,closestPt);
+//			if(cb) cb(sampleCnt++*100/sampleNum,"Resampling Vertex attributes");
+//				if(storeDistanceAsQualityFlag)  p.Q() = dist;
+//				if(dist == dist_upper_bound) return ;		
+//				
+//				if(coordFlag) p.P()=nearestV->P();
+//				if(colorFlag) p.C() = nearestV->C();
+//				if(normalFlag) p.N() = nearestV->N();
+//				if(qualityFlag) p.Q()= nearestV->Q();
+//        if(selectionFlag) if(nearestV->IsS()) p.SetS();
+//			}
+//		else
+//			{
+//				CMesh::FaceType   *nearestF=0;
+//				vcg::face::PointDistanceBaseFunctor<CMesh::ScalarType> PDistFunct;
+//				dist=dist_upper_bound;
+//				if(cb) cb(sampleCnt++*100/sampleNum,"Resampling Vertex attributes");
+//				nearestF =  unifGridFace.GetClosest(PDistFunct,markerFunctor,startPt,dist_upper_bound,dist,closestPt);
+//				if(dist == dist_upper_bound) return ;																				
+//
+//				Point3f interp;
+//        InterpolationParameters(*nearestF,(*nearestF).cN(),closestPt, interp[0], interp[1], interp[2]);
+//        interp[2]=1.0-interp[1]-interp[0];
+//
+//				if(coordFlag) p.P()=closestPt;
+//				if(colorFlag) p.C().lerp(nearestF->V(0)->C(),nearestF->V(1)->C(),nearestF->V(2)->C(),interp);
+//				if(normalFlag) p.N() = nearestF->V(0)->N()*interp[0] + nearestF->V(1)->N()*interp[1] + nearestF->V(2)->N()*interp[2];
+//				if(qualityFlag) p.Q()= nearestF->V(0)->Q()*interp[0] + nearestF->V(1)->Q()*interp[1] + nearestF->V(2)->Q()*interp[2];
+//        if(selectionFlag) if(nearestF->IsS()) p.SetS();
+//			}
+//	}
+//}; // end class RedetailSampler
+
 
 Poisson::Poisson(RichParameterSet* _para)
 {
@@ -557,6 +716,7 @@ void Poisson::runPoisson()
         if (polygon[j].inCore)
         {
           new_face.V(j) = &tentative_mesh.vert[polygon[j].idx];
+          
         }
         else
         {
@@ -572,21 +732,57 @@ void Poisson::runPoisson()
 
     tentative_mesh.vn = tentative_mesh.vert.size();
     tentative_mesh.fn = tentative_mesh.face.size();
-    model->vert.clear();
-    model->face.clear();
-    for (int i = 0; i < tentative_mesh.vert.size(); i++)
-    {
-      model->vert.push_back(tentative_mesh.vert[i]);
-    }
-    model->vn = model->vert.size();
+    vcg::tri::UpdateNormals<CMesh>::PerVertex(tentative_mesh);
 
-    for (int i = 0; i < tentative_mesh.face.size(); i++)
-    {
-      model->face.push_back(tentative_mesh.face[i]);
-    }
-    model->fn = model->face.size();
+    //model->vert.clear();
+    //model->face.clear();
+    //for (int i = 0; i < tentative_mesh.vert.size(); i++)
+    //{
+    //  model->vert.push_back(tentative_mesh.vert[i]);
+    //}
+    //model->vn = model->vert.size();
 
-    vector<Point3f> sample_points;
+    //for (int i = 0; i < tentative_mesh.face.size(); i++)
+    //{
+    //  model->face.push_back(tentative_mesh.face[i]);
+    //}
+    //model->fn = model->face.size();
+    //vcg::tri::Allocator<CMesh>::CompactFaceVector(*model);  
+    //vcg::tri::Allocator<CMesh>::CompactVertexVector(*model);
+
+    float radius = 0;
+    int sampleNum = 5000;
+    radius = tri::SurfaceSampling<CMesh,BaseSampler>::ComputePoissonDiskRadius(tentative_mesh, sampleNum);
+
+    // first of all generate montecarlo samples for fast lookup
+    CMesh *presampledMesh=&(tentative_mesh);
+    CMesh MontecarloMesh; // this mesh is used only if we need real poisson sampling (and therefore we need to choose points different from the starting mesh vertices)
+
+    if (1)
+    {
+      BaseSampler sampler(&MontecarloMesh);
+      sampler.qualitySampling =true;
+      tri::SurfaceSampling<CMesh,BaseSampler>::Montecarlo(tentative_mesh, sampler, sampleNum*20);
+      MontecarloMesh.bbox = tentative_mesh.bbox; // we want the same bounding box
+      presampledMesh=&MontecarloMesh;
+    }
+
+    iso_points->vert.clear();
+    BaseSampler mps(iso_points);
+    tri::SurfaceSampling<CMesh,BaseSampler>::PoissonDiskParam pp;
+    tri::SurfaceSampling<CMesh,BaseSampler>::PoissonDisk(tentative_mesh, mps, *presampledMesh, radius,pp);
+
+    for (int i = 0; i < iso_points->vert.size(); i++)
+    {
+      CVertex& v = iso_points->vert[i];
+      v.is_iso = true;
+      v.m_index = i;
+      v.eigen_confidence = 0;
+      v.N().Normalize();
+      v.recompute_m_render();
+    }
+
+ /*   vector<Point3f> sample_points;
     float result_radius;
     tri::PoissonSampling(tentative_mesh, sample_points, 2500, result_radius);
 
@@ -601,44 +797,8 @@ void Poisson::runPoisson()
       iso_points->vert.push_back(new_v);
       iso_points->bbox.Add(new_v.P());
     }
-    iso_points->vn = iso_points->vert.size();
+    iso_points->vn = iso_points->vert.size();*/
 
- /*   iso_points->vert.clear();
-    iso_points->vn = vm;
-    iso_points->bbox.SetNull();
-
-    Point3D<float> p;
-    PlyVertex<float> pv; 
-    int i=0;
-    int index = 0;
-    for (; i < int(mesh.inCorePoints.size()); i++)
-    {
-      p = mesh.inCorePoints[i].point;
-      CVertex new_v;
-      new_v.P()[0] = p.coords[0]*scale+center.coords[0];
-      new_v.P()[1] = p.coords[1]*scale+center.coords[1];
-      new_v.P()[2] = p.coords[2]*scale+center.coords[2];
-      new_v.is_iso = true;
-      new_v.eigen_confidence = 0;
-      new_v.m_index = index++;
-      iso_points->vert.push_back(new_v);
-      iso_points->bbox.Add(new_v.P());
-    }
-
-    for (int ii=0; ii < mesh.outOfCorePointCount(); ii++)
-    {
-      mesh.nextOutOfCorePoint(pv);
-      p = pv.point;
-      CVertex new_v;
-      new_v.P()[0] = p.coords[0]*scale+center.coords[0];
-      new_v.P()[1] = p.coords[1]*scale+center.coords[1];
-      new_v.P()[2] = p.coords[2]*scale+center.coords[2];
-      new_v.eigen_confidence = 0;
-      new_v.is_iso = true;
-      new_v.m_index = index++;
-      iso_points->vert.push_back(new_v);
-      iso_points->bbox.Add(new_v.P());
-    }*/
   }
   else
   {
@@ -757,20 +917,22 @@ void Poisson::runSlice()
 
 void Poisson::runComputeOriginalConfidence()
 {
-  vector<Point3f> result;
-  float result_radius;
-  tri::PoissonSampling(*model, result, 2000, result_radius);
+  //vector<Point3f> result;
+  //float result_radius;
+  //tri::PoissonSampling(*model, result, 2000, result_radius);
 
-  iso_points->vert.clear();
-  for (int i = 0; i < result.size(); i++)
-  {
-    CVertex new_v;
-    new_v.m_index = i; 
-    new_v.is_iso = true;
-    new_v.P() = result[i];
-    iso_points->vert.push_back(new_v);
-  }
-  iso_points->vn = iso_points->vert.size();
+  //iso_points->vert.clear();
+  //for (int i = 0; i < result.size(); i++)
+  //{
+  //  CVertex new_v;
+  //  new_v.m_index = i; 
+  //  new_v.is_iso = true;
+  //  new_v.P() = result[i];
+  //  iso_points->vert.push_back(new_v);
+  //}
+  //iso_points->vn = iso_points->vert.size();
+
+
 
   //vector< vector<float>>confidences;
   //
