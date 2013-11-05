@@ -27,6 +27,8 @@ void CameraParaDlg::initConnects()
   connect(ui->tableView_scan_candidates, SIGNAL(clicked(QModelIndex)), this, SLOT(showSelectedScannCandidates(QModelIndex)));
   connect(ui->tableView_scan_results, SIGNAL(clicked(QModelIndex)), this, SLOT(showSelectedScannedMesh(QModelIndex)));
   connect(ui->pushButton_merge, SIGNAL(clicked()), this, SLOT(mergeScannedMeshWithOriginal()));
+  connect(ui->pushButton_build_grid, SIGNAL(clicked()), this, SLOT(buildGrid()));
+  connect(ui->pushButton_propagate, SIGNAL(clicked()), this, SLOT(propagate()));
 }
 
 bool CameraParaDlg::initWidgets()
@@ -216,6 +218,7 @@ void CameraParaDlg::showSelectedScannedMesh(QModelIndex index)
 void CameraParaDlg::mergeScannedMeshWithOriginal()
 {
   QModelIndexList sil = ui->tableView_scan_results->selectionModel()->selectedRows();
+  if (sil.isEmpty()) return;
 
   CMesh* original = area->dataMgr.getCurrentOriginal();
   vector<CMesh* > *scanned_results = area->dataMgr.getScannedResults();
@@ -275,4 +278,20 @@ void CameraParaDlg::getCameraMaxDist(double _val)
 void CameraParaDlg::getCameraDistToModel(double _val)
 {
   global_paraMgr.camera.setValue("Camera Dist To Model", DoubleValue(_val));
+}
+
+void
+CameraParaDlg::buildGrid()
+{
+  global_paraMgr.nbv.setValue("Run Build Grid", BoolValue(true));
+  area->runNBV();
+  global_paraMgr.nbv.setValue("Run Build Grid", BoolValue(false));
+}
+
+void
+CameraParaDlg::propagate()
+{
+  global_paraMgr.nbv.setValue("Run Propagate", BoolValue(true));
+  area->runNBV();
+  global_paraMgr.nbv.setValue("Run Propagate", BoolValue(false));
 }

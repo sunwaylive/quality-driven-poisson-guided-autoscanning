@@ -3008,7 +3008,7 @@ int POctree< Degree , OutputDensity >::refineBoundary( int subdivideDepth )
 	// This implementation is somewhat tricky.
 	// We would like to ensure that leaf-nodes across a subdivision boundary have the same depth.
 	// We do this by calling the setNeighbors function.
-	// The key is to implement this in a single pass through the leaves, ensuring that refinements don't propogate.
+	// The key is to implement this in a single pass through the leaves, ensuring that refinements don't propagate.
 	// To this end, we do the minimal refinement that ensures that a cross boundary neighbor, and any of its cross-boundary
 	// neighbors are all refined simultaneously.
 	// For this reason, the implementation can only support nodes deeper than sDepth.

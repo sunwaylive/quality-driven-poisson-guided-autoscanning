@@ -686,7 +686,7 @@ void DataMgr::clearData()
   clearCMesh(iso_points);
   clearCMesh(field_points);
 
-  clearCMesh(model);  
+  //clearCMesh(model);  
   clearCMesh(current_scanned_mesh);
 
 	skeleton.clear();
