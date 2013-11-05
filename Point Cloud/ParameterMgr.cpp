@@ -25,6 +25,7 @@ ParameterMgr::ParameterMgr(void)
 	initUpsamplingParameter();
   initPoissonParameter();
   initCameraParameter();
+  initNBVParameter();
 }
 
 ParameterMgr::~ParameterMgr(void)
@@ -79,6 +80,7 @@ void ParameterMgr::initGlareaParameter()
 	glarea.addParam(new RichBool("Show Samples Sphere", false) );
   glarea.addParam(new RichBool("Show ISO Points", true) );
   glarea.addParam(new RichBool("Use ISO Interval", false) );
+  glarea.addParam(new RichBool("Show NBV Grids", false));
   glarea.addParam(new RichBool("Show Scan Candidates", true));
   glarea.addParam(new RichBool("Show Scanned Mesh", true));
 
@@ -353,6 +355,7 @@ void ParameterMgr::initPoissonParameter()
   poisson.addParam(new RichBool("Use Confidence 4", false));
   poisson.addParam(new RichBool("Compute Original Confidence", false));
   poisson.addParam(new RichBool("Compute Sample Confidence", false));
+  poisson.addParam(new RichBool("Compute ISO Confidence", false));
   poisson.addParam(new RichBool("Use Sort Confidence Combination", true));
 }
 
@@ -368,4 +371,12 @@ void ParameterMgr::initCameraParameter()
   camera.addParam(new RichDouble("Camera Vertical Dist", 0.6f));
   camera.addParam(new RichDouble("Camera Dist To Model", 1.0f));
   camera.addParam(new RichBool("Is Init Camera Show", false));
+}
+
+void
+ParameterMgr::initNBVParameter()
+{
+  nbv.addParam(new RichString("Algorithm Name", "NBV"));
+  nbv.addParam(new RichBool("Run Build Grid", false));
+  nbv.addParam(new RichBool("Run Propagate", false));
 }

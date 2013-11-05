@@ -4,6 +4,7 @@
 #include "Parameter.h"
 #include "GlobalFunction.h"
 #include "Algorithm/Skeleton.h"
+#include "NBVGrid.h"
 
 //#include "Algorithm/Poisson.h"
 
@@ -42,14 +43,17 @@ public:
   bool      isOriginalEmpty();
   bool      isSkeletonEmpty();
   bool      isIsoPointsEmpty();
+  bool      isFieldPointsEmpty();
   bool      isViewCandidatesEmpty();
   bool      isScannedMeshEmpty();
   bool      isScannedResultsEmpty();
+  bool      isAllNBVGridCenterEmpty();
 
   CMesh*    getCurrentModel();
 	CMesh*    getCurrentSamples();
 	CMesh*    getCurrentOriginal();
   CMesh*    getCurrentIsoPoints();
+  CMesh*    getCurrentFieldPoints();
   Slices*   getCurrentSlices();
 	Skeleton* getCurrentSkeleton();
 
@@ -66,7 +70,8 @@ public:
   vector<ScanCandidate>*  getSelectedScanCandidates();
   CMesh*                  getCurrentScannedMesh();
   vector<CMesh* >*        getScannedResults(); 
-
+  CMesh*                  getAllNBVGridCenters();
+  vector<NBVGrid>*        getAllNBVGrids();
 
 	void      recomputeBox();
 	double    getInitRadiuse();
@@ -94,6 +99,7 @@ public:
   CMesh                  original;
   CMesh                  samples;
   CMesh                  iso_points;
+  CMesh                  field_points;
   CMesh                  camera_model;
   Point3f                camera_pos;
   Point3f                camera_direction;
@@ -102,12 +108,14 @@ public:
   double                 camera_resolution;
   double                 camera_max_distance;
   double                 camera_max_angle;
+  CMesh                  all_nbv_gird_centers;
+  vector<NBVGrid>        all_nbv_grids;
   vector<ScanCandidate>  init_scan_candidates;
   vector<ScanCandidate>  scan_candidates;
   vector<ScanCandidate>  selected_scan_candidates;
   CMesh                  current_scanned_mesh; 
   vector<CMesh *>        scanned_results;  
-                  
+
 	Skeleton        skeleton;
   Slices          slices;
 

@@ -13,7 +13,8 @@ GLArea::GLArea(QWidget *parent): QGLWidget(/*QGLFormat(QGL::DoubleBuffer | QGL::
 								 upsampler(global_paraMgr.getUpsamplingParameterSet()),
                  poisson(global_paraMgr.getPoissonParameterSet()),
                  camera(global_paraMgr.getCameraParameterSet()),
-								 paintMutex(QMutex::NonRecursive)
+								 paintMutex(QMutex::NonRecursive),
+                 nbv(global_paraMgr.getNBVParameterSet())
 {
 	setMouseTracking(true); 
 	isDragging = false;
@@ -301,6 +302,17 @@ void GLArea::paintGL()
     glw.Draw(GLW::DMWire, GLW::CMPerMesh, GLW::TMNone);
   }
 
+  if (para->getBool("Show NBV Grids"))
+  {
+    CMesh *nbv_grids = dataMgr.getAllNBVGridCenters();
+    if (NULL == nbv_grids) return;
+
+    if(nbv_grids->vert.empty()) return;
+
+     glDrawer.draw(GLDrawer::DOT, nbv_grids);
+  }
+
+  //fix, it doesn't work
   if (para->getBool("Show Scan Candidates"))
   {
     //init a default camera for debugging
@@ -1281,6 +1293,19 @@ void GLArea::runCamera()
   para->setValue("Running Algorithm Name", 
     StringValue(camera.getParameterSet()->getString("Algorithm Name")));
 
+  emit needUpdateStatus();
+}
+
+void
+GLArea::runNBV()
+{
+  //fix: this should be iso_points
+  if (dataMgr.isModelEmpty()) return;
+
+  runPointCloudAlgorithm(nbv);
+
+  para->setValue("Running Algorithm Name", 
+    StringValue(camera.getParameterSet()->getString("Algorithm Name")));
   emit needUpdateStatus();
 }
 
