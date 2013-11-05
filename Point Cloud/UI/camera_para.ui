@@ -362,6 +362,19 @@
        <string>Build Grid</string>
       </property>
      </widget>
+     <widget class="QPushButton" name="pushButton_propagate">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>60</y>
+        <width>181</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>propagate</string>
+      </property>
+     </widget>
     </widget>
    </widget>
   </widget>

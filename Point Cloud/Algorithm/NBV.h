@@ -23,8 +23,12 @@ public:
 
 private:
   void buildGrid();
-  void propogate();
+  void propagate();
+  
+
   int getStep(double s);
+  double getAbsMax(double x, double y, double z);
+  int round(double x);
 
 private:
   RichParameterSet *para;
@@ -35,5 +39,8 @@ private:
   double           grid_resolution;
   Point3f          whole_space_box_max;
   Point3f          whole_space_box_min;
+  int              x_max; //max index num of x-axis 
+  int              y_max;
+  int              z_max;
   std::vector<NBVGrid>  *all_nbv_grids; //grids in all the space
 };

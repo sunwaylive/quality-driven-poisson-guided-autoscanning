@@ -378,4 +378,5 @@ ParameterMgr::initNBVParameter()
 {
   nbv.addParam(new RichString("Algorithm Name", "NBV"));
   nbv.addParam(new RichBool("Run Build Grid", false));
+  nbv.addParam(new RichBool("Run Propagate", false));
 }

@@ -25,6 +25,12 @@ NBV::run()
     buildGrid();
     return;
   }
+
+  if (para->getBool("Run Propagate"))
+  {
+    propagate();
+    return;
+  }
 }
 
 void
@@ -66,8 +72,9 @@ NBV::clear()
 void
 NBV::buildGrid()
 {
-   Point3f bbox_max = model->bbox.max;
-   Point3f bbox_min = model->bbox.min;
+  //fix: this should be model->bbox.max
+   Point3f bbox_max = iso_points->bbox.max;
+   Point3f bbox_min = iso_points->bbox.min;
    //get the whole 3D space that a camera may exist
    double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
    whole_space_box_max = bbox_max + Point3f(camera_max_dist, camera_max_dist, camera_max_dist);
@@ -76,9 +83,9 @@ NBV::buildGrid()
    Point3f dif = whole_space_box_max - whole_space_box_min;
    //divide the box into grid
    
-   int x_max = static_cast<int> (dif.X() / grid_resolution);
-   int y_max = static_cast<int> (dif.Y() / grid_resolution);
-   int z_max = static_cast<int> (dif.Z() / grid_resolution);
+   x_max = static_cast<int> (dif.X() / grid_resolution);
+   y_max = static_cast<int> (dif.Y() / grid_resolution);
+   z_max = static_cast<int> (dif.Z() / grid_resolution);
    //pre allocate the memory
    int max_index = x_max * y_max * z_max;
    all_nbv_grid_centers->vert.resize(max_index);
@@ -113,7 +120,7 @@ NBV::buildGrid()
 }
 
 void
-NBV::propogate()
+NBV::propagate()
 {
   //traverse all points on the iso surface
   for (int i = 0; i < iso_points->vert.size(); ++i)
@@ -122,28 +129,50 @@ NBV::propogate()
     //get the x,y,z index of each iso_points
     int t_indexX = static_cast<int>( ceil((t.P()[0] - whole_space_box_min.X()) / grid_resolution ));
     int t_indexY = static_cast<int>( ceil((t.P()[1] - whole_space_box_min.Y()) / grid_resolution ));
-    int t_indexZ = static_cast<int>( ceil((t.P()[2] - whole_space_box_min).Z() / grid_resolution ));
-    //1. for each point, propogate to all discrete directions
+    int t_indexZ = static_cast<int>( ceil((t.P()[2] - whole_space_box_min.Z()) / grid_resolution ));
+    int n_indexX, n_indexY, n_indexZ;
+    //1. for each point, propagate to all discrete directions
     //get the sphere traversal resolution
     double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
     //compute the delta of a,b so as to traverse the whole sphere
-    double angle_delta = camera_max_dist / grid_resolution;
+    double angle_delta = grid_resolution / camera_max_dist;
     //loop for a, b
     double a = 0.0f, b = 0.0f;
-    double x = 0.0f, y = 0.f, z = 0.0f;
-    int stepX = 0, stepY = 0, stepZ = 0;
     double l = 0.0f;
+    double x = 0.0f, y = 0.f, z = 0.0f;
+    //for DDA
+    //int stepX = 0, stepY = 0, stepZ = 0;
+    int max_steps = static_cast<int>(camera_max_dist / grid_resolution);
+    double length = 0.0f;
+    double deltaX, deltaY, deltaZ;
     for (; a < PI; a += angle_delta)
     {
       l = sin(a); y = cos(a);
       for (; b < 2 * PI; b += angle_delta)
       {
-        //now the propogate direction is Point3f(x, y, z)
+        //now the propagate direction is Point3f(x, y, z)
         x = l * sin(b); z = l * cos(b);
+        //reset the next grid indexes
+        n_indexX = t_indexX; n_indexY = t_indexY; n_indexZ = t_indexZ;
         //2. compute the next grid indexes
         //determine the stepX stepY stepZ
-        stepX = getStep(x); stepY = getStep(y); stepZ = getStep(z);
+        //stepX = getStep(x); stepY = getStep(y); stepZ = getStep(z);
+        //compute all the grids that a ray intersect
+        //get the maximum among x,y,z
+        length = getAbsMax(x, y, z);
 
+        deltaX = x / length; 
+        deltaY = y / length;
+        deltaZ = z / length;
+        for (int k = 0; k <= max_steps; ++k)
+        {
+          n_indexX = round(n_indexX + deltaX);
+          n_indexY = round(n_indexY + deltaY);
+          n_indexZ = round(n_indexZ + deltaZ);
+          //do what we need in the next grid
+          
+
+        }
       }
     }
     
@@ -158,4 +187,16 @@ NBV::getStep(double s)
   if (0.0f == abs(s)) return 0;
   else if (s > 0.0f)  return 1;
   else                return -1;
+}
+
+double
+NBV::getAbsMax(double x, double y, double z)
+{
+  return std::max(abs(x), std::max(abs(y), abs(z)));
+}
+
+int 
+NBV::round(double x)
+{
+  return static_cast<int>(x + 0.5);
 }

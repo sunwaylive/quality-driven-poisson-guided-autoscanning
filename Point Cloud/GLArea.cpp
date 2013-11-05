@@ -305,6 +305,8 @@ void GLArea::paintGL()
   if (para->getBool("Show NBV Grids"))
   {
     CMesh *nbv_grids = dataMgr.getAllNBVGridCenters();
+    if (NULL == nbv_grids) return;
+
     if(nbv_grids->vert.empty()) return;
 
      glDrawer.draw(GLDrawer::DOT, nbv_grids);

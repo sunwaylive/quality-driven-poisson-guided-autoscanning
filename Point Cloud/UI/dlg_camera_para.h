@@ -38,6 +38,7 @@ private slots:
   void getCameraMaxDist(double _val);
   void getCameraDistToModel(double _val);
   void buildGrid();
+  void propagate();
 
 private:
 	Ui::camera_paras * ui;
