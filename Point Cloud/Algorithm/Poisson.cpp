@@ -534,8 +534,7 @@ void Poisson::runPoisson()
     }
 
     //TriangleIndex tIndex;
-    std::vector< CoredVertexIndex > tIndex;
-
+    std::vector< CoredVertexIndex > polygon;
     int inCoreFlag;
     int nr_faces=mesh.polygonCount();	
 
@@ -543,10 +542,11 @@ void Poisson::runPoisson()
       //
       // create and fill a struct that the ply code can handle
       //
-      if (!mesh.nextPolygon(tIndex))
-      {
-        continue;
-      }
+      //if (!mesh.nextPolygon(polygon))
+      //{
+      //  continue;
+      //}
+      mesh.nextPolygon(polygon);
       //if(!(inCoreFlag & CoredMeshData::IN_CORE_FLAG[0])){tIndex.idx[0]+=int(mesh.inCorePoints.size());}
       //if(!(inCoreFlag & CoredMeshData::IN_CORE_FLAG[1])){tIndex.idx[1]+=int(mesh.inCorePoints.size());}
       //if(!(inCoreFlag & CoredMeshData::IN_CORE_FLAG[2])){tIndex.idx[2]+=int(mesh.inCorePoints.size());}
@@ -554,13 +554,24 @@ void Poisson::runPoisson()
       for(int j=0; j < 3; j++)
       {
         //tentative_mesh.face[i].V(j) = &tentative_mesh.vert[tIndex.idx[j]];
-        new_face.V(j) = &tentative_mesh.vert[tIndex[j].idx];
+        if (polygon[j].inCore)
+        {
+          new_face.V(j) = &tentative_mesh.vert[polygon[j].idx];
+        }
+        else
+        {
+          int index = polygon[j].idx + int( mesh.inCorePoints.size() );
+          new_face.V(j) = &tentative_mesh.vert[index];
+        }
+        
         //cout << tIndex[j].idx << ", ";
       }
       tentative_mesh.face.push_back(new_face);
       //cout << endl;
     } 
 
+    tentative_mesh.vn = tentative_mesh.vert.size();
+    tentative_mesh.fn = tentative_mesh.face.size();
     model->vert.clear();
     model->face.clear();
     for (int i = 0; i < tentative_mesh.vert.size(); i++)
@@ -569,30 +580,28 @@ void Poisson::runPoisson()
     }
     model->vn = model->vert.size();
 
-    for (int i = 0; i < tentative_mesh.vert.size(); i++)
+    for (int i = 0; i < tentative_mesh.face.size(); i++)
     {
       model->face.push_back(tentative_mesh.face[i]);
     }
     model->fn = model->face.size();
 
+    vector<Point3f> sample_points;
+    float result_radius;
+    tri::PoissonSampling(tentative_mesh, sample_points, 2500, result_radius);
 
-
-    //vector<Point3f> sample_points;
-    //float result_radius;
-    //tri::PoissonSampling(tentative_mesh, sample_points, 2000, result_radius);
-
-
-    //iso_points->vert.clear();
-    //for (int i = 0; i < sample_points.size(); i++)
-    //{
-    //  CVertex new_v;
-    //  new_v.m_index = i; 
-    //  new_v.is_iso = true;
-    //  new_v.P() = sample_points[i];
-    //  iso_points->vert.push_back(new_v);
-    //  iso_points->bbox.Add(new_v.P());
-    //}
-    //iso_points->vn = iso_points->vert.size();
+    iso_points->vert.clear();
+    for (int i = 0; i < sample_points.size(); i++)
+    {
+      CVertex new_v;
+      new_v.m_index = i; 
+      new_v.is_iso = true;
+      new_v.eigen_confidence = 0;
+      new_v.P() = sample_points[i];
+      iso_points->vert.push_back(new_v);
+      iso_points->bbox.Add(new_v.P());
+    }
+    iso_points->vn = iso_points->vert.size();
 
  /*   iso_points->vert.clear();
     iso_points->vn = vm;
