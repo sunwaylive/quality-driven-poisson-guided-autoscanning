@@ -247,6 +247,12 @@
     <ClCompile Include="Algorithm\Camera.cpp">
       <Filter>Algorithm</Filter>
     </ClCompile>
+    <ClCompile Include="Algorithm\NBV.cpp">
+      <Filter>Algorithm</Filter>
+    </ClCompile>
+    <ClCompile Include="NBVGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="mainwindow.h">
@@ -454,6 +460,12 @@
     </ClInclude>
     <ClInclude Include="Algorithm\Camera.h">
       <Filter>Algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="Algorithm\NBV.h">
+      <Filter>Algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="NBVGrid.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

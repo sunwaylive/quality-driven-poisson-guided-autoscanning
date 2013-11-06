@@ -1296,6 +1296,18 @@ void GLArea::runCamera()
   emit needUpdateStatus();
 }
 
+void
+GLArea::runNBV()
+{
+  //fix: this should be iso_points
+  if (dataMgr.isModelEmpty()) return;
+
+  runPointCloudAlgorithm(nbv);
+
+  para->setValue("Running Algorithm Name", 
+    StringValue(camera.getParameterSet()->getString("Algorithm Name")));
+  emit needUpdateStatus();
+}
 void GLArea::runNormalSmoothing()
 {
 	if (dataMgr.isSamplesEmpty())

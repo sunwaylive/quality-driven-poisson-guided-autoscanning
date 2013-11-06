@@ -4,7 +4,7 @@
 #include "Parameter.h"
 #include "GlobalFunction.h"
 #include "Algorithm/Skeleton.h"
-
+#include "NBVGrid.h"
 //#include "Algorithm/Poisson.h"
 
 #include <wrap/io_trimesh/import.h>
@@ -47,13 +47,14 @@ public:
   bool      isScannedMeshEmpty();
   bool      isScannedResultsEmpty();
 
-  CMesh*    getCurrentModel();
-	CMesh*    getCurrentSamples();
-	CMesh*    getCurrentOriginal();
-  CMesh*    getCurrentIsoPoints();
-  CMesh*    getCurrentFieldPoints();
-  Slices*   getCurrentSlices();
-	Skeleton* getCurrentSkeleton();
+  CMesh*                   getCurrentModel();
+  CMesh*                   getCurrentSamples();
+  CMesh*                   getCurrentOriginal();
+  CMesh*                   getCurrentIsoPoints();
+  CMesh*                   getCurrentFieldPoints();
+  Slices*                  getCurrentSlices();
+  Skeleton*                getCurrentSkeleton();
+  
 
   CMesh*                  getCameraModel();
   Point3f&                getCameraPos();
@@ -63,6 +64,8 @@ public:
   double                  getCameraVerticalDist();
   double                  getCameraMaxDistance();
   double                  getCameraMaxAngle();
+  vector<NBVGrid>*        getAllNBVGrids();
+  CMesh*                  getAllNBVGridCenters();
   vector<ScanCandidate>*  getInitCameraScanCandidates();
   vector<ScanCandidate>*  getAllScanCandidates();
   vector<ScanCandidate>*  getSelectedScanCandidates();
@@ -98,7 +101,8 @@ public:
   CMesh                  iso_points;
   CMesh                  field_points;
   CMesh                  camera_model;
-
+  std::vector<NBVGrid>   all_nbv_grids;
+  CMesh                  all_nbv_grid_centers;
   Point3f                camera_pos;
   Point3f                camera_direction;
   double                 camera_horizon_dist;

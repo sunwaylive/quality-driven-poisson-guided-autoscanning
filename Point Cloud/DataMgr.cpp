@@ -412,6 +412,18 @@ double DataMgr::getCameraMaxAngle()
   return camera_max_angle;
 }
 
+vector<NBVGrid>*
+DataMgr::getAllNBVGrids()
+{
+  return &all_nbv_grids;
+}
+
+CMesh*
+DataMgr::getAllNBVGridCenters()
+{
+  return &all_nbv_grid_centers;
+}
+
 vector<ScanCandidate>* DataMgr::getInitCameraScanCandidates()
 {
   return &init_scan_candidates;
