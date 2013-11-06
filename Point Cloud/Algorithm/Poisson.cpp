@@ -70,7 +70,6 @@ Poisson::Poisson(RichParameterSet* _para)
 	samples = NULL; original = NULL; iso_points = NULL; slices = NULL;
   field_points = NULL;
 	para = _para;
-
 }
 
 Poisson::~Poisson(void)
