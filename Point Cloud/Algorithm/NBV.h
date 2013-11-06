@@ -26,9 +26,10 @@ private:
   void propagate();
   
 
-  int getStep(double s);
-  double getAbsMax(double x, double y, double z);
-  int round(double x);
+  int      getStep(double s);
+  double   getAbsMax(double x, double y, double z);
+  int      round(double x);
+  quadrant getQuadrantIdx(double a, double b); //two parameters deciding the quadrant
 
 private:
   RichParameterSet *para;

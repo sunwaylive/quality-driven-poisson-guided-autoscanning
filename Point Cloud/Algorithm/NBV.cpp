@@ -99,10 +99,7 @@ NBV::buildGrid()
        {
          //add the grid
          int index = i * y_max * z_max + j * z_max + k;
-         NBVGrid grid;
-         grid.x_idx = i;
-         grid.y_idx = j;
-         grid.z_idx = k;
+         NBVGrid grid(i, j, k);
          (*all_nbv_grids)[index] = grid;
 
          //add the center point of the grid
@@ -170,8 +167,8 @@ NBV::propagate()
           n_indexY = round(n_indexY + deltaY);
           n_indexZ = round(n_indexZ + deltaZ);
           //do what we need in the next grid
-          
-
+          //int index = i * y_max * z_max + j * z_max + k;
+          //all_nbv_grids[index].
         }
       }
     }
@@ -199,4 +196,23 @@ int
 NBV::round(double x)
 {
   return static_cast<int>(x + 0.5);
+}
+
+quadrant
+NBV::getQuadrantIdx(double a, double b)
+{
+  if (a >= 0 && a <= PI / 2)
+  {
+    if (b >=0 && b <= PI / 2)         return First;
+    if (b > PI / 2 && b < PI)         return Second;
+    if (b > PI && b < 3 / 2 * PI)     return Third;
+    if (b > 3 / 2 * PI && b < 2 * PI) return Fourth;
+  }
+  if (a >PI / 2 && a <= PI)
+  {
+    if (b >=0 && b <= PI / 2)         return Fifth;
+    if (b > PI / 2 && b < PI)         return Sixth;
+    if (b > PI && b < 3 / 2 * PI)     return Seventh;
+    if (b > 3 / 2 * PI && b < 2 * PI) return Eighth;
+  }
 }

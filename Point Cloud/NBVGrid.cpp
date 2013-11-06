@@ -1,6 +1,5 @@
 #include "NBVGrid.h"
 
-
 NBVGrid::NBVGrid(int x_index, int y_index, int z_index)
 {
   x_idx = x_index;
