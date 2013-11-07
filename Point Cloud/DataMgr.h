@@ -66,6 +66,7 @@ public:
   double                  getCameraMaxAngle();
   vector<NBVGrid>*        getAllNBVGrids();
   CMesh*                  getAllNBVGridCenters();
+  CMesh*                  getRayHitGrids();
   vector<ScanCandidate>*  getInitCameraScanCandidates();
   vector<ScanCandidate>*  getAllScanCandidates();
   vector<ScanCandidate>*  getSelectedScanCandidates();
@@ -103,6 +104,7 @@ public:
   CMesh                  camera_model;
   std::vector<NBVGrid>   all_nbv_grids;
   CMesh                  all_nbv_grid_centers;
+  CMesh                  ray_hit_grids;
   Point3f                camera_pos;
   Point3f                camera_direction;
   double                 camera_horizon_dist;

@@ -81,6 +81,7 @@ void ParameterMgr::initGlareaParameter()
   glarea.addParam(new RichBool("Show ISO Points", true) );
   glarea.addParam(new RichBool("Use ISO Interval", false) );
   glarea.addParam(new RichBool("Show NBV Grids", false));
+  glarea.addParam(new RichBool("Show NBV Ray Hit", false));
   glarea.addParam(new RichBool("Show Scan Candidates", true));
   glarea.addParam(new RichBool("Show Scanned Mesh", true));
 

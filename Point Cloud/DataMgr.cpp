@@ -424,6 +424,12 @@ DataMgr::getAllNBVGridCenters()
   return &all_nbv_grid_centers;
 }
 
+CMesh*
+DataMgr::getRayHitGrids()
+{
+  return &ray_hit_grids;
+}
+
 vector<ScanCandidate>* DataMgr::getInitCameraScanCandidates()
 {
   return &init_scan_candidates;

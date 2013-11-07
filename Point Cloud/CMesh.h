@@ -43,6 +43,8 @@ class CVertex : public vcg::Vertex<CUsedTypes, vcg::vertex::Coord3f, vcg::vertex
 public:
 	vector<int> neighbors;
 	vector<int> original_neighbors;
+  bool is_ray_hit;
+  bool is_inside_grid_center;
   bool is_grid_center;
   bool is_model;
   bool is_scanned;
@@ -89,6 +91,8 @@ public:
 	CVertex():
 		m_index(0),
     is_grid_center(false),
+    is_inside_grid_center(false),
+    is_ray_hit(false),
     is_model(false),
     is_scanned(false),
     is_scanned_visible(false),
