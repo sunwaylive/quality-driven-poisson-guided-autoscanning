@@ -312,6 +312,15 @@ void GLArea::paintGL()
      glDrawer.draw(GLDrawer::DOT, nbv_grids);
   }
 
+  if (para->getBool("Show NBV Ray Hit"))
+  {
+    CMesh *ray_hit_grids = dataMgr.getRayHitGrids();
+    if (NULL == ray_hit_grids) return;
+
+    if(ray_hit_grids->vert.empty()) return;
+
+    glDrawer.draw(GLDrawer::DOT, ray_hit_grids);
+  }
   //fix, it doesn't work
   if (para->getBool("Show Scan Candidates"))
   {

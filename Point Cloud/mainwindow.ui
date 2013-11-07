@@ -201,6 +201,7 @@
     <addaction name="menuPick_Point"/>
     <addaction name="actionCamera"/>
     <addaction name="actionShow_NBV_Grids"/>
+    <addaction name="actionShow_NBV_Ray_Hit"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuAlgorithom"/>
@@ -263,6 +264,7 @@
    <addaction name="actionShow_Skeleton"/>
    <addaction name="actionShow_ISO"/>
    <addaction name="actionShow_NBV_Grids"/>
+   <addaction name="actionShow_NBV_Ray_Hit"/>
    <addaction name="actionShow_Scan_Candidates"/>
    <addaction name="actionShow_Current_Scanned_Mesh"/>
    <addaction name="separator"/>
@@ -821,10 +823,18 @@
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Show NBV Grids</string>
+   </property>
+  </action>
+  <action name="actionShow_NBV_Ray_Hit">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show NBV Ray Hit</string>
    </property>
   </action>
  </widget>

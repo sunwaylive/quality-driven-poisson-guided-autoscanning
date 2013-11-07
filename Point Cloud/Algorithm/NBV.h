@@ -9,6 +9,8 @@ using std::cout;
 using std::endl;
 using vcg::Point3f;
 
+const double D = 1.0f;
+
 class NBV : public PointCloudAlgorithm
 {
 public:
@@ -24,9 +26,7 @@ public:
 private:
   void buildGrid();
   void propagate();
-  
 
-  int      getStep(double s);
   double   getAbsMax(double x, double y, double z);
   int      round(double x);
   quadrant getQuadrantIdx(double a, double b); //two parameters deciding the quadrant
@@ -37,6 +37,7 @@ private:
   CMesh            *original;
   CMesh            *iso_points;
   CMesh            *all_nbv_grid_centers;
+  CMesh            *ray_hit_nbv_grids;
   double           grid_resolution;
   Point3f          whole_space_box_max;
   Point3f          whole_space_box_min;

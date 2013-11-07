@@ -262,6 +262,17 @@ GLColor GLDrawer::getColorByType(const CVertex& v)
 	{
 		return feature_color;
 	}
+  if (v.is_grid_center)
+  {
+    if (v.is_ray_hit)
+    {
+      return cBlue;
+    }else
+    {
+      return cWhite;
+    }
+  }
+  
 	return sample_color;
 	
 }

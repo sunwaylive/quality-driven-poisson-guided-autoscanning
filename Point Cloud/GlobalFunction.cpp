@@ -165,7 +165,7 @@ void GlobalFun::computeAnnNeigbhors(vector<CVertex> &datapts, vector<CVertex> &q
 	int				k				= numKnn;			// number of nearest neighbors
 	int				dim				= 3;			// dimension
 	double			eps				= 0;			// error bound
-	int				maxPts			= numKnn + 30000;			// maximum number of data points
+	int				maxPts			= numKnn + 3000000;			// maximum number of data points
 
 	if (datapts.size() >= maxPts)
 	{
