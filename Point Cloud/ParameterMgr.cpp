@@ -355,8 +355,8 @@ void ParameterMgr::initPoissonParameter()
 
   poisson.addParam(new RichBool("Use Confidence 1", false));
   poisson.addParam(new RichBool("Use Confidence 2", false));
-  poisson.addParam(new RichBool("Use Confidence 3", true));
-  poisson.addParam(new RichBool("Use Confidence 4", false));
+  poisson.addParam(new RichBool("Use Confidence 3", false));
+  poisson.addParam(new RichBool("Use Confidence 4", true));
   poisson.addParam(new RichBool("Compute Original Confidence", false));
   poisson.addParam(new RichBool("Compute Sample Confidence", false));
   poisson.addParam(new RichBool("Compute ISO Confidence", false));

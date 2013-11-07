@@ -928,6 +928,11 @@ void Poisson::runComputeSampleConfidence()
 {
   vector< vector<float>>confidences;
 
+  ofstream file1("certainty_1_wlop.txt");
+  ofstream file2("certainty_2_gradient.txt");
+  ofstream file3("certainty_3_combine.txt");
+  ofstream file4("certainty_4_combine.txt");
+
   int factors = 0;
   if (para->getBool("Use Confidence 1")) factors++;
   if (para->getBool("Use Confidence 2")) factors++;
@@ -977,6 +982,7 @@ void Poisson::runComputeSampleConfidence()
     for (int i = 0; i < samples->vert.size(); i++)
     {
       confidences[i][curr] = (confidences[i][curr] - min_confidence) / space;
+      file1 << confidences[i][curr] << endl;
     }
     curr++;
   }
@@ -1018,6 +1024,7 @@ void Poisson::runComputeSampleConfidence()
     for (int i = 0; i < samples->vert.size(); i++)
     {
       confidences[i][curr] = (confidences[i][curr] - min_confidence) / space;
+      file2 << confidences[i][curr] << endl;
       //confidences[i][curr] = 1 - confidences[i][curr];
       //cout << "normal confidences" << confidences[i][curr] << endl;
     }
@@ -1064,12 +1071,14 @@ void Poisson::runComputeSampleConfidence()
     for (int i = 0; i < samples->vert.size(); i++)
     {
       confidences[i][curr] = (confidences[i][curr] - min_confidence) / space;
+      file3 << confidences[i][curr] << endl;
       //cout << "proj confidences:  " << confidences[i][curr] << endl;
     }
     curr++;
   }
 
-  if (para->getBool("Use Sort Confidence Combination"))
+  //if (para->getBool("Use Sort Confidence Combination"))
+  if (para->getBool("Use Confidence 4"))
   {
     for (int i = 0; i < factors; i++)
     {
@@ -1106,49 +1115,81 @@ void Poisson::runComputeSampleConfidence()
     //normalizeConfidence(samples->vert, -0.5);
     normalizeConfidence(samples->vert, 0);
 
+    for (int i = 0; i < samples->vn; i++)
+    {
+      CVertex& v = samples->vert[i];
+      file4 << v.eigen_confidence << endl;
+    }
+
   }
   else
   {
-    float min_confidence = GlobalFun::getDoubleMAXIMUM();
-    float max_confidence = 0;
     for (int i = 0; i < samples->vn; i++)
     {
       CVertex& v = samples->vert[i];
-      float sum_confidences = 0;
+      float multiply_confidence = 1.0;
       for (int j = 0; j < factors; j++)
       {
-        sum_confidences += confidences[i][j];
+        multiply_confidence *= confidences[i][j];
       }
-
-      v.eigen_confidence = sum_confidences / factors;
-
-      min_confidence = (std::min)(min_confidence, v.eigen_confidence);
-      max_confidence = (std::max)(max_confidence, v.eigen_confidence);
     }
 
-    float space = max_confidence - min_confidence;
+    normalizeConfidence(samples->vert, 0);
+
     for (int i = 0; i < samples->vn; i++)
     {
       CVertex& v = samples->vert[i];
-      v.eigen_confidence = (v.eigen_confidence - min_confidence) / space;
-
-      v.eigen_confidence -= 0;
-      //cout << "combine confidence" << v.eigen_confidence << endl;
+      file4 << v.eigen_confidence << endl;
     }
   }
+  //else
+  //{
+  //  float min_confidence = GlobalFun::getDoubleMAXIMUM();
+  //  float max_confidence = 0;
+  //  for (int i = 0; i < samples->vn; i++)
+  //  {
+  //    CVertex& v = samples->vert[i];
+  //    float sum_confidences = 0;
+  //    for (int j = 0; j < factors; j++)
+  //    {
+  //      sum_confidences += confidences[i][j];
+  //    }
+
+  //    v.eigen_confidence = sum_confidences / factors;
+
+  //    min_confidence = (std::min)(min_confidence, v.eigen_confidence);
+  //    max_confidence = (std::max)(max_confidence, v.eigen_confidence);
+  //  }
+
+  //  float space = max_confidence - min_confidence;
+  //  for (int i = 0; i < samples->vn; i++)
+  //  {
+  //    CVertex& v = samples->vert[i];
+  //    v.eigen_confidence = (v.eigen_confidence - min_confidence) / space;
+
+  //    v.eigen_confidence -= 0;
+  //    //cout << "combine confidence" << v.eigen_confidence << endl;
+  //  }
+  //}
 
 }
 
 void Poisson::runComputeIsoConfidence()
 {
+  ofstream file1("confidence_1_wlop.txt");
+  ofstream file2("confidence_2_gradient.txt");
+  ofstream file3("confidence_3_combine.txt");
+
   if (para->getBool("Use Confidence 4"))
   {
+    runLabelISO();
     normalizeConfidence(iso_points->vert, 0);
   }
   vector<float> confidences_temp;
   iso_points->vn = iso_points->vert.size();
   for (int i = 0; i < iso_points->vn; i++)
   {
+    file1 << iso_points->vert[i].eigen_confidence << endl;
     confidences_temp.push_back(iso_points->vert[i].eigen_confidence);
   }
 
@@ -1224,16 +1265,28 @@ void Poisson::runComputeIsoConfidence()
   }
   normalizeConfidence(iso_points->vert, 0);
 
-  if (para->getBool("Use Confidence 4"))
+  if (para->getBool("Use Confidence 3"))
+  {
+    
+
+  }
+  else if (para->getBool("Use Confidence 4"))
   {
     for (int i = 0; i < iso_points->vn; i++)
     {
       CVertex& v = iso_points->vert[i];
+      file2 << v.eigen_confidence << endl;
       float temp_confidence = confidences_temp[i];
       v.eigen_confidence *= temp_confidence;
     }
 
     normalizeConfidence(iso_points->vert, 0);
+
+    for (int i = 0; i < iso_points->vn; i++)
+    {
+      CVertex& v = iso_points->vert[i];
+      file3 << v.eigen_confidence << endl;
+    }
   }
 
 
