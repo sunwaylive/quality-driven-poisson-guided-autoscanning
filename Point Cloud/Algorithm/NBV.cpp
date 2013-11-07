@@ -114,15 +114,19 @@ NBV::buildGrid()
        }
      }
    }
+
    //distinguish the inside or outside grid
-   GlobalFun::computeAnnNeigbhors(all_nbv_grid_centers->vert, iso_points->vert, 3, false, "runGridNearestIsoPoint");
+   GlobalFun::computeAnnNeigbhors(iso_points->vert, all_nbv_grid_centers->vert, 3, false, "runGridNearestIsoPoint");
    for (int i = 0; i < all_nbv_grid_centers->vert.size(); ++i)
    {
-     CVertex &nearest = iso_points->vert[all_nbv_grid_centers->vert[i].original_neighbors[0]];
-     Point3f n = nearest.N();
-     Point3f l = all_nbv_grid_centers->vert[i].P() - nearest.P();
-     if (n * l < 0.0f) 
-       all_nbv_grid_centers->vert[i].is_inside_grid_center = true;
+     if (!all_nbv_grid_centers->vert[i].neighbors.empty())
+     {
+       CVertex &nearest = iso_points->vert[all_nbv_grid_centers->vert[i].neighbors[0]];
+       Point3f n = nearest.N();
+       Point3f l = all_nbv_grid_centers->vert[i].P() - nearest.P();
+       if (n * l < 0.0f) 
+         all_nbv_grid_centers->vert[i].is_inside_grid_center = true;
+     }
    }
 }
 
