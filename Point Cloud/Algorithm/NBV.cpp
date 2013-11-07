@@ -214,7 +214,7 @@ NBV::propagate()
           NBVGrid &g = (*all_nbv_grids)[index];
           //1. set the confidence of the grid
           double dist = GlobalFun::computeEulerDist(t.P(), all_nbv_grid_centers->vert[index]);
-          double coefficient = exp(-(dist - D) * (dist - D) / ((D / 2) * (D / 2)));
+          double coefficient = exp(-(dist - D) * (dist - D) / ((D / 2.0f) * (D / 2.0f)));
           g.confidence = coefficient * t.eigen_confidence;
           //2. add the count in the direction bins
           quadrant q = getQuadrantIdx(a, b);
