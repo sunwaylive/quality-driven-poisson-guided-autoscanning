@@ -30,7 +30,7 @@ private:
   double   getAbsMax(double x, double y, double z);
   int      round(double x);
   quadrant getQuadrantIdx(double a, double b); //two parameters deciding the quadrant
-
+  void     setGridUnHit(vector<int>& hit_grids_idx);
 private:
   RichParameterSet *para;
   CMesh            *model;

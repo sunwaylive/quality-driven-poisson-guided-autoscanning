@@ -7,7 +7,7 @@ NBV::NBV(RichParameterSet *_para)
   original = NULL;
   iso_points = NULL;
   model = NULL;
-  grid_resolution = 1.0f / 10; 
+  grid_resolution = 1.0f / 20; 
 }
 
 NBV::~NBV()
@@ -36,7 +36,7 @@ NBV::run()
 void
 NBV::setInput(DataMgr *pData)
 {
-  if (!pData->isOriginalEmpty() && !pData->isModelEmpty())
+  if (!pData->getCurrentIsoPoints()->vert.empty())
   {
     CMesh *_original = pData->getCurrentOriginal();
     CMesh *_model = pData->getCurrentModel();
@@ -104,9 +104,9 @@ NBV::buildGrid()
          (*all_nbv_grids)[index] = grid;
          //add the center point of the grid
          CVertex t;
-         t.P()[0] = whole_space_box_min.X() + k * grid_resolution;
+         t.P()[0] = whole_space_box_min.X() + i * grid_resolution;
          t.P()[1] = whole_space_box_min.Y() + j * grid_resolution;
-         t.P()[2] = whole_space_box_min.Z() + i * grid_resolution;
+         t.P()[2] = whole_space_box_min.Z() + k * grid_resolution;
          t.m_index = index;
          t.is_grid_center = true;
          all_nbv_grid_centers->vert[index] = t;
@@ -114,18 +114,26 @@ NBV::buildGrid()
        }
      }
    }
-
    //distinguish the inside or outside grid
-   GlobalFun::computeAnnNeigbhors(iso_points->vert, all_nbv_grid_centers->vert, 3, false, "runGridNearestIsoPoint");
+   GlobalFun::computeAnnNeigbhors(iso_points->vert, all_nbv_grid_centers->vert, 1, false, "runGridNearestIsoPoint");
    for (int i = 0; i < all_nbv_grid_centers->vert.size(); ++i)
    {
+     Point3f &t = all_nbv_grid_centers->vert[i].P();
      if (!all_nbv_grid_centers->vert[i].neighbors.empty())
      {
        CVertex &nearest = iso_points->vert[all_nbv_grid_centers->vert[i].neighbors[0]];
+       /*int t_indexX = static_cast<int>( ceil((nearest.P()[0] - whole_space_box_min.X()) / grid_resolution ));
+       int t_indexY = static_cast<int>( ceil((nearest.P()[1] - whole_space_box_min.Y()) / grid_resolution ));
+       int t_indexZ = static_cast<int>( ceil((nearest.P()[2] - whole_space_box_min.Z()) / grid_resolution ));
+       int index = t_indexX * y_max * z_max + t_indexY * z_max + t_indexZ;*/
+       Point3f &v = nearest.P();
+       double dist = GlobalFun::computeEulerDist(t, v);
        Point3f n = nearest.N();
        Point3f l = all_nbv_grid_centers->vert[i].P() - nearest.P();
-       if (n * l < 0.0f) 
-         all_nbv_grid_centers->vert[i].is_inside_grid_center = true;
+       if (n * l < 0.0f && dist < grid_resolution * 2)
+       {
+         all_nbv_grid_centers->vert[i].is_ray_stop = true; 
+       }        
      }
    }
 }
@@ -133,18 +141,21 @@ NBV::buildGrid()
 void
 NBV::propagate()
 {
+  vector<int> hit_grid_indexes;
   //traverse all points on the iso surface
-  for (int i = 40; i < 42; ++i)//fix: < iso_points->vert.size()
+  for (int i = 0; i < 1; ++i)//fix: < iso_points->vert.size()
   {
     CVertex &t = iso_points->vert[i];
     //t is the ray_start_point
     t.is_ray_hit = true;
+    ray_hit_nbv_grids->vert.push_back(t);
+
     //get the x,y,z index of each iso_points
     int t_indexX = static_cast<int>( ceil((t.P()[0] - whole_space_box_min.X()) / grid_resolution ));
     int t_indexY = static_cast<int>( ceil((t.P()[1] - whole_space_box_min.Y()) / grid_resolution ));
     int t_indexZ = static_cast<int>( ceil((t.P()[2] - whole_space_box_min.Z()) / grid_resolution ));
     //next point index along the ray 
-    int n_indexX, n_indexY, n_indexZ;
+    double n_indexX, n_indexY, n_indexZ;
     //get the sphere traversal resolution
     double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
     //compute the delta of a,b so as to traverse the whole sphere
@@ -158,6 +169,7 @@ NBV::propagate()
     int max_steps = static_cast<int>(camera_max_dist / grid_resolution);
     double length = 0.0f;
     double deltaX, deltaY, deltaZ;
+    double half_D = D / 2.0f;
     //for debug
     /*a = PI / 4; b = PI / 4;
     l = sin(a); y = cos(a);
@@ -189,10 +201,10 @@ NBV::propagate()
     //}*/
 
     //1. for each point, propagate to all discrete directions
-    for (; a < PI; a += angle_delta)
+    for (a = 0.0f; a < PI; a += angle_delta)
     {
       l = sin(a); y = cos(a);
-      for (; b < 2 * PI; b += angle_delta)
+      for (b = 0.0f; b < 2 * PI; b += angle_delta)
       {
         //now the propagate direction is Point3f(x, y, z)
         x = l * cos(b); z = l * sin(b);
@@ -205,27 +217,42 @@ NBV::propagate()
         deltaZ = z / length;
         for (int k = 0; k <= max_steps; ++k)
         {
-          n_indexX = round(n_indexX + deltaX);
-          n_indexY = round(n_indexY + deltaY);
-          n_indexZ = round(n_indexZ + deltaZ);
-          int index = n_indexX * y_max * z_max + n_indexY * z_max + n_indexZ;
-          //if the direction is into the model, then stop tracing
-          if (all_nbv_grid_centers->vert[index].is_inside_grid_center)
-            break;
+          n_indexX = n_indexX + deltaX;
+          n_indexY = n_indexY + deltaY;
+          n_indexZ = n_indexZ + deltaZ;
+          int index = round(n_indexX) * y_max * z_max + round(n_indexY) * z_max + round(n_indexZ);
+          //if the direction is into the model, or has been hit, then stop tracing
+          if (all_nbv_grid_centers->vert[index].is_ray_stop) break;
 
+          if (all_nbv_grid_centers->vert[index].is_ray_hit)  continue;
+          
+          //if the grid get first hit 
           all_nbv_grid_centers->vert[index].is_ray_hit = true;
           //do what we need in the next grid
           NBVGrid &g = (*all_nbv_grids)[index];
-          //1. set the confidence of the grid
+
+          //1. set the confidence of the grid center
           double dist = GlobalFun::computeEulerDist(t.P(), all_nbv_grid_centers->vert[index]);
-          double coefficient = exp(-(dist - D) * (dist - D) / ((D / 2.0f) * (D / 2.0f)));
-          g.confidence = coefficient * t.eigen_confidence;
+          double coefficient = exp(-(dist - D) * (dist - D) / (half_D * half_D));
+          all_nbv_grid_centers->vert[index].eigen_confidence = coefficient * t.eigen_confidence;
+
+          hit_grid_indexes.push_back(index);
+
+          CVertex c = all_nbv_grid_centers->vert[index];
+          ray_hit_nbv_grids->vert.push_back(c);
+          ray_hit_nbv_grids->bbox.Add(c.P());
+
           //2. add the count in the direction bins
           quadrant q = getQuadrantIdx(a, b);
           g.direction_count[q]++;
         }//end for k
       }// end for b
     }//end for a
+    if (hit_grid_indexes.size() > 0)
+    {
+      setGridUnHit(hit_grid_indexes);
+      hit_grid_indexes.clear();
+    }
   }//end for iso_points
 }
 
@@ -257,5 +284,15 @@ NBV::getQuadrantIdx(double a, double b)
     if (b > PI / 2 && b < PI)         return Sixth;
     if (b > PI && b < 3 / 2 * PI)     return Seventh;
     if (b > 3 / 2 * PI && b < 2 * PI) return Eighth;
+  }
+}
+
+void
+NBV::setGridUnHit(vector<int>& hit_grids_idx)
+{
+  vector<int>::iterator it;
+  for (it = hit_grids_idx.begin(); it != hit_grids_idx.end(); ++it)
+  {
+    all_nbv_grid_centers->vert[*it].is_ray_hit = false;
   }
 }

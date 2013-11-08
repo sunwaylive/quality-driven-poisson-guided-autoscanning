@@ -307,8 +307,7 @@ void GLArea::paintGL()
     CMesh *nbv_grids = dataMgr.getAllNBVGridCenters();
     if (NULL == nbv_grids) return;
 
-    if(nbv_grids->vert.empty()) return;
-
+    if(!nbv_grids->vert.empty())
      glDrawer.draw(GLDrawer::DOT, nbv_grids);
   }
 
@@ -317,9 +316,8 @@ void GLArea::paintGL()
     CMesh *ray_hit_grids = dataMgr.getRayHitGrids();
     if (NULL == ray_hit_grids) return;
 
-    if(ray_hit_grids->vert.empty()) return;
-
-    glDrawer.draw(GLDrawer::DOT, ray_hit_grids);
+    if(!ray_hit_grids->vert.empty()) 
+      glDrawer.draw(GLDrawer::DOT, ray_hit_grids);
   }
   //fix, it doesn't work
   if (para->getBool("Show Scan Candidates"))

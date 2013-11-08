@@ -262,19 +262,20 @@ GLColor GLDrawer::getColorByType(const CVertex& v)
 	{
 		return feature_color;
 	}
+
   if (v.is_grid_center)
   {
-    if (v.is_ray_hit)
+    if (v.is_ray_hit) 
     {
-      return cBlue;
-    }else
-    {
-      return cWhite;
+      return isoValue2color(v.eigen_confidence, slice_color_scale, iso_value_shift, true);
     }
+
+    if (v.is_ray_stop) return cOrange;
+    
+    return cBlack;
   }
   
 	return sample_color;
-	
 }
 
 void GLDrawer::drawDot(const CVertex& v)
@@ -297,7 +298,6 @@ void GLDrawer::drawDot(const CVertex& v)
 		size = sample_dot_size;
 	}
 
-  
 	glPointSize(size);
 	glBegin(GL_POINTS);
 
