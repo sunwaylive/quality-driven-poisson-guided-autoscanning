@@ -196,7 +196,7 @@ static void PerVertex(ComputeMeshType &m)
 {
  assert(HasPerVertexNormal(m));
  
- PerVertexClear(m);
+ //PerVertexClear(m);
 
  FaceIterator f;
  for(f=m.face.begin();f!=m.face.end();++f)

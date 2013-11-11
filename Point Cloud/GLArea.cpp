@@ -299,7 +299,8 @@ void GLArea::paintGL()
   {
     //different from drawing dot
     glw.m = dataMgr.getCurrentModel();
-    glw.Draw(GLW::DMWire, GLW::CMPerMesh, GLW::TMNone);
+    //glw.Draw(GLW::DMWire, GLW::CMPerMesh, GLW::TMNone);
+    glw.Draw(GLW::DMSmooth, GLW::CMPerMesh, GLW::TMNone);
   }
 
   if (para->getBool("Show NBV Grids"))
@@ -1947,7 +1948,8 @@ void GLArea::mouseReleaseEvent(QMouseEvent *e)
         CMesh* samples = dataMgr.getCurrentSamples();
         int index = pickList[0];
         CVertex v = samples->vert.at(index);
-        cout << "iso value: " << v.eigen_confidence << endl;
+        //cout << "iso value: " << v.eigen_confidence << endl;
+        cout << "Index: " << v.m_index << endl;
       }
 		}
 	}

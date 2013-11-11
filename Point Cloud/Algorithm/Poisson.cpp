@@ -33,8 +33,8 @@ public:
     m->vert.back().P() = f.P(0)*p[0] + f.P(1)*p[1] +f.P(2)*p[2];
     m->vert.back().N() = f.V(0)->N()*p[0] + f.V(1)->N()*p[1] + f.V(2)->N()*p[2];
 
-    if (qualitySampling)	
-      m->vert.back().Q() = f.V(0)->Q()*p[0] + f.V(1)->Q()*p[1] + f.V(2)->Q()*p[2];
+ /*   if (qualitySampling)	
+      m->vert.back().Q() = f.V(0)->Q()*p[0] + f.V(1)->Q()*p[1] + f.V(2)->Q()*p[2];*/
   }
   void AddTextureSample(const CMesh::FaceType &f, const CMesh::CoordType &p, const Point2i &tp, float edgeDist)
   {
@@ -80,7 +80,7 @@ Poisson::~Poisson(void)
 
 void Poisson::setInput(DataMgr* pData)
 {
-	if(!pData->isOriginalEmpty())
+	if(!pData->isSamplesEmpty())
 	{
     if (para->getBool("Run Poisson On Original"))
     {
@@ -611,7 +611,7 @@ void Poisson::runPoisson()
         if (polygon[j].inCore)
         {
           new_face.V(j) = &tentative_mesh.vert[polygon[j].idx];
-          
+         
         }
         else
         {
@@ -629,21 +629,22 @@ void Poisson::runPoisson()
     tentative_mesh.fn = tentative_mesh.face.size();
     vcg::tri::UpdateNormals<CMesh>::PerVertex(tentative_mesh);
 
-    //model->vert.clear();
-    //model->face.clear();
-    //for (int i = 0; i < tentative_mesh.vert.size(); i++)
-    //{
-    //  model->vert.push_back(tentative_mesh.vert[i]);
-    //}
-    //model->vn = model->vert.size();
 
-    //for (int i = 0; i < tentative_mesh.face.size(); i++)
-    //{
-    //  model->face.push_back(tentative_mesh.face[i]);
-    //}
-    //model->fn = model->face.size();
-    //vcg::tri::Allocator<CMesh>::CompactFaceVector(*model);  
-    //vcg::tri::Allocator<CMesh>::CompactVertexVector(*model);
+    model->vert.clear();
+    model->face.clear();
+    for (int i = 0; i < tentative_mesh.vert.size(); i++)
+    {
+      model->vert.push_back(tentative_mesh.vert[i]);
+    }
+    model->vn = model->vert.size();
+
+    for (int i = 0; i < tentative_mesh.face.size(); i++)
+    {
+      model->face.push_back(tentative_mesh.face[i]);
+    }
+    model->fn = model->face.size();
+    vcg::tri::Allocator<CMesh>::CompactFaceVector(*model);  
+    vcg::tri::Allocator<CMesh>::CompactVertexVector(*model);
 
     float radius = 0;
     int sampleNum = 5000;
@@ -676,6 +677,15 @@ void Poisson::runPoisson()
       v.N().Normalize();
       v.recompute_m_render();
     }
+    iso_points->vn = iso_points->vert.size();
+
+
+    iso_points->face.clear();
+    for (int i = 0; i < tentative_mesh.face.size(); i++)
+    {
+      iso_points->face.push_back(tentative_mesh.face[i]);
+    }
+    iso_points->fn = iso_points->face.size();
 
  /*   vector<Point3f> sample_points;
     float result_radius;
@@ -1080,22 +1090,23 @@ void Poisson::runComputeSampleConfidence()
   //if (para->getBool("Use Sort Confidence Combination"))
   if (para->getBool("Use Confidence 4"))
   {
-    for (int i = 0; i < factors; i++)
-    {
-      vector<sort_item> sort_items(samples->vn);
-      for (int j = 0; j < samples->vn; j++)
-      {
-        sort_items[j].value = confidences[j][i];
-      }
+    //for (int i = 0; i < factors; i++)
+    //{
+    //  vector<sort_item> sort_items(samples->vn);
+    //  for (int j = 0; j < samples->vn; j++)
+    //  {
+    //    sort_items[j].value = confidences[j][i];
+    //    sort_items[j].index = j;
+    //  }
 
-      std::sort(sort_items.begin(), sort_items.end());
+    //  std::sort(sort_items.begin(), sort_items.end());
 
-      for (int j = 0; j < samples->vn; j++)
-      {
-        int index = sort_items[j].index;
-        confidences[index][i] = float(j) / samples->vn;
-      }
-    }
+    //  for (int j = 0; j < samples->vn; j++)
+    //  {
+    //    int index = sort_items[j].index;
+    //    confidences[index][i] = float(j) / samples->vn;
+    //  }
+    //}
 
     for (int i = 0; i < samples->vn; i++)
     {
@@ -1124,6 +1135,25 @@ void Poisson::runComputeSampleConfidence()
   }
   else
   {
+    //for (int i = 0; i < samples->vn; i++)
+    //{
+    //  CVertex& v = samples->vert[i];
+    //  float max_cofidence = 0;
+    //  for (int j = 0; j < factors; j++)
+    //  {
+    //    max_cofidence = (std::max)(confidences[i][j], max_cofidence);
+    //  }
+    //  v.eigen_confidence = max_cofidence;
+    //}
+
+    //normalizeConfidence(samples->vert, 0);
+
+    //for (int i = 0; i < samples->vn; i++)
+    //{
+    //  CVertex& v = samples->vert[i];
+    //  file4 << v.eigen_confidence << endl;
+    //}
+
     for (int i = 0; i < samples->vn; i++)
     {
       CVertex& v = samples->vert[i];
@@ -1132,6 +1162,7 @@ void Poisson::runComputeSampleConfidence()
       {
         multiply_confidence *= confidences[i][j];
       }
+      v.eigen_confidence = multiply_confidence;
     }
 
     normalizeConfidence(samples->vert, 0);
@@ -1265,22 +1296,37 @@ void Poisson::runComputeIsoConfidence()
   }
   normalizeConfidence(iso_points->vert, 0);
 
-  if (para->getBool("Use Confidence 3"))
+  
+  if (para->getBool("Use Confidence 4"))
   {
-    
-
-  }
-  else if (para->getBool("Use Confidence 4"))
-  {
-    for (int i = 0; i < iso_points->vn; i++)
+    if (para->getBool("Use Confidence 3"))
     {
-      CVertex& v = iso_points->vert[i];
-      file2 << v.eigen_confidence << endl;
-      float temp_confidence = confidences_temp[i];
-      v.eigen_confidence *= temp_confidence;
-    }
 
-    normalizeConfidence(iso_points->vert, 0);
+      for (int i = 0; i < iso_points->vn; i++)
+      {
+        CVertex& v = iso_points->vert[i];
+        file2 << v.eigen_confidence << endl;
+        float temp_confidence = confidences_temp[i];
+        float combine_confidence = std::sqrt(temp_confidence * temp_confidence 
+                                   + v.eigen_confidence * v.eigen_confidence);
+        v.eigen_confidence = combine_confidence;
+      }
+
+      normalizeConfidence(iso_points->vert, 0);
+
+    }
+    else
+    {
+      for (int i = 0; i < iso_points->vn; i++)
+      {
+        CVertex& v = iso_points->vert[i];
+        file2 << v.eigen_confidence << endl;
+        float temp_confidence = confidences_temp[i];
+        v.eigen_confidence *= temp_confidence;
+      }
+
+      normalizeConfidence(iso_points->vert, 0);
+    }
 
     for (int i = 0; i < iso_points->vn; i++)
     {

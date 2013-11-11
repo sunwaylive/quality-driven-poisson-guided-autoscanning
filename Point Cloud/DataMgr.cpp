@@ -588,6 +588,7 @@ void DataMgr::savePly(QString fileName, CMesh& mesh)
 {
 	int mask= tri::io::Mask::IOM_VERTNORMAL ;
 	//mask += tri::io::Mask::IOM_VERTCOLOR;
+  mask += tri::io::Mask::IOM_ALL;
 	mask += tri::io::Mask::IOM_BITPOLYGONAL;
   mask += tri::io::Mask::IOM_FACEINDEX;
 
@@ -720,6 +721,10 @@ void DataMgr::recomputeQuad()
   for (int i = 0; i < iso_points.vert.size(); i++)
   {
     iso_points.vert[i].recompute_m_render();
+  }
+  for (int i = 0; i < original.vert.size(); i++)
+  {
+    original.vert[i].recompute_m_render();
   }
 }
 
