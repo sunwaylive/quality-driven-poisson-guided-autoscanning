@@ -1572,7 +1572,7 @@ void GLArea::wheelEvent(QWheelEvent *e)
 	double change_rate = 0.1;
 	double change = (e->delta() < 0) ? (1 + change_rate) : (1 - change_rate);
   
-  double change_rate2 = 0.025;
+  double change_rate2 = 0.015;
   double change2 = (e->delta() < 0) ? (1 + change_rate2) : (1 - change_rate2);
 	
   double size_temp = 0.0;
@@ -1589,6 +1589,10 @@ void GLArea::wheelEvent(QWheelEvent *e)
 
       global_paraMgr.poisson.setValue("Show Slice Percentage", DoubleValue(size_temp));
       cout << "Slice Color Percentage" << size_temp << endl;
+
+      global_paraMgr.poisson.setValue("Run Slice", BoolValue(true));
+      runPoisson();
+      global_paraMgr.poisson.setValue("Run Slice", BoolValue(false));
     }
     else if( (e->modifiers() & Qt::ShiftModifier) && (e->modifiers() & Qt::ControlModifier) )
     {
@@ -1619,7 +1623,8 @@ void GLArea::wheelEvent(QWheelEvent *e)
         size_temp = (std::max)(size_temp, 1e-5);
         size_temp = (std::min)(size_temp, 0.999);
 
-        global_paraMgr.poisson.setValue("Current X Slice Position", DoubleValue(size_temp));       
+        global_paraMgr.poisson.setValue("Current X Slice Position", DoubleValue(size_temp)); 
+        cout << "X position: " << size_temp << endl;
         emit needUpdateStatus();
         global_paraMgr.poisson.setValue("Run Slice", BoolValue(true));
         runPoisson();
@@ -1632,6 +1637,7 @@ void GLArea::wheelEvent(QWheelEvent *e)
         size_temp = (std::max)(size_temp, 1e-10);
         size_temp = (std::min)(size_temp, 1.0);
         global_paraMgr.poisson.setValue("Current Y Slice Position", DoubleValue(size_temp)); 
+        cout << "Y position: " << size_temp << endl;
 
         global_paraMgr.poisson.setValue("Run Slice", BoolValue(true));
         runPoisson();
@@ -1645,6 +1651,7 @@ void GLArea::wheelEvent(QWheelEvent *e)
         size_temp = (std::max)(size_temp, 1e-5);
         size_temp = (std::min)(size_temp, 0.999);
         global_paraMgr.poisson.setValue("Current Z Slice Position", DoubleValue(size_temp));      
+        cout << "Z position: " << size_temp << endl;
 
         global_paraMgr.poisson.setValue("Run Slice", BoolValue(true));
         runPoisson();
@@ -1796,7 +1803,7 @@ void GLArea::wheelEvent(QWheelEvent *e)
 				}
 				global_paraMgr.drawer.setValue("Original Dot Size", DoubleValue(size_temp));
 			}
-      else  if (para->getBool("Show ISO Points"))
+      else  if (para->getBool("Show ISO Points") &&  para->getBool("Show Samples Dot") )
       {
         size_temp = global_paraMgr.drawer.getDouble("ISO Dot Size") * change;
         size_temp = (std::max)(size_temp, 1.0);

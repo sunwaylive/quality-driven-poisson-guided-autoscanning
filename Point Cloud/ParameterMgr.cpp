@@ -352,7 +352,7 @@ void ParameterMgr::initPoissonParameter()
   poisson.addParam(new RichDouble("Current X Slice Position", 0.5));
   poisson.addParam(new RichDouble("Current Y Slice Position", 0.5));
   poisson.addParam(new RichDouble("Current Z Slice Position", 0.5));
-  poisson.addParam(new RichDouble("Show Slice Percentage", 0.8));
+  poisson.addParam(new RichDouble("Show Slice Percentage", 0.75));
 
 
   poisson.addParam(new RichBool("Use Confidence 1", false));

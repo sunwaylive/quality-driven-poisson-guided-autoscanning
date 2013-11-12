@@ -771,14 +771,29 @@ void Poisson::runSlice()
   if (para->getBool("Show X Slices"))
   {
     double slice_i_position = para->getDouble("Current X Slice Position");
-    int slice_i_num = res * slice_i_position;
+    //int slice_i_num = res * slice_i_position;
+
+    //(*slices)[0].slice_nodes.clear();
+    //for (int i = slice_i_num; i < slice_i_num + 1; i++)
+    //{
+    //  for (int j = begin; j < end; j++)
+    //  {
+    //    for (int k = begin; k < end; k++)
+    //    {      
+    //      (*slices)[0].slice_nodes.push_back(field_points->vert[i * res2 + j * res + k]);
+    //    }
+    //  }
+    //}
+    //(*slices)[0].res = end - begin;
+
+    int slice_k_num = res * slice_i_position;
 
     (*slices)[0].slice_nodes.clear();
-    for (int i = slice_i_num; i < slice_i_num + 1; i++)
+    for (int i = begin; i < end; i++)
     {
       for (int j = begin; j < end; j++)
       {
-        for (int k = begin; k < end; k++)
+        for (int k = slice_k_num; k < slice_k_num+1; k++)
         {      
           (*slices)[0].slice_nodes.push_back(field_points->vert[i * res2 + j * res + k]);
         }
@@ -790,14 +805,29 @@ void Poisson::runSlice()
   if (para->getBool("Show Y Slices"))
   {
     double slice_j_position = para->getDouble("Current Y Slice Position");
-    int slice_j_num = res * slice_j_position;
+    //int slice_j_num = res * slice_j_position;
+
+    //(*slices)[1].slice_nodes.clear();
+    //for (int i = begin; i < end; i++)
+    //{
+    //  for (int j = slice_j_num; j < slice_j_num+1; j++)
+    //  {
+    //    for (int k = begin; k < end; k++)
+    //    {      
+    //      (*slices)[1].slice_nodes.push_back(field_points->vert[i * res2 + j * res + k]);
+    //    }
+    //  }
+    //}
+    //(*slices)[1].res = end - begin;
+
+    int slice_k_num = res * slice_j_position;
 
     (*slices)[1].slice_nodes.clear();
     for (int i = begin; i < end; i++)
     {
-      for (int j = slice_j_num; j < slice_j_num+1; j++)
+      for (int j = begin; j < end; j++)
       {
-        for (int k = begin; k < end; k++)
+        for (int k = slice_k_num; k < slice_k_num+1; k++)
         {      
           (*slices)[1].slice_nodes.push_back(field_points->vert[i * res2 + j * res + k]);
         }
