@@ -1579,10 +1579,21 @@ void GLArea::wheelEvent(QWheelEvent *e)
 
 	if (global_paraMgr.poisson.getBool("Show Slices Mode"))
 	{
-    if( (e->modifiers() & Qt::ShiftModifier) && (e->modifiers() & Qt::ControlModifier) )
+    if ((e->modifiers() & Qt::ShiftModifier)
+        && (e->modifiers() & Qt::ControlModifier)
+        && (e->modifiers() & Qt::AltModifier))
+    {
+      size_temp = global_paraMgr.poisson.getDouble("Show Slice Percentage");
+      size_temp *= change;
+      size_temp = (std::min)((std::max)(size_temp, 1e-10), 0.99);
+
+      global_paraMgr.poisson.setValue("Show Slice Percentage", DoubleValue(size_temp));
+      cout << "Slice Color Percentage" << size_temp << endl;
+    }
+    else if( (e->modifiers() & Qt::ShiftModifier) && (e->modifiers() & Qt::ControlModifier) )
     {
       size_temp = global_paraMgr.glarea.getDouble("Slice Color Scale");
-      size_temp *= change;
+      size_temp *= change2;
       size_temp = (std::max)(size_temp, 1e-10);
 
       global_paraMgr.glarea.setValue("Slice Color Scale", DoubleValue(size_temp));

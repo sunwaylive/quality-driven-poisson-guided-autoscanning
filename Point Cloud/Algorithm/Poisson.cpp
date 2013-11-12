@@ -750,6 +750,7 @@ void Poisson::runPoisson()
 void Poisson::runSlice()
 {
   int iso_num = field_points->vert.size();
+  double show_percentage = para->getDouble("Show Slice Percentage");
 
   int res = 0;
   for (; res < iso_num; res++)
@@ -761,6 +762,12 @@ void Poisson::runSlice()
   }
   int res2 = res * res;
 
+  show_percentage = (std::max)(0., show_percentage);
+  show_percentage = (std::min)(1., show_percentage);
+  int begin = int(res * (1-show_percentage));
+  int end = int(res * show_percentage);
+  end = (std::max)(end, begin+1);
+
   if (para->getBool("Show X Slices"))
   {
     double slice_i_position = para->getDouble("Current X Slice Position");
@@ -769,15 +776,15 @@ void Poisson::runSlice()
     (*slices)[0].slice_nodes.clear();
     for (int i = slice_i_num; i < slice_i_num + 1; i++)
     {
-      for (int j = 0; j < res; j++)
+      for (int j = begin; j < end; j++)
       {
-        for (int k = 0; k < res; k++)
+        for (int k = begin; k < end; k++)
         {      
           (*slices)[0].slice_nodes.push_back(field_points->vert[i * res2 + j * res + k]);
         }
       }
     }
-    (*slices)[0].res = res;
+    (*slices)[0].res = end - begin;
   }
 
   if (para->getBool("Show Y Slices"))
@@ -786,17 +793,17 @@ void Poisson::runSlice()
     int slice_j_num = res * slice_j_position;
 
     (*slices)[1].slice_nodes.clear();
-    for (int i = 0; i < res; i++)
+    for (int i = begin; i < end; i++)
     {
       for (int j = slice_j_num; j < slice_j_num+1; j++)
       {
-        for (int k = 0; k < res; k++)
+        for (int k = begin; k < end; k++)
         {      
           (*slices)[1].slice_nodes.push_back(field_points->vert[i * res2 + j * res + k]);
         }
       }
     }
-    (*slices)[1].res = res;
+    (*slices)[1].res = end - begin;
   }
 
   if (para->getBool("Show Z Slices"))
@@ -805,9 +812,9 @@ void Poisson::runSlice()
     int slice_k_num = res * slice_k_position;
 
     (*slices)[2].slice_nodes.clear();
-    for (int i = 0; i < res; i++)
+    for (int i = begin; i < end; i++)
     {
-      for (int j = 0; j < res; j++)
+      for (int j = begin; j < end; j++)
       {
         for (int k = slice_k_num; k < slice_k_num+1; k++)
         {      
@@ -815,7 +822,7 @@ void Poisson::runSlice()
         }
       }
     }
-    (*slices)[2].res = res;
+    (*slices)[2].res = end - begin;
   }
 }
 
