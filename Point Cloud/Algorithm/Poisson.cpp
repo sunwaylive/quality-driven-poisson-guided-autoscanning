@@ -989,11 +989,11 @@ void Poisson::runComputeSampleConfidence()
     }
 
     float space = max_confidence - min_confidence;
-    for (int i = 0; i < samples->vert.size(); i++)
-    {
-      confidences[i][curr] = (confidences[i][curr] - min_confidence) / space;
-      file1 << confidences[i][curr] << endl;
-    }
+    //for (int i = 0; i < samples->vert.size(); i++)
+    //{
+    //  confidences[i][curr] = (confidences[i][curr] - min_confidence) / space;
+    //  file1 << confidences[i][curr] << endl;
+    //}
     curr++;
   }
 
@@ -1030,14 +1030,12 @@ void Poisson::runComputeSampleConfidence()
       max_confidence = (std::max)(max_confidence, confidences[i][curr]);
     }
 
-    float space = max_confidence - min_confidence;
-    for (int i = 0; i < samples->vert.size(); i++)
-    {
-      confidences[i][curr] = (confidences[i][curr] - min_confidence) / space;
-      file2 << confidences[i][curr] << endl;
-      //confidences[i][curr] = 1 - confidences[i][curr];
-      //cout << "normal confidences" << confidences[i][curr] << endl;
-    }
+    //float space = max_confidence - min_confidence;
+    //for (int i = 0; i < samples->vert.size(); i++)
+    //{
+    //  confidences[i][curr] = (confidences[i][curr] - min_confidence) / space;
+    //  file2 << confidences[i][curr] << endl;
+    //}
     curr++;
   }
 
@@ -1077,13 +1075,12 @@ void Poisson::runComputeSampleConfidence()
       max_confidence = (std::max)(max_confidence, confidences[i][curr]);
     }
 
-    float space = max_confidence - min_confidence;
-    for (int i = 0; i < samples->vert.size(); i++)
-    {
-      confidences[i][curr] = (confidences[i][curr] - min_confidence) / space;
-      file3 << confidences[i][curr] << endl;
-      //cout << "proj confidences:  " << confidences[i][curr] << endl;
-    }
+    //float space = max_confidence - min_confidence;
+    //for (int i = 0; i < samples->vert.size(); i++)
+    //{
+    //  confidences[i][curr] = (confidences[i][curr] - min_confidence) / space;
+    //  file3 << confidences[i][curr] << endl;
+    //}
     curr++;
   }
 

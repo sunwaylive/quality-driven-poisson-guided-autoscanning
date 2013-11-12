@@ -18,6 +18,7 @@ void GLDrawer::updateDrawer(vector<int>& pickList)
 	bUseIndividualColor = para->getBool("Show Individual Color");
 	useNormalColor = para->getBool("Use Color From Normal");
   useDifferBranchColor = para->getBool("Use Differ Branch Color");
+  bShowSlice = global_paraMgr.poisson.getBool("Show Slices Mode");
 
 	original_draw_width = para->getDouble("Original Draw Width");
 	sample_draw_width = para->getDouble("Sample Draw Width");
@@ -124,8 +125,11 @@ GLColor GLDrawer::isoValue2color(double iso_value,
                                  double shift,
                                  bool need_negative)
 {
-  iso_value += shift;
-
+  if (!bShowSlice)
+  {
+    iso_value += shift;
+  }
+  
   if (scale_threshold <= 0)
   {
     scale_threshold = 1;
