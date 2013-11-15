@@ -140,17 +140,18 @@ NBV::propagate()
   vector<int> hit_grid_indexes;
   //traverse all points on the iso surface
   //for (int i = 0; i < 1; ++i)//fix: < iso_points->vert.size()
-  for (int i = 1009; i < 1010; ++i)//fix: < iso_points->vert.size()  
+  int target_index = 425;
+  for (int i = target_index; i < target_index+1; ++i)//fix: < iso_points->vert.size()  
   {
-    CVertex &t = iso_points->vert[i];
+    CVertex &v = iso_points->vert[i];
     //t is the ray_start_point
-    t.is_ray_hit = true;
-    ray_hit_nbv_grids->vert.push_back(t);
+    v.is_ray_hit = true;
+    ray_hit_nbv_grids->vert.push_back(v);
 
     //get the x,y,z index of each iso_points
-    int t_indexX = static_cast<int>( ceil((t.P()[0] - whole_space_box_min.X()) / grid_resolution ));
-    int t_indexY = static_cast<int>( ceil((t.P()[1] - whole_space_box_min.Y()) / grid_resolution ));
-    int t_indexZ = static_cast<int>( ceil((t.P()[2] - whole_space_box_min.Z()) / grid_resolution ));
+    int t_indexX = static_cast<int>( ceil((v.P()[0] - whole_space_box_min.X()) / grid_resolution ));
+    int t_indexY = static_cast<int>( ceil((v.P()[1] - whole_space_box_min.Y()) / grid_resolution ));
+    int t_indexZ = static_cast<int>( ceil((v.P()[2] - whole_space_box_min.Z()) / grid_resolution ));
     //next point index along the ray, pay attention , index should be stored in double ,used in integer
     double n_indexX, n_indexY, n_indexZ;
     //get the sphere traversal resolution
@@ -199,6 +200,9 @@ NBV::propagate()
       ray_hit_nbv_grids->bbox.Add(t.P());
     }*/
 
+    double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
+    double sigma_threshold = pow(max(1e-8,1-cos(sigma/180.0*3.1415926)), 2);
+
     //1. for each point, propagate to all discrete directions
     for (a = 0.0f; a < PI; a += angle_delta)
     {
@@ -230,9 +234,16 @@ NBV::propagate()
           //do what we need in the next grid
           NBVGrid &g = (*all_nbv_grids)[index];
           //1. set the confidence of the grid center
-          double dist = GlobalFun::computeEulerDist(t.P(), all_nbv_grid_centers->vert[index]);
-          double coefficient = exp(-(dist - optimal_D) * (dist - optimal_D) / half_D2);
-          all_nbv_grid_centers->vert[index].eigen_confidence = coefficient * t.eigen_confidence;
+          CVertex& t = all_nbv_grid_centers->vert[index];
+          //double dist = GlobalFun::computeEulerDist(v.P(), t.P());
+          Point3f diff = t.P() - v.P();
+          double dist2 = diff.SquaredNorm();
+          double dist = sqrt(dist2);
+
+          double coefficient1 = exp(-(dist - optimal_D) * (dist - optimal_D) / half_D2);
+          double coefficient2 = exp(-pow(1-v.N()*diff.Normalize(), 2)/sigma_threshold);
+
+          all_nbv_grid_centers->vert[index].eigen_confidence = coefficient1 * coefficient2 * v.eigen_confidence;
           // record hit_grid center index
           hit_grid_indexes.push_back(index);
           //put the hit_grid center into a mesh for UI show
