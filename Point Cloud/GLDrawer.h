@@ -105,6 +105,7 @@ private:
   bool bUseIsoInteral;
   bool bUseConfidenceColor;
   bool bShowSlice;
+  bool bShowGridCenters;
 
 	double original_draw_width;
 	double sample_draw_width;

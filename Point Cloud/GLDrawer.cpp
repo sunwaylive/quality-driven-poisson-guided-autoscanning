@@ -46,6 +46,7 @@ void GLDrawer::updateDrawer(vector<int>& pickList)
   bUseConfidenceColor = global_paraMgr.drawer.getBool("Show Confidence Color");
   cofidence_color_scale = global_paraMgr.glarea.getDouble("Confidence Color Scale");
   iso_value_shift = global_paraMgr.glarea.getDouble("ISO Value Shift");
+  bShowGridCenters = global_paraMgr.glarea.getBool("Show NBV Grids");
 
 	if (!pickList.empty())
 	{
@@ -284,6 +285,12 @@ GLColor GLDrawer::getColorByType(const CVertex& v)
 
 void GLDrawer::drawDot(const CVertex& v)
 {
+
+  if (bShowGridCenters && v.is_grid_center && !v.is_ray_stop)
+  {
+    return;
+  }
+
 	int size;
   if (v.is_model)
   {

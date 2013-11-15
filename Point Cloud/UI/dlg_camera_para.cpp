@@ -29,6 +29,10 @@ void CameraParaDlg::initConnects()
   connect(ui->pushButton_merge, SIGNAL(clicked()), this, SLOT(mergeScannedMeshWithOriginal()));
   connect(ui->pushButton_build_grid, SIGNAL(clicked()), this, SLOT(buildGrid()));
   connect(ui->pushButton_propagate, SIGNAL(clicked()), this, SLOT(propagate()));
+ 
+  connect(ui->grid_resolution, SIGNAL(valueChanged(double)), this, SLOT(getGridResolution(double)));
+  connect(ui->use_other_inside_segment,SIGNAL(clicked(bool)),this,SLOT(useOtherInsideSegment(bool)));
+
 }
 
 bool CameraParaDlg::initWidgets()
@@ -36,6 +40,10 @@ bool CameraParaDlg::initWidgets()
   ui->horizon_dist->setValue(m_paras->camera.getDouble("Camera Horizon Dist"));
   ui->vertical_dist->setValue(m_paras->camera.getDouble("Camera Vertical Dist"));
   ui->max_dist->setValue(m_paras->camera.getDouble("Camera Max Dist"));
+  ui->grid_resolution->setValue(m_paras->nbv.getDouble("Grid resolution"));
+
+  Qt::CheckState state = m_paras->nbv.getBool("Test Other Inside Segment") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
+  ui->use_other_inside_segment->setCheckState(state);
 
   updateTableViewNBVCandidate();
   update();
@@ -166,6 +174,11 @@ void CameraParaDlg::showInitCameras(bool is_show)
   }
 }
 
+void CameraParaDlg::useOtherInsideSegment(bool _val)
+{
+  global_paraMgr.nbv.setValue("Test Other Inside Segment", BoolValue(_val));
+}
+
 void CameraParaDlg::showSelectedScannCandidates(QModelIndex index)
 {
   ui->checkBox_show_init_cameras->setChecked(false);
@@ -278,6 +291,11 @@ void CameraParaDlg::getCameraMaxDist(double _val)
 void CameraParaDlg::getCameraDistToModel(double _val)
 {
   global_paraMgr.camera.setValue("Camera Dist To Model", DoubleValue(_val));
+}
+
+void CameraParaDlg::getGridResolution(double _val)
+{
+  global_paraMgr.nbv.setValue("Grid resolution", DoubleValue(_val));
 }
 
 void

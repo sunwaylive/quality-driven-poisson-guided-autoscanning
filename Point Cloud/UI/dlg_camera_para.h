@@ -28,6 +28,7 @@ private slots:
   void initialScan();
   void NBVCandidatesScan();
   void showInitCameras(bool is_show);
+  void useOtherInsideSegment(bool _val);
   void updateTableViewNBVCandidate();
   void updateTabelViewScanResults();
   void showSelectedScannCandidates(QModelIndex index);
@@ -37,6 +38,7 @@ private slots:
 	void getCameraVerticalDist(double _val);
   void getCameraMaxDist(double _val);
   void getCameraDistToModel(double _val);
+  void getGridResolution(double _val);
   void buildGrid();
   void propagate();
 

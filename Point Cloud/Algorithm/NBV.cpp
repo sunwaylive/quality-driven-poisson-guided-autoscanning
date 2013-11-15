@@ -7,7 +7,7 @@ NBV::NBV(RichParameterSet *_para)
   original = NULL;
   iso_points = NULL;
   model = NULL;
-  grid_resolution = 1.0f / 10; 
+  grid_resolution = 1.0f / 20.0; 
 }
 
 NBV::~NBV()
@@ -20,6 +20,8 @@ NBV::~NBV()
 void
 NBV::run()
 {
+  grid_resolution = 1.0 / para->getDouble("Grid resolution");
+
   if (para->getBool("Run Build Grid"))
   {
     buildGrid();
@@ -114,6 +116,12 @@ NBV::buildGrid()
        }
      }
    }
+   cout << "all: " << max_index << endl;
+   cout << "x_max: " << x_max << endl;
+   cout << "y_max: " << y_max << endl;
+   cout << "z_max: " << z_max << endl;
+
+   bool test_other_segment = para->getBool("Test Other Inside Segment");
    //distinguish the inside or outside grid
    GlobalFun::computeAnnNeigbhors(iso_points->vert, all_nbv_grid_centers->vert, 1, false, "runGridNearestIsoPoint");
    for (int i = 0; i < all_nbv_grid_centers->vert.size(); ++i)
@@ -126,7 +134,8 @@ NBV::buildGrid()
        double dist = GlobalFun::computeEulerDist(t, v);
        Point3f n = nearest.N();
        Point3f l = all_nbv_grid_centers->vert[i].P() - nearest.P();
-       if (n * l < 0.0f && dist < grid_resolution * 2)
+       if ((n * l < 0.0f && dist < grid_resolution * 2)
+           || (test_other_segment && dist < grid_resolution / 2)) //wsh change
        {
          all_nbv_grid_centers->vert[i].is_ray_stop = true; 
        }        
@@ -137,10 +146,17 @@ NBV::buildGrid()
 void
 NBV::propagate()
 {
+  for (int i = 0; i < all_nbv_grid_centers->vert.size(); i++)
+  {
+    CVertex& v = all_nbv_grid_centers->vert[i];
+    v.eigen_confidence = 0.0;
+  }
+
   vector<int> hit_grid_indexes;
   //traverse all points on the iso surface
   //for (int i = 0; i < 1; ++i)//fix: < iso_points->vert.size()
-  int target_index = 425;
+  //int target_index = 425;
+  int target_index = 1009;  
   for (int i = target_index; i < target_index+1; ++i)//fix: < iso_points->vert.size()  
   {
     CVertex &v = iso_points->vert[i];
@@ -158,6 +174,8 @@ NBV::propagate()
     double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
     //compute the delta of a,b so as to traverse the whole sphere
     double angle_delta = grid_resolution / camera_max_dist;
+    //angle_delta *=2;// wsh
+
     //loop for a, b
     double a = 0.0f, b = 0.0f;
     double l = 0.0f;
@@ -165,6 +183,8 @@ NBV::propagate()
     //for DDA algorithm
     //int stepX = 0, stepY = 0, stepZ = 0;
     int max_steps = static_cast<int>(camera_max_dist / grid_resolution);
+    //max_steps *= 1.5; //wsh
+
     double length = 0.0f;
     double deltaX, deltaY, deltaZ;
 
@@ -218,6 +238,8 @@ NBV::propagate()
         deltaX = x / length; 
         deltaY = y / length;
         deltaZ = z / length;
+
+        //int hit_stop_time = 0;
         for (int k = 0; k <= max_steps; ++k)
         {
           n_indexX = n_indexX + deltaX;
@@ -225,8 +247,11 @@ NBV::propagate()
           n_indexZ = n_indexZ + deltaZ;
           int index = round(n_indexX) * y_max * z_max + round(n_indexY) * z_max + round(n_indexZ);
           //if the direction is into the model, or has been hit, then stop tracing
-          if (all_nbv_grid_centers->vert[index].is_ray_stop) break;
-
+          if (all_nbv_grid_centers->vert[index].is_ray_stop)
+          {
+            break;
+          }
+          
           if (all_nbv_grid_centers->vert[index].is_ray_hit)  continue;
           
           //if the grid get first hit 
@@ -243,9 +268,11 @@ NBV::propagate()
           double coefficient1 = exp(-(dist - optimal_D) * (dist - optimal_D) / half_D2);
           double coefficient2 = exp(-pow(1-v.N()*diff.Normalize(), 2)/sigma_threshold);
 
-          all_nbv_grid_centers->vert[index].eigen_confidence = coefficient1 * coefficient2 * v.eigen_confidence;
+          t.eigen_confidence += coefficient1 * coefficient2 * v.eigen_confidence;
           // record hit_grid center index
           hit_grid_indexes.push_back(index);
+          
+          
           //put the hit_grid center into a mesh for UI show
           CVertex c = all_nbv_grid_centers->vert[index];
           ray_hit_nbv_grids->vert.push_back(c);
