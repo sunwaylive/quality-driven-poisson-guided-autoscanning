@@ -116,6 +116,7 @@ NBV::buildGrid()
        }
      }
    }
+   all_nbv_grid_centers->vn = max_index;
    cout << "all: " << max_index << endl;
    cout << "x_max: " << x_max << endl;
    cout << "y_max: " << y_max << endl;
@@ -146,12 +147,20 @@ NBV::buildGrid()
 void
 NBV::propagate()
 {
-  for (int i = 0; i < all_nbv_grid_centers->vert.size(); i++)
+  if (all_nbv_grid_centers)
   {
-    CVertex& v = all_nbv_grid_centers->vert[i];
-    v.eigen_confidence = 0.0;
+    for (int i = 0; i < all_nbv_grid_centers->vert.size(); i++)
+    {
+      CVertex& v = all_nbv_grid_centers->vert[i];
+      v.eigen_confidence = 0.0;
+    }
   }
-  ray_hit_nbv_grids->vert.clear();
+  if (ray_hit_nbv_grids)
+  {
+    ray_hit_nbv_grids->vert.clear();
+  }
+ 
+  normalizeConfidence(iso_points->vert, 0);
 
   vector<int> hit_grid_indexes;
   //traverse all points on the iso surface
@@ -159,12 +168,13 @@ NBV::propagate()
   int target_index = 425;
   //int target_index = 1009;  
   //for (int i = target_index; i < target_index+1; ++i)//fix: < iso_points->vert.size()  
-  for (int i = 0; i < 5; ++i)//fix: < iso_points->vert.size()    
+  for (int i = 0; i < iso_points->vert.size(); ++i)//fix: < iso_points->vert.size()    
   {
+//    cout << "index" << i << endl;
     CVertex &v = iso_points->vert[i];
     //t is the ray_start_point
     v.is_ray_hit = true;
-    ray_hit_nbv_grids->vert.push_back(v);
+    //ray_hit_nbv_grids->vert.push_back(v);
 
     //get the x,y,z index of each iso_points
     int t_indexX = static_cast<int>( ceil((v.P()[0] - whole_space_box_min.X()) / grid_resolution ));
@@ -193,34 +203,6 @@ NBV::propagate()
     double half_D = optimal_D / 2.0f;
     double half_D2 = half_D * half_D;
     //for debug
-    /*a = PI / 4; b = PI / 4;
-    l = sin(a); y = cos(a);
-    x = l * cos(b); z = l * sin(b);
-    n_indexX = t_indexX; n_indexY = t_indexY; n_indexZ = t_indexZ;
-    //add the start point
-    CVertex o = all_nbv_grid_centers->vert[t_indexX * y_max * z_max + t_indexY * z_max + t_indexZ];
-    o.is_ray_hit = true;
-    ray_hit_nbv_grids->vert.push_back(o);
-    ray_hit_nbv_grids->bbox.Add(o.P());
-
-    length = getAbsMax(x, y, z);
-
-    deltaX = x / length; 
-    deltaY = y / length;
-    deltaZ = z / length;
-    for (int k = 0; k <= max_steps; ++k)
-    {
-      n_indexX = round(n_indexX + deltaX);
-      n_indexY = round(n_indexY + deltaY);
-      n_indexZ = round(n_indexZ + deltaZ);
-      //do what we need in the next grid
-      int index = n_indexX * y_max * z_max + n_indexY * z_max + n_indexZ;
-      all_nbv_grid_centers->vert[index].is_ray_hit = true;
-      //add the grid center into ray_hit_nbv_grids mesh
-      CVertex t = all_nbv_grid_centers->vert[index];
-      ray_hit_nbv_grids->vert.push_back(t);
-      ray_hit_nbv_grids->bbox.Add(t.P());
-    }*/
 
     double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
     double sigma_threshold = pow(max(1e-8,1-cos(sigma/180.0*3.1415926)), 2);
@@ -248,6 +230,11 @@ NBV::propagate()
           n_indexY = n_indexY + deltaY;
           n_indexZ = n_indexZ + deltaZ;
           int index = round(n_indexX) * y_max * z_max + round(n_indexY) * z_max + round(n_indexZ);
+
+          if (index >= all_nbv_grid_centers->vert.size())
+          {
+            continue;
+          }
           //if the direction is into the model, or has been hit, then stop tracing
           if (all_nbv_grid_centers->vert[index].is_ray_stop)
           {
@@ -270,7 +257,7 @@ NBV::propagate()
           double coefficient1 = exp(-(dist - optimal_D) * (dist - optimal_D) / half_D2);
           double coefficient2 = exp(-pow(1-v.N()*diff.Normalize(), 2)/sigma_threshold);
 
-          t.eigen_confidence += coefficient1 * coefficient2 * v.eigen_confidence;
+          t.eigen_confidence += coefficient1 * coefficient2 * (1 - v.eigen_confidence);
           // record hit_grid center index
           hit_grid_indexes.push_back(index);
           
@@ -281,8 +268,9 @@ NBV::propagate()
           //ray_hit_nbv_grids->bbox.Add(c.P());
 
           //2. add the count in the direction bins
-          quadrant q = getQuadrantIdx(a, b);
-          g.direction_count[q]++;
+          //quadrant q = getQuadrantIdx(a, b);
+          //g.direction_count[q]++;
+
         }//end for k
       }// end for b
     }//end for a
@@ -293,8 +281,31 @@ NBV::propagate()
       hit_grid_indexes.clear();
     }
   }//end for iso_points
+
+  normalizeConfidence(all_nbv_grid_centers->vert, 0);
 }
 
+void NBV::normalizeConfidence(vector<CVertex>& vertexes, float delta)
+{
+  float min_confidence = GlobalFun::getDoubleMAXIMUM();
+  float max_confidence = 0;
+  for (int i = 0; i < vertexes.size(); i++)
+  {
+    CVertex& v = vertexes[i];
+    min_confidence = (std::min)(min_confidence, v.eigen_confidence);
+    max_confidence = (std::max)(max_confidence, v.eigen_confidence);
+  }
+  float space = max_confidence - min_confidence;
+
+  for (int i = 0; i < vertexes.size(); i++)
+  {
+    CVertex& v = vertexes[i];
+    v.eigen_confidence = (v.eigen_confidence - min_confidence) / space;
+
+    v.eigen_confidence += delta;
+  }
+
+}
 double
 NBV::getAbsMax(double x, double y, double z)
 {

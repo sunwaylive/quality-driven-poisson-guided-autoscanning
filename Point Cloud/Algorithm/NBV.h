@@ -27,6 +27,7 @@ private:
   void buildGrid();
   void propagate();
 
+  void normalizeConfidence(vector<CVertex>& vertexes, float delta);
   double   getAbsMax(double x, double y, double z);
   int      round(double x);
   quadrant getQuadrantIdx(double a, double b); //two parameters deciding the quadrant

@@ -106,6 +106,7 @@ private:
   bool bUseConfidenceColor;
   bool bShowSlice;
   bool bShowGridCenters;
+  bool bShowHitGrids;
 
 	double original_draw_width;
 	double sample_draw_width;

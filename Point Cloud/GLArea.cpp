@@ -574,7 +574,7 @@ void GLArea::openByDrop(QString fileName)
     dataMgr.loadXYZN(fileName);
   }
 
-	//initAfterOpenFile();
+	initAfterOpenFile();
 	updateGL();
 }
 

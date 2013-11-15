@@ -25,6 +25,9 @@ public:
 protected:
 	Poisson(){}
 
+public:
+  void normalizeConfidence(vector<CVertex>& vertexes, float delta);
+
 private:
 	void input(CMesh* _mesh);
   void runPoisson();
@@ -37,7 +40,7 @@ private:
   void runComputeOriginalConfidence();
   void runComputeSampleConfidence();
   void runComputeIsoConfidence();
-  void normalizeConfidence(vector<CVertex>& vertexes, float delta);
+  
 
 private:
 	CMesh* samples;

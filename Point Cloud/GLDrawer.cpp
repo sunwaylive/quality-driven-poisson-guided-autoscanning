@@ -47,7 +47,8 @@ void GLDrawer::updateDrawer(vector<int>& pickList)
   cofidence_color_scale = global_paraMgr.glarea.getDouble("Confidence Color Scale");
   iso_value_shift = global_paraMgr.glarea.getDouble("ISO Value Shift");
   bShowGridCenters = global_paraMgr.glarea.getBool("Show NBV Grids");
-
+  bShowHitGrids = global_paraMgr.glarea.getBool("Show NBV Ray Hit");
+  
 	if (!pickList.empty())
 	{
 		curr_pick_indx = pickList[0];
@@ -236,6 +237,11 @@ GLColor GLDrawer::getColorByType(const CVertex& v)
 
 	}
 
+  if (bShowHitGrids && v.is_iso)
+  {
+    return cBlue;
+  }
+
   if (bUseConfidenceColor && !v.is_iso && v.eigen_confidence >= -0.5)
   {
     return isoValue2color(v.eigen_confidence, cofidence_color_scale, iso_value_shift, true);
@@ -286,10 +292,10 @@ GLColor GLDrawer::getColorByType(const CVertex& v)
 void GLDrawer::drawDot(const CVertex& v)
 {
 
-  if (bShowGridCenters && v.is_grid_center && !v.is_ray_stop)
-  {
-    return;
-  }
+  //if (bShowGridCenters && v.is_grid_center && !v.is_ray_stop)
+  //{
+  //  return;
+  //}
 
 	int size;
   if (v.is_model)
