@@ -93,6 +93,11 @@ bool DataMgr::isScannedResultsEmpty()
   return scanned_results.empty();
 }
 
+bool DataMgr::isNBVGridsEmpty()
+{
+  return all_nbv_grid_centers.vert.empty();
+}
+
 void DataMgr::loadPlyToModel(QString fileName)
 {
   clearCMesh(model);
@@ -708,6 +713,12 @@ void DataMgr::clearData()
   //clearCMesh(model);  
   clearCMesh(current_scanned_mesh);
 
+  clearCMesh(all_nbv_grid_centers);
+  clearCMesh(ray_hit_grids);
+  clearCMesh(current_scanned_mesh);
+
+
+
 	skeleton.clear();
   slices.clear();
 }
@@ -889,6 +900,14 @@ void DataMgr::saveSkeletonAsSkel(QString fileName)
     strStream << v.is_hole << "	"; 
   }
   strStream << endl;
+
+  //strStream << "Is_hole " << iso_points.vert.size() << endl;
+  //for(int i = 0; i < iso_points.vert.size(); i++)
+  //{
+  //  CVertex& v = iso_points.vert[i];
+  //  strStream << v.is_hole << "	"; 
+  //}
+  //strStream << endl;
 
 	outfile.write( strStream.str().c_str(), strStream.str().size() ); 
 	outfile.close();

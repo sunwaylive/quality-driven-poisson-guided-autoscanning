@@ -46,6 +46,7 @@ public:
   bool      isViewCandidatesEmpty();
   bool      isScannedMeshEmpty();
   bool      isScannedResultsEmpty();
+  bool      isNBVGridsEmpty();
 
   CMesh*                   getCurrentModel();
   CMesh*                   getCurrentSamples();

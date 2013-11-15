@@ -99,8 +99,18 @@ void Poisson::setInput(DataMgr* pData)
     samples = pData->getCurrentSamples();
     iso_points = pData->getCurrentIsoPoints();
     slices = pData->getCurrentSlices();
-    field_points = pData->getCurrentFieldPoints();
+    
     model = pData->getCurrentModel();
+
+    if (pData->isNBVGridsEmpty())
+    {
+      field_points = pData->getCurrentFieldPoints();
+    }
+    else
+    {
+      field_points = pData->getAllNBVGridCenters();
+    }
+    
 	}
 	else
 	{

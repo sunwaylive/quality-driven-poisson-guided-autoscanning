@@ -89,6 +89,11 @@ NBV::buildGrid()
    x_max = static_cast<int> (dif.X() / grid_resolution);
    y_max = static_cast<int> (dif.Y() / grid_resolution);
    z_max = static_cast<int> (dif.Z() / grid_resolution);
+
+   int all_max = (std::max)(x_max, y_max);
+   all_max = (std::max)(all_max, z_max);
+   x_max = y_max =z_max = all_max;
+
    //pre allocate the memory
    int max_index = x_max * y_max * z_max;
    all_nbv_grid_centers->vert.resize(max_index);
