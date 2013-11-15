@@ -127,6 +127,7 @@ GLColor GLDrawer::isoValue2color(double iso_value,
                                  double shift,
                                  bool need_negative)
 {
+  iso_value += shift;
   //if (!bShowSlice)
   //{
   //  iso_value += shift;
