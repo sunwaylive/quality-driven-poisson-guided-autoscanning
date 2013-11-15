@@ -151,13 +151,15 @@ NBV::propagate()
     CVertex& v = all_nbv_grid_centers->vert[i];
     v.eigen_confidence = 0.0;
   }
+  ray_hit_nbv_grids->vert.clear();
 
   vector<int> hit_grid_indexes;
   //traverse all points on the iso surface
   //for (int i = 0; i < 1; ++i)//fix: < iso_points->vert.size()
-  //int target_index = 425;
-  int target_index = 1009;  
-  for (int i = target_index; i < target_index+1; ++i)//fix: < iso_points->vert.size()  
+  int target_index = 425;
+  //int target_index = 1009;  
+  //for (int i = target_index; i < target_index+1; ++i)//fix: < iso_points->vert.size()  
+  for (int i = 0; i < 5; ++i)//fix: < iso_points->vert.size()    
   {
     CVertex &v = iso_points->vert[i];
     //t is the ray_start_point
@@ -273,10 +275,10 @@ NBV::propagate()
           hit_grid_indexes.push_back(index);
           
           
-          //put the hit_grid center into a mesh for UI show
-          CVertex c = all_nbv_grid_centers->vert[index];
-          ray_hit_nbv_grids->vert.push_back(c);
-          ray_hit_nbv_grids->bbox.Add(c.P());
+          ////put the hit_grid center into a mesh for UI show
+          //CVertex c = all_nbv_grid_centers->vert[index];
+          //ray_hit_nbv_grids->vert.push_back(c);
+          //ray_hit_nbv_grids->bbox.Add(c.P());
 
           //2. add the count in the direction bins
           quadrant q = getQuadrantIdx(a, b);
