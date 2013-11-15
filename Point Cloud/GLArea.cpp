@@ -583,7 +583,7 @@ void GLArea::loadDefaultModel()
 	//dataMgr.loadPlyToSample("default.ply");
 	//dataMgr.loadPlyToOriginal("default_original.ply");
   //dataMgr.loadSkeletonFromSkel("Yoga1 MC Labeled.skel");
-  //dataMgr.loadSkeletonFromSkel("yoga0.skel");
+  dataMgr.loadSkeletonFromSkel("yoga3.skel");
   dataMgr.loadPlyToModel("model.ply"); 
   dataMgr.loadPlyToOriginal("model.ply");
   dataMgr.loadCameraModel("camera.ply");

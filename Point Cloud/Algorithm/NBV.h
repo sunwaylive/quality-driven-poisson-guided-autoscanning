@@ -9,7 +9,7 @@ using std::cout;
 using std::endl;
 using vcg::Point3f;
 
-const double D = 1.0f;
+const double optimal_D = 1.8f;
 
 class NBV : public PointCloudAlgorithm
 {

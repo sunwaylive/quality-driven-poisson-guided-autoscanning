@@ -343,7 +343,6 @@ void ParameterMgr::initPoissonParameter()
   poisson.addParam(new RichBool("Run Slice", false));
   poisson.addParam(new RichDouble("Max Depth", 6));
 
-
   poisson.addParam(new RichBool("Show Slices Mode", false));
   poisson.addParam(new RichBool("Show X Slices", false));
   poisson.addParam(new RichBool("Show Y Slices", false));
@@ -353,7 +352,6 @@ void ParameterMgr::initPoissonParameter()
   poisson.addParam(new RichDouble("Current Y Slice Position", 0.5));
   poisson.addParam(new RichDouble("Current Z Slice Position", 0.5));
   poisson.addParam(new RichDouble("Show Slice Percentage", 0.75));
-
 
   poisson.addParam(new RichBool("Use Confidence 1", false));
   poisson.addParam(new RichBool("Use Confidence 2", false));
@@ -372,7 +370,7 @@ void ParameterMgr::initCameraParameter()
   camera.addParam(new RichBool("Run NBV Scan", false));
   camera.addParam(new RichBool("Run Virtual Scan", false));
   camera.addParam(new RichDouble("Camera Resolution",1.0f / 100.0f));
-  camera.addParam(new RichDouble("Camera Max Dist", 1.5f));
+  camera.addParam(new RichDouble("Camera Max Dist", 2.1f));
   camera.addParam(new RichDouble("Camera Horizon Dist", 1.0f));
   camera.addParam(new RichDouble("Camera Vertical Dist", 0.6f));
   camera.addParam(new RichDouble("Camera Dist To Model", 1.0f));

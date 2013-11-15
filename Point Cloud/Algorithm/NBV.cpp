@@ -7,7 +7,7 @@ NBV::NBV(RichParameterSet *_para)
   original = NULL;
   iso_points = NULL;
   model = NULL;
-  grid_resolution = 1.0f / 20; 
+  grid_resolution = 1.0f / 10; 
 }
 
 NBV::~NBV()
@@ -78,6 +78,7 @@ NBV::buildGrid()
    Point3f bbox_min = iso_points->bbox.min;
    //get the whole 3D space that a camera may exist
    double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
+
    whole_space_box_max = bbox_max + Point3f(camera_max_dist, camera_max_dist, camera_max_dist);
    whole_space_box_min = bbox_min - Point3f(camera_max_dist, camera_max_dist, camera_max_dist);
    //compute the size of the 3D space
@@ -138,7 +139,8 @@ NBV::propagate()
 {
   vector<int> hit_grid_indexes;
   //traverse all points on the iso surface
-  for (int i = 0; i < 1; ++i)//fix: < iso_points->vert.size()
+  //for (int i = 0; i < 1; ++i)//fix: < iso_points->vert.size()
+  for (int i = 1009; i < 1010; ++i)//fix: < iso_points->vert.size()  
   {
     CVertex &t = iso_points->vert[i];
     //t is the ray_start_point
@@ -164,7 +166,9 @@ NBV::propagate()
     int max_steps = static_cast<int>(camera_max_dist / grid_resolution);
     double length = 0.0f;
     double deltaX, deltaY, deltaZ;
-    double half_D = D / 2.0f;
+
+    double half_D = optimal_D / 2.0f;
+    double half_D2 = half_D * half_D;
     //for debug
     /*a = PI / 4; b = PI / 4;
     l = sin(a); y = cos(a);
@@ -227,7 +231,7 @@ NBV::propagate()
           NBVGrid &g = (*all_nbv_grids)[index];
           //1. set the confidence of the grid center
           double dist = GlobalFun::computeEulerDist(t.P(), all_nbv_grid_centers->vert[index]);
-          double coefficient = exp(-(dist - D) * (dist - D) / (half_D * half_D));
+          double coefficient = exp(-(dist - optimal_D) * (dist - optimal_D) / half_D2);
           all_nbv_grid_centers->vert[index].eigen_confidence = coefficient * t.eigen_confidence;
           // record hit_grid center index
           hit_grid_indexes.push_back(index);
