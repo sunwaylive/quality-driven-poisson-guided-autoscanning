@@ -237,13 +237,13 @@ void Poisson::runLabelISO()
         float dist2  = (v.P() - t.P()).SquaredNorm();
         float w = exp(dist2*iradius16);
 
-        sum_confidence += (t.eigen_confidence + 0.5) * w;
+        sum_confidence += t.eigen_confidence  * w;
         sum_w += w;
       }
 
       if (!v.original_neighbors.empty())
       {
-        v.eigen_confidence = (sum_confidence / sum_w) - 0.5;
+        v.eigen_confidence = (sum_confidence / sum_w);
       }
       
     }

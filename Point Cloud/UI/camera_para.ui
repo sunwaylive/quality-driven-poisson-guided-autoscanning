@@ -424,6 +424,19 @@
       <string>use_other_inside_segment</string>
      </property>
     </widget>
+    <widget class="QCheckBox" name="use_confidence_seperation">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>260</y>
+       <width>201</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>use_confidence_seperation</string>
+     </property>
+    </widget>
    </widget>
   </widget>
  </widget>

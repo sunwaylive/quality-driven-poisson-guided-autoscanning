@@ -29,6 +29,7 @@ private slots:
   void NBVCandidatesScan();
   void showInitCameras(bool is_show);
   void useOtherInsideSegment(bool _val);
+  void useConfidenceSeperation(bool _val);
   void updateTableViewNBVCandidate();
   void updateTabelViewScanResults();
   void showSelectedScannCandidates(QModelIndex index);

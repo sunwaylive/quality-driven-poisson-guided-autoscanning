@@ -49,6 +49,10 @@ void GLDrawer::updateDrawer(vector<int>& pickList)
   bShowGridCenters = global_paraMgr.glarea.getBool("Show NBV Grids");
   bShowHitGrids = global_paraMgr.glarea.getBool("Show NBV Ray Hit");
   
+  bUseConfidenceSeperation = global_paraMgr.nbv.getBool("Use Confidence Seperation");
+  confidence_seperation_value = global_paraMgr.nbv.getDouble("Confidence Seperation Value");
+
+  
 	if (!pickList.empty())
 	{
 		curr_pick_indx = pickList[0];
@@ -297,6 +301,14 @@ void GLDrawer::drawDot(const CVertex& v)
   //{
   //  return;
   //}
+
+  if (bUseConfidenceSeperation && v.is_grid_center)
+  {
+    if (v.eigen_confidence < confidence_seperation_value)
+    {
+      return;
+    }
+  }
 
 	int size;
   if (v.is_model)

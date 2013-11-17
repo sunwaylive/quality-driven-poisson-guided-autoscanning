@@ -386,4 +386,8 @@ ParameterMgr::initNBVParameter()
   nbv.addParam(new RichDouble("Grid resolution", 10.f));
   nbv.addParam(new RichBool("Test Other Inside Segment", false));
 
+  nbv.addParam(new RichBool("Use Confidence Seperation", false));
+  nbv.addParam(new RichDouble("Confidence Seperation Value", 0.5));
+
+
 }

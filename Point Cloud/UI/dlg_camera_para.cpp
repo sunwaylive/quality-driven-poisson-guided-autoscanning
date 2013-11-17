@@ -32,6 +32,7 @@ void CameraParaDlg::initConnects()
  
   connect(ui->grid_resolution, SIGNAL(valueChanged(double)), this, SLOT(getGridResolution(double)));
   connect(ui->use_other_inside_segment,SIGNAL(clicked(bool)),this,SLOT(useOtherInsideSegment(bool)));
+  connect(ui->use_confidence_seperation,SIGNAL(clicked(bool)),this,SLOT(useConfidenceSeperation(bool)));
 
 }
 
@@ -44,6 +45,9 @@ bool CameraParaDlg::initWidgets()
 
   Qt::CheckState state = m_paras->nbv.getBool("Test Other Inside Segment") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
   ui->use_other_inside_segment->setCheckState(state);
+
+  state = m_paras->nbv.getBool("Use Confidence Seperation") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
+  ui->use_confidence_seperation->setCheckState(state);
 
   updateTableViewNBVCandidate();
   update();
@@ -177,6 +181,12 @@ void CameraParaDlg::showInitCameras(bool is_show)
 void CameraParaDlg::useOtherInsideSegment(bool _val)
 {
   global_paraMgr.nbv.setValue("Test Other Inside Segment", BoolValue(_val));
+}
+
+void CameraParaDlg::useConfidenceSeperation(bool _val)
+{
+  global_paraMgr.nbv.setValue("Use Confidence Seperation", BoolValue(_val));
+  cout << "Use Confidence Seperation" << endl;
 }
 
 void CameraParaDlg::showSelectedScannCandidates(QModelIndex index)

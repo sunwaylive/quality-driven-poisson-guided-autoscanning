@@ -1569,7 +1569,7 @@ void GLArea::loadView(QString fileName)
 void GLArea::wheelEvent(QWheelEvent *e) 
 {
 	const int WHEEL_STEP = 120;
-	double change_rate = 0.1;
+	double change_rate = 0.05;
 	double change = (e->delta() < 0) ? (1 + change_rate) : (1 - change_rate);
   
   double change_rate2 = 0.015;
@@ -1577,7 +1577,20 @@ void GLArea::wheelEvent(QWheelEvent *e)
 	
   double size_temp = 0.0;
 
-	if (global_paraMgr.poisson.getBool("Show Slices Mode"))
+  if (global_paraMgr.nbv.getBool("Use Confidence Seperation")
+      && (e->modifiers() & Qt::ControlModifier)
+      && (e->modifiers() & Qt::AltModifier))
+  {
+    size_temp = global_paraMgr.nbv.getDouble("Confidence Seperation Value");
+    size_temp *= change2;
+    size_temp = (std::min)((std::max)(size_temp, 1e-10), 0.99);
+
+    global_paraMgr.nbv.setValue("Confidence Seperation Value", DoubleValue(size_temp));
+    cout << "Confidence Seperation Value" << size_temp << endl;
+    return;
+  }
+	
+  if (global_paraMgr.poisson.getBool("Show Slices Mode"))
 	{
     if ((e->modifiers() & Qt::ShiftModifier)
         && (e->modifiers() & Qt::ControlModifier)
