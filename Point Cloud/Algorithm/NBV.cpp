@@ -156,8 +156,9 @@ NBV::propagate()
   {
     for (int i = 0; i < all_nbv_grid_centers->vert.size(); i++)
     {
-      CVertex& v = all_nbv_grid_centers->vert[i];
-      v.eigen_confidence = 0.0;
+      CVertex& t = all_nbv_grid_centers->vert[i];
+      t.eigen_confidence = 0.0;
+      t.N() = Point3f(0, 0, 0);
     }
   }
   if (ray_hit_nbv_grids)
@@ -259,10 +260,18 @@ NBV::propagate()
           double dist2 = diff.SquaredNorm();
           double dist = sqrt(dist2);
 
+          Point3f view_direction = diff.Normalize();
           double coefficient1 = exp(-(dist - optimal_D) * (dist - optimal_D) / half_D2);
-          double coefficient2 = exp(-pow(1-v.N()*diff.Normalize(), 2)/sigma_threshold);
+          double coefficient2 = exp(-pow(1-v.N()*view_direction, 2)/sigma_threshold);
 
-          t.eigen_confidence += coefficient1 * coefficient2 * (1 - v.eigen_confidence);
+          float iso_confidence = 1 - v.eigen_confidence;
+          float view_confidence = iso_confidence * coefficient2;          
+          
+          t.eigen_confidence += coefficient1 * coefficient2 * iso_confidence;
+          
+          t.N() += view_direction * view_confidence;
+          t.weight_sum += view_confidence;
+          
           // record hit_grid center index
           hit_grid_indexes.push_back(index);
           
@@ -288,6 +297,14 @@ NBV::propagate()
   }//end for iso_points
 
   normalizeConfidence(all_nbv_grid_centers->vert, 0);
+
+  for (int i = 0; i < all_nbv_grid_centers->vert.size(); i++)
+  {
+    CVertex& t = all_nbv_grid_centers->vert[i];
+    t.N() /= t.weight_sum;
+    t.N() *= -1;
+    //t.N().Normalize();
+  }
 }
 
 void NBV::normalizeConfidence(vector<CVertex>& vertexes, float delta)
@@ -306,7 +323,6 @@ void NBV::normalizeConfidence(vector<CVertex>& vertexes, float delta)
   {
     CVertex& v = vertexes[i];
     v.eigen_confidence = (v.eigen_confidence - min_confidence) / space;
-
     v.eigen_confidence += delta;
   }
 

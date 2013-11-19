@@ -461,6 +461,14 @@ void GLDrawer::drawQuade(const CVertex& v)
 
 void GLDrawer::drawNormal(const CVertex& v)
 {
+  if (bUseConfidenceSeperation && v.is_grid_center)
+  {
+    if (v.eigen_confidence < confidence_seperation_value)
+    {
+      return;
+    }
+  }
+
 	double width = normal_width;
 	double length = normal_length;
 	QColor qcolor = normal_color;

@@ -70,7 +70,11 @@ public:
 	bool is_skel_branch;
   bool is_fixed_original; 
   
-  float skel_radius; // remember radius for branches
+  union
+  {
+    float skel_radius; // remember radius for branches
+    float weight_sum; //
+  };
 	
 public:
 	operator Point3f &()

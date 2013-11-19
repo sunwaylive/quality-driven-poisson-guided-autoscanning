@@ -233,7 +233,14 @@ void GLArea::paintGL()
 
 	if (para->getBool("Show Normal")) 
 	{
-    if (para->getBool("Show ISO Points"))
+    if (para->getBool("Show NBV Grids"))
+    {
+      if (!dataMgr.isNBVGridsEmpty())
+      {
+        glDrawer.draw(GLDrawer::NORMAL, dataMgr.getAllNBVGridCenters());
+      }  
+    }
+    else if (para->getBool("Show ISO Points"))
     {
       glDrawer.draw(GLDrawer::NORMAL, dataMgr.getCurrentIsoPoints());
     }
@@ -246,6 +253,8 @@ void GLArea::paintGL()
 			if(!dataMgr.isOriginalEmpty())
 				glDrawer.draw(GLDrawer::NORMAL, dataMgr.getCurrentOriginal());
 		}
+
+
 	}
 
  	if(para->getBool("Show Original"))
@@ -583,7 +592,8 @@ void GLArea::loadDefaultModel()
 	//dataMgr.loadPlyToSample("default.ply");
 	//dataMgr.loadPlyToOriginal("default_original.ply");
   //dataMgr.loadSkeletonFromSkel("Yoga1 MC Labeled.skel");
-  dataMgr.loadSkeletonFromSkel("default.skel");
+  //dataMgr.loadSkeletonFromSkel("default.skel");
+  dataMgr.loadSkeletonFromSkel("yoga0.skel");
   //dataMgr.loadPlyToModel("model.ply"); 
   //dataMgr.loadPlyToOriginal("model.ply");
   dataMgr.loadCameraModel("camera.ply");
@@ -1309,7 +1319,7 @@ void
 GLArea::runNBV()
 {
   //fix: this should be iso_points
-  if (dataMgr.isModelEmpty()) return;
+  //if (dataMgr.isModelEmpty()) return;
 
   runPointCloudAlgorithm(nbv);
 
@@ -1579,7 +1589,8 @@ void GLArea::wheelEvent(QWheelEvent *e)
 
   if (global_paraMgr.nbv.getBool("Use Confidence Seperation")
       && (e->modifiers() & Qt::ControlModifier)
-      && (e->modifiers() & Qt::AltModifier))
+      && (e->modifiers() & Qt::AltModifier)
+      && (e->modifiers() & Qt::ShiftModifier))
   {
     size_temp = global_paraMgr.nbv.getDouble("Confidence Seperation Value");
     size_temp *= change2;

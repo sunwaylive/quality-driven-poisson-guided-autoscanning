@@ -150,7 +150,7 @@ void ParameterMgr::initDrawerParameter()
   drawer.addParam(new RichDouble("ISO Dot Size", 4));
 	drawer.addParam(new RichDouble("Original Dot Size", 1));
 	drawer.addParam(new RichDouble("Normal Line Width", 2));
-	drawer.addParam(new RichDouble("Normal Line Length", 0.08));
+	drawer.addParam(new RichDouble("Normal Line Length", 0.12));
 
 	drawer.addParam(new RichColor("Background Color", QColor(255, 255, 255) ));
 	drawer.addParam(new RichColor("Normal Line Color", QColor(0, 0, 255) ));
