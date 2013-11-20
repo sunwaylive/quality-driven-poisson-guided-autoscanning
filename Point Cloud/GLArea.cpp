@@ -318,7 +318,18 @@ void GLArea::paintGL()
     if (NULL == nbv_grids) return;
 
     if(!nbv_grids->vert.empty())
-     glDrawer.draw(GLDrawer::DOT, nbv_grids);
+    {
+      glDrawer.draw(GLDrawer::DOT, nbv_grids);
+      //if (global_paraMgr.nbv.getBool("Use Confidence Seperation"))
+      //{
+      //  glDrawer.draw(GLDrawer::QUADE, nbv_grids);
+      //}
+      //else
+      //{
+      //  glDrawer.draw(GLDrawer::DOT, nbv_grids);
+      //}
+    }
+     
   }
 
   if (para->getBool("Show NBV Ray Hit"))

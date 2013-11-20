@@ -265,7 +265,7 @@ NBV::propagate()
           double coefficient2 = exp(-pow(1-v.N()*view_direction, 2)/sigma_threshold);
 
           float iso_confidence = 1 - v.eigen_confidence;
-          float view_confidence = iso_confidence * coefficient2;          
+          float view_confidence = iso_confidence /** coefficient2*/;          
           
           t.eigen_confidence += coefficient1 * coefficient2 * iso_confidence;
           
@@ -301,8 +301,9 @@ NBV::propagate()
   for (int i = 0; i < all_nbv_grid_centers->vert.size(); i++)
   {
     CVertex& t = all_nbv_grid_centers->vert[i];
-    t.N() /= t.weight_sum;
-    t.N() *= -1;
+    t.N() /= -t.weight_sum;
+    t.recompute_m_render();
+    //t.N() *= -1;
     //t.N().Normalize();
   }
 }

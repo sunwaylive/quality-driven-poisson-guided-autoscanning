@@ -85,6 +85,14 @@ void GLDrawer::draw(DrawType type, CMesh* _mesh)
 			continue;
 		}
 
+    if (bUseConfidenceSeperation && vi->is_grid_center)
+    {
+      if (vi->eigen_confidence < confidence_seperation_value)
+      {
+        continue;
+      }
+    }
+
 		Point3f& p = vi->P();      
 		Point3f& normal = vi->N();
 
@@ -302,13 +310,7 @@ void GLDrawer::drawDot(const CVertex& v)
   //  return;
   //}
 
-  if (bUseConfidenceSeperation && v.is_grid_center)
-  {
-    if (v.eigen_confidence < confidence_seperation_value)
-    {
-      return;
-    }
-  }
+
 
 	int size;
   if (v.is_model)
@@ -461,13 +463,6 @@ void GLDrawer::drawQuade(const CVertex& v)
 
 void GLDrawer::drawNormal(const CVertex& v)
 {
-  if (bUseConfidenceSeperation && v.is_grid_center)
-  {
-    if (v.eigen_confidence < confidence_seperation_value)
-    {
-      return;
-    }
-  }
 
 	double width = normal_width;
 	double length = normal_length;
