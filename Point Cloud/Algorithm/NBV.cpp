@@ -7,7 +7,7 @@ NBV::NBV(RichParameterSet *_para)
   original = NULL;
   iso_points = NULL;
   model = NULL;
-  grid_resolution = 1.0f / 20.0; 
+  grid_resolution = 1.0f / 10.0; 
 }
 
 NBV::~NBV()
@@ -81,8 +81,15 @@ NBV::buildGrid()
    //get the whole 3D space that a camera may exist
    double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
 
-   whole_space_box_max = bbox_max + Point3f(camera_max_dist, camera_max_dist, camera_max_dist);
-   whole_space_box_min = bbox_min - Point3f(camera_max_dist, camera_max_dist, camera_max_dist);
+ /*  whole_space_box_max = bbox_max + Point3f(camera_max_dist, camera_max_dist, camera_max_dist);
+   whole_space_box_min = bbox_min - Point3f(camera_max_dist, camera_max_dist, camera_max_dist);*/
+
+   Point3f center = (bbox_min + bbox_max) / 2.0;
+   float camera_max_dist2 = camera_max_dist * 1.5;
+   whole_space_box_max = center + Point3f(camera_max_dist2, camera_max_dist2, camera_max_dist2);
+   whole_space_box_min = center - Point3f(camera_max_dist2, camera_max_dist2, camera_max_dist2);
+
+
    //compute the size of the 3D space
    Point3f dif = whole_space_box_max - whole_space_box_min;
    //divide the box into grid
@@ -147,6 +154,8 @@ NBV::buildGrid()
        }        
      }
    }
+
+   //confidence_weight_sum.resize(all_nbv_grid_centers->vert.size());
 }
 
 void
@@ -158,14 +167,15 @@ NBV::propagate()
     {
       CVertex& t = all_nbv_grid_centers->vert[i];
       t.eigen_confidence = 0.0;
-      t.N() = Point3f(0, 0, 0);
+      t.N() = Point3f(0., 0., 0.);
+      t.weight_sum = 0.0;
     }
   }
   if (ray_hit_nbv_grids)
   {
     ray_hit_nbv_grids->vert.clear();
   }
- 
+  confidence_weight_sum.assign(all_nbv_grid_centers->vert.size(), 0.0);
   normalizeConfidence(iso_points->vert, 0);
 
   vector<int> hit_grid_indexes;
@@ -265,12 +275,15 @@ NBV::propagate()
           double coefficient2 = exp(-pow(1-v.N()*view_direction, 2)/sigma_threshold);
 
           float iso_confidence = 1 - v.eigen_confidence;
-          float view_confidence = iso_confidence /** coefficient2*/;          
+          float view_weight = iso_confidence * coefficient2;          
+          float confidence_weight = coefficient1 * coefficient2;
           
-          t.eigen_confidence += coefficient1 * coefficient2 * iso_confidence;
+          t.eigen_confidence += confidence_weight * iso_confidence;
+          confidence_weight_sum[index] += 1.;
+          //confidence_weight_sum[index] += confidence_weight;
           
-          t.N() += view_direction * view_confidence;
-          t.weight_sum += view_confidence;
+          t.N() += view_direction * view_weight;
+          t.weight_sum += view_weight;
           
           // record hit_grid center index
           hit_grid_indexes.push_back(index);
@@ -296,16 +309,27 @@ NBV::propagate()
     }
   }//end for iso_points
 
-  normalizeConfidence(all_nbv_grid_centers->vert, 0);
 
   for (int i = 0; i < all_nbv_grid_centers->vert.size(); i++)
   {
     CVertex& t = all_nbv_grid_centers->vert[i];
-    t.N() /= -t.weight_sum;
-    t.recompute_m_render();
+    if (t.weight_sum > 1e-10)
+    {
+      t.N() /= -t.weight_sum;
+    }
+    
+    //t.recompute_m_render();
+
+    if (confidence_weight_sum[i] > 5)
+    {
+      t.eigen_confidence /= confidence_weight_sum[i];
+    }
     //t.N() *= -1;
     //t.N().Normalize();
   }
+
+  normalizeConfidence(all_nbv_grid_centers->vert, 0.);
+
 }
 
 void NBV::normalizeConfidence(vector<CVertex>& vertexes, float delta)
