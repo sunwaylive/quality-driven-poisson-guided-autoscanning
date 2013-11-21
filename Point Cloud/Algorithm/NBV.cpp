@@ -211,7 +211,7 @@ NBV::propagate()
     //for DDA algorithm
     //int stepX = 0, stepY = 0, stepZ = 0;
     int max_steps = static_cast<int>(camera_max_dist / grid_resolution);
-    //max_steps *= 1.5; //wsh
+    max_steps *= 1.2; //wsh
 
     double length = 0.0f;
     double deltaX, deltaY, deltaZ;
@@ -241,6 +241,7 @@ NBV::propagate()
 
         //int hit_stop_time = 0;
         for (int k = 0; k <= max_steps; ++k)
+        //while (1)        
         {
           n_indexX = n_indexX + deltaX;
           n_indexY = n_indexY + deltaY;
@@ -249,7 +250,7 @@ NBV::propagate()
 
           if (index >= all_nbv_grid_centers->vert.size())
           {
-            continue;
+            break;
           }
           //if the direction is into the model, or has been hit, then stop tracing
           if (all_nbv_grid_centers->vert[index].is_ray_stop)
