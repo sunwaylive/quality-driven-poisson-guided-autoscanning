@@ -161,6 +161,8 @@ NBV::buildGrid()
 void
 NBV::propagate()
 {
+  bool use_average_confidence = para->getBool("Use Average Confidence");
+
   if (all_nbv_grid_centers)
   {
     for (int i = 0; i < all_nbv_grid_centers->vert.size(); i++)
@@ -175,8 +177,17 @@ NBV::propagate()
   {
     ray_hit_nbv_grids->vert.clear();
   }
-  confidence_weight_sum.assign(all_nbv_grid_centers->vert.size(), 0.0);
+
+  if (use_average_confidence)
+  {
+    confidence_weight_sum.assign(all_nbv_grid_centers->vert.size(), 0.0);
+  }
   normalizeConfidence(iso_points->vert, 0);
+
+  double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
+  int max_steps = static_cast<int>(camera_max_dist / grid_resolution);
+  max_steps *= para->getDouble("Max Ray Steps Para"); //wsh
+ 
 
   vector<int> hit_grid_indexes;
   //traverse all points on the iso surface
@@ -210,8 +221,7 @@ NBV::propagate()
     double x = 0.0f, y = 0.f, z = 0.0f;
     //for DDA algorithm
     //int stepX = 0, stepY = 0, stepZ = 0;
-    int max_steps = static_cast<int>(camera_max_dist / grid_resolution);
-    max_steps *= 1.5; //wsh
+
 
     double length = 0.0f;
     double deltaX, deltaY, deltaZ;
@@ -241,6 +251,7 @@ NBV::propagate()
 
         //int hit_stop_time = 0;
         for (int k = 0; k <= max_steps; ++k)
+        //for (int k = 0; k <= 100000; ++k)
         //while (1)        
         {
           n_indexX = n_indexX + deltaX;
@@ -280,7 +291,11 @@ NBV::propagate()
           float confidence_weight = coefficient1 * coefficient2;
           
           t.eigen_confidence += confidence_weight * iso_confidence;
-          confidence_weight_sum[index] += 1.;
+          if (use_average_confidence)
+          {
+            confidence_weight_sum[index] += 1.;
+          }
+          
           //confidence_weight_sum[index] += confidence_weight;
           
           t.N() += view_direction * view_weight;
@@ -321,10 +336,14 @@ NBV::propagate()
     
     //t.recompute_m_render();
 
-    if (confidence_weight_sum[i] > 5)
+    if (use_average_confidence)
     {
-      t.eigen_confidence /= confidence_weight_sum[i];
+      if (confidence_weight_sum[i] > 5)
+      {
+        t.eigen_confidence /= confidence_weight_sum[i];
+      }
     }
+
     //t.N() *= -1;
     //t.N().Normalize();
   }

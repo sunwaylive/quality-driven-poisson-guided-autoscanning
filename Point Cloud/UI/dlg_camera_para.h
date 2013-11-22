@@ -30,6 +30,9 @@ private slots:
   void showInitCameras(bool is_show);
   void useOtherInsideSegment(bool _val);
   void useConfidenceSeperation(bool _val);
+  void useAverageConfidence(bool _val);
+  void useNbvTest1(bool _val);
+
   void updateTableViewNBVCandidate();
   void updateTabelViewScanResults();
   void showSelectedScannCandidates(QModelIndex index);
@@ -40,6 +43,7 @@ private slots:
   void getCameraMaxDist(double _val);
   void getCameraDistToModel(double _val);
   void getGridResolution(double _val);
+  void getMaxRaySteps(double _val);
   void buildGrid();
   void propagate();
 

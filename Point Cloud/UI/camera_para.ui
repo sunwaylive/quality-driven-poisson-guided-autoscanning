@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>266</width>
+    <width>264</width>
     <height>704</height>
    </rect>
   </property>
@@ -379,7 +379,7 @@
     <widget class="QDoubleSpinBox" name="grid_resolution">
      <property name="geometry">
       <rect>
-       <x>149</x>
+       <x>159</x>
        <y>190</y>
        <width>62</width>
        <height>22</height>
@@ -401,7 +401,7 @@
     <widget class="QLabel" name="label_7">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>30</x>
        <y>190</y>
        <width>111</width>
        <height>16</height>
@@ -415,7 +415,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>230</y>
+       <y>300</y>
        <width>201</width>
        <height>16</height>
       </rect>
@@ -428,13 +428,74 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>260</y>
+       <y>430</y>
        <width>201</width>
        <height>16</height>
       </rect>
      </property>
      <property name="text">
       <string>use_confidence_seperation</string>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="max_ray_steps">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>220</y>
+       <width>62</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="decimals">
+      <number>2</number>
+     </property>
+     <property name="maximum">
+      <double>1000.000000000000000</double>
+     </property>
+     <property name="singleStep">
+      <double>1.000000000000000</double>
+     </property>
+     <property name="value">
+      <double>0.000000000000000</double>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_8">
+     <property name="geometry">
+      <rect>
+       <x>21</x>
+       <y>220</y>
+       <width>121</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Max ray steps para :</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="use_average_confidence">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>340</y>
+       <width>201</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>use_average_confidence</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="use_nbv_test1">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>380</y>
+       <width>201</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>use_nbv_test1</string>
      </property>
     </widget>
    </widget>

@@ -352,6 +352,8 @@ void ParameterMgr::initPoissonParameter()
   poisson.addParam(new RichDouble("Current Y Slice Position", 0.5));
   poisson.addParam(new RichDouble("Current Z Slice Position", 0.5));
   poisson.addParam(new RichDouble("Show Slice Percentage", 0.75));
+  poisson.addParam(new RichDouble("Poisson Disk Sample Number", 3500));
+
 
   poisson.addParam(new RichBool("Use Confidence 1", false));
   poisson.addParam(new RichBool("Use Confidence 2", false));
@@ -387,7 +389,11 @@ ParameterMgr::initNBVParameter()
   nbv.addParam(new RichBool("Test Other Inside Segment", false));
 
   nbv.addParam(new RichBool("Use Confidence Seperation", false));
-  nbv.addParam(new RichDouble("Confidence Seperation Value", 0.5));
+  nbv.addParam(new RichBool("Use Average Confidence", true));
+  nbv.addParam(new RichBool("Use NBV Test1", false));
 
+
+  nbv.addParam(new RichDouble("Confidence Seperation Value", 0.5));
+  nbv.addParam(new RichDouble("Max Ray Steps Para", 1.5));
 
 }

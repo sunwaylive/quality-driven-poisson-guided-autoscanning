@@ -657,7 +657,11 @@ void Poisson::runPoisson()
     //vcg::tri::Allocator<CMesh>::CompactVertexVector(*model);
 
     float radius = 0;
-    int sampleNum = 4000;
+    int sampleNum = para->getDouble("Poisson Disk Sample Number");
+    if (sampleNum <= 100)
+    {
+      sampleNum = 100;
+    }
     radius = tri::SurfaceSampling<CMesh,BaseSampler>::ComputePoissonDiskRadius(tentative_mesh, sampleNum);
 
     // first of all generate montecarlo samples for fast lookup
@@ -1136,24 +1140,6 @@ void Poisson::runComputeSampleConfidence()
   //if (para->getBool("Use Sort Confidence Combination"))
   if (para->getBool("Use Confidence 4"))
   {
-    //for (int i = 0; i < factors; i++)
-    //{
-    //  vector<sort_item> sort_items(samples->vn);
-    //  for (int j = 0; j < samples->vn; j++)
-    //  {
-    //    sort_items[j].value = confidences[j][i];
-    //    sort_items[j].index = j;
-    //  }
-
-    //  std::sort(sort_items.begin(), sort_items.end());
-
-    //  for (int j = 0; j < samples->vn; j++)
-    //  {
-    //    int index = sort_items[j].index;
-    //    confidences[index][i] = float(j) / samples->vn;
-    //  }
-    //}
-
     for (int i = 0; i < samples->vn; i++)
     {
       CVertex& v = samples->vert[i];
@@ -1181,25 +1167,6 @@ void Poisson::runComputeSampleConfidence()
   }
   else
   {
-    //for (int i = 0; i < samples->vn; i++)
-    //{
-    //  CVertex& v = samples->vert[i];
-    //  float max_cofidence = 0;
-    //  for (int j = 0; j < factors; j++)
-    //  {
-    //    max_cofidence = (std::max)(confidences[i][j], max_cofidence);
-    //  }
-    //  v.eigen_confidence = max_cofidence;
-    //}
-
-    //normalizeConfidence(samples->vert, 0);
-
-    //for (int i = 0; i < samples->vn; i++)
-    //{
-    //  CVertex& v = samples->vert[i];
-    //  file4 << v.eigen_confidence << endl;
-    //}
-
     for (int i = 0; i < samples->vn; i++)
     {
       CVertex& v = samples->vert[i];

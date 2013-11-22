@@ -28,6 +28,7 @@ private slots:
 	void getRadiusValues(double _val);
   void getPoissonDepth(double _val);
   void getPoissonIsoInterval(double _val);
+  void getPoissonSampleNumber(double _val);
 
 	void runPoissonAndExtractLeafs();
   void runPoissonAndExtractNodes();

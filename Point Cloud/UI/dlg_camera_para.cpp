@@ -30,9 +30,13 @@ void CameraParaDlg::initConnects()
   connect(ui->pushButton_build_grid, SIGNAL(clicked()), this, SLOT(buildGrid()));
   connect(ui->pushButton_propagate, SIGNAL(clicked()), this, SLOT(propagate()));
  
+  connect(ui->max_ray_steps, SIGNAL(valueChanged(double)), this, SLOT(getMaxRaySteps(double)));
   connect(ui->grid_resolution, SIGNAL(valueChanged(double)), this, SLOT(getGridResolution(double)));
+    
   connect(ui->use_other_inside_segment,SIGNAL(clicked(bool)),this,SLOT(useOtherInsideSegment(bool)));
   connect(ui->use_confidence_seperation,SIGNAL(clicked(bool)),this,SLOT(useConfidenceSeperation(bool)));
+  connect(ui->use_average_confidence,SIGNAL(clicked(bool)),this,SLOT(useAverageConfidence(bool)));
+  connect(ui->use_nbv_test1, SIGNAL(clicked(bool)), this, SLOT(useNbvTest1(bool)));
 
 }
 
@@ -42,12 +46,19 @@ bool CameraParaDlg::initWidgets()
   ui->vertical_dist->setValue(m_paras->camera.getDouble("Camera Vertical Dist"));
   ui->max_dist->setValue(m_paras->camera.getDouble("Camera Max Dist"));
   ui->grid_resolution->setValue(m_paras->nbv.getDouble("Grid resolution"));
+  ui->max_ray_steps->setValue(m_paras->nbv.getDouble("Max Ray Steps Para"));
 
   Qt::CheckState state = m_paras->nbv.getBool("Test Other Inside Segment") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
   ui->use_other_inside_segment->setCheckState(state);
 
   state = m_paras->nbv.getBool("Use Confidence Seperation") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
   ui->use_confidence_seperation->setCheckState(state);
+
+  state = m_paras->nbv.getBool("Use Average Confidence") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
+  ui->use_average_confidence->setCheckState(state);
+
+  state = m_paras->nbv.getBool("Use NBV Test1") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
+  ui->use_nbv_test1->setCheckState(state);
 
   updateTableViewNBVCandidate();
   update();
@@ -189,6 +200,18 @@ void CameraParaDlg::useConfidenceSeperation(bool _val)
   cout << "Use Confidence Seperation" << endl;
 }
 
+void CameraParaDlg::useAverageConfidence(bool _val)
+{
+  global_paraMgr.nbv.setValue("Use Average Confidence", BoolValue(_val));
+  cout << "Use Average Confidence" << endl;
+}
+
+void CameraParaDlg::useNbvTest1(bool _val)
+{
+  global_paraMgr.nbv.setValue("Use NBV Test1", BoolValue(_val));
+  cout << "Use NBV Test1" << endl;
+}
+
 void CameraParaDlg::showSelectedScannCandidates(QModelIndex index)
 {
   ui->checkBox_show_init_cameras->setChecked(false);
@@ -306,6 +329,11 @@ void CameraParaDlg::getCameraDistToModel(double _val)
 void CameraParaDlg::getGridResolution(double _val)
 {
   global_paraMgr.nbv.setValue("Grid resolution", DoubleValue(_val));
+}
+
+void CameraParaDlg::getMaxRaySteps(double _val)
+{
+  global_paraMgr.nbv.setValue("Max Ray Steps Para", DoubleValue(_val));
 }
 
 void

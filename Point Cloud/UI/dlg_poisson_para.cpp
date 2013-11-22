@@ -31,6 +31,7 @@ void PoissonParaDlg::initConnects()
 	connect(ui->radius,SIGNAL(valueChanged(double)),this,SLOT(getRadiusValues(double)));
   connect(ui->poisson_depth,SIGNAL(valueChanged(double)),this,SLOT(getPoissonDepth(double)));
   connect(ui->poisson_ISO_interval,SIGNAL(valueChanged(double)),this,SLOT(getPoissonIsoInterval(double)));
+  connect(ui->poisson_sample_number,SIGNAL(valueChanged(double)),this,SLOT(getPoissonSampleNumber(double)));
 
 	connect(ui->pushButton_poisson_leafs,SIGNAL(clicked()),this,SLOT(runPoissonAndExtractLeafs()));
   connect(ui->pushButton_poisson_nodes,SIGNAL(clicked()),this,SLOT(runPoissonAndExtractNodes()));  
@@ -68,6 +69,7 @@ bool PoissonParaDlg::initWidgets()
 	ui->radius->setValue(m_paras->poisson.getDouble("CGrid Radius"));
   ui->poisson_depth->setValue(m_paras->poisson.getDouble("Max Depth"));
   ui->poisson_ISO_interval->setValue(m_paras->glarea.getDouble("ISO Interval Size"));
+  ui->poisson_sample_number->setValue(m_paras->poisson.getDouble("Poisson Disk Sample Number"));
 
 	Qt::CheckState state = m_paras->poisson.getBool("Show Slices Mode") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
 	ui->checkBox_show_slices->setCheckState(state);
@@ -108,6 +110,11 @@ void PoissonParaDlg::getPoissonDepth(double _val)
 void PoissonParaDlg::getPoissonIsoInterval(double _val)
 {
   global_paraMgr.glarea.setValue("ISO Interval Size", DoubleValue(_val));
+}
+
+void PoissonParaDlg::getPoissonSampleNumber(double _val)
+{
+  global_paraMgr.poisson.setValue("Poisson Disk Sample Number", DoubleValue(_val));
 }
 
 void PoissonParaDlg::runPoissonAndExtractLeafs()
