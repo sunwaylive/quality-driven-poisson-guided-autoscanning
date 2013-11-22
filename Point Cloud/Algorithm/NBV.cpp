@@ -211,7 +211,7 @@ NBV::propagate()
     //for DDA algorithm
     //int stepX = 0, stepY = 0, stepZ = 0;
     int max_steps = static_cast<int>(camera_max_dist / grid_resolution);
-    max_steps *= 1.4; //wsh
+    max_steps *= 1.5; //wsh
 
     double length = 0.0f;
     double deltaX, deltaY, deltaZ;

@@ -640,24 +640,24 @@ void Poisson::runPoisson()
     vcg::tri::UpdateNormals<CMesh>::PerVertex(tentative_mesh);
 
 
-    model->vert.clear();
-    model->face.clear();
-    for (int i = 0; i < tentative_mesh.vert.size(); i++)
-    {
-      model->vert.push_back(tentative_mesh.vert[i]);
-    }
-    model->vn = model->vert.size();
+    //model->vert.clear();
+    //model->face.clear();
+    //for (int i = 0; i < tentative_mesh.vert.size(); i++)
+    //{
+    //  model->vert.push_back(tentative_mesh.vert[i]);
+    //}
+    //model->vn = model->vert.size();
 
-    for (int i = 0; i < tentative_mesh.face.size(); i++)
-    {
-      model->face.push_back(tentative_mesh.face[i]);
-    }
-    model->fn = model->face.size();
-    vcg::tri::Allocator<CMesh>::CompactFaceVector(*model);  
-    vcg::tri::Allocator<CMesh>::CompactVertexVector(*model);
+    //for (int i = 0; i < tentative_mesh.face.size(); i++)
+    //{
+    //  model->face.push_back(tentative_mesh.face[i]);
+    //}
+    //model->fn = model->face.size();
+    //vcg::tri::Allocator<CMesh>::CompactFaceVector(*model);  
+    //vcg::tri::Allocator<CMesh>::CompactVertexVector(*model);
 
     float radius = 0;
-    int sampleNum = 5000;
+    int sampleNum = 4000;
     radius = tri::SurfaceSampling<CMesh,BaseSampler>::ComputePoissonDiskRadius(tentative_mesh, sampleNum);
 
     // first of all generate montecarlo samples for fast lookup

@@ -93,7 +93,7 @@ public:
 	{
 		stoptime = clock();
 		timeused = stoptime - starttime;
-		cout << /*endl <<*/ "@@@@ finish	" << _str << "  time used:  " << timeused / double(CLOCKS_PER_SEC) << " seconds." << endl;
+		cout <<  "@@@@ finish	" << _str << "  time used:  " << timeused / double(CLOCKS_PER_SEC) << " seconds." << endl;
 		cout << endl;
 	}
 
