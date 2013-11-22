@@ -211,7 +211,7 @@ NBV::propagate()
     //for DDA algorithm
     //int stepX = 0, stepY = 0, stepZ = 0;
     int max_steps = static_cast<int>(camera_max_dist / grid_resolution);
-    max_steps *= 1.2; //wsh
+    max_steps *= 1.4; //wsh
 
     double length = 0.0f;
     double deltaX, deltaY, deltaZ;
@@ -221,7 +221,7 @@ NBV::propagate()
     //for debug
 
     double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
-    double sigma_threshold = pow(max(1e-8,1-cos(sigma/180.0*3.1415926)), 2);
+    double sigma_threshold = pow(max(1e-8, 1-cos(sigma/180.0*3.1415926)), 2);
 
     //1. for each point, propagate to all discrete directions
     for (a = 0.0f; a < PI; a += angle_delta)
