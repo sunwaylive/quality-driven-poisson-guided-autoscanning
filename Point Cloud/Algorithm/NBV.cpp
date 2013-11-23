@@ -7,7 +7,7 @@ NBV::NBV(RichParameterSet *_para)
   original = NULL;
   iso_points = NULL;
   model = NULL;
-  grid_resolution = 1.0f / 10.0; 
+  //grid_resolution = 1.0f / 10.0; 
 }
 
 NBV::~NBV()
@@ -20,7 +20,8 @@ NBV::~NBV()
 void
 NBV::run()
 {
-  grid_resolution = 1.0 / para->getDouble("Grid resolution");
+  double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
+  grid_resolution = camera_max_dist * 2. / para->getDouble("Grid resolution");
 
   if (para->getBool("Run Build Grid"))
   {
@@ -84,11 +85,13 @@ NBV::buildGrid()
  /*  whole_space_box_max = bbox_max + Point3f(camera_max_dist, camera_max_dist, camera_max_dist);
    whole_space_box_min = bbox_min - Point3f(camera_max_dist, camera_max_dist, camera_max_dist);*/
 
-   Point3f center = (bbox_min + bbox_max) / 2.0;
+ /*  Point3f center = (bbox_min + bbox_max) / 2.0;
    float camera_max_dist2 = camera_max_dist * 1.5;
    whole_space_box_max = center + Point3f(camera_max_dist2, camera_max_dist2, camera_max_dist2);
    whole_space_box_min = center - Point3f(camera_max_dist2, camera_max_dist2, camera_max_dist2);
-
+*/
+   whole_space_box_min = Point3f(-camera_max_dist, -camera_max_dist, -camera_max_dist);
+   whole_space_box_max = Point3f(camera_max_dist, camera_max_dist, camera_max_dist);
 
    //compute the size of the 3D space
    Point3f dif = whole_space_box_max - whole_space_box_min;
@@ -226,7 +229,9 @@ NBV::propagate()
     double length = 0.0f;
     double deltaX, deltaY, deltaZ;
 
-    double half_D = optimal_D / 2.0f;
+    //double half_D = optimal_D / 2.0f;
+    double optimal_D = camera_max_dist / 2.0f;
+    double half_D = optimal_D / 2.0f; //wsh    
     double half_D2 = half_D * half_D;
     //for debug
 
@@ -288,9 +293,12 @@ NBV::propagate()
 
           float iso_confidence = 1 - v.eigen_confidence;
           float view_weight = iso_confidence * coefficient2;          
-          float confidence_weight = coefficient1 * coefficient2;
+          
+          //float confidence_weight = coefficient1 * coefficient2;
+          float confidence_weight = coefficient1;
           
           t.eigen_confidence += confidence_weight * iso_confidence;
+          //t.eigen_confidence += confidence_weight * 1.0;          
           if (use_average_confidence)
           {
             confidence_weight_sum[index] += 1.;
