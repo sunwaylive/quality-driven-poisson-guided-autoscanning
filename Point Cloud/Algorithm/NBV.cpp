@@ -90,8 +90,9 @@ NBV::buildGrid()
    whole_space_box_max = center + Point3f(camera_max_dist2, camera_max_dist2, camera_max_dist2);
    whole_space_box_min = center - Point3f(camera_max_dist2, camera_max_dist2, camera_max_dist2);
 */
-   whole_space_box_min = Point3f(-camera_max_dist, -camera_max_dist, -camera_max_dist);
-   whole_space_box_max = Point3f(camera_max_dist, camera_max_dist, camera_max_dist);
+   float scan_box_size = camera_max_dist + 0.5;
+   whole_space_box_min = Point3f(-scan_box_size, -scan_box_size, -scan_box_size);
+   whole_space_box_max = Point3f(scan_box_size, scan_box_size, scan_box_size);
 
    //compute the size of the 3D space
    Point3f dif = whole_space_box_max - whole_space_box_min;
@@ -311,17 +312,6 @@ NBV::propagate()
           
           // record hit_grid center index
           hit_grid_indexes.push_back(index);
-          
-          
-          ////put the hit_grid center into a mesh for UI show
-          //CVertex c = all_nbv_grid_centers->vert[index];
-          //ray_hit_nbv_grids->vert.push_back(c);
-          //ray_hit_nbv_grids->bbox.Add(c.P());
-
-          //2. add the count in the direction bins
-          //quadrant q = getQuadrantIdx(a, b);
-          //g.direction_count[q]++;
-
         }//end for k
       }// end for b
     }//end for a
@@ -361,7 +351,9 @@ NBV::propagate()
 }
 
 void NBV::normalizeConfidence(vector<CVertex>& vertexes, float delta)
-{
+{  
+
+
   float min_confidence = GlobalFun::getDoubleMAXIMUM();
   float max_confidence = 0;
   for (int i = 0; i < vertexes.size(); i++)
