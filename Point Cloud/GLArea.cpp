@@ -401,7 +401,13 @@ void GLArea::paintGL()
   {
     Box3f box = dataMgr.getCurrentOriginal()->bbox;
     glBoxWire(box);
-    CoordinateFrame(box.Diag()/2.0).Render(this, NULL);
+
+    Box3f standard_box;
+    standard_box.min = Point3f(-1, -1, -1);
+    standard_box.max = Point3f(1, 1, 1);
+    glBoxWire(standard_box);
+
+    CoordinateFrame(standard_box.Diag()/2.0).Render(this, NULL);
   }
 
 

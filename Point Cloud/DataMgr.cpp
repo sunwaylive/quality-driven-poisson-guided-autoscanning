@@ -623,7 +623,8 @@ void DataMgr::normalizeROSA_Mesh(CMesh& mesh)
     p -= box.min;
     p /= max_length;
 
-    p = (p - Point3f(0.5, .5, .5));
+    p -= Point3f(0.5, .5, .5);
+    p *= 2.0;
 
     mesh.vert[i].N().Normalize(); 
     box_temp.Add(p);
@@ -649,34 +650,42 @@ Box3f DataMgr::normalizeAllMesh()
     {
       box.Add(model.vert[i].P());
     }
+
+    model.bbox = box;
+    normalizeROSA_Mesh(model);
+    recomputeBox();
+
+    return model.bbox;
   }
-	if (!isSamplesEmpty())
-	{
-		for (int i = 0; i < samples.vert.size(); ++i)
-		{
-			box.Add(samples.vert[i].P());
-		}
-	}
-	if (!isOriginalEmpty())
-	{
-		for (int i = 0; i < original.vert.size(); ++i)
-		{
-			box.Add(original.vert[i].P());
-		}
-		original.bbox =box;
-	}
-  model.bbox = box;
-	samples.bbox = box;
+  else
+  {
+    if (!isSamplesEmpty())
+    {
+      for (int i = 0; i < samples.vert.size(); ++i)
+      {
+        box.Add(samples.vert[i].P());
+      }
+    }
+    if (!isOriginalEmpty())
+    {
+      for (int i = 0; i < original.vert.size(); ++i)
+      {
+        box.Add(original.vert[i].P());
+      }
+      original.bbox =box;
+    }
 
-  normalizeROSA_Mesh(model);
-	normalizeROSA_Mesh(samples);
-	normalizeROSA_Mesh(original);
-  normalizeROSA_Mesh(iso_points);
+    samples.bbox = box;
 
-	recomputeBox();
-	getInitRadiuse();
+    normalizeROSA_Mesh(samples);
+    normalizeROSA_Mesh(original);
+    normalizeROSA_Mesh(iso_points);
 
-	return samples.bbox;
+    recomputeBox();
+    getInitRadiuse();
+
+    return samples.bbox;
+  }
 }
 
 
