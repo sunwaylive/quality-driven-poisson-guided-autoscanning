@@ -32,6 +32,8 @@ private:
   quadrant getQuadrantIdx(double a, double b); //two parameters deciding the quadrant
   void     setGridUnHit(vector<int>& hit_grids_idx);
   vector<float> confidence_weight_sum;
+
+
 private:
   RichParameterSet *para;
   CMesh            *model;

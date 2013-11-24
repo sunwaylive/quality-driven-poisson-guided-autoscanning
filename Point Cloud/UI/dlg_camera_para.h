@@ -32,6 +32,7 @@ private slots:
   void useConfidenceSeperation(bool _val);
   void useAverageConfidence(bool _val);
   void useNbvTest1(bool _val);
+  void useMaxConfidencePropagation(bool _val);
 
   void updateTableViewNBVCandidate();
   void updateTabelViewScanResults();
@@ -46,6 +47,8 @@ private slots:
   void getMaxRaySteps(double _val);
   void buildGrid();
   void propagate();
+  void propagateOnePoint();
+  void gridSegment();
 
 private:
 	Ui::camera_paras * ui;

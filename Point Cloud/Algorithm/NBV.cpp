@@ -76,20 +76,13 @@ NBV::clear()
 void
 NBV::buildGrid()
 {
+   bool use_grid_segment = para->getBool("Run Grid Segment");
   //fix: this should be model->bbox.max
    Point3f bbox_max = iso_points->bbox.max;
    Point3f bbox_min = iso_points->bbox.min;
    //get the whole 3D space that a camera may exist
    double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
 
- /*  whole_space_box_max = bbox_max + Point3f(camera_max_dist, camera_max_dist, camera_max_dist);
-   whole_space_box_min = bbox_min - Point3f(camera_max_dist, camera_max_dist, camera_max_dist);*/
-
- /*  Point3f center = (bbox_min + bbox_max) / 2.0;
-   float camera_max_dist2 = camera_max_dist * 1.5;
-   whole_space_box_max = center + Point3f(camera_max_dist2, camera_max_dist2, camera_max_dist2);
-   whole_space_box_min = center - Point3f(camera_max_dist2, camera_max_dist2, camera_max_dist2);
-*/
    float scan_box_size = camera_max_dist + 0.5;
    whole_space_box_min = Point3f(-scan_box_size, -scan_box_size, -scan_box_size);
    whole_space_box_max = Point3f(scan_box_size, scan_box_size, scan_box_size);
@@ -159,6 +152,19 @@ NBV::buildGrid()
      }
    }
 
+   if (use_grid_segment)
+   {
+     for (int i = 0; i < all_nbv_grid_centers->vert.size(); ++i)
+     {
+       CVertex &t = all_nbv_grid_centers->vert[i];
+
+       if (!t.is_ray_stop)
+       {
+         t.is_skel_ignore = true;
+       }
+     }
+   }
+
    //confidence_weight_sum.resize(all_nbv_grid_centers->vert.size());
 }
 
@@ -166,6 +172,8 @@ void
 NBV::propagate()
 {
   bool use_average_confidence = para->getBool("Use Average Confidence");
+  bool use_propagate_one_point = para->getBool("Run Propagate One Point");
+  bool use_max_propagation = para->getBool("Use Max Propagation");
 
   if (all_nbv_grid_centers)
   {
@@ -199,7 +207,14 @@ NBV::propagate()
   int target_index = 425;
   //int target_index = 1009;  
   //for (int i = target_index; i < target_index+1; ++i)//fix: < iso_points->vert.size()  
-  for (int i = 0; i < iso_points->vert.size(); ++i)//fix: < iso_points->vert.size()    
+
+  int i = 0;
+  if (use_propagate_one_point)
+  {
+    srand(time(NULL)); 
+    i = rand() % iso_points->vert.size();
+  }
+  for ( ;i < iso_points->vert.size(); ++i)//fix: < iso_points->vert.size()    
   {
 //    cout << "index" << i << endl;
     CVertex &v = iso_points->vert[i];
@@ -225,7 +240,6 @@ NBV::propagate()
     double x = 0.0f, y = 0.f, z = 0.0f;
     //for DDA algorithm
     //int stepX = 0, stepY = 0, stepZ = 0;
-
 
     double length = 0.0f;
     double deltaX, deltaY, deltaZ;
@@ -297,10 +311,16 @@ NBV::propagate()
           
           float confidence_weight = coefficient1 * coefficient2;
           //float confidence_weight = coefficient1;
-          
-          //t.eigen_confidence += confidence_weight * iso_confidence;
-          //t.eigen_confidence += confidence_weight * 1.0;          
-          t.eigen_confidence = (std::max)(t.eigen_confidence, confidence_weight * iso_confidence);          
+            
+          if (use_max_propagation)
+          {
+            t.eigen_confidence = (std::max)(t.eigen_confidence, confidence_weight * iso_confidence);          
+          }
+          else
+          {
+            t.eigen_confidence += coefficient1 * iso_confidence;
+          }
+
           if (use_average_confidence)
           {
             confidence_weight_sum[index] += 1.;
@@ -321,6 +341,11 @@ NBV::propagate()
     {
       setGridUnHit(hit_grid_indexes);
       hit_grid_indexes.clear();
+    }
+
+    if (use_propagate_one_point)
+    {
+      break;
     }
   }//end for iso_points
 
@@ -348,7 +373,6 @@ NBV::propagate()
   }
 
   normalizeConfidence(all_nbv_grid_centers->vert, 0.);
-
 }
 
 void NBV::normalizeConfidence(vector<CVertex>& vertexes, float delta)

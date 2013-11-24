@@ -29,6 +29,8 @@ void CameraParaDlg::initConnects()
   connect(ui->pushButton_merge, SIGNAL(clicked()), this, SLOT(mergeScannedMeshWithOriginal()));
   connect(ui->pushButton_build_grid, SIGNAL(clicked()), this, SLOT(buildGrid()));
   connect(ui->pushButton_propagate, SIGNAL(clicked()), this, SLOT(propagate()));
+  connect(ui->pushButton_propagate_one, SIGNAL(clicked()), this, SLOT(propagateOnePoint()));
+  connect(ui->pushButton_grid_segment, SIGNAL(clicked()), this, SLOT(gridSegment()));
  
   connect(ui->max_ray_steps, SIGNAL(valueChanged(double)), this, SLOT(getMaxRaySteps(double)));
   connect(ui->grid_resolution, SIGNAL(valueChanged(double)), this, SLOT(getGridResolution(double)));
@@ -37,6 +39,7 @@ void CameraParaDlg::initConnects()
   connect(ui->use_confidence_seperation,SIGNAL(clicked(bool)),this,SLOT(useConfidenceSeperation(bool)));
   connect(ui->use_average_confidence,SIGNAL(clicked(bool)),this,SLOT(useAverageConfidence(bool)));
   connect(ui->use_nbv_test1, SIGNAL(clicked(bool)), this, SLOT(useNbvTest1(bool)));
+  connect(ui->use_max_propagation, SIGNAL(clicked(bool)), this, SLOT(useMaxConfidencePropagation(bool)));
 
 }
 
@@ -59,6 +62,9 @@ bool CameraParaDlg::initWidgets()
 
   state = m_paras->nbv.getBool("Use NBV Test1") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
   ui->use_nbv_test1->setCheckState(state);
+
+  state = m_paras->nbv.getBool("Use Max Propagation") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
+  ui->use_max_propagation->setCheckState(state);
 
   updateTableViewNBVCandidate();
   update();
@@ -206,6 +212,12 @@ void CameraParaDlg::useAverageConfidence(bool _val)
   cout << "Use Average Confidence" << endl;
 }
 
+void CameraParaDlg::useMaxConfidencePropagation(bool _val)
+{
+  global_paraMgr.nbv.setValue("Use Max Propagation", BoolValue(_val));
+  cout << "Use Max Propagation" << endl;
+}
+
 void CameraParaDlg::useNbvTest1(bool _val)
 {
   global_paraMgr.nbv.setValue("Use NBV Test1", BoolValue(_val));
@@ -351,3 +363,24 @@ CameraParaDlg::propagate()
   area->runNBV();
   global_paraMgr.nbv.setValue("Run Propagate", BoolValue(false));
 }
+
+void CameraParaDlg::propagateOnePoint()
+{
+  global_paraMgr.nbv.setValue("Run Propagate", BoolValue(true));
+  global_paraMgr.nbv.setValue("Run Propagate One Point", BoolValue(true));
+  area->runNBV();
+  global_paraMgr.nbv.setValue("Run Propagate One Point", BoolValue(false));
+  global_paraMgr.nbv.setValue("Run Propagate", BoolValue(false));
+
+}
+
+void CameraParaDlg::gridSegment()
+{
+  global_paraMgr.nbv.setValue("Run Build Grid", BoolValue(true));
+  global_paraMgr.nbv.setValue("Run Grid Segment", BoolValue(true));
+  area->runNBV();
+  global_paraMgr.nbv.setValue("Run Grid Segment", BoolValue(false));
+  global_paraMgr.nbv.setValue("Run Build Grid", BoolValue(false));
+
+}
+
