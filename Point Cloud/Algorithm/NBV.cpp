@@ -6,6 +6,7 @@ NBV::NBV(RichParameterSet *_para)
   para = _para;
   original = NULL;
   iso_points = NULL;
+  field_points = NULL;
   model = NULL;
   //grid_resolution = 1.0f / 10.0; 
 }
@@ -56,6 +57,7 @@ NBV::setInput(DataMgr *pData)
     }
     model = _model;
     original = _original;
+    field_points = pData->getCurrentFieldPoints();
   }else
   {
     cout<<"ERROR: NBV::setInput empty!"<<endl;
@@ -131,24 +133,49 @@ NBV::buildGrid()
    cout << "y_max: " << y_max << endl;
    cout << "z_max: " << z_max << endl;
 
-   bool test_other_segment = para->getBool("Test Other Inside Segment");
+   bool test_field_segment = para->getBool("Test Other Inside Segment");
+   if (field_points->vert.empty())
+   {
+     test_field_segment = false;
+     cout << "field points emputy" << endl;
+   }
    //distinguish the inside or outside grid
-   GlobalFun::computeAnnNeigbhors(iso_points->vert, all_nbv_grid_centers->vert, 1, false, "runGridNearestIsoPoint");
+
+   if (test_field_segment)
+   {
+     GlobalFun::computeAnnNeigbhors(field_points->vert, all_nbv_grid_centers->vert, 1, false, "runGridNearestIsoPoint");
+   }
+   else
+   {
+     GlobalFun::computeAnnNeigbhors(iso_points->vert, all_nbv_grid_centers->vert, 1, false, "runGridNearestIsoPoint");
+   }
+   
    for (int i = 0; i < all_nbv_grid_centers->vert.size(); ++i)
    {
      Point3f &t = all_nbv_grid_centers->vert[i].P();
      if (!all_nbv_grid_centers->vert[i].neighbors.empty())
      {
-       CVertex &nearest = iso_points->vert[all_nbv_grid_centers->vert[i].neighbors[0]];
-       Point3f &v = nearest.P();
-       double dist = GlobalFun::computeEulerDist(t, v);
-       Point3f n = nearest.N();
-       Point3f l = all_nbv_grid_centers->vert[i].P() - nearest.P();
-       if ((n * l < 0.0f && dist < grid_resolution * 2)
-           || (test_other_segment && dist < grid_resolution / 2)) //wsh change
+       if (test_field_segment)
        {
-         all_nbv_grid_centers->vert[i].is_ray_stop = true; 
-       }        
+         CVertex &nearest = field_points->vert[all_nbv_grid_centers->vert[i].neighbors[0]];
+         if (nearest.eigen_confidence > 0)
+         {
+           all_nbv_grid_centers->vert[i].is_ray_stop = true; 
+         }
+       }
+       else
+       {
+         CVertex &nearest = iso_points->vert[all_nbv_grid_centers->vert[i].neighbors[0]];
+         Point3f &v = nearest.P();
+         double dist = GlobalFun::computeEulerDist(t, v);
+         Point3f n = nearest.N();
+         Point3f l = all_nbv_grid_centers->vert[i].P() - nearest.P();
+         if ((n * l < 0.0f && dist < grid_resolution * 2)
+           /*|| (test_other_segment && dist < grid_resolution / 2)*/) //wsh change
+         {
+           all_nbv_grid_centers->vert[i].is_ray_stop = true; 
+         }  
+       }
      }
    }
 

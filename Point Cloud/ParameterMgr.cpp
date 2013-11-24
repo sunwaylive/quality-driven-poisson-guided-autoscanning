@@ -392,7 +392,7 @@ ParameterMgr::initNBVParameter()
   nbv.addParam(new RichBool("Run Grid Segment", false));
   
   nbv.addParam(new RichDouble("Grid resolution", 40.f));
-  nbv.addParam(new RichBool("Test Other Inside Segment", false));
+  nbv.addParam(new RichBool("Test Other Inside Segment", true));
 
   nbv.addParam(new RichBool("Use Confidence Seperation", false));
   nbv.addParam(new RichBool("Use Average Confidence", false));

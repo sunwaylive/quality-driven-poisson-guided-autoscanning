@@ -41,6 +41,7 @@ private:
   CMesh            *iso_points;
   CMesh            *all_nbv_grid_centers;
   CMesh            *ray_hit_nbv_grids;
+  CMesh            *field_points;
   double           grid_resolution;
   Point3f          whole_space_box_max;
   Point3f          whole_space_box_min;
