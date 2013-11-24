@@ -397,7 +397,7 @@ ParameterMgr::initNBVParameter()
   nbv.addParam(new RichBool("Use Confidence Seperation", false));
   nbv.addParam(new RichBool("Use Average Confidence", false));
   nbv.addParam(new RichBool("Use NBV Test1", false));
-  nbv.addParam(new RichBool("Use Max Propagation", false));
+  nbv.addParam(new RichBool("Use Max Propagation", true));
 
 
   nbv.addParam(new RichDouble("Confidence Seperation Value", 0.5));

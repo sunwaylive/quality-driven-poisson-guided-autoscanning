@@ -213,6 +213,7 @@ NBV::propagate()
   {
     srand(time(NULL)); 
     i = rand() % iso_points->vert.size();
+    cout << "propagate one point index: " << i << endl;
   }
   for ( ;i < iso_points->vert.size(); ++i)//fix: < iso_points->vert.size()    
   {
