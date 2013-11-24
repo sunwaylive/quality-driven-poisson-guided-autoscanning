@@ -295,11 +295,12 @@ NBV::propagate()
           float iso_confidence = 1 - v.eigen_confidence;
           float view_weight = iso_confidence * coefficient2;          
           
-          //float confidence_weight = coefficient1 * coefficient2;
-          float confidence_weight = coefficient1;
+          float confidence_weight = coefficient1 * coefficient2;
+          //float confidence_weight = coefficient1;
           
-          t.eigen_confidence += confidence_weight * iso_confidence;
+          //t.eigen_confidence += confidence_weight * iso_confidence;
           //t.eigen_confidence += confidence_weight * 1.0;          
+          t.eigen_confidence = (std::max)(t.eigen_confidence, confidence_weight * iso_confidence);          
           if (use_average_confidence)
           {
             confidence_weight_sum[index] += 1.;

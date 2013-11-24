@@ -385,7 +385,7 @@ ParameterMgr::initNBVParameter()
   nbv.addParam(new RichString("Algorithm Name", "NBV"));
   nbv.addParam(new RichBool("Run Build Grid", false));
   nbv.addParam(new RichBool("Run Propagate", false));
-  nbv.addParam(new RichDouble("Grid resolution", 50.f));
+  nbv.addParam(new RichDouble("Grid resolution", 40.f));
   nbv.addParam(new RichBool("Test Other Inside Segment", false));
 
   nbv.addParam(new RichBool("Use Confidence Seperation", false));
@@ -394,6 +394,6 @@ ParameterMgr::initNBVParameter()
 
 
   nbv.addParam(new RichDouble("Confidence Seperation Value", 0.5));
-  nbv.addParam(new RichDouble("Max Ray Steps Para", 1));
+  nbv.addParam(new RichDouble("Max Ray Steps Para", 1.5));
 
 }

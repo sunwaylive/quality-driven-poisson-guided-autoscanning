@@ -1614,7 +1614,7 @@ void GLArea::wheelEvent(QWheelEvent *e)
   {
     size_temp = global_paraMgr.nbv.getDouble("Confidence Seperation Value");
     size_temp *= change2;
-    size_temp = (std::min)((std::max)(size_temp, 1e-10), 0.99);
+    size_temp = (std::min)((std::max)(size_temp, 1e-10), 0.995);
 
     global_paraMgr.nbv.setValue("Confidence Seperation Value", DoubleValue(size_temp));
     cout << "Confidence Seperation Value" << size_temp << endl;
