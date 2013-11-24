@@ -55,10 +55,12 @@ void PoissonParaDlg::initConnects()
   connect(ui->checkBox_use_confidence2,SIGNAL(clicked(bool)),this,SLOT(useConfidence2(bool)));
   connect(ui->checkBox_use_confidence3,SIGNAL(clicked(bool)),this,SLOT(useConfidence3(bool)));
   connect(ui->checkBox_use_confidence4,SIGNAL(clicked(bool)),this,SLOT(useConfidence4(bool)));
+  connect(ui->checkBox_parallel_slice_mode,SIGNAL(clicked(bool)),this,SLOT(showParallerSlice(bool)));
 
   connect(ui->pushButton_compute_confidence_original,SIGNAL(clicked()),this,SLOT(computeOriginalConfidence()));
   connect(ui->pushButton_compute_confidence_samples,SIGNAL(clicked()),this,SLOT(computeSamplesConfidence()));
   connect(ui->pushButton_compute_confidence_iso,SIGNAL(clicked()),this,SLOT(computeIsoConfidence()));
+  connect(ui->pushButton_clear_slice,SIGNAL(clicked()),this,SLOT(runClearSlice()));
 
 
 }
@@ -91,6 +93,8 @@ bool PoissonParaDlg::initWidgets()
   ui->checkBox_use_confidence3->setCheckState(state);
   state = m_paras->poisson.getBool("Use Confidence 4") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
   ui->checkBox_use_confidence4->setCheckState(state);
+  state = m_paras->poisson.getBool("Parallel Slices Mode") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
+  ui->checkBox_parallel_slice_mode->setCheckState(state);
 
   update();
   repaint();
@@ -153,6 +157,14 @@ void PoissonParaDlg::runSlice()
   area->runPoisson();
   global_paraMgr.poisson.setValue("Run Slice", BoolValue(false));
 }
+
+void PoissonParaDlg::runClearSlice()
+{
+  global_paraMgr.poisson.setValue("Run Clear Slice", BoolValue(true));
+  area->runPoisson();
+  global_paraMgr.poisson.setValue("Run Clear Slice", BoolValue(false));
+}
+
 
 void PoissonParaDlg::removeNonIsoPoints()
 {
@@ -239,6 +251,11 @@ void PoissonParaDlg::viewCandidatesClustering()
   global_paraMgr.poisson.setValue("Run View Candidates Clustering", BoolValue(false));
 }
 
+void PoissonParaDlg::showParallerSlice(bool _val)
+{
+  global_paraMgr.poisson.setValue("Parallel Slices Mode", BoolValue(_val));
+  area->updateGL();
+}
 
 void PoissonParaDlg::showSlices(bool _val)
 {

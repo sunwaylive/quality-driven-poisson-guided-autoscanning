@@ -1616,6 +1616,10 @@ void GLArea::wheelEvent(QWheelEvent *e)
     size_temp *= change2;
     size_temp = (std::min)((std::max)(size_temp, 1e-10), 0.995);
 
+    if (size_temp > 0.994)
+    {
+      size_temp = 0.9995;
+    }
     global_paraMgr.nbv.setValue("Confidence Seperation Value", DoubleValue(size_temp));
     cout << "Confidence Seperation Value" << size_temp << endl;
     return;
@@ -1655,6 +1659,28 @@ void GLArea::wheelEvent(QWheelEvent *e)
       if(size_temp < 0)
       {
       	size_temp = 0;
+      }
+    }
+    else if( (e->modifiers() & Qt::AltModifier) && (e->modifiers() & Qt::ControlModifier) )
+    {
+      if ((para->getBool("Show ISO Points") || para->getBool("Show Samples")) && !para->getBool("Show Normal"))
+      {
+        size_temp = global_paraMgr.glarea.getDouble("ISO Value Shift");
+        if(e->delta() < 0)
+        {
+          size_temp += 0.02;
+        }
+        else
+        {
+          size_temp -= 0.02;
+        }
+        global_paraMgr.glarea.setValue("ISO Value Shift", DoubleValue(size_temp));
+        cout << "ISO Value Shift" << size_temp << endl;
+      }
+      else
+      {
+        size_temp = global_paraMgr.drawer.getDouble("Normal Line Length");
+        global_paraMgr.drawer.setValue("Normal Line Length", DoubleValue(size_temp * change));
       }
     }
     else
@@ -1739,7 +1765,6 @@ void GLArea::wheelEvent(QWheelEvent *e)
       size_temp = global_paraMgr.drawer.getDouble("Normal Line Length");
       global_paraMgr.drawer.setValue("Normal Line Length", DoubleValue(size_temp * change));
     }
-
 	}
 	else if( (e->modifiers() & Qt::ShiftModifier) && (e->modifiers() & Qt::ControlModifier) )
 	{
@@ -1758,13 +1783,6 @@ void GLArea::wheelEvent(QWheelEvent *e)
 	}
 	else if((e->modifiers() & Qt::ShiftModifier) && (e->modifiers() & Qt::AltModifier))
 	{
-		//size_temp = global_paraMgr.glarea.getDouble("Radius Ball Transparency") * change;
-		//global_paraMgr.glarea.setValue("Radius Ball Transparency", DoubleValue(size_temp));
-		//cout << "trans: " << size_temp << endl;
-		//if(size_temp < 0)
-		//{
-		//	size_temp = 0;
-		//}
     size_temp = global_paraMgr.glarea.getDouble("ISO Interval Size");
     size_temp *= change;
     size_temp = (std::max)(size_temp, 1e-6);

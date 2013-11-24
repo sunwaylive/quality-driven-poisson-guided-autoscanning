@@ -34,6 +34,7 @@ private slots:
   void runPoissonAndExtractNodes();
   void runPoissonAndExtractMC();
   void runSlice();
+  void runClearSlice();
 
   void removeNonIsoPoints();
   void labelIsoPoints();
@@ -48,6 +49,7 @@ private slots:
   void showSlicesX(bool _val);
   void showSlicesY(bool _val);
   void showSlicesZ(bool _val);
+  void showParallerSlice(bool _val);
 
   void useConfidence1(bool _val);
   void useConfidence2(bool _val);

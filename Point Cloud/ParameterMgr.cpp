@@ -341,9 +341,12 @@ void ParameterMgr::initPoissonParameter()
   poisson.addParam(new RichBool("Run View Candidates Clustering", false));
 
   poisson.addParam(new RichBool("Run Slice", false));
+  poisson.addParam(new RichBool("Run Clear Slice", false));
   poisson.addParam(new RichDouble("Max Depth", 6));
 
   poisson.addParam(new RichBool("Show Slices Mode", false));
+  poisson.addParam(new RichBool("Parallel Slices Mode", false));
+
   poisson.addParam(new RichBool("Show X Slices", false));
   poisson.addParam(new RichBool("Show Y Slices", false));
   poisson.addParam(new RichBool("Show Z Slices", false));

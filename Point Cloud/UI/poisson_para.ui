@@ -223,7 +223,7 @@
     <widget class="QPushButton" name="pushButton_slice">
      <property name="geometry">
       <rect>
-       <x>0</x>
+       <x>10</x>
        <y>570</y>
        <width>211</width>
        <height>21</height>
@@ -349,6 +349,32 @@
       <string>Poisson sample</string>
      </property>
     </widget>
+    <widget class="QCheckBox" name="checkBox_parallel_slice_mode">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>660</y>
+       <width>151</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Parallel Slice Mode</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_clear_slice">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>680</y>
+       <width>211</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Clear Slice</string>
+     </property>
+    </widget>
     <zorder>checkBox_show_slices_Z</zorder>
     <zorder>poisson_depth</zorder>
     <zorder>checkBox_show_slices</zorder>
@@ -365,6 +391,8 @@
     <zorder>checkBox_show_slices_transparent</zorder>
     <zorder>label_4</zorder>
     <zorder>poisson_sample_number</zorder>
+    <zorder>checkBox_parallel_slice_mode</zorder>
+    <zorder>pushButton_clear_slice</zorder>
    </widget>
    <widget class="QWidget" name="tab_2">
     <attribute name="title">
