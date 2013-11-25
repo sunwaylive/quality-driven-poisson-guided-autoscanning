@@ -25,7 +25,9 @@ public:
 private:
   void buildGrid();
   void propagate();
-  //void viewClustering();
+
+  void viewExtraction();
+  void viewClustering();
 
   void normalizeConfidence(vector<CVertex>& vertexes, float delta);
   double   getAbsMax(double x, double y, double z);
@@ -41,7 +43,7 @@ private:
   CMesh            *original;
   CMesh            *iso_points;
   CMesh            *all_nbv_grid_centers;
-  CMesh            *ray_hit_nbv_grids;
+  CMesh            *nbv_candidates;
   CMesh            *field_points;
   double           grid_resolution;
   Point3f          whole_space_box_max;

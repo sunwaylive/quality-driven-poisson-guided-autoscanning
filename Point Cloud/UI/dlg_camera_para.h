@@ -49,7 +49,8 @@ private slots:
   void propagate();
   void propagateOnePoint();
   void gridSegment();
-  //void runViewClustering();
+  void extractViewCandidates();
+  void runViewClustering();
 
 private:
 	Ui::camera_paras * ui;

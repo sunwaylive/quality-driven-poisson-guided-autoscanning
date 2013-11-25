@@ -56,7 +56,7 @@ void MainWindow::initWidgets()
   ui.actionShow_ISO->setChecked(paras->glarea.getBool("Show ISO Points"));
   ui.actionUse_ISO_Interval->setChecked(paras->glarea.getBool("Use ISO Interval"));
   ui.actionShow_NBV_Grids->setChecked(paras->glarea.getBool("Show NBV Grids"));
-  ui.actionShow_NBV_Ray_Hit->setChecked(paras->glarea.getBool("Show NBV Ray Hit"));
+  ui.actionShow_NBV_Candidates->setChecked(paras->glarea.getBool("Show NBV Candidates"));
   ui.actionShow_Scan_Candidates->setChecked(paras->glarea.getBool("Show Scan Candidates"));
   ui.actionShow_Current_Scanned_Mesh->setChecked(paras->glarea.getBool("Show Scanned Mesh"));
 }
@@ -119,7 +119,7 @@ void MainWindow::initConnect()
   connect(ui.actionUse_ISO_Interval,SIGNAL(toggled(bool)),this,SLOT(useIsoInterval(bool)));
 
   connect(ui.actionShow_NBV_Grids, SIGNAL(toggled(bool)), this, SLOT(showNBVGrids(bool)));
-  connect(ui.actionShow_NBV_Ray_Hit, SIGNAL(toggled(bool)), this, SLOT(showNBVRayHit(bool)));
+  connect(ui.actionShow_NBV_Candidates, SIGNAL(toggled(bool)), this, SLOT(showNBVCandidates(bool)));
   connect(ui.actionShow_Scan_Candidates, SIGNAL(toggled(bool)), this, SLOT(showScanCandidates(bool)));
   connect(ui.actionShow_Current_Scanned_Mesh, SIGNAL(toggle(bool)), this, SLOT(showScannedMesh(bool)));
 
@@ -621,9 +621,9 @@ MainWindow::showNBVGrids(bool _val)
 }
 
 void
-  MainWindow::showNBVRayHit(bool _val)
+  MainWindow::showNBVCandidates(bool _val)
 {
-  paras->glarea.setValue("Show NBV Ray Hit", BoolValue(_val));
+  paras->glarea.setValue("Show NBV Candidates", BoolValue(_val));
   area->updateGL();
 }
 
