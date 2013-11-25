@@ -25,6 +25,7 @@ public:
 private:
   void buildGrid();
   void propagate();
+  //void viewClustering();
 
   void normalizeConfidence(vector<CVertex>& vertexes, float delta);
   double   getAbsMax(double x, double y, double z);
