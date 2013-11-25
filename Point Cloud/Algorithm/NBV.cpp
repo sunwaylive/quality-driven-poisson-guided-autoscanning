@@ -228,7 +228,7 @@ NBV::propagate()
   max_steps *= para->getDouble("Max Ray Steps Para"); //wsh
  
 
-  vector<int> hit_grid_indexes;
+ 
   //traverse all points on the iso surface
   //for (int i = 0; i < 1; ++i)//fix: < iso_points->vert.size()
   int target_index = 425;
@@ -245,6 +245,8 @@ NBV::propagate()
   for ( ;i < iso_points->vert.size(); ++i)//fix: < iso_points->vert.size()    
   {
 //    cout << "index" << i << endl;
+    vector<int> hit_grid_indexes;
+
     CVertex &v = iso_points->vert[i];
     //t is the ray_start_point
     v.is_ray_hit = true;
