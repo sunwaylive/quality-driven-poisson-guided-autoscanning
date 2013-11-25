@@ -8,7 +8,6 @@ NBV::NBV(RichParameterSet *_para)
   iso_points = NULL;
   field_points = NULL;
   model = NULL;
-  //grid_resolution = 1.0f / 10.0; 
 }
 
 NBV::~NBV()
@@ -33,6 +32,18 @@ NBV::run()
   if (para->getBool("Run Propagate"))
   {
     propagate();
+    return;
+  }
+
+  if (para->getBool("Run Viewing Clustering"))
+  {
+    viewClustering();
+    return;
+  }
+
+  if (para->getBool("Run Viewing Extract"))
+  {
+    viewExtraction();
     return;
   }
 }
@@ -66,7 +77,7 @@ NBV::setInput(DataMgr *pData)
   all_nbv_grid_centers = pData->getAllNBVGridCenters();
   all_nbv_grids = pData->getAllNBVGrids();
   iso_points = pData->getCurrentIsoPoints();
-  ray_hit_nbv_grids = pData->getRayHitGrids();
+  nbv_candidates = pData->getNbvCandidates();
 }
 
 void
@@ -191,9 +202,8 @@ NBV::buildGrid()
        }
      }
    }
-
-   //confidence_weight_sum.resize(all_nbv_grid_centers->vert.size());
 }
+
 
 void
 NBV::propagate()
@@ -212,9 +222,9 @@ NBV::propagate()
       t.weight_sum = 0.0;
     }
   }
-  if (ray_hit_nbv_grids)
+  if (nbv_candidates)
   {
-    ray_hit_nbv_grids->vert.clear();
+    nbv_candidates->vert.clear();
   }
 
   if (use_average_confidence)
@@ -269,7 +279,6 @@ NBV::propagate()
       //compute the delta of a,b so as to traverse the whole sphere
       double angle_delta = grid_resolution / camera_max_dist;
       //angle_delta *=2;// wsh
-
       //loop for a, b
       double a = 0.0f, b = 0.0f;
       double l = 0.0f;
@@ -748,4 +757,91 @@ NBV::setGridUnHit(vector<int>& hit_grids_idx)
   {
     all_nbv_grid_centers->vert[*it].is_ray_hit = false;
   }
+}
+
+void NBV::viewExtraction()
+{
+  double nbv_confidence_value = para->getBool("Confidence Seperation Value");
+  nbv_candidates->vert.clear();
+
+  int index = 0;
+  for (int i = 0; i < all_nbv_grid_centers->vert.size(); i++)
+  {
+    CVertex& v = all_nbv_grid_centers->vert[i];
+    if (v.eigen_confidence > nbv_confidence_value)
+    {
+      v.m_index = index++;
+      //v.is_grid_center = false;
+      //v.is_iso = true;
+      nbv_candidates->vert.push_back(v);
+    }
+  }
+  nbv_candidates->vn = nbv_candidates->vert.size();
+  cout << "candidate number: " << nbv_candidates->vn << endl;
+}
+
+void NBV::viewClustering()
+{
+  //double radius = para->getDouble("CGrid Radius"); 
+  double radius = global_paraMgr.wLop.getDouble("CGrid Radius"); 
+  
+  double radius2 = radius * radius;
+  double iradius16 = -4/radius2;
+
+  double sigma = 45;
+  double cos_sigma = cos(sigma / 180.0 * 3.1415926);
+  double sharpness_bandwidth = std::pow((std::max)(1e-8, 1 - cos_sigma), 2);
+
+  //GlobalFun::computeBallNeighbors(view_candidates, NULL, 
+  //                                radius, view_candidates->bbox);
+  GlobalFun::computeAnnNeigbhors(nbv_candidates->vert,
+    nbv_candidates->vert, 
+    15,
+    false,
+    "runViewCandidatesClustering");
+
+  vector<CVertex> update_temp;
+  for(int i = 0; i < nbv_candidates->vert.size(); i++)
+  {
+    CVertex& v = nbv_candidates->vert[i];
+
+    //if (v.neighbors.size() <= 5)
+    if (v.neighbors.empty())
+    {
+      //update_temp.push_back(v);
+      continue;
+    }
+
+    Point3f average_positon = Point3f(0, 0, 0);
+    Point3f average_normal = Point3f(0, 0, 0);
+    double sum_weight = 0.0;
+
+    for (int j = 0; j < v.neighbors.size(); j++)
+    {
+      CVertex& t = nbv_candidates->vert[v.neighbors[j]];
+
+      Point3f diff = v.P() - t.P();
+      double dist2  = diff.SquaredNorm();
+
+      double dist_weight = exp(dist2 * iradius16);
+      double normal_weight = exp(-std::pow(1 - v.N() * t.N(), 2));
+      double weight = dist_weight;
+
+      average_positon += t.P() * weight;
+      average_normal += t.N() * weight;
+      sum_weight += weight;
+    }
+
+    CVertex temp_v = v;
+    temp_v.P() = average_positon / sum_weight;
+    temp_v.N() = average_normal / sum_weight;
+    update_temp.push_back(temp_v);
+  }
+
+  nbv_candidates->vert.clear();
+  for (int i = 0; i < update_temp.size(); i++)
+  {
+    nbv_candidates->vert.push_back(update_temp[i]);
+  }
+  nbv_candidates->vn = nbv_candidates->vert.size(); 
 }

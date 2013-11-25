@@ -81,7 +81,7 @@ void ParameterMgr::initGlareaParameter()
   glarea.addParam(new RichBool("Show ISO Points", true) );
   glarea.addParam(new RichBool("Use ISO Interval", false) );
   glarea.addParam(new RichBool("Show NBV Grids", false));
-  glarea.addParam(new RichBool("Show NBV Ray Hit", false));
+  glarea.addParam(new RichBool("Show NBV Candidates", false));
   glarea.addParam(new RichBool("Show Scan Candidates", true));
   glarea.addParam(new RichBool("Show Scanned Mesh", true));
 
@@ -390,7 +390,9 @@ ParameterMgr::initNBVParameter()
   nbv.addParam(new RichBool("Run Propagate", false));
   nbv.addParam(new RichBool("Run Propagate One Point", false));
   nbv.addParam(new RichBool("Run Grid Segment", false));
+
   nbv.addParam(new RichBool("Run Viewing Clustering", false));
+  nbv.addParam(new RichBool("Run Viewing Extract", false));
   
   nbv.addParam(new RichDouble("Grid resolution", 40.f));
   nbv.addParam(new RichBool("Test Other Inside Segment", false));
@@ -401,7 +403,7 @@ ParameterMgr::initNBVParameter()
   nbv.addParam(new RichBool("Use Max Propagation", true));
 
 
-  nbv.addParam(new RichDouble("Confidence Seperation Value", 0.5));
+  nbv.addParam(new RichDouble("Confidence Seperation Value", 0.85));
   nbv.addParam(new RichDouble("Max Ray Steps Para", 1.5));
 
 }

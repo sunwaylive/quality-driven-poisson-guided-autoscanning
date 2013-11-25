@@ -32,6 +32,9 @@ void CameraParaDlg::initConnects()
   connect(ui->pushButton_propagate_one, SIGNAL(clicked()), this, SLOT(propagateOnePoint()));
   connect(ui->pushButton_grid_segment, SIGNAL(clicked()), this, SLOT(gridSegment()));
  
+  connect(ui->extract_view_candidates, SIGNAL(clicked()), this, SLOT(extractViewCandidates()));
+  connect(ui->cluster_view_candidates, SIGNAL(clicked()), this, SLOT(runViewClustering()));
+
   connect(ui->max_ray_steps, SIGNAL(valueChanged(double)), this, SLOT(getMaxRaySteps(double)));
   connect(ui->grid_resolution, SIGNAL(valueChanged(double)), this, SLOT(getGridResolution(double)));
     
@@ -382,5 +385,19 @@ void CameraParaDlg::gridSegment()
   global_paraMgr.nbv.setValue("Run Grid Segment", BoolValue(false));
   global_paraMgr.nbv.setValue("Run Build Grid", BoolValue(false));
 
+}
+
+void CameraParaDlg::extractViewCandidates()
+{
+  global_paraMgr.nbv.setValue("Run Viewing Extract", BoolValue(true));
+  area->runNBV();
+  global_paraMgr.nbv.setValue("Run Viewing Extract", BoolValue(false));
+}
+
+void CameraParaDlg::runViewClustering()
+{
+  global_paraMgr.nbv.setValue("Run Viewing Clustering", BoolValue(true));
+  area->runNBV();
+  global_paraMgr.nbv.setValue("Run Viewing Clustering", BoolValue(false));
 }
 

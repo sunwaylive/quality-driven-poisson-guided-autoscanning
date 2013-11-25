@@ -47,7 +47,7 @@ void GLDrawer::updateDrawer(vector<int>& pickList)
   cofidence_color_scale = global_paraMgr.glarea.getDouble("Confidence Color Scale");
   iso_value_shift = global_paraMgr.glarea.getDouble("ISO Value Shift");
   bShowGridCenters = global_paraMgr.glarea.getBool("Show NBV Grids");
-  bShowHitGrids = global_paraMgr.glarea.getBool("Show NBV Ray Hit");
+  bShowNBVCandidates = global_paraMgr.glarea.getBool("Show NBV Candidates");
   
   bUseConfidenceSeperation = global_paraMgr.nbv.getBool("Use Confidence Seperation");
   confidence_seperation_value = global_paraMgr.nbv.getDouble("Confidence Seperation Value");
@@ -250,10 +250,10 @@ GLColor GLDrawer::getColorByType(const CVertex& v)
 
 	}
 
-  if (bShowHitGrids && v.is_iso)
-  {
-    return cBlue;
-  }
+  //if (bShowNBVCandidates && v.is_iso)
+  //{
+  //  return cBlue;
+  //}
 
   if (bUseConfidenceColor && !v.is_iso && v.eigen_confidence >= -0.5)
   {

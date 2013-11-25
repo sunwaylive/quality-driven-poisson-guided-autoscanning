@@ -430,9 +430,9 @@ DataMgr::getAllNBVGridCenters()
 }
 
 CMesh*
-DataMgr::getRayHitGrids()
+DataMgr::getNbvCandidates()
 {
-  return &ray_hit_grids;
+  return &nbv_candidates;
 }
 
 vector<ScanCandidate>* DataMgr::getInitCameraScanCandidates()
@@ -723,7 +723,7 @@ void DataMgr::clearData()
   clearCMesh(current_scanned_mesh);
 
   clearCMesh(all_nbv_grid_centers);
-  clearCMesh(ray_hit_grids);
+  clearCMesh(nbv_candidates);
   clearCMesh(current_scanned_mesh);
 
 

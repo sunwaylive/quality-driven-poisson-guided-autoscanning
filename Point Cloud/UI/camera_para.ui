@@ -537,7 +537,7 @@
       <string>use_max_propagation</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_view_clustering">
+    <widget class="QPushButton" name="extract_view_candidates">
      <property name="geometry">
       <rect>
        <x>30</x>
@@ -547,7 +547,20 @@
       </rect>
      </property>
      <property name="text">
-      <string>View Clustering</string>
+      <string>Extract View Candidates</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="cluster_view_candidates">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>540</y>
+       <width>181</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Cluster View Candidates</string>
      </property>
     </widget>
    </widget>

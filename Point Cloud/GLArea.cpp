@@ -238,7 +238,12 @@ void GLArea::paintGL()
       if (!dataMgr.isNBVGridsEmpty())
       {
         glDrawer.draw(GLDrawer::NORMAL, dataMgr.getAllNBVGridCenters());
-      }  
+      } 
+
+      if (!dataMgr.isNBVGridsEmpty())
+      {
+        glDrawer.draw(GLDrawer::NORMAL, dataMgr.getNbvCandidates());
+      }
     }
     else if (para->getBool("Show ISO Points"))
     {
@@ -332,13 +337,12 @@ void GLArea::paintGL()
      
   }
 
-  if (para->getBool("Show NBV Ray Hit"))
+  if (para->getBool("Show NBV Candidates"))
   {
-    CMesh *ray_hit_grids = dataMgr.getRayHitGrids();
-    if (NULL == ray_hit_grids) return;
+    CMesh *nbv_candidates = dataMgr.getNbvCandidates();
 
-    if(!ray_hit_grids->vert.empty()) 
-      glDrawer.draw(GLDrawer::DOT, ray_hit_grids);
+    if(!nbv_candidates->vert.empty()) 
+      glDrawer.draw(GLDrawer::DOT, nbv_candidates);
   }
   //fix, it doesn't work
   if (para->getBool("Show Scan Candidates"))
