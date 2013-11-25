@@ -111,7 +111,7 @@ NBV::buildGrid()
    all_max = (std::max)(all_max, z_max);
    x_max = y_max =z_max = all_max;
 
-   //pre allocate the memory
+   //preallocate the memory
    int max_index = x_max * y_max * z_max;
    all_nbv_grid_centers->vert.resize(max_index);
    all_nbv_grids->resize(max_index);
@@ -236,9 +236,7 @@ NBV::propagate()
   double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
   int max_steps = static_cast<int>(camera_max_dist / grid_resolution);
   max_steps *= para->getDouble("Max Ray Steps Para"); //wsh
- 
 
- 
   //traverse all points on the iso surface
   //for (int i = 0; i < 1; ++i)//fix: < iso_points->vert.size()
   int target_index = 425;
@@ -262,7 +260,6 @@ NBV::propagate()
     for (size_t i = r.begin(); i < r.end(); ++i)
     {
       vector<int> hit_grid_indexes;
-
       CVertex &v = iso_points->vert[i];
       //t is the ray_start_point
       v.is_ray_hit = true;
@@ -293,8 +290,6 @@ NBV::propagate()
       double optimal_D = camera_max_dist / 2.0f;
       double half_D = optimal_D / 2.0f; //wsh    
       double half_D2 = half_D * half_D;
-      //for debug
-
       double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
       double sigma_threshold = pow(max(1e-8, 1-cos(sigma/180.0*3.1415926)), 2);
 
@@ -395,281 +390,145 @@ NBV::propagate()
     }
   });
 #else
-for ( ;i < iso_points->vert.size(); ++i)//fix: < iso_points->vert.size()    
-{
-  //    cout << "index" << i << endl;
-  vector<int> hit_grid_indexes;
-
-  CVertex &v = iso_points->vert[i];
-  //t is the ray_start_point
-  v.is_ray_hit = true;
-  //ray_hit_nbv_grids->vert.push_back(v);
-
-  //get the x,y,z index of each iso_points
-  int t_indexX = static_cast<int>( ceil((v.P()[0] - whole_space_box_min.X()) / grid_resolution ));
-  int t_indexY = static_cast<int>( ceil((v.P()[1] - whole_space_box_min.Y()) / grid_resolution ));
-  int t_indexZ = static_cast<int>( ceil((v.P()[2] - whole_space_box_min.Z()) / grid_resolution ));
-  //next point index along the ray, pay attention , index should be stored in double ,used in integer
-  double n_indexX, n_indexY, n_indexZ;
-  //get the sphere traversal resolution
-  double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
-  //compute the delta of a,b so as to traverse the whole sphere
-  double angle_delta = grid_resolution / camera_max_dist;
-  //angle_delta *=2;// wsh
-
-  //loop for a, b
-  double a = 0.0f, b = 0.0f;
-  double l = 0.0f;
-  double x = 0.0f, y = 0.f, z = 0.0f;
-  //for DDA algorithm
-  //int stepX = 0, stepY = 0, stepZ = 0;
-
-  double length = 0.0f;
-  double deltaX, deltaY, deltaZ;
-
-  //double half_D = optimal_D / 2.0f;
-  double optimal_D = camera_max_dist / 2.0f;
-  double half_D = optimal_D / 2.0f; //wsh    
-  double half_D2 = half_D * half_D;
-  //for debug
-
-  double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
-  double sigma_threshold = pow(max(1e-8, 1-cos(sigma/180.0*3.1415926)), 2);
-
-  //1. for each point, propagate to all discrete directions
-  for (a = 0.0f; a < PI; a += angle_delta)
+  for ( ;i < iso_points->vert.size(); ++i)//fix: < iso_points->vert.size()    
   {
-    l = sin(a); y = cos(a);
-    for (b = 0.0f; b < 2 * PI; b += angle_delta)
+    //    cout << "index" << i << endl;
+    vector<int> hit_grid_indexes;
+
+    CVertex &v = iso_points->vert[i];
+    //t is the ray_start_point
+    v.is_ray_hit = true;
+
+
+    //ray_hit_nbv_grids->vert.push_back(v);
+
+    //get the x,y,z index of each iso_points
+    int t_indexX = static_cast<int>( ceil((v.P()[0] - whole_space_box_min.X()) / grid_resolution ));
+    int t_indexY = static_cast<int>( ceil((v.P()[1] - whole_space_box_min.Y()) / grid_resolution ));
+    int t_indexZ = static_cast<int>( ceil((v.P()[2] - whole_space_box_min.Z()) / grid_resolution ));
+    //next point index along the ray, pay attention , index should be stored in double ,used in integer
+    double n_indexX, n_indexY, n_indexZ;
+    //get the sphere traversal resolution
+    double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
+    //compute the delta of a,b so as to traverse the whole sphere
+    double angle_delta = grid_resolution / camera_max_dist;
+    //angle_delta *=2;// wsh
+
+    //loop for a, b
+    double a = 0.0f, b = 0.0f;
+    double l = 0.0f;
+    double x = 0.0f, y = 0.f, z = 0.0f;
+    //for DDA algorithm
+    //int stepX = 0, stepY = 0, stepZ = 0;
+
+    double length = 0.0f;
+    double deltaX, deltaY, deltaZ;
+
+    //double half_D = optimal_D / 2.0f;
+    double optimal_D = camera_max_dist / 2.0f;
+    double half_D = optimal_D / 2.0f; //wsh    
+    double half_D2 = half_D * half_D;
+    //for debug
+
+    double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
+    double sigma_threshold = pow(max(1e-8, 1-cos(sigma/180.0*3.1415926)), 2);
+
+    //1. for each point, propagate to all discrete directions
+    for (a = 0.0f; a < PI; a += angle_delta)
     {
-      //now the propagate direction is Point3f(x, y, z)
-      x = l * cos(b); z = l * sin(b);
-      //reset the next grid indexes
-      n_indexX = t_indexX; n_indexY = t_indexY; n_indexZ = t_indexZ;
-      //2. compute the next grid indexes
-      length = getAbsMax(x, y, z);
-      deltaX = x / length; 
-      deltaY = y / length;
-      deltaZ = z / length;
-
-      //int hit_stop_time = 0;
-      for (int k = 0; k <= max_steps; ++k)
-        //for (int k = 0; k <= 100000; ++k)
-        //while (1)        
+      l = sin(a); y = cos(a);
+      for (b = 0.0f; b < 2 * PI; b += angle_delta)
       {
-        n_indexX = n_indexX + deltaX;
-        n_indexY = n_indexY + deltaY;
-        n_indexZ = n_indexZ + deltaZ;
-        int index = round(n_indexX) * y_max * z_max + round(n_indexY) * z_max + round(n_indexZ);
+        //now the propagate direction is Point3f(x, y, z)
+        x = l * cos(b); z = l * sin(b);
+        //reset the next grid indexes
+        n_indexX = t_indexX; n_indexY = t_indexY; n_indexZ = t_indexZ;
+        //2. compute the next grid indexes
+        length = getAbsMax(x, y, z);
+        deltaX = x / length; 
+        deltaY = y / length;
+        deltaZ = z / length;
 
-        if (index >= all_nbv_grid_centers->vert.size())
+        //int hit_stop_time = 0;
+        for (int k = 0; k <= max_steps; ++k)
+          //for (int k = 0; k <= 100000; ++k)
+          //while (1)        
         {
-          break;
-        }
-        //if the direction is into the model, or has been hit, then stop tracing
-        if (all_nbv_grid_centers->vert[index].is_ray_stop)
-        {
-          break;
-        }
+          n_indexX = n_indexX + deltaX;
+          n_indexY = n_indexY + deltaY;
+          n_indexZ = n_indexZ + deltaZ;
+          int index = round(n_indexX) * y_max * z_max + round(n_indexY) * z_max + round(n_indexZ);
 
-        if (all_nbv_grid_centers->vert[index].is_ray_hit)  continue;
+          if (index >= all_nbv_grid_centers->vert.size())
+          {
+            break;
+          }
+          //if the direction is into the model, or has been hit, then stop tracing
+          if (all_nbv_grid_centers->vert[index].is_ray_stop)
+          {
+            break;
+          }
 
-        //if the grid get first hit 
-        all_nbv_grid_centers->vert[index].is_ray_hit = true;
-        //do what we need in the next grid
-        NBVGrid &g = (*all_nbv_grids)[index];
-        //1. set the confidence of the grid center
-        CVertex& t = all_nbv_grid_centers->vert[index];
-        //double dist = GlobalFun::computeEulerDist(v.P(), t.P());
-        Point3f diff = t.P() - v.P();
-        double dist2 = diff.SquaredNorm();
-        double dist = sqrt(dist2);
+          if (all_nbv_grid_centers->vert[index].is_ray_hit)  continue;
 
-        Point3f view_direction = diff.Normalize();
-        double coefficient1 = exp(-(dist - optimal_D) * (dist - optimal_D) / half_D2);
-        double coefficient2 = exp(-pow(1-v.N()*view_direction, 2)/sigma_threshold);
+          //if the grid get first hit 
+          all_nbv_grid_centers->vert[index].is_ray_hit = true;
+          //do what we need in the next grid
+          NBVGrid &g = (*all_nbv_grids)[index];
+          //1. set the confidence of the grid center
+          CVertex& t = all_nbv_grid_centers->vert[index];
+          //double dist = GlobalFun::computeEulerDist(v.P(), t.P());
+          Point3f diff = t.P() - v.P();
+          double dist2 = diff.SquaredNorm();
+          double dist = sqrt(dist2);
 
-        float iso_confidence = 1 - v.eigen_confidence;
-        float view_weight = iso_confidence * coefficient2;          
+          Point3f view_direction = diff.Normalize();
+          double coefficient1 = exp(-(dist - optimal_D) * (dist - optimal_D) / half_D2);
+          double coefficient2 = exp(-pow(1-v.N()*view_direction, 2)/sigma_threshold);
 
-        float confidence_weight = coefficient1 * coefficient2;
-        //float confidence_weight = coefficient1;
+          float iso_confidence = 1 - v.eigen_confidence;
+          float view_weight = iso_confidence * coefficient2;          
 
-        if (use_max_propagation)
-        {
-          t.eigen_confidence = (std::max)(t.eigen_confidence, confidence_weight * iso_confidence);          
-        }
-        else
-        {
-          t.eigen_confidence += coefficient1 * iso_confidence;
-        }
+          float confidence_weight = coefficient1 * coefficient2;
+          //float confidence_weight = coefficient1;
 
-        if (use_average_confidence)
-        {
-          confidence_weight_sum[index] += 1.;
-        }
+          if (use_max_propagation)
+          {
+            t.eigen_confidence = (std::max)(t.eigen_confidence, confidence_weight * iso_confidence);          
+          }
+          else
+          {
+            t.eigen_confidence += coefficient1 * iso_confidence;
+          }
 
-        //confidence_weight_sum[index] += confidence_weight;
+          if (use_average_confidence)
+          {
+            confidence_weight_sum[index] += 1.;
+          }
 
-        t.N() += view_direction * view_weight;
-        t.weight_sum += view_weight;
+          //confidence_weight_sum[index] += confidence_weight;
 
-        // record hit_grid center index
-        hit_grid_indexes.push_back(index);
-      }//end for k
-    }// end for b
-  }//end for a
+          t.N() += view_direction * view_weight;
+          t.weight_sum += view_weight;
 
-  if (hit_grid_indexes.size() > 0)
-  {
-    setGridUnHit(hit_grid_indexes);
-    hit_grid_indexes.clear();
-  }
+          // record hit_grid center index
+          hit_grid_indexes.push_back(index);
+        }//end for k
+      }// end for b
+    }//end for a
 
-  if (use_propagate_one_point)
-  {
-    break;
-  }
-}//end for iso_points
+    if (hit_grid_indexes.size() > 0)
+    {
+      setGridUnHit(hit_grid_indexes);
+      hit_grid_indexes.clear();
+    }
+
+    if (use_propagate_one_point)
+    {
+      break;
+    }
+  }//end for iso_points
 #endif
-
-//  for ( ;i < iso_points->vert.size(); ++i)//fix: < iso_points->vert.size()    
-//  {
-////    cout << "index" << i << endl;
-//    vector<int> hit_grid_indexes;
-//
-//    CVertex &v = iso_points->vert[i];
-//    //t is the ray_start_point
-//    v.is_ray_hit = true;
-//    //ray_hit_nbv_grids->vert.push_back(v);
-//
-//    //get the x,y,z index of each iso_points
-//    int t_indexX = static_cast<int>( ceil((v.P()[0] - whole_space_box_min.X()) / grid_resolution ));
-//    int t_indexY = static_cast<int>( ceil((v.P()[1] - whole_space_box_min.Y()) / grid_resolution ));
-//    int t_indexZ = static_cast<int>( ceil((v.P()[2] - whole_space_box_min.Z()) / grid_resolution ));
-//    //next point index along the ray, pay attention , index should be stored in double ,used in integer
-//    double n_indexX, n_indexY, n_indexZ;
-//    //get the sphere traversal resolution
-//    double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
-//    //compute the delta of a,b so as to traverse the whole sphere
-//    double angle_delta = grid_resolution / camera_max_dist;
-//    //angle_delta *=2;// wsh
-//
-//    //loop for a, b
-//    double a = 0.0f, b = 0.0f;
-//    double l = 0.0f;
-//    double x = 0.0f, y = 0.f, z = 0.0f;
-//    //for DDA algorithm
-//    //int stepX = 0, stepY = 0, stepZ = 0;
-//
-//    double length = 0.0f;
-//    double deltaX, deltaY, deltaZ;
-//
-//    //double half_D = optimal_D / 2.0f;
-//    double optimal_D = camera_max_dist / 2.0f;
-//    double half_D = optimal_D / 2.0f; //wsh    
-//    double half_D2 = half_D * half_D;
-//    //for debug
-//
-//    double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
-//    double sigma_threshold = pow(max(1e-8, 1-cos(sigma/180.0*3.1415926)), 2);
-//
-//    //1. for each point, propagate to all discrete directions
-//    for (a = 0.0f; a < PI; a += angle_delta)
-//    {
-//      l = sin(a); y = cos(a);
-//      for (b = 0.0f; b < 2 * PI; b += angle_delta)
-//      {
-//        //now the propagate direction is Point3f(x, y, z)
-//        x = l * cos(b); z = l * sin(b);
-//        //reset the next grid indexes
-//        n_indexX = t_indexX; n_indexY = t_indexY; n_indexZ = t_indexZ;
-//        //2. compute the next grid indexes
-//        length = getAbsMax(x, y, z);
-//        deltaX = x / length; 
-//        deltaY = y / length;
-//        deltaZ = z / length;
-//
-//        //int hit_stop_time = 0;
-//        for (int k = 0; k <= max_steps; ++k)
-//        //for (int k = 0; k <= 100000; ++k)
-//        //while (1)        
-//        {
-//          n_indexX = n_indexX + deltaX;
-//          n_indexY = n_indexY + deltaY;
-//          n_indexZ = n_indexZ + deltaZ;
-//          int index = round(n_indexX) * y_max * z_max + round(n_indexY) * z_max + round(n_indexZ);
-//
-//          if (index >= all_nbv_grid_centers->vert.size())
-//          {
-//            break;
-//          }
-//          //if the direction is into the model, or has been hit, then stop tracing
-//          if (all_nbv_grid_centers->vert[index].is_ray_stop)
-//          {
-//            break;
-//          }
-//          
-//          if (all_nbv_grid_centers->vert[index].is_ray_hit)  continue;
-//          
-//          //if the grid get first hit 
-//          all_nbv_grid_centers->vert[index].is_ray_hit = true;
-//          //do what we need in the next grid
-//          NBVGrid &g = (*all_nbv_grids)[index];
-//          //1. set the confidence of the grid center
-//          CVertex& t = all_nbv_grid_centers->vert[index];
-//          //double dist = GlobalFun::computeEulerDist(v.P(), t.P());
-//          Point3f diff = t.P() - v.P();
-//          double dist2 = diff.SquaredNorm();
-//          double dist = sqrt(dist2);
-//
-//          Point3f view_direction = diff.Normalize();
-//          double coefficient1 = exp(-(dist - optimal_D) * (dist - optimal_D) / half_D2);
-//          double coefficient2 = exp(-pow(1-v.N()*view_direction, 2)/sigma_threshold);
-//
-//          float iso_confidence = 1 - v.eigen_confidence;
-//          float view_weight = iso_confidence * coefficient2;          
-//          
-//          float confidence_weight = coefficient1 * coefficient2;
-//          //float confidence_weight = coefficient1;
-//            
-//          if (use_max_propagation)
-//          {
-//            t.eigen_confidence = (std::max)(t.eigen_confidence, confidence_weight * iso_confidence);          
-//          }
-//          else
-//          {
-//            t.eigen_confidence += coefficient1 * iso_confidence;
-//          }
-//
-//          if (use_average_confidence)
-//          {
-//            confidence_weight_sum[index] += 1.;
-//          }
-//          
-//          //confidence_weight_sum[index] += confidence_weight;
-//          
-//          t.N() += view_direction * view_weight;
-//          t.weight_sum += view_weight;
-//          
-//          // record hit_grid center index
-//          hit_grid_indexes.push_back(index);
-//        }//end for k
-//      }// end for b
-//    }//end for a
-//
-//    if (hit_grid_indexes.size() > 0)
-//    {
-//      setGridUnHit(hit_grid_indexes);
-//      hit_grid_indexes.clear();
-//    }
-//
-//    if (use_propagate_one_point)
-//    {
-//      break;
-//    }
-//  }//end for iso_points
-
 
   for (int i = 0; i < all_nbv_grid_centers->vert.size(); i++)
   {
@@ -698,8 +557,6 @@ for ( ;i < iso_points->vert.size(); ++i)//fix: < iso_points->vert.size()
 
 void NBV::normalizeConfidence(vector<CVertex>& vertexes, float delta)
 {  
-
-
   float min_confidence = GlobalFun::getDoubleMAXIMUM();
   float max_confidence = 0;
   for (int i = 0; i < vertexes.size(); i++)
@@ -761,7 +618,7 @@ NBV::setGridUnHit(vector<int>& hit_grids_idx)
 
 void NBV::viewExtraction()
 {
-  double nbv_confidence_value = para->getBool("Confidence Seperation Value");
+  double nbv_confidence_value = para->getBool("Confidence Separation Value");
   nbv_candidates->vert.clear();
 
   int index = 0;
