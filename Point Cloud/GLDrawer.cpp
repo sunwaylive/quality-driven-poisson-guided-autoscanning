@@ -49,8 +49,8 @@ void GLDrawer::updateDrawer(vector<int>& pickList)
   bShowGridCenters = global_paraMgr.glarea.getBool("Show NBV Grids");
   bShowNBVCandidates = global_paraMgr.glarea.getBool("Show NBV Candidates");
   
-  bUseConfidenceSeperation = global_paraMgr.nbv.getBool("Use Confidence Seperation");
-  confidence_seperation_value = global_paraMgr.nbv.getDouble("Confidence Seperation Value");
+  bUseConfidenceSeparation = global_paraMgr.nbv.getBool("Use Confidence Separation");
+  confidence_Separation_value = global_paraMgr.nbv.getDouble("Confidence Separation Value");
 
   
 	if (!pickList.empty())
@@ -85,9 +85,9 @@ void GLDrawer::draw(DrawType type, CMesh* _mesh)
 			continue;
 		}
 
-    if (bUseConfidenceSeperation && vi->is_grid_center)
+    if (bUseConfidenceSeparation && vi->is_grid_center)
     {
-      if (vi->eigen_confidence < confidence_seperation_value)
+      if (vi->eigen_confidence < confidence_Separation_value)
       {
         continue;
       }

@@ -33,10 +33,6 @@ ParameterMgr::~ParameterMgr(void)
 
 }
 
-
-
-
-
 void ParameterMgr::setGlobalParameter(QString paraName,Value& val)
 {
 	if(glarea.hasParameter(paraName))
@@ -397,13 +393,11 @@ ParameterMgr::initNBVParameter()
   nbv.addParam(new RichDouble("Grid resolution", 40.f));
   nbv.addParam(new RichBool("Test Other Inside Segment", false));
 
-  nbv.addParam(new RichBool("Use Confidence Seperation", false));
+  nbv.addParam(new RichBool("Use Confidence Separation", false));
   nbv.addParam(new RichBool("Use Average Confidence", false));
   nbv.addParam(new RichBool("Use NBV Test1", false));
   nbv.addParam(new RichBool("Use Max Propagation", true));
 
-
-  nbv.addParam(new RichDouble("Confidence Seperation Value", 0.85));
+  nbv.addParam(new RichDouble("Confidence Separation Value", 0.85));
   nbv.addParam(new RichDouble("Max Ray Steps Para", 1.5));
-
 }

@@ -325,7 +325,7 @@ void GLArea::paintGL()
     if(!nbv_grids->vert.empty())
     {
       glDrawer.draw(GLDrawer::DOT, nbv_grids);
-      //if (global_paraMgr.nbv.getBool("Use Confidence Seperation"))
+      //if (global_paraMgr.nbv.getBool("Use Confidence Separation"))
       //{
       //  glDrawer.draw(GLDrawer::QUADE, nbv_grids);
       //}
@@ -1611,13 +1611,13 @@ void GLArea::wheelEvent(QWheelEvent *e)
 	
   double size_temp = 0.0;
 
-  if (global_paraMgr.nbv.getBool("Use Confidence Seperation")
+  if (global_paraMgr.nbv.getBool("Use Confidence Separation")
       && (e->modifiers() & Qt::ControlModifier)
       && (e->modifiers() & Qt::AltModifier)
       && (e->modifiers() & Qt::ShiftModifier)
       && !global_paraMgr.poisson.getBool("Show Slices Mode"))
   {
-    size_temp = global_paraMgr.nbv.getDouble("Confidence Seperation Value");
+    size_temp = global_paraMgr.nbv.getDouble("Confidence Separation Value");
     size_temp *= change2;
     size_temp = (std::min)((std::max)(size_temp, 1e-10), 0.995);
 
@@ -1625,8 +1625,8 @@ void GLArea::wheelEvent(QWheelEvent *e)
     {
       size_temp = 0.9995;
     }
-    global_paraMgr.nbv.setValue("Confidence Seperation Value", DoubleValue(size_temp));
-    cout << "Confidence Seperation Value" << size_temp << endl;
+    global_paraMgr.nbv.setValue("Confidence Separation Value", DoubleValue(size_temp));
+    cout << "Confidence Separation Value" << size_temp << endl;
     return;
   }
 	

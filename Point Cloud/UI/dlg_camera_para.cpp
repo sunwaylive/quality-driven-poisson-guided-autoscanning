@@ -39,7 +39,7 @@ void CameraParaDlg::initConnects()
   connect(ui->grid_resolution, SIGNAL(valueChanged(double)), this, SLOT(getGridResolution(double)));
     
   connect(ui->use_other_inside_segment,SIGNAL(clicked(bool)),this,SLOT(useOtherInsideSegment(bool)));
-  connect(ui->use_confidence_seperation,SIGNAL(clicked(bool)),this,SLOT(useConfidenceSeperation(bool)));
+  connect(ui->use_confidence_Separation,SIGNAL(clicked(bool)),this,SLOT(useConfidenceSeparation(bool)));
   connect(ui->use_average_confidence,SIGNAL(clicked(bool)),this,SLOT(useAverageConfidence(bool)));
   connect(ui->use_nbv_test1, SIGNAL(clicked(bool)), this, SLOT(useNbvTest1(bool)));
   connect(ui->use_max_propagation, SIGNAL(clicked(bool)), this, SLOT(useMaxConfidencePropagation(bool)));
@@ -57,8 +57,8 @@ bool CameraParaDlg::initWidgets()
   Qt::CheckState state = m_paras->nbv.getBool("Test Other Inside Segment") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
   ui->use_other_inside_segment->setCheckState(state);
 
-  state = m_paras->nbv.getBool("Use Confidence Seperation") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
-  ui->use_confidence_seperation->setCheckState(state);
+  state = m_paras->nbv.getBool("Use Confidence Separation") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
+  ui->use_confidence_Separation->setCheckState(state);
 
   state = m_paras->nbv.getBool("Use Average Confidence") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
   ui->use_average_confidence->setCheckState(state);
@@ -203,10 +203,10 @@ void CameraParaDlg::useOtherInsideSegment(bool _val)
   global_paraMgr.nbv.setValue("Test Other Inside Segment", BoolValue(_val));
 }
 
-void CameraParaDlg::useConfidenceSeperation(bool _val)
+void CameraParaDlg::useConfidenceSeparation(bool _val)
 {
-  global_paraMgr.nbv.setValue("Use Confidence Seperation", BoolValue(_val));
-  cout << "Use Confidence Seperation" << endl;
+  global_paraMgr.nbv.setValue("Use Confidence Separation", BoolValue(_val));
+  cout << "Use Confidence Separation" << endl;
 }
 
 void CameraParaDlg::useAverageConfidence(bool _val)

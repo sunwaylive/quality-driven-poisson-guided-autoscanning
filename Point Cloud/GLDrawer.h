@@ -107,7 +107,7 @@ private:
   bool bShowSlice;
   bool bShowGridCenters;
   bool bShowNBVCandidates;
-  bool bUseConfidenceSeperation;
+  bool bUseConfidenceSeparation;
 
 	double original_draw_width;
 	double sample_draw_width;
@@ -120,7 +120,7 @@ private:
   double iso_step_size;
   double cofidence_color_scale;
   double iso_value_shift;
-  double confidence_seperation_value;
+  double confidence_Separation_value;
 
 	QColor original_color;
 	QColor sample_color;

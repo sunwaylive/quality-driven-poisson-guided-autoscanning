@@ -102,7 +102,7 @@ void Poisson::setInput(DataMgr* pData)
     
     model = pData->getCurrentModel();
 
-    if (!pData->isNBVGridsEmpty() && global_paraMgr.nbv.getBool("Use Confidence Seperation"))
+    if (!pData->isNBVGridsEmpty() && global_paraMgr.nbv.getBool("Use Confidence Separation"))
     {
       field_points = pData->getAllNBVGridCenters();
 

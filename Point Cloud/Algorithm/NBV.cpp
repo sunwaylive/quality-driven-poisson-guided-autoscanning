@@ -626,9 +626,10 @@ NBV::setGridUnHit(vector<int>& hit_grids_idx)
   }
 }
 
-void NBV::viewExtraction()
+void 
+NBV::viewExtraction()
 {
-  double nbv_confidence_value = para->getBool("Confidence Separation Value");
+  double nbv_confidence_value = para->getDouble("Confidence Separation Value");
   nbv_candidates->vert.clear();
 
   int index = 0;
