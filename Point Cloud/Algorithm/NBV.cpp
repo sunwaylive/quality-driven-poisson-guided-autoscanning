@@ -351,11 +351,12 @@ NBV::propagate()
             
           if (use_max_propagation)
           {
-            t.eigen_confidence = (std::max)(t.eigen_confidence, confidence_weight * iso_confidence);          
+            t.eigen_confidence = (std::max)(t.eigen_confidence, confidence_weight * float(1.0));          
           }
           else
           {
-            t.eigen_confidence += coefficient1 * iso_confidence;
+            //t.eigen_confidence += coefficient1 * iso_confidence;
+            t.eigen_confidence += coefficient1 * 1.0;
           }
 
           if (use_average_confidence)

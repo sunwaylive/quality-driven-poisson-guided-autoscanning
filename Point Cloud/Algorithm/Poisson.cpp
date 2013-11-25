@@ -773,6 +773,10 @@ void Poisson::runPoisson()
 
 void Poisson::runSlice()
 {
+  if (field_points->vert.empty())
+  {
+    return;
+  }
   int iso_num = field_points->vert.size();
   double show_percentage = para->getDouble("Show Slice Percentage");
   bool paraller_slice_mode = para->getBool("Parallel Slices Mode");

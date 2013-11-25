@@ -1614,7 +1614,8 @@ void GLArea::wheelEvent(QWheelEvent *e)
   if (global_paraMgr.nbv.getBool("Use Confidence Seperation")
       && (e->modifiers() & Qt::ControlModifier)
       && (e->modifiers() & Qt::AltModifier)
-      && (e->modifiers() & Qt::ShiftModifier))
+      && (e->modifiers() & Qt::ShiftModifier)
+      && !global_paraMgr.poisson.getBool("Show Slices Mode"))
   {
     size_temp = global_paraMgr.nbv.getDouble("Confidence Seperation Value");
     size_temp *= change2;
