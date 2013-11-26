@@ -50,6 +50,7 @@ private slots:
   void propagateOnePoint();
   void gridSegment();
   void extractViewCandidates();
+  void extractViewIntoBins();
   void runViewClustering();
 
 private:

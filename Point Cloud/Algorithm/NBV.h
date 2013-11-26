@@ -28,6 +28,7 @@ private:
   void propagate();
 
   void viewExtraction();
+  void viewExtractionIntoBins();
   void viewClustering();
 
   void normalizeConfidence(vector<CVertex>& vertexes, float delta);
@@ -53,4 +54,6 @@ private:
   int              y_max;
   int              z_max;
   std::vector<NBVGrid>  *all_nbv_grids; //grids in all the space
+
+  static int       view_bins_each_axis;
 };

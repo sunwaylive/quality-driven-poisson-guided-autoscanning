@@ -233,17 +233,18 @@ void GLArea::paintGL()
 
 	if (para->getBool("Show Normal")) 
 	{
-    if (para->getBool("Show NBV Grids"))
+    if (para->getBool("Show NBV Candidates"))
+    {
+      if (!dataMgr.isNBVGridsEmpty())
+      {
+        glDrawer.draw(GLDrawer::NORMAL, dataMgr.getNbvCandidates());
+      }
+    }else if (para->getBool("Show NBV Grids"))
     {
       if (!dataMgr.isNBVGridsEmpty())
       {
         glDrawer.draw(GLDrawer::NORMAL, dataMgr.getAllNBVGridCenters());
       } 
-
-      if (!dataMgr.isNBVGridsEmpty())
-      {
-        glDrawer.draw(GLDrawer::NORMAL, dataMgr.getNbvCandidates());
-      }
     }
     else if (para->getBool("Show ISO Points"))
     {
