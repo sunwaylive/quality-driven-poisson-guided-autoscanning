@@ -40,6 +40,7 @@ class OctNode
 {
 private:
 	static int UseAlloc;
+	unsigned long long _depthAndOffset;
 
 	class AdjacencyCountFunction
 	{
@@ -82,7 +83,6 @@ public:
 
 	OctNode* parent;
 	OctNode* children;
-	short d , off[DIMENSION];
 	NodeData nodeData;
 
 	OctNode(void);
@@ -94,7 +94,8 @@ public:
 	static inline void DepthAndOffset(const long long& index,int& depth,int offset[DIMENSION]);
 	static inline void CenterAndWidth(const long long& index,Point3D<Real>& center,Real& width);
 	static inline int Depth(const long long& index);
-	static inline void Index(int depth,const int offset[3],short& d,short off[DIMENSION]);
+	static inline void Index( int depth , const int offset[3] , short& d , short off[DIMENSION] );
+	static inline unsigned long long Index( int depth , const int offset[3] );
 	void centerAndWidth( Point3D<Real>& center , Real& width ) const;
 	bool isInside( Point3D< Real > p ) const;
 
@@ -202,6 +203,8 @@ public:
 		Neighbors3& setNeighbors( OctNode* node , bool flags[3][3][3] );
 		Neighbors3& setNeighbors( OctNode* node );
 		Neighbors3& getNeighbors( OctNode* node );
+		void setNeighbors( OctNode* node , typename OctNode< NodeData , Real >::Neighbors5& neighbors );
+		void getNeighbors( OctNode* node , typename OctNode< NodeData , Real >::Neighbors5& neighbors );
 	};
 	class ConstNeighbors3
 	{
@@ -221,6 +224,7 @@ public:
 		void set(int depth);
 		ConstNeighbors3& getNeighbors( const OctNode* node );
 		ConstNeighbors3& getNeighbors( const OctNode* node , int minDepth );
+		void getNeighbors( const OctNode* node , typename OctNode< NodeData , Real >::ConstNeighbors5& neighbors );
 	};
 	class Neighbors5
 	{

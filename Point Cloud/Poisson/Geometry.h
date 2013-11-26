@@ -53,6 +53,10 @@ struct Point3D
 	inline Point3D  operator -  ( Point3D p ) const { Point3D q ; q.coords[0] = coords[0] - p.coords[0] , q.coords[1] = coords[1] - p.coords[1] , q.coords[2] = coords[2] - p.coords[2] ; return q; }
 	inline Point3D  operator *  ( Real r ) const { Point3D q ; q.coords[0] = coords[0] * r , q.coords[1] = coords[1] * r , q.coords[2] = coords[2] * r ; return q; }
 	inline Point3D  operator /  ( Real r ) const { return (*this) * ( Real(1.)/r ); }
+
+	static Real Dot( const Point3D< Real >& p1 , const Point3D< Real >& p2 ){ return p1.coords[0]*p2.coords[0] + p1.coords[1]*p2.coords[1] + p1.coords[2]*p2.coords[2]; }
+	template< class Real1 , class Real2 >
+	static Real Dot( const Point3D< Real1 >& p1 , const Point3D< Real2 >& p2 ){ return Real( p1.coords[0]*p2.coords[0] + p1.coords[1]*p2.coords[1] + p1.coords[2]*p2.coords[2] ); }
 };
 
 template< class Real >

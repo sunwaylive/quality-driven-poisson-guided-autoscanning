@@ -12,7 +12,7 @@ in the documentation and/or other materials provided with the distribution.
 
 Neither the name of the Johns Hopkins University nor the names of its contributors
 may be used to endorse or promote products derived from this software without specific
-prior writften permission. 
+prior written permission. 
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
 EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO THE IMPLIED WARRANTIES 
@@ -26,58 +26,21 @@ ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF S
 DAMAGE.
 */
 
-#ifndef POINT_STREAM_INCLUDED
-#define POINT_STREAM_INCLUDED
+#include <string.h>
+#include <sys/timeb.h>
+#ifndef WIN32
+#include <sys/time.h>
+#endif // WIN32
 
-template< class Real >
-class PointStream
+double PTime( void )
 {
-public:
-	virtual ~PointStream( void ){}
-	virtual void reset( void ) = 0;
-	virtual bool nextPoint( Point3D< Real >& p , Point3D< Real >& n ) = 0;
-};
-
-template< class Real >
-class ASCIIPointStream : public PointStream< Real >
-{
-	FILE* _fp;
-public:
-	ASCIIPointStream( const char* fileName );
-	~ASCIIPointStream( void );
-	void reset( void );
-	bool nextPoint( Point3D< Real >& p , Point3D< Real >& n );
-};
-
-template< class Real >
-class BinaryPointStream : public PointStream< Real >
-{
-	FILE* _fp;
-	static const int POINT_BUFFER_SIZE=1024;
-	Real _pointBuffer[ POINT_BUFFER_SIZE * 2 * 3 ];
-	int _pointsInBuffer , _currentPointIndex;
-public:
-	BinaryPointStream( const char* filename );
-	~BinaryPointStream( void );
-	void reset( void );
-	bool nextPoint( Point3D< Real >& p , Point3D< Real >& n );
-};
-
-template< class Real >
-class PLYPointStream : public PointStream< Real >
-{
-	char* _fileName;
-	PlyFile* _ply;
-	int _nr_elems;
-	char **_elist;
-
-	int _pCount , _pIdx;
-	void _free( void );
-public:
-	PLYPointStream( const char* fileName );
-	~PLYPointStream( void );
-	void reset( void );
-	bool nextPoint( Point3D< Real >& p , Point3D< Real >& n );
-};
-#include "PointStream.inl"
-#endif // POINT_STREAM_INCLUDED
+#ifdef WIN32
+	struct _timeb t;
+	_ftime( &t );
+	return double( t.time ) + double( t.millitm ) / 1000.0;
+#else // WIN32
+	struct timeval t;
+	gettimeofday( &t , NULL );
+	return t.tv_sec + double( t.tv_usec ) / 1000000;
+#endif // WIN32
+}

@@ -253,6 +253,9 @@
     <ClCompile Include="NBVGrid.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Poisson\PTime.cpp">
+      <Filter>Poisson</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="mainwindow.h">
@@ -466,6 +469,9 @@
     </ClInclude>
     <ClInclude Include="NBVGrid.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Poisson\MemoryUsage.h">
+      <Filter>Poisson</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

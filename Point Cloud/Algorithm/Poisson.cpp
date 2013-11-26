@@ -569,8 +569,8 @@ void Poisson::runPoisson()
 
     tentative_mesh.vert.clear();
     tentative_mesh.face.clear();
-    //tri::Allocator<CMesh>::AddVertices(tentative_mesh,vm);
-    //tri::Allocator<CMesh>::AddFaces(tentative_mesh,fm);
+    //tri::MyAllocator<CMesh>::AddVertices(tentative_mesh,vm);
+    //tri::MyAllocator<CMesh>::AddFaces(tentative_mesh,fm);
 
     Point3D<float> p;
     PlyVertex<float> pv; 
@@ -661,8 +661,8 @@ void Poisson::runPoisson()
     //  model->face.push_back(tentative_mesh.face[i]);
     //}
     //model->fn = model->face.size();
-    //vcg::tri::Allocator<CMesh>::CompactFaceVector(*model);  
-    //vcg::tri::Allocator<CMesh>::CompactVertexVector(*model);
+    //vcg::tri::MyAllocator<CMesh>::CompactFaceVector(*model);  
+    //vcg::tri::MyAllocator<CMesh>::CompactVertexVector(*model);
 
     float radius = 0;
     int sampleNum = para->getDouble("Poisson Disk Sample Number");

@@ -338,7 +338,7 @@ void ParameterMgr::initPoissonParameter()
 
   poisson.addParam(new RichBool("Run Slice", false));
   poisson.addParam(new RichBool("Run Clear Slice", false));
-  poisson.addParam(new RichDouble("Max Depth", 6));
+  poisson.addParam(new RichDouble("Max Depth", 7));
 
   poisson.addParam(new RichBool("Show Slices Mode", false));
   poisson.addParam(new RichBool("Parallel Slices Mode", false));

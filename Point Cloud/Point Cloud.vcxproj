@@ -449,6 +449,7 @@
     <ClCompile Include="Poisson\MarchingCubes.cpp" />
     <ClCompile Include="Poisson\MultiGridOctest.cpp" />
     <ClCompile Include="Poisson\PlyFile.cpp" />
+    <ClCompile Include="Poisson\PTime.cpp" />
     <ClCompile Include="trackball.cpp" />
     <ClCompile Include="trackmode.cpp" />
     <ClCompile Include="UI\dlg_camera_para.cpp" />
@@ -547,6 +548,7 @@
     <ClInclude Include="Poisson\Hash.h" />
     <ClInclude Include="Poisson\MarchingCubes.h" />
     <ClInclude Include="Poisson\MAT.h" />
+    <ClInclude Include="Poisson\MemoryUsage.h" />
     <ClInclude Include="Poisson\MultiGridOctreeData.h" />
     <ClInclude Include="Poisson\Octree.h" />
     <ClInclude Include="Poisson\Ply.h" />

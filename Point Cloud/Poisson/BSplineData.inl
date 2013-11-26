@@ -79,6 +79,12 @@ BSplineData<Degree,Real>::BSplineData( void )
 	vvDotTable = dvDotTable = ddDotTable = NullPointer< Real >();
 	valueTables = dValueTables = NullPointer< Real >();
 	functionCount = sampleCount = 0;
+	SetBSplineElementIntegrals< Degree   , Degree   >( _vvIntegrals );
+	SetBSplineElementIntegrals< Degree   , Degree-1 >( _vdIntegrals );
+	SetBSplineElementIntegrals< Degree-1 , Degree   >( _dvIntegrals );
+	SetBSplineElementIntegrals< Degree-1 , Degree-1 >( _ddIntegrals );
+	_cc_vv_Integrals = _cc_dv_Integrals = _cc_vd_Integrals = _cc_dd_Integrals = NullPointer< _CCIntegrals >();
+	_cp_vv_Integrals = _cp_dv_Integrals = _cp_vd_Integrals = _cp_dd_Integrals = NullPointer< _CPIntegrals >();
 }
 
 template< int Degree , class Real >
@@ -94,12 +100,110 @@ BSplineData< Degree , Real >::~BSplineData(void)
 	}
 	functionCount = 0;
 }
+template< int Degree , class Real >
+double BSplineData< Degree , Real >::Integrator::dot( int depth , int off1 , int off2 , bool d1 , bool d2 , bool childParent ) const
+{
+	if( depth<0 || depth>=int( iTables.size() ) ) return 0.;
+	const typename Integrator::IntegralTables& iTable = iTables[depth];
+	if( childParent )
+	{
+		int c = off1&1;
+		off1 >>= 1 , depth--;
+		int ii , d = off2-off1 , res = (1<<depth);
+		if( depth<0 || off1<0 || off2<0 || off1>=res || off2>=res || d<-Degree || d>Degree ) return 0;
+		if     ( off1<     Degree ) ii = off1;
+		else if( off1>=res-Degree ) ii = 2*Degree + off1 - (res-1);
+		else                        ii = Degree;
+		if     ( d1 && d2 ) return iTable.dd_cpIntegrals[2*ii+c][d+Degree];
+		else if( d1       ) return iTable.dv_cpIntegrals[2*ii+c][d+Degree];
+		else if(       d2 ) return iTable.vd_cpIntegrals[2*ii+c][d+Degree];
+		else                return iTable.vv_cpIntegrals[2*ii+c][d+Degree];
+	}
+	else
+	{
+		int ii , d = off2-off1 , res = (1<<depth);
+		if( off1<0 || off2<0 || off1>=res || off2>=res || d<-Degree || d>Degree ) return 0;
+		if     ( off1<     Degree ) ii = off1;
+		else if( off1>=res-Degree ) ii = 2*Degree + off1 - (res-1);
+		else                        ii = Degree;
+		if     ( d1 && d2 ) return iTable.dd_ccIntegrals[ii][d+Degree];
+		else if( d1       ) return iTable.dv_ccIntegrals[ii][d+Degree];
+		else if(       d2 ) return iTable.vd_ccIntegrals[ii][d+Degree];
+		else                return iTable.vv_ccIntegrals[ii][d+Degree];
+	}
+}
+template< int Degree , class Real >
+template< int Radius >
+double BSplineData< Degree , Real >::CenterEvaluator< Radius >::value( int depth , int off1 , int off2 , bool d , bool childParent ) const
+{
+	if( depth<0 || depth>=int(vTables.size()) ) return 0.;
+	if( childParent )
+	{
+		int c = off1&1;
+		off1 >>= 1 , depth--;
+		const typename CenterEvaluator::ValueTables& vTable = vTables[depth];
+		int ii , dd = off1-off2 , res = (1<<depth);
+		if( depth<0 || off1<0 || off2<0 || off1>=res || off2>=res || dd<-Radius || dd>Radius ) return 0;
+		if     ( off2<     Degree ) ii = off2;
+		else if( off2>=res-Degree ) ii = 2*Degree + off2 - (res-1);
+		else                        ii = Degree;
+		if( d ) return vTable.dValues[ii][(dd+Radius)*3+2*c];
+		else    return vTable.vValues[ii][(dd+Radius)*3+2*c];
+	}
+	else
+	{
+		const typename CenterEvaluator::ValueTables& vTable = vTables[depth];
+		int ii , dd = off1-off2 , res = (1<<depth);
+		if( off1<0 || off2<0 || off1>=res || off2>=res || dd<-Radius || dd>Radius ) return 0;
+		if     ( off2<     Degree ) ii = off2;
+		else if( off2>=res-Degree ) ii = 2*Degree + off2 - (res-1);
+		else                        ii = Degree;
+		if( d ) return vTable.dValues[ii][(dd+Radius)*3+1];
+		else    return vTable.vValues[ii][(dd+Radius)*3+1];
+	}
+}
+template< int Degree , class Real >
+template< int Radius >
+double BSplineData< Degree , Real >::CornerEvaluator< Radius >::value( int depth , int off1 , int c1 , int off2 , bool d , bool childParent ) const
+{
+	if( c1<0 || c1>=2 )
+	{
+		fprintf( stderr , "[WARNING] Clamping corner to {0,1}\n" );
+		c1 = std::max< int >( 0 , std::min< int >( c1 , 1 ) );
+	}
+	if( depth<0 || depth>=int( vTables.size() ) ) return 0.;
+	if( childParent )
+	{
+		int c = off1&1;
+		off1 >>= 1 , depth--;
+		const typename CornerEvaluator::ValueTables& vTable = vTables[depth];
+		int ii , dd = off1-off2 , res = (1<<depth);
+		if( depth<0 || off1<0 || off2<0 || off1>=res || off2>=res || dd<-Radius || dd>Radius ) return 0;
+		if     ( off2<     Degree ) ii = off2;
+		else if( off2>=res-Degree ) ii = 2*Degree + off2 - (res-1);
+		else                        ii = Degree;
+		if( d ) return vTable.dValues[ii][(dd+Radius)*2+c+c1];
+		else    return vTable.vValues[ii][(dd+Radius)*2+c+c1];
+	}
+	else
+	{
+		const typename CornerEvaluator::ValueTables& vTable = vTables[depth];
+		int ii , dd = off1-off2 , res = (1<<depth);
+		if( off1<0 || off2<0 || off1>=res || off2>=res || dd<-Radius || dd>Radius ) return 0;
+		if     ( off2<     Degree ) ii = off2;
+		else if( off2>=res-Degree ) ii = 2*Degree + off2 - (res-1);
+		else                        ii = Degree;
+		if( d ) return vTable.dValues[ii][(dd+Radius)*2+2*c1];
+		else    return vTable.vValues[ii][(dd+Radius)*2+2*c1];
+	}
+}
+
 
 template< int Degree , class Real >
 void BSplineData<Degree,Real>::set( int maxDepth , bool useDotRatios , int boundaryType )
 {
-	this->useDotRatios = useDotRatios;
-	this->boundaryType = boundaryType;
+	_useDotRatios = useDotRatios;
+	_boundaryType = boundaryType;
 
 	depth = maxDepth;
 	// [Warning] This assumes that the functions spacing is dual
@@ -117,7 +221,7 @@ void BSplineData<Degree,Real>::set( int maxDepth , bool useDotRatios , int bound
 	{
 		sPolys[i].start = double(-(Degree+1)/2) + i - 1.5;
 		sPolys[i].p *= 0;
-		if(         i<=Degree   )  sPolys[i].p += baseBSpline[i  ].shift( -1 ) * boundaryType;
+		if(         i<=Degree   )  sPolys[i].p += baseBSpline[i  ].shift( -1 ) * _boundaryType;
 		if( i>=1 && i<=Degree+1 )  sPolys[i].p += baseBSpline[i-1];
 		for( int j=0 ; j<i ; j++ ) sPolys[i].p -= sPolys[j].p;
 	}
@@ -127,7 +231,7 @@ void BSplineData<Degree,Real>::set( int maxDepth , bool useDotRatios , int bound
 		sPolys[i].start = double(-(Degree+1)/2) + i - 0.5;
 		sPolys[i].p *= 0;
 		if(         i<=Degree   )  sPolys[i].p += baseBSpline[i  ];
-		if( i>=1 && i<=Degree+1 )  sPolys[i].p += baseBSpline[i-1].shift( 1 ) * boundaryType;
+		if( i>=1 && i<=Degree+1 )  sPolys[i].p += baseBSpline[i-1].shift( 1 ) * _boundaryType;
 		for( int j=0 ; j<i ; j++ ) sPolys[i].p -= sPolys[j].p;
 	}
 	rightBaseFunction.set( sPolys , Degree+3 );
@@ -135,9 +239,9 @@ void BSplineData<Degree,Real>::set( int maxDepth , bool useDotRatios , int bound
 	{
 		sPolys[i].start = double(-(Degree+1)/2) + i - 1.5;
 		sPolys[i].p *= 0;
-		if(         i<=Degree   )  sPolys[i].p += baseBSpline[i  ].shift( -1 ) * boundaryType; // The left-shifted B-spline
+		if(         i<=Degree   )  sPolys[i].p += baseBSpline[i  ].shift( -1 ) * _boundaryType; // The left-shifted B-spline
 		if( i>=1 && i<=Degree+1 )  sPolys[i].p += baseBSpline[i-1];             // The centered B-Spline
-		if( i>=2 && i<=Degree+2 )  sPolys[i].p += baseBSpline[i-2].shift(  1 ) * boundaryType; // The right-shifted B-spline
+		if( i>=2 && i<=Degree+2 )  sPolys[i].p += baseBSpline[i-2].shift(  1 ) * _boundaryType; // The right-shifted B-spline
 		for( int j=0 ; j<i ; j++ ) sPolys[i].p -= sPolys[j].p;
 	}
 	leftRightBaseFunction.set( sPolys , Degree+4 );
@@ -151,15 +255,15 @@ void BSplineData<Degree,Real>::set( int maxDepth , bool useDotRatios , int bound
 	leftRightBSpline[1] += leftRightBSpline[2].shift( -1 ) + leftRightBSpline[0].shift( 1 ) , leftRightBSpline[0] *= 0 , leftRightBSpline[2] *= 0 ;
 
 	double c , w;
-	for( int i=0 ; i<functionCount ; i++ )
+	for( size_t i=0 ; i<functionCount ; i++ )
 	{
-		BinaryNode< double >::CenterAndWidth( i , c , w );
+		BinaryNode< double >::CenterAndWidth( int(i) , c , w );
 		baseFunctions[i] = baseFunction.scale(w).shift(c);
 		baseBSplines[i] = baseBSpline.scale(w).shift(c);
-		if( boundaryType )
+		if( _boundaryType )
 		{
 			int d , off , r;
-			BinaryNode< double >::DepthAndOffset( i , d , off );
+			BinaryNode< double >::DepthAndOffset( int(i) , d , off );
 			r = 1<<d;
 			if     ( off==0 && off==r-1 ) baseFunctions[i] = leftRightBaseFunction.scale(w).shift(c);
 			else if( off==0             ) baseFunctions[i] =      leftBaseFunction.scale(w).shift(c);
@@ -170,124 +274,262 @@ void BSplineData<Degree,Real>::set( int maxDepth , bool useDotRatios , int bound
 		}
 	}
 }
+template< int Degree , class Real >
+template< bool D1 , bool D2 >
+double BSplineData< Degree , Real >::_dot( int depth1 ,  int off1 , int depth2 , int off2 , bool inset ) const
+{
+	const int _Degree1 = (D1 ? (Degree-1) : Degree) , _Degree2 = (D2 ? (Degree-1) : Degree);
+	int sums[ _Degree1+1 ][ _Degree2+1 ];
+
+	int depth = std::max< int >( depth1 , depth2 );
+
+	BSplineElements< Degree > b1( 1<<depth1 , off1 , _boundaryType , inset ? ( 1<<(depth1-2) ) : 0 ) , b2( 1<<depth2 , off2 , _boundaryType , inset ? ( 1<<(depth2-2) ) : 0 );
+
+	BSplineElements< Degree > b;
+	while( depth1<depth ) b=b1 , b.upSample( b1 ) , depth1++;
+	while( depth2<depth ) b=b2 , b.upSample( b2 ) , depth2++;
+
+	BSplineElements< Degree-1 > db1 , db2;
+	b1.differentiate( db1 ) , b2.differentiate( db2 );
+
+	int start1=-1 , end1=-1 , start2=-1 , end2=-1;
+	for( int i=0 ; i<int( b1.size() ) ; i++ ) for( int j=0 ; j<=Degree ; j++ )
+	{
+		if( b1[i][j] && start1==-1 ) start1 = i;
+		if( b1[i][j] ) end1 = i+1;
+		if( b2[i][j] && start2==-1 ) start2 = i;
+		if( b2[i][j] ) end2 = i+1;
+	}
+	if( start1==end1 || start2==end2 || start1>=end2 || start2>=end1 ) return Real(0);
+	int start = std::max< int >( start1 , start2 ) , end = std::min< int >( end1 , end2 );
+	memset( sums , 0 , sizeof( sums ) );
+	for( int i=start ; i<end ; i++ ) for( int j=0 ; j<=_Degree1 ; j++ ) for( int k=0 ; k<=_Degree2 ; k++ ) sums[j][k] += ( D1 ?  db1[i][j] : b1[i][j] ) * ( D2 ? db2[i][k] : b2[i][k] );
+	double _dot = 0;
+	if     ( D1 && D2 ) for( int j=0 ; j<=_Degree1 ; j++ ) for( int k=0 ; k<=_Degree2 ; k++ ) _dot += _ddIntegrals[j][k] * sums[j][k];
+	else if( D1       ) for( int j=0 ; j<=_Degree1 ; j++ ) for( int k=0 ; k<=_Degree2 ; k++ ) _dot += _dvIntegrals[j][k] * sums[j][k];
+	else if(       D2 ) for( int j=0 ; j<=_Degree1 ; j++ ) for( int k=0 ; k<=_Degree2 ; k++ ) _dot += _vdIntegrals[j][k] * sums[j][k];
+	else                for( int j=0 ; j<=_Degree1 ; j++ ) for( int k=0 ; k<=_Degree2 ; k++ ) _dot += _vvIntegrals[j][k] * sums[j][k];
+	_dot /= b1.denominator;
+	_dot /= b2.denominator;
+	if     ( D1 && D2 ) return _dot * (1<<depth);
+	else if( D1 || D2 ) return _dot;
+	else                return _dot / (1<<depth);
+}
+template< int Degree , class Real >
+double BSplineData< Degree , Real >::value( int depth ,  int off , double smoothingRadius ,  double s , bool d , bool inset ) const
+{
+	PPolynomial< Degree+1 >  function;
+	PPolynomial< Degree   > dFunction;
+
+	if( off<0 || off>=(1<<depth) ) return 0;
+	int idx = BinaryNode< Real >::CenterIndex( depth , off );
+
+	if( smoothingRadius>0 ) function = baseFunctions[idx].MovingAverage( smoothingRadius );
+	else                    function = baseFunctions[idx];
+	dFunction = function.derivative();
+
+	if( d ) return dFunction(s);
+	else    return  function(s);
+}
+template< int Degree , class Real >
+void BSplineData< Degree , Real >::setIntegrator( Integrator& integrator , bool inset ) const
+{
+	integrator.iTables.resize( depth+1 );
+	for( int d=0 ; d<=depth ; d++ ) for( int i=0 ; i<=2*Degree ; i++ ) for( int j=-Degree ; j<=Degree ; j++ )
+	{
+		int res = 1<<d , ii = (i<=Degree ? i : i+res-1 - 2*Degree );
+		integrator.iTables[d].vv_ccIntegrals[i][j+Degree] = _dot< false , false >( d , ii , d , ii+j , inset );
+		integrator.iTables[d].dv_ccIntegrals[i][j+Degree] = _dot< true  , false >( d , ii , d , ii+j , inset );
+		integrator.iTables[d].vd_ccIntegrals[i][j+Degree] = _dot< false , true  >( d , ii , d , ii+j , inset );
+		integrator.iTables[d].dd_ccIntegrals[i][j+Degree] = _dot< true  , true  >( d , ii , d , ii+j , inset );
+	}
+	for( int d=1 ; d<=depth ; d++ ) for( int i=0 ; i<=2*Degree ; i++ ) for( int j=-Degree ; j<=Degree ; j++ )
+	{
+		int res = 1<<d , ii = (i<=Degree ? i : i+(res/2)-1 - 2*Degree );
+		for( int c=0 ; c<2 ; c++ )
+		{
+			integrator.iTables[d].vv_cpIntegrals[2*i+c][j+Degree] = _dot< false , false >( d , 2*ii+c , d-1 , ii+j , inset );
+			integrator.iTables[d].dv_cpIntegrals[2*i+c][j+Degree] = _dot< true  , false >( d , 2*ii+c , d-1 , ii+j , inset );
+			integrator.iTables[d].vd_cpIntegrals[2*i+c][j+Degree] = _dot< false , true  >( d , 2*ii+c , d-1 , ii+j , inset );
+			integrator.iTables[d].dd_cpIntegrals[2*i+c][j+Degree] = _dot< true  , true  >( d , 2*ii+c , d-1 , ii+j , inset );
+		}
+	}
+}
+template< int Degree , class Real >
+template< int Radius >
+void BSplineData< Degree , Real >::setCenterEvaluator( CenterEvaluator< Radius >& evaluator , double smoothingRadius , double dSmoothingRadius , bool inset ) const
+{
+	evaluator.vTables.resize( depth+1 );
+	for( int d=0 ; d<=depth ; d++ ) for( int i=0 ; i<=2*Degree ; i++ ) for( int j=-Radius ; j<=Radius ; j++ ) for( int k=-1 ; k<=1 ; k++ )
+	{
+		int res = 1<<d , ii = (i<=Degree ? i : i+res-1 - 2*Degree );
+		double s = 0.5+ii+j+0.25*k;
+		evaluator.vTables[d].vValues[i][(j+Radius)*3+(k+1)] = value( d , ii ,  smoothingRadius , s/res , false , inset );
+		evaluator.vTables[d].dValues[i][(j+Radius)*3+(k+1)] = value( d , ii , dSmoothingRadius , s/res , true  , inset );
+	}
+}
+template< int Degree , class Real >
+template< int Radius >
+void BSplineData< Degree , Real >::setCornerEvaluator( CornerEvaluator< Radius >& evaluator , double smoothingRadius , double dSmoothingRadius , bool inset ) const
+{
+	evaluator.vTables.resize( depth+1 );
+	for( int d=0 ; d<=depth ; d++ ) for( int i=0 ; i<=2*Degree ; i++ ) for( int j=-Radius ; j<=Radius ; j++ ) for( int k=0 ; k<=2 ; k++ )
+	{
+		int res = 1<<d , ii = (i<=Degree ? i : i+res-1 - 2*Degree );
+		double s = ii+j+0.5*k;
+		evaluator.vTables[d].vValues[i][(j+Radius)*2+k] = value( d , ii ,  smoothingRadius , s/res , false , inset );
+		evaluator.vTables[d].dValues[i][(j+Radius)*2+k] = value( d , ii , dSmoothingRadius , s/res , true  , inset );
+	}
+}
+
 template<int Degree,class Real>
-void BSplineData<Degree,Real>::setDotTables( int flags , bool inset )
+void BSplineData< Degree , Real >::setDotTables( int flags , bool full , bool inset )
 {
 	clearDotTables( flags );
-	int size = ( functionCount*functionCount + functionCount )>>1;
-	int fullSize = functionCount*functionCount;
-	if( flags & VV_DOT_FLAG )
+	_cc_vv_Integrals = NewPointer< _CCIntegrals >( depth+1 );
+	_cc_dv_Integrals = NewPointer< _CCIntegrals >( depth+1 );
+	_cc_vd_Integrals = NewPointer< _CCIntegrals >( depth+1 );
+	_cc_dd_Integrals = NewPointer< _CCIntegrals >( depth+1 );
+	_cp_vv_Integrals = NewPointer< _CPIntegrals >( depth+1 );
+	_cp_dv_Integrals = NewPointer< _CPIntegrals >( depth+1 );
+	_cp_vd_Integrals = NewPointer< _CPIntegrals >( depth+1 );
+	_cp_dd_Integrals = NewPointer< _CPIntegrals >( depth+1 );
+	for( int d=0 ; d<=depth ; d++ ) for( int i=0 ; i<=2*Degree ; i++ ) for( int j=-Degree ; j<=Degree ; j++ )
 	{
-		vvDotTable = NewPointer< Real >( size );
-		memset( vvDotTable , 0 , sizeof(Real)*size );
+		int res = 1<<d , ii = (i<=Degree ? i : i+res-1 - 2*Degree );
+		_cc_vv_Integrals[d].integrals[i][j+Degree] = _dot< false , false >( d , ii , d , ii+j , inset );
+		_cc_dv_Integrals[d].integrals[i][j+Degree] = _dot< true  , false >( d , ii , d , ii+j , inset );
+		_cc_vd_Integrals[d].integrals[i][j+Degree] = _dot< false , true  >( d , ii , d , ii+j , inset );
+		_cc_dd_Integrals[d].integrals[i][j+Degree] = _dot< true  , true  >( d , ii , d , ii+j , inset );
 	}
-	if( flags & DV_DOT_FLAG )
+	for( int d=1 ; d<=depth ; d++ ) for( int i=0 ; i<=2*Degree ; i++ ) for( int j=-Degree ; j<=Degree ; j++ )
 	{
-		dvDotTable = NewPointer< Real >( fullSize );
-		memset( dvDotTable , 0 , sizeof(Real)*fullSize );
-	}
-	if( flags & DD_DOT_FLAG )
-	{
-		ddDotTable = NewPointer< Real >( size );
-		memset( ddDotTable , 0 , sizeof(Real)*size );
-	}
-	double vvIntegrals[Degree+1][Degree+1];
-	double vdIntegrals[Degree+1][Degree  ];
-	double dvIntegrals[Degree  ][Degree+1];
-	double ddIntegrals[Degree  ][Degree  ];
-	int vvSums[Degree+1][Degree+1];
-	int vdSums[Degree+1][Degree  ];
-	int dvSums[Degree  ][Degree+1];
-	int ddSums[Degree  ][Degree  ];
-	SetBSplineElementIntegrals< Degree   , Degree   >( vvIntegrals );
-	SetBSplineElementIntegrals< Degree   , Degree-1 >( vdIntegrals );
-	SetBSplineElementIntegrals< Degree-1 , Degree   >( dvIntegrals );
-	SetBSplineElementIntegrals< Degree-1 , Degree-1 >( ddIntegrals );
-
-	for( int d1=0 ; d1<=depth ; d1++ )
-		for( int off1=0 ; off1<(1<<d1) ; off1++ )
+		int res = 1<<d , ii = (i<=Degree ? i : i+(res/2)-1 - 2*Degree );
+		for( int c=0 ; c<2 ; c++ )
 		{
-			int ii = BinaryNode< Real >::CenterIndex( d1 , off1 );
-			BSplineElements< Degree > b1( 1<<d1 , off1 , boundaryType , inset ? ( 1<<(d1-2) ) : 0 );
-			BSplineElements< Degree-1 > db1;
-			b1.differentiate( db1 );
+			_cp_vv_Integrals[d].integrals[2*i+c][j+Degree] = _dot< false , false >( d , 2*ii+c , d-1 , ii+j , inset );
+			_cp_dv_Integrals[d].integrals[2*i+c][j+Degree] = _dot< true  , false >( d , 2*ii+c , d-1 , ii+j , inset );
+			_cp_vd_Integrals[d].integrals[2*i+c][j+Degree] = _dot< false , true  >( d , 2*ii+c , d-1 , ii+j , inset );
+			_cp_dd_Integrals[d].integrals[2*i+c][j+Degree] = _dot< true  , true  >( d , 2*ii+c , d-1 , ii+j , inset );
+		}
+	}
+	if( full )
+	{
+		size_t size = ( functionCount*functionCount + functionCount )>>1;
+		size_t fullSize = functionCount*functionCount;
+		if( flags & VV_DOT_FLAG )
+		{
+			vvDotTable = NewPointer< Real >( size );
+			memset( vvDotTable , 0 , sizeof(Real)*size );
+		}
+		if( flags & DV_DOT_FLAG )
+		{
+			dvDotTable = NewPointer< Real >( fullSize );
+			memset( dvDotTable , 0 , sizeof(Real)*fullSize );
+		}
+		if( flags & DD_DOT_FLAG )
+		{
+			ddDotTable = NewPointer< Real >( size );
+			memset( ddDotTable , 0 , sizeof(Real)*size );
+		}
+		double vvIntegrals[Degree+1][Degree+1];
+		double vdIntegrals[Degree+1][Degree  ];
+		double dvIntegrals[Degree  ][Degree+1];
+		double ddIntegrals[Degree  ][Degree  ];
+		int vvSums[Degree+1][Degree+1];
+		int vdSums[Degree+1][Degree  ];
+		int dvSums[Degree  ][Degree+1];
+		int ddSums[Degree  ][Degree  ];
+		SetBSplineElementIntegrals< Degree   , Degree   >( vvIntegrals );
+		SetBSplineElementIntegrals< Degree   , Degree-1 >( vdIntegrals );
+		SetBSplineElementIntegrals< Degree-1 , Degree   >( dvIntegrals );
+		SetBSplineElementIntegrals< Degree-1 , Degree-1 >( ddIntegrals );
 
-			int start1 , end1;
-
-			start1 = -1 , end1 = -1;
-			for( int i=0 ; i<int(b1.size()) ; i++ ) for( int j=0 ; j<=Degree ; j++ )
+		for( int d1=0 ; d1<=depth ; d1++ )
+			for( int off1=0 ; off1<(1<<d1) ; off1++ )
 			{
-				if( b1[i][j] && start1==-1 ) start1 = i;
-				if( b1[i][j] ) end1 = i+1;
-			}
-			if( start1==end1 ) continue;
-			for( int d2=d1 ; d2<=depth ; d2++ )
-			{
-				for( int off2=0 ; off2<(1<<d2) ; off2++ )
-				{
-					int start2 = off2-Degree;
-					int end2   = off2+Degree+1;
-					if( start2>=end1 || start1>=end2 ) continue;
-					start2 = std::max< int >( start1 , start2 );
-					end2   = std::min< int >(   end1 ,   end2 );
-					if( d1==d2 && off2<off1 ) continue;
-					int jj = BinaryNode< Real >::CenterIndex( d2 , off2 );
-					BSplineElements< Degree > b2( 1<<d2 , off2 , boundaryType , inset ? ( 1<<(d2-2) ) : 0 );
-					BSplineElements< Degree-1 > db2;
-					b2.differentiate( db2 );
-
-					int idx = SymmetricIndex( ii , jj );
-					int idx1 = Index( ii , jj ) , idx2 = Index( jj , ii );
-
-					memset( vvSums , 0 , sizeof( int ) * ( Degree+1 ) * ( Degree+1 ) );
-					memset( vdSums , 0 , sizeof( int ) * ( Degree+1 ) * ( Degree   ) );
-					memset( dvSums , 0 , sizeof( int ) * ( Degree   ) * ( Degree+1 ) );
-					memset( ddSums , 0 , sizeof( int ) * ( Degree   ) * ( Degree   ) );
-					for( int i=start2 ; i<end2 ; i++ )
-					{
-						for( int j=0 ; j<=Degree ; j++ ) for( int k=0 ; k<=Degree ; k++ ) vvSums[j][k] +=  b1[i][j] *  b2[i][k];
-						for( int j=0 ; j<=Degree ; j++ ) for( int k=0 ; k< Degree ; k++ ) vdSums[j][k] +=  b1[i][j] * db2[i][k];
-						for( int j=0 ; j< Degree ; j++ ) for( int k=0 ; k<=Degree ; k++ ) dvSums[j][k] += db1[i][j] *  b2[i][k];
-						for( int j=0 ; j< Degree ; j++ ) for( int k=0 ; k< Degree ; k++ ) ddSums[j][k] += db1[i][j] * db2[i][k];
-					}
-					double vvDot = 0 , dvDot = 0 , vdDot = 0 , ddDot = 0;
-					for( int j=0 ; j<=Degree ; j++ ) for( int k=0 ; k<=Degree ; k++ ) vvDot += vvIntegrals[j][k] * vvSums[j][k];
-					for( int j=0 ; j<=Degree ; j++ ) for( int k=0 ; k< Degree ; k++ ) vdDot += vdIntegrals[j][k] * vdSums[j][k];
-					for( int j=0 ; j< Degree ; j++ ) for( int k=0 ; k<=Degree ; k++ ) dvDot += dvIntegrals[j][k] * dvSums[j][k];
-					for( int j=0 ; j< Degree ; j++ ) for( int k=0 ; k< Degree ; k++ ) ddDot += ddIntegrals[j][k] * ddSums[j][k];
-					vvDot /= (1<<d2);
-					ddDot *= (1<<d2);
-					vvDot /= ( b1.denominator * b2.denominator );
-					dvDot /= ( b1.denominator * b2.denominator );
-					vdDot /= ( b1.denominator * b2.denominator );
-					ddDot /= ( b1.denominator * b2.denominator );
-					if( fabs(vvDot)<1e-15 ) continue;
-					if( flags & VV_DOT_FLAG ) vvDotTable [idx] = Real( vvDot );
-					if( useDotRatios )
-					{
-						if( flags & DV_DOT_FLAG ) dvDotTable[idx1] = Real( dvDot / vvDot );
-						if( flags & DV_DOT_FLAG ) dvDotTable[idx2] = Real( vdDot / vvDot );
-						if( flags & DD_DOT_FLAG ) ddDotTable[idx ] = Real( ddDot / vvDot );
-					}
-					else
-					{
-						if( flags & DV_DOT_FLAG ) dvDotTable[idx1] = Real( dvDot );
-						if( flags & DV_DOT_FLAG ) dvDotTable[idx2] = Real( dvDot );
-						if( flags & DD_DOT_FLAG ) ddDotTable[idx ] = Real( ddDot );
-					}
-				}
-				BSplineElements< Degree > b;
-				b = b1;
-				b.upSample( b1 );
+				int ii = BinaryNode< Real >::CenterIndex( d1 , off1 );
+				BSplineElements< Degree > b1( 1<<d1 , off1 , _boundaryType , inset ? ( 1<<(d1-2) ) : 0 );
+				BSplineElements< Degree-1 > db1;
 				b1.differentiate( db1 );
-				start1 = -1;
+
+				int start1 , end1;
+
+				start1 = -1 , end1 = -1;
 				for( int i=0 ; i<int(b1.size()) ; i++ ) for( int j=0 ; j<=Degree ; j++ )
 				{
 					if( b1[i][j] && start1==-1 ) start1 = i;
 					if( b1[i][j] ) end1 = i+1;
 				}
+				if( start1==end1 ) continue;
+				for( int d2=d1 ; d2<=depth ; d2++ )
+				{
+					for( int off2=0 ; off2<(1<<d2) ; off2++ )
+					{
+						int start2 = off2-Degree;
+						int end2   = off2+Degree+1;
+						if( start2>=end1 || start1>=end2 ) continue;
+						start2 = std::max< int >( start1 , start2 );
+						end2   = std::min< int >(   end1 ,   end2 );
+						if( d1==d2 && off2<off1 ) continue;
+						int jj = BinaryNode< Real >::CenterIndex( d2 , off2 );
+						BSplineElements< Degree > b2( 1<<d2 , off2 , _boundaryType , inset ? ( 1<<(d2-2) ) : 0 );
+						BSplineElements< Degree-1 > db2;
+						b2.differentiate( db2 );
+
+						size_t idx = SymmetricIndex( ii , jj );
+						size_t idx1 = Index( ii , jj ) , idx2 = Index( jj , ii );
+
+						memset( vvSums , 0 , sizeof( int ) * ( Degree+1 ) * ( Degree+1 ) );
+						memset( vdSums , 0 , sizeof( int ) * ( Degree+1 ) * ( Degree   ) );
+						memset( dvSums , 0 , sizeof( int ) * ( Degree   ) * ( Degree+1 ) );
+						memset( ddSums , 0 , sizeof( int ) * ( Degree   ) * ( Degree   ) );
+						for( int i=start2 ; i<end2 ; i++ )
+						{
+							for( int j=0 ; j<=Degree ; j++ ) for( int k=0 ; k<=Degree ; k++ ) vvSums[j][k] +=  b1[i][j] *  b2[i][k];
+							for( int j=0 ; j<=Degree ; j++ ) for( int k=0 ; k< Degree ; k++ ) vdSums[j][k] +=  b1[i][j] * db2[i][k];
+							for( int j=0 ; j< Degree ; j++ ) for( int k=0 ; k<=Degree ; k++ ) dvSums[j][k] += db1[i][j] *  b2[i][k];
+							for( int j=0 ; j< Degree ; j++ ) for( int k=0 ; k< Degree ; k++ ) ddSums[j][k] += db1[i][j] * db2[i][k];
+						}
+						double vvDot = 0 , dvDot = 0 , vdDot = 0 , ddDot = 0;
+						for( int j=0 ; j<=Degree ; j++ ) for( int k=0 ; k<=Degree ; k++ ) vvDot += vvIntegrals[j][k] * vvSums[j][k];
+						for( int j=0 ; j<=Degree ; j++ ) for( int k=0 ; k< Degree ; k++ ) vdDot += vdIntegrals[j][k] * vdSums[j][k];
+						for( int j=0 ; j< Degree ; j++ ) for( int k=0 ; k<=Degree ; k++ ) dvDot += dvIntegrals[j][k] * dvSums[j][k];
+						for( int j=0 ; j< Degree ; j++ ) for( int k=0 ; k< Degree ; k++ ) ddDot += ddIntegrals[j][k] * ddSums[j][k];
+						vvDot /= (1<<d2);
+						ddDot *= (1<<d2);
+						vvDot /= ( b1.denominator * b2.denominator );
+						dvDot /= ( b1.denominator * b2.denominator );
+						vdDot /= ( b1.denominator * b2.denominator );
+						ddDot /= ( b1.denominator * b2.denominator );
+						if( fabs(vvDot)<1e-15 ) continue;
+						if( flags & VV_DOT_FLAG ) vvDotTable [idx] = Real( vvDot );
+						if( _useDotRatios )
+						{
+							if( flags & DV_DOT_FLAG ) dvDotTable[idx1] = Real( dvDot / vvDot );
+							if( flags & DV_DOT_FLAG ) dvDotTable[idx2] = Real( vdDot / vvDot );
+							if( flags & DD_DOT_FLAG ) ddDotTable[idx ] = Real( ddDot / vvDot );
+						}
+						else
+						{
+							if( flags & DV_DOT_FLAG ) dvDotTable[idx1] = Real( dvDot );
+							if( flags & DV_DOT_FLAG ) dvDotTable[idx2] = Real( dvDot );
+							if( flags & DD_DOT_FLAG ) ddDotTable[idx ] = Real( ddDot );
+						}
+					}
+					BSplineElements< Degree > b;
+					b = b1;
+					b.upSample( b1 );
+					b1.differentiate( db1 );
+					start1 = -1;
+					for( int i=0 ; i<int(b1.size()) ; i++ ) for( int j=0 ; j<=Degree ; j++ )
+					{
+						if( b1[i][j] && start1==-1 ) start1 = i;
+						if( b1[i][j] ) end1 = i+1;
+					}
+				}
 			}
-		}
+	}
 }
 template<int Degree,class Real>
 void BSplineData<Degree,Real>::clearDotTables( int flags )
@@ -295,6 +537,14 @@ void BSplineData<Degree,Real>::clearDotTables( int flags )
 	if( (flags & VV_DOT_FLAG) && vvDotTable ) DeletePointer( vvDotTable );
 	if( (flags & DV_DOT_FLAG) && dvDotTable ) DeletePointer( dvDotTable );
 	if( (flags & DD_DOT_FLAG) && ddDotTable ) DeletePointer( ddDotTable );
+	if( _cc_vv_Integrals ) DeletePointer( _cc_vv_Integrals );
+	if( _cc_vd_Integrals ) DeletePointer( _cc_vd_Integrals );
+	if( _cc_dv_Integrals ) DeletePointer( _cc_dv_Integrals );
+	if( _cc_dd_Integrals ) DeletePointer( _cc_dd_Integrals );
+	if( _cp_vv_Integrals ) DeletePointer( _cp_vv_Integrals );
+	if( _cp_vd_Integrals ) DeletePointer( _cp_vd_Integrals );
+	if( _cp_dv_Integrals ) DeletePointer( _cp_dv_Integrals );
+	if( _cp_dd_Integrals ) DeletePointer( _cp_dd_Integrals );
 }
 template< int Degree , class Real >
 void BSplineData< Degree , Real >::setSampleSpan( int idx , int& start , int& end , double smooth ) const
@@ -313,7 +563,7 @@ void BSplineData< Degree , Real >::setSampleSpan( int idx , int& start , int& en
 	// => end < _end * (sampleCount-1 ) && end >= _end*(sampleCount-1) - 1
 	// => _end * (sampleCount-1) > end >= _end * (sampleCount-1) - 1
 	end = int( ceil( _end * (sampleCount-1) - 1 ) );
-	if( end>=sampleCount ) end = sampleCount-1;
+	if( end>=int(sampleCount) ) end = int(sampleCount)-1;
 }
 template<int Degree,class Real>
 void BSplineData<Degree,Real>::setValueTables( int flags , double smooth )
@@ -323,7 +573,7 @@ void BSplineData<Degree,Real>::setValueTables( int flags , double smooth )
 	if( flags & D_VALUE_FLAG ) dValueTables = NewPointer< Real >( functionCount*sampleCount );
 	PPolynomial<Degree+1> function;
 	PPolynomial<Degree>  dFunction;
-	for( int i=0 ; i<functionCount ; i++ )
+	for( size_t i=0 ; i<functionCount ; i++ )
 	{
 		if(smooth>0)
 		{
@@ -335,7 +585,7 @@ void BSplineData<Degree,Real>::setValueTables( int flags , double smooth )
 			function  = baseFunctions[i];
 			dFunction = baseFunctions[i].derivative();
 		}
-		for( int j=0 ; j<sampleCount ; j++ )
+		for( size_t j=0 ; j<sampleCount ; j++ )
 		{
 			double x=double(j)/(sampleCount-1);
 			if( flags &   VALUE_FLAG )  valueTables[j*functionCount+i] = Real(  function(x) );
@@ -351,14 +601,14 @@ void BSplineData<Degree,Real>::setValueTables( int flags , double valueSmooth , 
 	if(flags & D_VALUE_FLAG) dValueTables = NewPointer< Real >( functionCount*sampleCount );
 	PPolynomial<Degree+1> function;
 	PPolynomial<Degree>  dFunction;
-	for( int i=0 ; i<functionCount ; i++ )
+	for( size_t i=0 ; i<functionCount ; i++ )
 	{
 		if( valueSmooth>0 )      function=baseFunctions[i].MovingAverage( valueSmooth );
 		else                     function=baseFunctions[i];
 		if( derivativeSmooth>0 ) dFunction=baseFunctions[i].derivative().MovingAverage( derivativeSmooth );
 		else                     dFunction=baseFunctions[i].derivative();
 
-		for( int j=0 ; j<sampleCount ; j++ )
+		for( size_t j=0 ; j<sampleCount ; j++ )
 		{
 			double x=double(j)/(sampleCount-1);
 			if( flags &   VALUE_FLAG )  valueTables[j*functionCount+i] = Real( function(x));
@@ -374,25 +624,27 @@ void BSplineData<Degree,Real>::clearValueTables(void){
 	if( dValueTables ) DeletePointer( dValueTables );
 }
 
-template<int Degree,class Real>
-inline int BSplineData<Degree,Real>::Index( int i1 , int i2 ) const { return i1*functionCount+i2; }
-template<int Degree,class Real>
-inline int BSplineData<Degree,Real>::SymmetricIndex( int i1 , int i2 )
+template< int Degree , class Real >
+inline size_t BSplineData< Degree , Real >::Index( int i1 , int i2 ) const { return size_t(i1)*functionCount + size_t(i2); }
+template< int Degree , class Real >
+inline size_t BSplineData<Degree,Real>::SymmetricIndex( int i1 , int i2 )
 {
-	if( i1>i2 ) return ((i1*i1+i1)>>1)+i2;
-	else        return ((i2*i2+i2)>>1)+i1;
+	size_t _i1 = i1 , _i2 = i2;
+	if( i1>i2 ) return ((_i1*_i1+i1)>>1)+_i2;
+	else        return ((_i2*_i2+i2)>>1)+_i1;
 }
-template<int Degree,class Real>
-inline int BSplineData<Degree,Real>::SymmetricIndex( int i1 , int i2 , int& index )
+template< int Degree , class Real >
+inline int BSplineData< Degree , Real >::SymmetricIndex( int i1 , int i2 , size_t& index )
 {
+	size_t _i1 = i1 , _i2 = i2;
 	if( i1<i2 )
 	{
-		index = ((i2*i2+i2)>>1)+i1;
+		index = ((_i2*_i2+_i2)>>1)+_i1;
 		return 1;
 	}
 	else
 	{
-		index = ((i1*i1+i1)>>1)+i2;
+		index = ((_i1*_i1+_i1)>>1)+_i2;
 		return 0;
 	}
 }

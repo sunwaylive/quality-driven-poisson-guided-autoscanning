@@ -77,9 +77,76 @@ public:
 template< int Degree , class Real >
 class BSplineData
 {
-	bool useDotRatios;
-	int boundaryType;
+	bool _useDotRatios;
+	int _boundaryType;
+	double _vvIntegrals[Degree+1][Degree+1];
+	double _vdIntegrals[Degree+1][Degree  ];
+	double _dvIntegrals[Degree  ][Degree+1];
+	double _ddIntegrals[Degree  ][Degree  ];
+
+	struct _CCIntegrals
+	{
+		double integrals[2*Degree+1][2*Degree+1];
+		_CCIntegrals( void ){ memset( integrals , 0 , sizeof(integrals) ); }
+	};
+	struct _CPIntegrals
+	{
+		double integrals[(2*Degree+1)*2][2*Degree+1];
+		_CPIntegrals( void ){ memset( integrals , 0 , sizeof(integrals) ); }
+	};
+	template< bool D1 , bool D2 >
+	double _dot( int depth1 , int off1 , int depth2 , int off2 , bool inset=false ) const;
+	Pointer( _CCIntegrals ) _cc_vv_Integrals;
+	Pointer( _CCIntegrals ) _cc_vd_Integrals;
+	Pointer( _CCIntegrals ) _cc_dv_Integrals;
+	Pointer( _CCIntegrals ) _cc_dd_Integrals;
+	Pointer( _CPIntegrals ) _cp_vv_Integrals;
+	Pointer( _CPIntegrals ) _cp_vd_Integrals;
+	Pointer( _CPIntegrals ) _cp_dv_Integrals;
+	Pointer( _CPIntegrals ) _cp_dd_Integrals;
 public:
+	struct Integrator
+	{
+		struct IntegralTables
+		{
+			double vv_ccIntegrals[2*Degree+1][2*Degree+1] , vv_cpIntegrals[(2*Degree+1)*2][2*Degree+1];
+			double dv_ccIntegrals[2*Degree+1][2*Degree+1] , dv_cpIntegrals[(2*Degree+1)*2][2*Degree+1];
+			double vd_ccIntegrals[2*Degree+1][2*Degree+1] , vd_cpIntegrals[(2*Degree+1)*2][2*Degree+1];
+			double dd_ccIntegrals[2*Degree+1][2*Degree+1] , dd_cpIntegrals[(2*Degree+1)*2][2*Degree+1];
+		};
+		std::vector< IntegralTables > iTables;
+		double dot( int depth , int off1 , int off2 , bool d1 , bool d2 , bool childParent=false ) const;
+	};
+	void setIntegrator( Integrator& integrator , bool inset ) const;
+
+	template< int Radius >
+	struct CenterEvaluator
+	{
+		struct ValueTables
+		{
+			double vValues[2*Degree+1][ 3*(2*Radius+1) ];
+			double dValues[2*Degree+1][ 3*(2*Radius+1) ];
+		};
+		std::vector< ValueTables > vTables;
+		double value( int depth , int off1 , int off2 , bool d , bool childParent=false ) const;
+	};
+	template< int Radius >
+	void setCenterEvaluator( CenterEvaluator< Radius >& evaluator , double smoothingRadius , double dSmoothingRadius, bool inset ) const;
+	double value( int depth , int off , double smoothingRadius , double s , bool d , bool inset=false ) const;
+	template< int Radius >
+	struct CornerEvaluator
+	{
+		struct ValueTables
+		{
+			double vValues[2*Degree+1][4*Radius+3];
+			double dValues[2*Degree+1][4*Radius+3];
+		};
+		std::vector< ValueTables > vTables;
+		double value( int depth , int off1 , int c1 , int off2 , bool d , bool childParent=false ) const;
+	};
+	template< int Radius >
+	void setCornerEvaluator( CornerEvaluator< Radius >& evaluator , double smoothingRadius , double dSmoothingRadius, bool inset ) const;
+
 	struct BSplineComponents
 	{
 		Polynomial< Degree > polys[Degree+1];
@@ -95,7 +162,8 @@ public:
 	const static int   VALUE_FLAG = 1;
 	const static int D_VALUE_FLAG = 2;
 
-	int depth , functionCount , sampleCount;
+	int depth;
+	size_t functionCount , sampleCount;
 	Pointer( Real ) vvDotTable;
 	Pointer( Real ) dvDotTable;
 	Pointer( Real ) ddDotTable;
@@ -107,10 +175,10 @@ public:
 	Pointer( PPolynomial< Degree > ) baseFunctions;
 	Pointer( BSplineComponents ) baseBSplines;
 
-	BSplineData(void);
-	~BSplineData(void);
+	BSplineData( void );
+	~BSplineData( void );
 
-	virtual void   setDotTables( int flags , bool inset=false );
+	virtual void   setDotTables( int flags , bool full , bool inset=false );
 	virtual void clearDotTables( int flags );
 
 	virtual void   setValueTables( int flags , double smooth=0 );
@@ -130,9 +198,9 @@ public:
 	 ********************************************************/
 	void set( int maxDepth , bool useDotRatios=true , int boundaryType=BSplineElements< Degree >::NONE );
 
-	inline int Index( int i1 , int i2 ) const;
-	static inline int SymmetricIndex( int i1 , int i2 );
-	static inline int SymmetricIndex( int i1 , int i2 , int& index  );
+	inline size_t Index( int i1 , int i2 ) const;
+	static inline size_t SymmetricIndex( int i1 , int i2 );
+	static inline int SymmetricIndex( int i1 , int i2 , size_t& index );
 };
 
 template< int Degree1 , int Degree2 > void SetBSplineElementIntegrals( double integrals[Degree1+1][Degree2+1] );
