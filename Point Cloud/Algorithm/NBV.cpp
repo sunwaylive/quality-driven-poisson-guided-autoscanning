@@ -358,7 +358,8 @@ NBV::propagate()
             }
             else
             {
-              t.eigen_confidence += coefficient1 * iso_confidence;
+              //t.eigen_confidence += coefficient1 * iso_confidence;
+              t.eigen_confidence += confidence_weight * 1.0;              
             }
 
             if (use_average_confidence)
