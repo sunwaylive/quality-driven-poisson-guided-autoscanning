@@ -388,6 +388,7 @@ ParameterMgr::initNBVParameter()
   nbv.addParam(new RichBool("Run Grid Segment", false));
 
   nbv.addParam(new RichBool("Run Viewing Clustering", false));
+  nbv.addParam(new RichBool("Run Extract Views Into Bins", false));
   nbv.addParam(new RichBool("Run Viewing Extract", false));
   
   nbv.addParam(new RichDouble("Grid resolution", 40.f));

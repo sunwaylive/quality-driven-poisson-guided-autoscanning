@@ -1,5 +1,7 @@
 #include "NBV.h"
 
+int NBV::view_bins_each_axis = 3;
+
 NBV::NBV(RichParameterSet *_para)
 {
   cout<<"NBV constructed!"<<endl;
@@ -44,6 +46,12 @@ NBV::run()
   if (para->getBool("Run Viewing Extract"))
   {
     viewExtraction();
+    return;
+  }
+
+  if (para->getBool("Run Extract Views Into Bins"))
+  {
+    viewExtractionIntoBins();
     return;
   }
 }
@@ -107,8 +115,7 @@ NBV::buildGrid()
    y_max = static_cast<int> (dif.Y() / grid_resolution);
    z_max = static_cast<int> (dif.Z() / grid_resolution);
 
-   int all_max = (std::max)(x_max, y_max);
-   all_max = (std::max)(all_max, z_max);
+   int all_max = std::max(std::max(x_max, y_max), z_max);
    x_max = y_max =z_max = all_max;
 
    //preallocate the memory
@@ -148,7 +155,7 @@ NBV::buildGrid()
    if (field_points->vert.empty())
    {
      test_field_segment = false;
-     cout << "field points emputy" << endl;
+     cout << "field points empty" << endl;
    }
    //distinguish the inside or outside grid
 
@@ -354,7 +361,11 @@ NBV::propagate()
 
             if (use_max_propagation)
             {
-              t.eigen_confidence = (std::max)(t.eigen_confidence, confidence_weight * iso_confidence);          
+              //t.eigen_confidence = (std::max)(float(t.eigen_confidence), float(confidence_weight * iso_confidence));          
+              if (confidence_weight * iso_confidence > t.eigen_confidence)
+              {
+                t.eigen_confidence = confidence_weight * iso_confidence;
+              }
             }
             else
             {
@@ -387,7 +398,7 @@ NBV::propagate()
       {
         break;
       }
-    }
+    }//end for iso_points
   });
 #else
   for ( ;i < iso_points->vert.size(); ++i)//fix: < iso_points->vert.size()    
@@ -646,6 +657,83 @@ NBV::viewExtraction()
   }
   nbv_candidates->vn = nbv_candidates->vert.size();
   cout << "candidate number: " << nbv_candidates->vn << endl;
+}
+
+void
+NBV::viewExtractionIntoBins()
+{
+  nbv_candidates->vert.clear();
+  Point3f diff = whole_space_box_max - whole_space_box_min;
+  double bin_length_x = diff.X() / NBV::view_bins_each_axis;
+  double bin_length_y = diff.Y() / NBV::view_bins_each_axis;
+  double bin_length_z = diff.Z() / NBV::view_bins_each_axis;
+  
+  //dynamic allocate memory
+  int bin_confidence_size = NBV::view_bins_each_axis * NBV::view_bins_each_axis * NBV::view_bins_each_axis;
+  float *bin_confidence = new float[bin_confidence_size];
+  memset(bin_confidence, 0, bin_confidence_size * sizeof(float));
+
+  int ***view_bins;
+  view_bins = new int **[NBV::view_bins_each_axis];
+  for (int i = 0; i < NBV::view_bins_each_axis; ++i)
+  {
+    view_bins[i] = new int *[NBV::view_bins_each_axis];
+    for (int j = 0; j < NBV::view_bins_each_axis; ++j)
+    {
+      view_bins[i][j] = new int[NBV::view_bins_each_axis];
+    }
+  }
+  
+  //process each iso_point
+  int index = 0;
+  for (int i = 0; i < all_nbv_grid_centers->vert.size(); ++i)
+  {
+    CVertex &v = all_nbv_grid_centers->vert[i];
+    
+    //get the x,y,z index of each iso_points
+    int t_indexX = static_cast<int>( floor((v.P()[0] - whole_space_box_min.X()) / bin_length_x ));
+    int t_indexY = static_cast<int>( floor((v.P()[1] - whole_space_box_min.Y()) / bin_length_y ));
+    int t_indexZ = static_cast<int>( floor((v.P()[2] - whole_space_box_min.Z()) / bin_length_z ));
+
+    t_indexX = t_indexX >= 3 ? 2 : t_indexX;
+    t_indexY = t_indexY >= 3 ? 2 : t_indexY;
+    t_indexZ = t_indexZ >= 3 ? 2 : t_indexZ;
+
+    int idx = t_indexX * NBV::view_bins_each_axis * NBV::view_bins_each_axis 
+                  + t_indexY * NBV::view_bins_each_axis + t_indexZ;
+    if (v.eigen_confidence > bin_confidence[idx])
+    {
+      bin_confidence[idx] = v.eigen_confidence;
+      view_bins[t_indexX][t_indexY][t_indexZ] = v.m_index;
+    }
+  }
+
+  //put bin direction into nbv_candidates
+  for (int i = 0; i < NBV::view_bins_each_axis; ++i)
+  {
+    for (int j = 0; j < NBV::view_bins_each_axis; ++j)
+    {
+      for (int k = 0; k < NBV::view_bins_each_axis; ++k)
+      {
+        nbv_candidates->vert.push_back(all_nbv_grid_centers->vert[view_bins[i][j][k]]);
+      }
+    }
+  }
+  nbv_candidates->vn = nbv_candidates->vert.size();
+  cout << "candidate number: " << nbv_candidates->vn << endl;
+
+  //release the memory
+  delete [] bin_confidence;
+
+  for (int i = 0; i < NBV::view_bins_each_axis; ++i)
+  {
+    for (int j = 0; j < NBV::view_bins_each_axis; ++j)
+    {
+      delete[] view_bins[i][j];
+    }
+    delete view_bins[i];
+  }
+  delete view_bins;
 }
 
 void NBV::viewClustering()

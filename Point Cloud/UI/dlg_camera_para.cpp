@@ -33,6 +33,7 @@ void CameraParaDlg::initConnects()
   connect(ui->pushButton_grid_segment, SIGNAL(clicked()), this, SLOT(gridSegment()));
  
   connect(ui->extract_view_candidates, SIGNAL(clicked()), this, SLOT(extractViewCandidates()));
+  connect(ui->pushButton_extract_views_into_bins, SIGNAL(clicked()), this, SLOT(extractViewIntoBins()));
   connect(ui->cluster_view_candidates, SIGNAL(clicked()), this, SLOT(runViewClustering()));
 
   connect(ui->max_ray_steps, SIGNAL(valueChanged(double)), this, SLOT(getMaxRaySteps(double)));
@@ -392,6 +393,13 @@ void CameraParaDlg::extractViewCandidates()
   global_paraMgr.nbv.setValue("Run Viewing Extract", BoolValue(true));
   area->runNBV();
   global_paraMgr.nbv.setValue("Run Viewing Extract", BoolValue(false));
+}
+
+void CameraParaDlg::extractViewIntoBins()
+{
+  global_paraMgr.nbv.setValue("Run Extract Views Into Bins", BoolValue(true));
+  area->runNBV();
+  global_paraMgr.nbv.setValue("Run Extract Views Into Bins", BoolValue(false));
 }
 
 void CameraParaDlg::runViewClustering()
