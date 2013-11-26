@@ -1,6 +1,6 @@
 #include "NBV.h"
 
-int NBV::view_bins_each_axis = 3;
+int NBV::view_bins_each_axis = 4;
 
 NBV::NBV(RichParameterSet *_para)
 {
@@ -695,12 +695,13 @@ NBV::viewExtractionIntoBins()
     int t_indexY = static_cast<int>( floor((v.P()[1] - whole_space_box_min.Y()) / bin_length_y ));
     int t_indexZ = static_cast<int>( floor((v.P()[2] - whole_space_box_min.Z()) / bin_length_z ));
 
-    t_indexX = t_indexX >= 3 ? 2 : t_indexX;
-    t_indexY = t_indexY >= 3 ? 2 : t_indexY;
-    t_indexZ = t_indexZ >= 3 ? 2 : t_indexZ;
+    t_indexX = t_indexX >= NBV::view_bins_each_axis ? (NBV::view_bins_each_axis-1) : t_indexX;
+    t_indexY = t_indexY >= NBV::view_bins_each_axis ? (NBV::view_bins_each_axis-1) : t_indexY;
+    t_indexZ = t_indexZ >= NBV::view_bins_each_axis ? (NBV::view_bins_each_axis-1) : t_indexZ;
 
     int idx = t_indexX * NBV::view_bins_each_axis * NBV::view_bins_each_axis 
                   + t_indexY * NBV::view_bins_each_axis + t_indexZ;
+
     if (v.eigen_confidence > bin_confidence[idx])
     {
       bin_confidence[idx] = v.eigen_confidence;
