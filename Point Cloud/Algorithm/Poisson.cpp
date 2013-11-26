@@ -10,6 +10,11 @@
 #include "Poisson/MultiGridOctreeData.h"
 #include "vcg/complex/trimesh/point_sampling.h"
 
+#ifdef _WIN32
+#include <Windows.h>
+#include <Psapi.h>
+#endif // _WIN32
+
 class BaseSampler
 {
 public:
@@ -462,6 +467,20 @@ void Poisson::runViewCandidatesClustering()
 
 void Poisson::runPoisson() 
 {
+//#ifdef _WIN32
+//  if(1 )
+//  {
+//    HANDLE cur_thread=GetCurrentThread();
+//    FILETIME tcreat, texit, tkernel, tuser;
+//    if( GetThreadTimes( cur_thread , &tcreat , &texit , &tkernel , &tuser ) )
+//      printf( "Time (Wall/User/Kernel): %.2f / %.2f / %.2f\n" , PTime()-t , to_seconds( tuser ) , to_seconds( tkernel ) );
+//    else printf( "Time: %.2f\n" , PTime()-t );
+//    HANDLE h = GetCurrentProcess();
+//    PROCESS_MEMORY_COUNTERS pmc;
+//    if( GetProcessMemoryInfo( h , &pmc , sizeof(pmc) ) ) printf( "Peak Memory (MB): %d\n" , pmc.PeakWorkingSetSize>>20 );
+//  }
+//#endif // _WIN32
+//
   vector<Point3D<float> > Pts(original->vn);
   vector<Point3D<float> > Nor(original->vn); 
 
@@ -506,6 +525,7 @@ void Poisson::runPoisson()
 
   POctree<Degree, OutputDensity> tree;
   tree.threads = Par.Threads;
+  cout << "Threads Number:  " << tree.threads << endl;
   //PPolynomial<Degree> ReconstructionFunction=PPolynomial<Degree>::GaussianApproximation();
 
   center.coords[0]=center.coords[1]=center.coords[2]=0;
@@ -552,6 +572,7 @@ void Poisson::runPoisson()
   global_paraMgr.glarea.setValue("Slice Color Scale", DoubleValue(estimate_scale*2/3));
   global_paraMgr.glarea.setValue("ISO Interval Size", DoubleValue(estimate_scale/3));
 
+  time.end();
   //iso_points->vert.clear();
   if (para->getBool("Run Extract MC Points"))
   {
