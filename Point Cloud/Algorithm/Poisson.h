@@ -41,7 +41,6 @@ private:
   void runComputeSampleConfidence();
   void runComputeIsoConfidence();
   
-
 private:
 	CMesh* samples;
 	CMesh* original;
