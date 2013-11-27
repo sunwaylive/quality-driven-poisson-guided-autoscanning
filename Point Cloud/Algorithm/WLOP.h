@@ -2,7 +2,22 @@
 #include "GlobalFunction.h"
 #include "PointCloudAlgorithm.h"
 #include "normal_extrapolation.h"
+
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/wlop_simplify_and_regularize_point_set_test_AABB_tree.h>
+//#include <CGAL/wlop_simplify_and_regularize_point_set.h>
+#include <CGAL/IO/read_xyz_points.h>
+#include <CGAL/IO/write_xyz_points.h>
+#include <CGAL/Timer.h>
+#include <CGAL/tags.h>
+#include <CGAL/Simple_cartesian.h>
+
+#include <vector>
+#include <time.h>
 #include <iostream>
+// types
+typedef CGAL::Simple_cartesian<double> Kernel;
+typedef Kernel::Point_3 Point;
 
 using namespace std;
 using namespace vcg;
