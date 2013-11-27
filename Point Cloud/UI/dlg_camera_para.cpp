@@ -416,15 +416,23 @@ void CameraParaDlg::runViewClustering()
 
 void CameraParaDlg::runStep1WLOP()
 {
+  area->dataMgr.downSamplesByNum();
+  //area->initSetting();
+
   global_paraMgr.wLop.setValue("Run One Key WLOP", BoolValue(true));
-  //area->runWlop();
+  area->runWlop();
   global_paraMgr.wLop.setValue("Run One Key WLOP", BoolValue(false));
+
+  int knn = global_paraMgr.norSmooth.getInt("PCA KNN");
+  CMesh* samples = area->dataMgr.getCurrentSamples();
+  vcg::NormalExtrapolation<vector<CVertex> >::ExtrapolateNormals(samples->vert.begin(), samples->vert.end(), knn, -1);
+  area->dataMgr.recomputeQuad();
 }
 
 void CameraParaDlg::runStep2PoissonConfidence()
 {
   global_paraMgr.wLop.setValue("Run One Key PoissonConfidence", BoolValue(true));
-  ///area->runWlop();
+  area->runPoisson();
   global_paraMgr.wLop.setValue("Run One Key PoissonConfidence", BoolValue(false));
 }
 

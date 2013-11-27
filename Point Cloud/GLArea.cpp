@@ -1183,7 +1183,13 @@ void GLArea::runWlop()
   global_paraMgr.glarea.setValue("GLarea Busying", BoolValue(true));
 
   bool is_break = false;
-	for (int i = 0; i < global_paraMgr.wLop.getDouble("Num Of Iterate Time"); i++)
+  int iterate_time = global_paraMgr.wLop.getDouble("Num Of Iterate Time");
+  if (global_paraMgr.wLop.getBool("Run One Key WLOP"))
+  {
+    iterate_time = 1.0;
+  }
+
+	for (int i = 0; i < iterate_time; i++)
 	{
     if (global_paraMgr.glarea.getBool("Algorithom Stop") || is_break)
     {

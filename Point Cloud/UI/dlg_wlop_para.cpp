@@ -137,10 +137,6 @@ void WlopParaDlg::isPca(bool _val)
 // apply
 void WlopParaDlg::applyWlop()
 {
-	//Timer timer;
-	//timer.start("WWWWLLLLLOOOOOPPPP Time");
-	//area->runWlop();
-	//timer.end();
 
   if (global_paraMgr.glarea.getBool("SnapShot Each Iteration"))
   {
