@@ -450,7 +450,7 @@
       <string>use_other_inside_segment</string>
      </property>
     </widget>
-    <widget class="QCheckBox" name="use_confidence_seperation">
+    <widget class="QCheckBox" name="use_confidence_Separation">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -554,13 +554,26 @@
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>540</y>
+       <y>580</y>
        <width>181</width>
        <height>31</height>
       </rect>
      </property>
      <property name="text">
       <string>Cluster View Candidates</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_extract_views_into_bins">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>540</y>
+       <width>181</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Extract Views Into Bins</string>
      </property>
     </widget>
    </widget>
