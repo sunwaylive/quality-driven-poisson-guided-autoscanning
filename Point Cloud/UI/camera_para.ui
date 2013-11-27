@@ -460,7 +460,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>use_confidence_Separation</string>
+      <string>use_confidence_seperation</string>
      </property>
     </widget>
     <widget class="QDoubleSpinBox" name="max_ray_steps">
@@ -574,6 +574,63 @@
      </property>
      <property name="text">
       <string>Extract Views Into Bins</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="tab_3">
+    <attribute name="title">
+     <string>AutoScan</string>
+    </attribute>
+    <widget class="QPushButton" name="step1_run_WLOP">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>30</y>
+       <width>181</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Step1: WLOP</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="step2_run_Poisson_Confidence">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>80</y>
+       <width>181</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Step2: Poisson-Confidence</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="step3_run_NBV">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>130</y>
+       <width>181</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Step3: NBV</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="step4_run_New_Scan">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>180</y>
+       <width>181</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Step4: Run New Scan</string>
      </property>
     </widget>
    </widget>
