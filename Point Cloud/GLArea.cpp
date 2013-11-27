@@ -1406,9 +1406,6 @@ void GLArea::saveView(QString fileName)
 
 
 	//outfile << cut_pos[0] << " " << cut_pos[1] << " " << cut_pos[2] << endl;	
-	outfile << -1 << " " << -1 << " " << -1 << endl;	
-
-
 	outfile << global_paraMgr.drawer.getDouble("Sample Dot Size") << endl;
 	outfile << global_paraMgr.drawer.getDouble("Sample Draw Width") << endl;
 	outfile << global_paraMgr.drawer.getDouble("Normal Line Width") << endl;
@@ -1439,8 +1436,6 @@ void GLArea::saveView(QString fileName)
 	//outfile << global_paraMgr.skeleton.getDouble("Snake Search Max Dist Blue") << endl;
 	//outfile << global_paraMgr.skeleton.getDouble("Branch Search Max Dist Yellow") << endl;
 	//outfile << global_paraMgr.skeleton.getDouble("Branches Merge Max Dist Orange") << endl;
-
-	outfile << -1<< "	" << -1 << "	"<< -1 << "	"<< -1 << "	"<< endl;
 
 	outfile << global_paraMgr.wLop.getDouble("Repulsion Mu") << endl;
 	outfile << global_paraMgr.wLop.getDouble("Repulsion Mu2") << endl;

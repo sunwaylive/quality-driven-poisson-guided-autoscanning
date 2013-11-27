@@ -30,6 +30,8 @@ public:
 
 private:
 	void input(CMesh* _mesh);
+  void runOneKeyPoissonConfidence();
+
   void runPoisson();
   void runLabelISO();
   void runIsoSmooth();

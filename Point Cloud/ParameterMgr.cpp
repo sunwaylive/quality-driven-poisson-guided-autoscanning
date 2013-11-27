@@ -332,6 +332,8 @@ void ParameterMgr::initPoissonParameter()
   poisson.addParam(new RichBool("Run Extract MC Points", false));
 
   poisson.addParam(new RichBool("Run Poisson On Original", true));
+  poisson.addParam(new RichBool("Run Generate Poisson Field", false));
+
 
   poisson.addParam(new RichBool("Run Poisson On Samples", false));  
   poisson.addParam(new RichBool("Run Label ISO Points", false));
