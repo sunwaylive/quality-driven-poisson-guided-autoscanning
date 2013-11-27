@@ -53,6 +53,11 @@ private slots:
   void extractViewIntoBins();
   void runViewClustering();
 
+  void runStep1WLOP();
+  void runStep2PoissonConfidence();
+  void runStep3NBVcandidates();
+  void runStep3NewScans();
+
 private:
 	Ui::camera_paras * ui;
 	ParameterMgr * m_paras;

@@ -168,6 +168,9 @@ void ParameterMgr::initDrawerParameter()
 void ParameterMgr::initWLopParameter()
 {
 	wLop.addParam(new RichString("Algorithm Name", "WLOP") );
+  wLop.addParam(new RichBool("Run One Key WLOP", false));
+
+
 	wLop.addParam(new RichDouble("Num Of Iterate Time", 5));
 
 	wLop.addParam(new RichDouble("CGrid Radius", grid_r));
@@ -324,6 +327,8 @@ void ParameterMgr::initPoissonParameter()
   poisson.addParam(new RichDouble("CGrid Radius", 0.08) );
   poisson.addParam(new RichDouble("View Candidates Distance", 0.85));
 
+  poisson.addParam(new RichBool("Run One Key PoissonConfidence", false));
+
   poisson.addParam(new RichBool("Run Extract All Octree Nodes", false));
   poisson.addParam(new RichBool("Run Extract MC Points", false));
 
@@ -367,6 +372,8 @@ void ParameterMgr::initPoissonParameter()
 void ParameterMgr::initCameraParameter()
 {
   camera.addParam(new RichString("Algorithm Name", "Camera") );
+  camera.addParam(new RichBool("Run One Key NewScans", false));
+
   camera.addParam(new RichBool("Run Initial Scan", false));
   camera.addParam(new RichBool("Run NBV Scan", false));
   camera.addParam(new RichBool("Run Virtual Scan", false));
@@ -382,6 +389,8 @@ void
 ParameterMgr::initNBVParameter()
 {
   nbv.addParam(new RichString("Algorithm Name", "NBV"));
+  nbv.addParam(new RichBool("Run One Key NBV", false));
+
   nbv.addParam(new RichBool("Run Build Grid", false));
   nbv.addParam(new RichBool("Run Propagate", false));
   nbv.addParam(new RichBool("Run Propagate One Point", false));

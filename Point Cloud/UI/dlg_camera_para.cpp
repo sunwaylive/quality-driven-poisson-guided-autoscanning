@@ -45,6 +45,11 @@ void CameraParaDlg::initConnects()
   connect(ui->use_nbv_test1, SIGNAL(clicked(bool)), this, SLOT(useNbvTest1(bool)));
   connect(ui->use_max_propagation, SIGNAL(clicked(bool)), this, SLOT(useMaxConfidencePropagation(bool)));
 
+  connect(ui->step1_run_WLOP, SIGNAL(clicked()), this, SLOT(runStep1WLOP()));
+  connect(ui->step2_run_Poisson_Confidence, SIGNAL(clicked()), this, SLOT(runStep2PoissonConfidence()));
+  connect(ui->step3_run_NBV, SIGNAL(clicked()), this, SLOT(runStep3NBVcandidates()));
+  connect(ui->step4_run_New_Scan, SIGNAL(clicked()), this, SLOT(runStep3NewScans()));
+
 }
 
 bool CameraParaDlg::initWidgets()
@@ -407,5 +412,33 @@ void CameraParaDlg::runViewClustering()
   global_paraMgr.nbv.setValue("Run Viewing Clustering", BoolValue(true));
   area->runNBV();
   global_paraMgr.nbv.setValue("Run Viewing Clustering", BoolValue(false));
+}
+
+void CameraParaDlg::runStep1WLOP()
+{
+  global_paraMgr.wLop.setValue("Run One Key WLOP", BoolValue(true));
+  //area->runWlop();
+  global_paraMgr.wLop.setValue("Run One Key WLOP", BoolValue(false));
+}
+
+void CameraParaDlg::runStep2PoissonConfidence()
+{
+  global_paraMgr.wLop.setValue("Run One Key PoissonConfidence", BoolValue(true));
+  ///area->runWlop();
+  global_paraMgr.wLop.setValue("Run One Key PoissonConfidence", BoolValue(false));
+}
+
+void CameraParaDlg::runStep3NBVcandidates()
+{
+  global_paraMgr.wLop.setValue("Run One Key NBV", BoolValue(true));
+  //area->runWlop();
+  global_paraMgr.wLop.setValue("Run One Key NBV", BoolValue(false));
+}
+
+void CameraParaDlg::runStep3NewScans()
+{
+  global_paraMgr.wLop.setValue("Run One Key NewScans", BoolValue(true));
+  //area->runWlop();
+  global_paraMgr.wLop.setValue("Run One Key NewScans", BoolValue(false));
 }
 

@@ -450,7 +450,7 @@
       <string>use_other_inside_segment</string>
      </property>
     </widget>
-    <widget class="QCheckBox" name="use_confidence_Separation">
+    <widget class="QCheckBox" name="use_confidence_seperation">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -460,7 +460,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>use_confidence_Separation</string>
+      <string>use_confidence_seperation</string>
      </property>
     </widget>
     <widget class="QDoubleSpinBox" name="max_ray_steps">
@@ -554,7 +554,7 @@
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>580</y>
+       <y>540</y>
        <width>181</width>
        <height>31</height>
       </rect>
@@ -563,17 +563,61 @@
       <string>Cluster View Candidates</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_extract_views_into_bins">
+   </widget>
+   <widget class="QWidget" name="tab_3">
+    <attribute name="title">
+     <string>AutoScan</string>
+    </attribute>
+    <widget class="QPushButton" name="step1_run_WLOP">
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>540</y>
+       <y>30</y>
        <width>181</width>
        <height>31</height>
       </rect>
      </property>
      <property name="text">
-      <string>Extract Views Into Bins</string>
+      <string>Step1: WLOP</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="step2_run_Poisson_Confidence">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>80</y>
+       <width>181</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Step2: Poisson-Confidence</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="step3_run_NBV">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>130</y>
+       <width>181</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Step3: NBV</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="step4_run_New_Scan">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>180</y>
+       <width>181</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Step4: Run New Scan</string>
      </property>
     </widget>
    </widget>
