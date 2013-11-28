@@ -1,8 +1,24 @@
 #pragma once
+
+//#include <CGAL/wlop_simplify_and_regularize_point_set_test_AABB_tree.h>
+#include <vector>
+#include <time.h>
+#include <iostream>
+
 #include "GlobalFunction.h"
 #include "PointCloudAlgorithm.h"
 #include "normal_extrapolation.h"
-#include <iostream>
+
+//#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+//#include <CGAL/wlop_simplify_and_regularize_point_set.h>
+#include <CGAL/Timer.h>
+//#include <CGAL/tags.h>
+//#include <CGAL/Simple_cartesian.h>
+
+
+// types
+//typedef CGAL::Simple_cartesian<double> Kernel;
+//typedef Kernel::Point_3 Point;
 
 using namespace std;
 using namespace vcg;
