@@ -423,10 +423,10 @@ void CameraParaDlg::runStep1WLOP()
   area->runWlop();
   global_paraMgr.wLop.setValue("Run One Key WLOP", BoolValue(false));
 
-  //int knn = global_paraMgr.norSmooth.getInt("PCA KNN");
-  //CMesh* samples = area->dataMgr.getCurrentSamples();
-  //vcg::NormalExtrapolation<vector<CVertex> >::ExtrapolateNormals(samples->vert.begin(), samples->vert.end(), knn, -1);
-  //area->dataMgr.recomputeQuad();
+  int knn = global_paraMgr.norSmooth.getInt("PCA KNN");
+  CMesh* samples = area->dataMgr.getCurrentSamples();
+  vcg::NormalExtrapolation<vector<CVertex> >::ExtrapolateNormals(samples->vert.begin(), samples->vert.end(), knn, -1);
+  area->dataMgr.recomputeQuad();
 }
 
 void CameraParaDlg::runStep2PoissonConfidence()
