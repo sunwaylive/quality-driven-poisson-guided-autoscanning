@@ -5,10 +5,12 @@
 #include <QtGui/QWidget>
 #include <iostream>
 
+//#include "Algorithm/normal_extrapolation.h"
 #include "../GeneratedFiles/ui_camera_para.h"
 #include "DataMgr.h"
 #include "ParameterMgr.h"
 #include "glarea.h"
+
 
 using namespace std;
 

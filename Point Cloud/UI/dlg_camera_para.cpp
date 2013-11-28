@@ -416,29 +416,39 @@ void CameraParaDlg::runViewClustering()
 
 void CameraParaDlg::runStep1WLOP()
 {
+  area->dataMgr.downSamplesByNum();
+  //area->initSetting();
+
   global_paraMgr.wLop.setValue("Run One Key WLOP", BoolValue(true));
-  //area->runWlop();
+  area->runWlop();
   global_paraMgr.wLop.setValue("Run One Key WLOP", BoolValue(false));
+
+  //int knn = global_paraMgr.norSmooth.getInt("PCA KNN");
+  //CMesh* samples = area->dataMgr.getCurrentSamples();
+  //vcg::NormalExtrapolation<vector<CVertex> >::ExtrapolateNormals(samples->vert.begin(), samples->vert.end(), knn, -1);
+  //area->dataMgr.recomputeQuad();
 }
 
 void CameraParaDlg::runStep2PoissonConfidence()
 {
-  global_paraMgr.wLop.setValue("Run One Key PoissonConfidence", BoolValue(true));
-  ///area->runWlop();
-  global_paraMgr.wLop.setValue("Run One Key PoissonConfidence", BoolValue(false));
+  global_paraMgr.poisson.setValue("Run Poisson On Samples", BoolValue(true));
+  global_paraMgr.poisson.setValue("Run One Key PoissonConfidence", BoolValue(true));
+  area->runPoisson();
+  global_paraMgr.poisson.setValue("Run One Key PoissonConfidence", BoolValue(false));
+  global_paraMgr.poisson.setValue("Run Poisson On Samples", BoolValue(false));
 }
 
 void CameraParaDlg::runStep3NBVcandidates()
 {
-  global_paraMgr.wLop.setValue("Run One Key NBV", BoolValue(true));
+  global_paraMgr.nbv.setValue("Run One Key NBV", BoolValue(true));
   //area->runWlop();
-  global_paraMgr.wLop.setValue("Run One Key NBV", BoolValue(false));
+  global_paraMgr.nbv.setValue("Run One Key NBV", BoolValue(false));
 }
 
 void CameraParaDlg::runStep3NewScans()
 {
-  global_paraMgr.wLop.setValue("Run One Key NewScans", BoolValue(true));
+  global_paraMgr.camera.setValue("Run One Key NewScans", BoolValue(true));
   //area->runWlop();
-  global_paraMgr.wLop.setValue("Run One Key NewScans", BoolValue(false));
+  global_paraMgr.camera.setValue("Run One Key NewScans", BoolValue(false));
 }
 

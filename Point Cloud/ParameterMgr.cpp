@@ -56,7 +56,7 @@ void ParameterMgr::setGlobalParameter(QString paraName,Value& val)
 void ParameterMgr::initDataMgrParameter()
 {
 	data.addParam(new RichDouble("Init Radius Para", 2.0));
-	data.addParam(new RichDouble("Down Sample Num", 1000));
+	data.addParam(new RichDouble("Down Sample Num", 2500));
 	data.addParam(new RichDouble("CGrid Radius", grid_r));
 }
 
@@ -169,7 +169,6 @@ void ParameterMgr::initWLopParameter()
 {
 	wLop.addParam(new RichString("Algorithm Name", "WLOP") );
   wLop.addParam(new RichBool("Run One Key WLOP", false));
-
 
 	wLop.addParam(new RichDouble("Num Of Iterate Time", 5));
 
@@ -333,6 +332,8 @@ void ParameterMgr::initPoissonParameter()
   poisson.addParam(new RichBool("Run Extract MC Points", false));
 
   poisson.addParam(new RichBool("Run Poisson On Original", true));
+  poisson.addParam(new RichBool("Run Generate Poisson Field", false));
+
 
   poisson.addParam(new RichBool("Run Poisson On Samples", false));  
   poisson.addParam(new RichBool("Run Label ISO Points", false));

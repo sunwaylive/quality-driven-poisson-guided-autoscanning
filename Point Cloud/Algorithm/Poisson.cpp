@@ -188,7 +188,30 @@ void Poisson::run()
     return;
   }
 
+  if (para->getBool("Run One Key PoissonConfidence"))
+  {
+    runOneKeyPoissonConfidence();
+    return;
+  }
+
   runPoisson();
+}
+
+void Poisson::runOneKeyPoissonConfidence()
+{
+  runPoisson();
+  para->setValue("Use Confidence 1",BoolValue(true));
+  para->setValue("Use Confidence 2",BoolValue(true));
+
+  runComputeSampleConfidence();
+
+  runLabelISO();
+
+  para->setValue("Use Confidence 4", BoolValue(true));
+  runComputeIsoConfidence();
+
+
+
 }
 
 
@@ -573,8 +596,54 @@ void Poisson::runPoisson()
   global_paraMgr.glarea.setValue("ISO Interval Size", DoubleValue(estimate_scale/3));
 
   time.end();
+  if (para->getBool("Run Generate Poisson Field") || para->getBool("Run One Key PoissonConfidence"))
+  {
+    cout << "Run Generate Poisson Field" << endl;
+
+    //global_paraMgr.glarea.setValue("Show ISO Points", BoolValue(false));
+    //global_paraMgr.poisson.setValue("Show Slices Mode", BoolValue(true));
+
+    int res;
+    Pointer( Real ) grid_values = tree.GetSolutionGrid( res , isoValue , Par.VoxelDepth );
+
+    float tree_scale = tree._scale;
+    Point3D<float> tree_center = tree._center;
+
+    float space = tree_scale * (1.0 / (1<<Par.Depth));
+
+    Point3f center_p(tree_center.coords[0], tree_center.coords[1], tree_center.coords[2]);
+
+    int index = 0;
+    field_points->vert.clear();
+    int res2 = res * res;
+    for (int i = 0; i < res; i++)
+    {
+      for (int j = 0; j < res; j++)
+      {
+        for (int k = 0; k < res; k++)
+        {
+          Point3f p(i * space, j * space, k * space);
+          CVertex new_v;
+          new_v.is_iso = true;
+          new_v.P() = p + center_p;
+          new_v.m_index = index;
+          new_v.eigen_confidence = float( grid_values[i + j * res + k * res2] );          
+          index++;
+          field_points->vert.push_back(new_v);
+          field_points->bbox.Add(new_v.P());
+        }
+      }
+    }
+
+    field_points->vn = field_points->vert.size();
+    cout << "field point size:  " << field_points->vn << endl;
+    cout << "resolution:  " << res << endl;
+  }
+
+  
+
   //iso_points->vert.clear();
-  if (para->getBool("Run Extract MC Points"))
+  if (para->getBool("Run Extract MC Points") || para->getBool("Run One Key PoissonConfidence"))
   {
     time.start("marching cube");
     //if(Par.IsoDivide){tree.GetMCIsoTriangles(isoValue,Par.IsoDivide,&mesh);}
@@ -730,65 +799,12 @@ void Poisson::runPoisson()
     }
     iso_points->fn = iso_points->face.size();
 
- /*   vector<Point3f> sample_points;
-    float result_radius;
-    tri::PoissonSampling(tentative_mesh, sample_points, 2500, result_radius);
-
-    iso_points->vert.clear();
-    for (int i = 0; i < sample_points.size(); i++)
-    {
-      CVertex new_v;
-      new_v.m_index = i; 
-      new_v.is_iso = true;
-      new_v.eigen_confidence = 0;
-      new_v.P() = sample_points[i];
-      iso_points->vert.push_back(new_v);
-      iso_points->bbox.Add(new_v.P());
-    }
-    iso_points->vn = iso_points->vert.size();*/
-
   }
-  else
-  {
-    //global_paraMgr.glarea.setValue("Show ISO Points", BoolValue(false));
-    //global_paraMgr.poisson.setValue("Show Slices Mode", BoolValue(true));
 
-    int res;
-    Pointer( Real ) grid_values = tree.GetSolutionGrid( res , isoValue , Par.VoxelDepth );
 
-    float tree_scale = tree._scale;
-    Point3D<float> tree_center = tree._center;
 
-    float space = tree_scale * (1.0 / (1<<Par.Depth));
+  
 
-    Point3f center_p(tree_center.coords[0], tree_center.coords[1], tree_center.coords[2]);
-
-    int index = 0;
-    field_points->vert.clear();
-    int res2 = res * res;
-    for (int i = 0; i < res; i++)
-    {
-      for (int j = 0; j < res; j++)
-      {
-        for (int k = 0; k < res; k++)
-        {
-          Point3f p(i * space, j * space, k * space);
-          CVertex new_v;
-          new_v.is_iso = true;
-          new_v.P() = p + center_p;
-          new_v.m_index = index;
-          new_v.eigen_confidence = float( grid_values[i + j * res + k * res2] );          
-          index++;
-          field_points->vert.push_back(new_v);
-          field_points->bbox.Add(new_v.P());
-        }
-      }
-    }
-
-    field_points->vn = field_points->vert.size();
-    cout << "field point size:  " << field_points->vn << endl;
-    cout << "resolution:  " << res << endl;
-  }
 
 }
 
@@ -1036,10 +1052,10 @@ void Poisson::runComputeSampleConfidence()
 {
   vector< vector<float>>confidences;
 
-  ofstream file1("certainty_1_wlop.txt");
-  ofstream file2("certainty_2_gradient.txt");
-  ofstream file3("certainty_3_combine.txt");
-  ofstream file4("certainty_4_combine.txt");
+  //ofstream file1("certainty_1_wlop.txt");
+  //ofstream file2("certainty_2_gradient.txt");
+  //ofstream file3("certainty_3_combine.txt");
+  //ofstream file4("certainty_4_combine.txt");
 
   int factors = 0;
   if (para->getBool("Use Confidence 1")) factors++;
@@ -1206,7 +1222,7 @@ void Poisson::runComputeSampleConfidence()
     for (int i = 0; i < samples->vn; i++)
     {
       CVertex& v = samples->vert[i];
-      file4 << v.eigen_confidence << endl;
+      //file4 << v.eigen_confidence << endl;
     }
 
   }
@@ -1228,7 +1244,7 @@ void Poisson::runComputeSampleConfidence()
     for (int i = 0; i < samples->vn; i++)
     {
       CVertex& v = samples->vert[i];
-      file4 << v.eigen_confidence << endl;
+      //file4 << v.eigen_confidence << endl;
     }
   }
   //else
@@ -1265,9 +1281,9 @@ void Poisson::runComputeSampleConfidence()
 
 void Poisson::runComputeIsoConfidence()
 {
-  ofstream file1("confidence_1_wlop.txt");
-  ofstream file2("confidence_2_gradient.txt");
-  ofstream file3("confidence_3_combine.txt");
+  //ofstream file1("confidence_1_wlop.txt");
+  //ofstream file2("confidence_2_gradient.txt");
+  //ofstream file3("confidence_3_combine.txt");
 
   if (para->getBool("Use Confidence 4"))
   {
@@ -1278,7 +1294,7 @@ void Poisson::runComputeIsoConfidence()
   iso_points->vn = iso_points->vert.size();
   for (int i = 0; i < iso_points->vn; i++)
   {
-    file1 << iso_points->vert[i].eigen_confidence << endl;
+    //file1 << iso_points->vert[i].eigen_confidence << endl;
     confidences_temp.push_back(iso_points->vert[i].eigen_confidence);
   }
 
@@ -1363,7 +1379,7 @@ void Poisson::runComputeIsoConfidence()
       for (int i = 0; i < iso_points->vn; i++)
       {
         CVertex& v = iso_points->vert[i];
-        file2 << v.eigen_confidence << endl;
+        //file2 << v.eigen_confidence << endl;
         float temp_confidence = confidences_temp[i];
         float combine_confidence = std::sqrt(temp_confidence * temp_confidence 
                                    + v.eigen_confidence * v.eigen_confidence);
@@ -1378,7 +1394,7 @@ void Poisson::runComputeIsoConfidence()
       for (int i = 0; i < iso_points->vn; i++)
       {
         CVertex& v = iso_points->vert[i];
-        file2 << v.eigen_confidence << endl;
+        //file2 << v.eigen_confidence << endl;
         float temp_confidence = confidences_temp[i];
         v.eigen_confidence *= temp_confidence;
       }
@@ -1389,7 +1405,7 @@ void Poisson::runComputeIsoConfidence()
     for (int i = 0; i < iso_points->vn; i++)
     {
       CVertex& v = iso_points->vert[i];
-      file3 << v.eigen_confidence << endl;
+      //file3 << v.eigen_confidence << endl;
     }
   }
 

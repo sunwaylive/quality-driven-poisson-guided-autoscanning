@@ -123,7 +123,10 @@ void PoissonParaDlg::getPoissonSampleNumber(double _val)
 
 void PoissonParaDlg::runPoissonAndExtractLeafs()
 {
+  global_paraMgr.poisson.setValue("Run Generate Poisson Field", BoolValue(true));
 	area->runPoisson();
+  global_paraMgr.poisson.setValue("Run Generate Poisson Field", BoolValue(false));
+
 	area->updateGL();
 }
 
@@ -136,9 +139,11 @@ void PoissonParaDlg::runPoissonAndExtractLeafs()
 
 void PoissonParaDlg::runPoissonAndExtractNodes()
 {
+  global_paraMgr.poisson.setValue("Run Generate Poisson Field", BoolValue(true));
   global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(false));
   area->runPoisson();
   global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(true));
+  global_paraMgr.poisson.setValue("Run Generate Poisson Field", BoolValue(false));
 }
 
 void PoissonParaDlg::runPoissonAndExtractMC()

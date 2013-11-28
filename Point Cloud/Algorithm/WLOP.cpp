@@ -102,6 +102,17 @@ void WLOP::initVertexes()
 
 void WLOP::run()
 {
+  if (para->getBool("Run One Key WLOP"))
+  {
+    for(int i = 0; i < 30; i++)
+    { 
+      iterate();
+      nTimeIterated++;
+      cout << "Iterated: " << nTimeIterated << endl;
+    }
+    return;
+  }
+
 	if (para->getBool("Run Anisotropic LOP"))
 	{
 		cout << "Run Anisotropic LOP" << endl;
