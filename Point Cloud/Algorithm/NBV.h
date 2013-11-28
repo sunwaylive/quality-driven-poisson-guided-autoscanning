@@ -1,9 +1,9 @@
 #pragma once
 #include <iostream>
+#include <tbb/parallel_for.h>
 #include "PointCloudAlgorithm.h"
 #include "GlobalFunction.h"
 #include "NBVGrid.h"
-#include <tbb/parallel_for.h>
 
 using std::cout;
 using std::endl;

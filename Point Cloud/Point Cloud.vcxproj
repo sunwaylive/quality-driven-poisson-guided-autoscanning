@@ -97,12 +97,12 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release_debug|Win32'">$(SolutionDir)$(ConfigurationName)</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)$(ConfigurationName)</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release_debug|x64'">$(SolutionDir)$(ConfigurationName)</OutDir>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">IncludeLib\glut64\lib;IncludeLib\ann_1.1.2\MS_Win64\bin;IncludeLib\tbb\lib\intel64\vc10;$(LibraryPath)</LibraryPath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">IncludeLib\vcglib;IncludeLib\glut64\include;IncludeLib\ann_1.1.2\include;IncludeLib\tbb\include;$(IncludePath)</IncludePath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\OpenNI2\Lib;IncludeLib\glut64\lib;IncludeLib\ann_1.1.2\MS_Win64\bin;IncludeLib\tbb\lib\intel64\vc10;$(LibraryPath)</LibraryPath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">IncludeLib\vcglib;IncludeLib\glut64\include;IncludeLib\ann_1.1.2\include;IncludeLib\tbb\include;C:\Program Files\OpenNI2\Include;$(IncludePath)</IncludePath>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release_debug|x64'">D:\IncludeLib\vcglib;D:\IncludeLib\glut64\include;D:\IncludeLib\ann_1.1.2\include;$(IncludePath)</IncludePath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">IncludeLib\glut64\lib;IncludeLib\tbb\lib\intel64\vc10;IncludeLib\ann_1.1.2\MS_Win64\bin;$(LibraryPath);D:\boost_1_53_0\lib64;D:\cgal-gsoc\build2\lib;$(VCInstallDir)lib\amd64;$(VCInstallDir)atlmfc\lib\amd64;$(WindowsSdkDir)lib\x64</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">IncludeLib\glut64\lib;IncludeLib\tbb\lib\intel64\vc10;C:\Program Files\OpenNI2\Lib;IncludeLib\ann_1.1.2\MS_Win64\bin;$(LibraryPath);D:\boost_1_53_0\lib64;D:\cgal-gsoc\build2\lib;$(VCInstallDir)lib\amd64;$(VCInstallDir)atlmfc\lib\amd64;$(WindowsSdkDir)lib\x64</LibraryPath>
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release_debug|x64'">D:\IncludeLib\glut64\lib;D:\IncludeLib\ann_1.1.2\MS_Win64\bin;$(LibraryPath)</LibraryPath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">IncludeLib\glut64\include;IncludeLib\vcglib;IncludeLib\ann_1.1.2\include;IncludeLib\tbb\include;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\OpenNI2\Include;IncludeLib\glut64\include;IncludeLib\vcglib;IncludeLib\ann_1.1.2\include;IncludeLib\tbb\include;$(IncludePath)</IncludePath>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">IncludeLib\vcglib;IncludeLib\eigen-eigen-3.0.3;IncludeLib\ann_1.1.2\include;IncludeLib\glut;$(IncludePath)</IncludePath>
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">IncludeLib\glut;IncludeLib\ann_1.1.2\MS_Win32\MS_Win32\bin;$(LibraryPath)</LibraryPath>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">IncludeLib\vcglib;IncludeLib\ann_1.1.2\include;IncludeLib\glut;$(IncludePath)</IncludePath>
@@ -146,7 +146,7 @@
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>qtmaind.lib;QtCored4.lib;QtGuid4.lib;QtOpenGLd4.lib;glew32.lib;glew32mx.lib;glew32mxs.lib;glew32s.lib;QtTestd4.lib;ANND.lib;glut64.lib;tbb_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmaind.lib;QtCored4.lib;QtGuid4.lib;QtOpenGLd4.lib;glew32.lib;glew32mx.lib;glew32mxs.lib;glew32s.lib;QtTestd4.lib;ANND.lib;glut64.lib;tbb_debug.lib;OpenNI2.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
       <Profile>true</Profile>
@@ -208,7 +208,7 @@
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalDependencies>qtmain.lib;QtCore4.lib;QtGui4.lib;QtOpenGL4.lib;QtTest4.lib;tbb.lib;ANN.lib;glut64.lib;glew32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;advapi32.lib;D:\CGAL-4.2\auxiliary\gmp\lib\libmpfr-4.lib;D:\CGAL-4.2\auxiliary\gmp\lib\libgmp-10.lib;CGAL-vc100-mt-gd-4.3-I-900.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmain.lib;QtCore4.lib;QtGui4.lib;QtOpenGL4.lib;QtTest4.lib;tbb.lib;OpenNI2.lib;ANN.lib;glut64.lib;glew32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;advapi32.lib;D:\CGAL-4.2\auxiliary\gmp\lib\libmpfr-4.lib;D:\CGAL-4.2\auxiliary\gmp\lib\libgmp-10.lib;CGAL-vc100-mt-gd-4.3-I-900.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <Profile>true</Profile>
     </Link>
   </ItemDefinitionGroup>
