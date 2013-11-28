@@ -27,6 +27,8 @@ private:
   void buildGrid();
   void propagate();
 
+  void runOneKeyNBV();
+
   void viewExtraction();
   void viewExtractionIntoBins();
   void viewClustering();

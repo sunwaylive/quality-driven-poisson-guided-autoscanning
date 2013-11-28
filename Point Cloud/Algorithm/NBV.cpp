@@ -54,6 +54,19 @@ NBV::run()
     viewExtractionIntoBins();
     return;
   }
+
+  if (para->getBool("Run One Key NBV"))
+  {
+    runOneKeyNBV();
+  }
+}
+
+void NBV::runOneKeyNBV()
+{
+  buildGrid();
+  propagate();
+  viewExtractionIntoBins();
+
 }
 
 void
