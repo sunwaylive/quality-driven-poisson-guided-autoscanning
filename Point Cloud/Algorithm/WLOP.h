@@ -11,7 +11,7 @@
 
 //#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 //#include <CGAL/wlop_simplify_and_regularize_point_set.h>
-#include <CGAL/Timer.h>
+//#include <CGAL/Timer.h>
 //#include <CGAL/tags.h>
 //#include <CGAL/Simple_cartesian.h>
 
