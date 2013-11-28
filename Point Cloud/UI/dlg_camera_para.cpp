@@ -441,7 +441,7 @@ void CameraParaDlg::runStep2PoissonConfidence()
 void CameraParaDlg::runStep3NBVcandidates()
 {
   global_paraMgr.nbv.setValue("Run One Key NBV", BoolValue(true));
-  //area->runWlop();
+  area->runNBV();
   global_paraMgr.nbv.setValue("Run One Key NBV", BoolValue(false));
 }
 
