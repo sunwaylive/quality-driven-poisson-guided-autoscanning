@@ -1183,7 +1183,13 @@ void GLArea::runWlop()
   global_paraMgr.glarea.setValue("GLarea Busying", BoolValue(true));
 
   bool is_break = false;
-	for (int i = 0; i < global_paraMgr.wLop.getDouble("Num Of Iterate Time"); i++)
+  int iterate_time = global_paraMgr.wLop.getDouble("Num Of Iterate Time");
+  if (global_paraMgr.wLop.getBool("Run One Key WLOP"))
+  {
+    iterate_time = 1.0;
+  }
+
+	for (int i = 0; i < iterate_time; i++)
 	{
     if (global_paraMgr.glarea.getBool("Algorithom Stop") || is_break)
     {
@@ -1400,9 +1406,6 @@ void GLArea::saveView(QString fileName)
 
 
 	//outfile << cut_pos[0] << " " << cut_pos[1] << " " << cut_pos[2] << endl;	
-	outfile << -1 << " " << -1 << " " << -1 << endl;	
-
-
 	outfile << global_paraMgr.drawer.getDouble("Sample Dot Size") << endl;
 	outfile << global_paraMgr.drawer.getDouble("Sample Draw Width") << endl;
 	outfile << global_paraMgr.drawer.getDouble("Normal Line Width") << endl;
@@ -1433,8 +1436,6 @@ void GLArea::saveView(QString fileName)
 	//outfile << global_paraMgr.skeleton.getDouble("Snake Search Max Dist Blue") << endl;
 	//outfile << global_paraMgr.skeleton.getDouble("Branch Search Max Dist Yellow") << endl;
 	//outfile << global_paraMgr.skeleton.getDouble("Branches Merge Max Dist Orange") << endl;
-
-	outfile << -1<< "	" << -1 << "	"<< -1 << "	"<< -1 << "	"<< endl;
 
 	outfile << global_paraMgr.wLop.getDouble("Repulsion Mu") << endl;
 	outfile << global_paraMgr.wLop.getDouble("Repulsion Mu2") << endl;
