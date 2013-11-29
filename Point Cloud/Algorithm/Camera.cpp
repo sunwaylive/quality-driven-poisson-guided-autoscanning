@@ -192,7 +192,15 @@ vcc::Camera::runOneKeyNewScan()
 	runNBVScan();
 
 	//merge
-	cout<<"one key new scan finished!"<<endl;
+	vector<CMesh*>::iterator it_scan_result = scanned_results->begin();
+	for (; it_scan_result != scanned_results->end(); ++it)
+	{
+		CMesh *r = *it_scan_result;
+		for (int i = 0; i < r->vert.size(); ++i)
+		{
+			original->vert.push_back(r->vert[i]);
+		}
+	}
 }
 
 void vcc::Camera::computeUpAndRight()
