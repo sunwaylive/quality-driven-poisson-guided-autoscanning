@@ -1286,9 +1286,46 @@ void DataMgr::loadSkeletonFromSkel(QString fileName)
   }*/
 }
 
-void DataMgr::saveFieldPoints()
+void DataMgr::saveFieldPoints(QString fileName)
 {
+  if (field_points.vert.empty())
+  {
+    return;
+  }
+
+  //ofstream outfile;
+  //outfile.open(fileName.toStdString().c_str());
+
+  //ostringstream strStream; 
+
+  //strStream << "ON " << original.vert.size() << endl;
 
 
+
+  //FILE *fp = fopen(fileName.toStdString().c_str(),"rb");
+  //if(!fp)
+  //  cerr<<"open "<< fileName.toStdString().c_str() <<" failed"<<endl;
+
+
+  ofstream fout;
+  fout.open("intensity test.dat", std::ios::out | std::ios::binary);
+  if( fout == NULL)
+    cout<<" error ----- "<<endl;
+
+
+  for (int i = 0; i < field_points.vert.size(); i++)
+  {
+    CVertex& v = field_points.vert[i];
+    float eigen_value = v.eigen_confidence * 255;
+
+    unsigned char pTest = static_cast<unsigned char>(eigen_value);
+
+    if (i<100)
+    {
+      cout << v.eigen_confidence << " " << eigen_value << "  " << pTest << endl;
+    }
+
+    fout << pTest;
+  }
 }
 

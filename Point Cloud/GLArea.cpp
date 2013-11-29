@@ -270,8 +270,6 @@ void GLArea::paintGL()
 				if(!dataMgr.isOriginalEmpty())
 					glDrawer.draw(GLDrawer::NORMAL, dataMgr.getCurrentOriginal());
 			}
-
-
 		}
 
 
@@ -614,9 +612,9 @@ void GLArea::openByDrop(QString fileName)
 
 void GLArea::loadDefaultModel()
 {
-	dataMgr.loadPlyToModel("child_model.ply");
-	dataMgr.loadPlyToOriginal("child_original.ply");
-	dataMgr.loadPlyToSample("child_sample.ply");
+	//dataMgr.loadPlyToModel("child_model.ply");
+	//dataMgr.loadPlyToOriginal("child_original.ply");
+	//dataMgr.loadPlyToSample("child_sample.ply");
 
 	//dataMgr.loadPlyToSample("default.ply");
 	//dataMgr.loadPlyToOriginal("default_original.ply");
@@ -625,6 +623,7 @@ void GLArea::loadDefaultModel()
 
 	//dataMgr.loadSkeletonFromSkel("yoga0.skel");
 	//dataMgr.loadSkeletonFromSkel("wlop2 + iso.skel");
+  dataMgr.loadSkeletonFromSkel("default.skel");
 
 	//dataMgr.loadPlyToModel("model.ply"); 
 	//dataMgr.loadPlyToOriginal("model.ply");

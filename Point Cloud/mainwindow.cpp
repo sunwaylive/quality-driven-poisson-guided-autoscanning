@@ -136,7 +136,9 @@ void MainWindow::initConnect()
 	connect(ui.actionFeature_Color,SIGNAL(triggered()),this,SLOT(featureColor()));
 
 	connect(ui.actionErase_Pick,SIGNAL(triggered()),this,SLOT(removePickPoints()));
+  connect(ui.actionSave_Field_Points,SIGNAL(triggered()),this,SLOT(saveFieldPoints()));
 	
+  
 
   //connect(ui.actionPoisson_test,SIGNAL(triggered()),this,SLOT(poissonTest()));
   //connect(ui.actionPoisson_test_all,SIGNAL(triggered()),this,SLOT(poissonTestAll()));
@@ -579,6 +581,7 @@ void MainWindow::saveFieldPoints()
   QString file = QFileDialog::getSaveFileName(this, "Save filed as", "", "*.field");
   if(!file.size()) return;
 
+  area->dataMgr.saveFieldPoints(file);
   //area->dataMgr.saveSkeletonAsSkel(file);
 }
 

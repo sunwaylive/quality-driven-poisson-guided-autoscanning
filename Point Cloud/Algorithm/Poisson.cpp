@@ -638,6 +638,8 @@ void Poisson::runPoisson()
     field_points->vn = field_points->vert.size();
     cout << "field point size:  " << field_points->vn << endl;
     cout << "resolution:  " << res << endl;
+
+    //normalizeConfidence(field_points->vert, 0);
   }
 
   

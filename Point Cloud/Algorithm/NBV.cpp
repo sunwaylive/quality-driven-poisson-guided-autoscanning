@@ -383,6 +383,7 @@ NBV::propagate()
               if (confidence_weight * iso_confidence > t.eigen_confidence)
               {
                 t.eigen_confidence = confidence_weight * iso_confidence;
+                t.N() = v.N();
               }
             }
             else
