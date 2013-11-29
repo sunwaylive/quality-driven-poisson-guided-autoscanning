@@ -5,7 +5,7 @@
 #include <QtGui/QWidget>
 #include <iostream>
 
-//#include "Algorithm/normal_extrapolation.h"
+#include "Algorithm/normal_extrapolation.h"
 #include "../GeneratedFiles/ui_camera_para.h"
 #include "DataMgr.h"
 #include "ParameterMgr.h"
@@ -54,6 +54,7 @@ private slots:
   void extractViewCandidates();
   void extractViewIntoBins();
   void runViewClustering();
+  void runUpdateViewDirections();
 
   void runSetupInitialScanns();
   void runStep1WLOP();

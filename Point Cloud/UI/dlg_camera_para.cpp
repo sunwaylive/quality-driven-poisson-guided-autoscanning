@@ -44,6 +44,7 @@ void CameraParaDlg::initConnects()
   connect(ui->use_average_confidence,SIGNAL(clicked(bool)),this,SLOT(useAverageConfidence(bool)));
   connect(ui->use_nbv_test1, SIGNAL(clicked(bool)), this, SLOT(useNbvTest1(bool)));
   connect(ui->use_max_propagation, SIGNAL(clicked(bool)), this, SLOT(useMaxConfidencePropagation(bool)));
+  connect(ui->update_view_directions, SIGNAL(clicked()), this, SLOT(runUpdateViewDirections()));
 
   connect(ui->pushButton_setup_initial_scans, SIGNAL(clicked()), this, SLOT(runSetupInitialScanns()));
   connect(ui->step1_run_WLOP, SIGNAL(clicked()), this, SLOT(runStep1WLOP()));
@@ -416,6 +417,13 @@ void CameraParaDlg::runViewClustering()
   global_paraMgr.nbv.setValue("Run Viewing Clustering", BoolValue(false));
 }
 
+void CameraParaDlg::runUpdateViewDirections()
+{
+  global_paraMgr.nbv.setValue("Run Update View Directions", BoolValue(true));
+  area->runNBV();
+  global_paraMgr.nbv.setValue("Run Update View Directions", BoolValue(false));
+}
+
 void CameraParaDlg::runSetupInitialScanns()
 {
 	global_paraMgr.camera.setValue("Run Initial Scan", BoolValue(true));
@@ -433,10 +441,10 @@ void CameraParaDlg::runStep1WLOP()
   area->runWlop();
   global_paraMgr.wLop.setValue("Run One Key WLOP", BoolValue(false));
 
-  //int knn = global_paraMgr.norSmooth.getInt("PCA KNN");
-  //CMesh* samples = area->dataMgr.getCurrentSamples();
-  //vcg::NormalExtrapolation<vector<CVertex> >::ExtrapolateNormals(samples->vert.begin(), samples->vert.end(), knn, -1);
-  //area->dataMgr.recomputeQuad();
+  int knn = global_paraMgr.norSmooth.getInt("PCA KNN");
+  CMesh* samples = area->dataMgr.getCurrentSamples();
+  vcg::NormalExtrapolation<vector<CVertex> >::ExtrapolateNormals(samples->vert.begin(), samples->vert.end(), knn, -1);
+  area->dataMgr.recomputeQuad();
 }
 
 void CameraParaDlg::runStep2PoissonConfidence()
@@ -465,7 +473,6 @@ void CameraParaDlg::runStep4NewScans()
 
 void CameraParaDlg::runShowScanWindow()
 {
-	//cmd line invoke system command
-	system("scanwindow.exe");
+
 }
 
