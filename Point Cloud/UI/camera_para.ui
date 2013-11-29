@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -574,6 +574,19 @@
      </property>
      <property name="text">
       <string>Extract Views Into Bins</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="update_view_directions">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>620</y>
+       <width>181</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Update View Directions</string>
      </property>
     </widget>
    </widget>

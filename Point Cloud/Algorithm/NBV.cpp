@@ -1,6 +1,6 @@
 #include "NBV.h"
 
-int NBV::view_bins_each_axis = 4;
+int NBV::view_bins_each_axis = 3;
 
 NBV::NBV(RichParameterSet *_para)
 {
@@ -58,6 +58,11 @@ NBV::run()
   if (para->getBool("Run One Key NBV"))
   {
     runOneKeyNBV();
+  }
+
+  if (para->getBool("Run Update View Directions"))
+  {
+    updateViewDirections();
   }
 }
 
@@ -393,8 +398,8 @@ NBV::propagate()
 
             //confidence_weight_sum[index] += confidence_weight;
 
-            t.N() += view_direction * view_weight;
-            t.weight_sum += view_weight;
+            //t.N() += view_direction * view_weight;
+            //t.weight_sum += view_weight;
 
             // record hit_grid center index
             hit_grid_indexes.push_back(index);
@@ -565,26 +570,29 @@ NBV::propagate()
   }//end for iso_points
 #endif
 
-  for (int i = 0; i < all_nbv_grid_centers->vert.size(); i++)
+  if (use_average_confidence)
   {
-    CVertex& t = all_nbv_grid_centers->vert[i];
-    if (t.weight_sum > 1e-10)
+    for (int i = 0; i < all_nbv_grid_centers->vert.size(); i++)
     {
-      t.N() /= -t.weight_sum;
-    }
-    
-    //t.recompute_m_render();
+      CVertex& t = all_nbv_grid_centers->vert[i];
+      //if (t.weight_sum > 1e-10)
+      //{
+      //  t.N() /= -t.weight_sum;
+      //}
 
-    if (use_average_confidence)
-    {
-      if (confidence_weight_sum[i] > 5)
+      //t.recompute_m_render();
+
+      if (use_average_confidence)
       {
-        t.eigen_confidence /= confidence_weight_sum[i];
+        if (confidence_weight_sum[i] > 5)
+        {
+          t.eigen_confidence /= confidence_weight_sum[i];
+        }
       }
-    }
 
-    //t.N() *= -1;
-    //t.N().Normalize();
+      //t.N() *= -1;
+      //t.N().Normalize();
+    }
   }
 
   normalizeConfidence(all_nbv_grid_centers->vert, 0.);
@@ -815,4 +823,11 @@ void NBV::viewClustering()
     nbv_candidates->vert.push_back(update_temp[i]);
   }
   nbv_candidates->vn = nbv_candidates->vert.size(); 
+}
+
+
+void NBV::updateViewDirections()
+{
+  cout << "NBV::updateViewDirections" << endl;
+
 }

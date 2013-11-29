@@ -54,6 +54,7 @@ private slots:
   void extractViewCandidates();
   void extractViewIntoBins();
   void runViewClustering();
+  void runUpdateViewDirections();
 
   void runStep1WLOP();
   void runStep2PoissonConfidence();

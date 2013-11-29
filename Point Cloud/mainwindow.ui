@@ -58,6 +58,7 @@
     <addaction name="actionClear_Data"/>
     <addaction name="actionImport_Image"/>
     <addaction name="actionSave_View"/>
+    <addaction name="actionSave_Field_Points"/>
    </widget>
    <widget class="QMenu" name="menuAlgorithom">
     <property name="title">
@@ -835,6 +836,11 @@
    </property>
    <property name="text">
     <string>Show NBV Candidates</string>
+   </property>
+  </action>
+  <action name="actionSave_Field_Points">
+   <property name="text">
+    <string>Save Field Points</string>
    </property>
   </action>
  </widget>
