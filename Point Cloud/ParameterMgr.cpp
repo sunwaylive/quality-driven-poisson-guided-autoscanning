@@ -389,7 +389,6 @@ void ParameterMgr::initCameraParameter()
 void
 	ParameterMgr::initNBVParameter()
 {
-<<<<<<< HEAD
   nbv.addParam(new RichString("Algorithm Name", "NBV"));
   nbv.addParam(new RichBool("Run One Key NBV", false));
 
@@ -413,6 +412,7 @@ void
 
   nbv.addParam(new RichDouble("Confidence Separation Value", 0.85));
   nbv.addParam(new RichDouble("Max Ray Steps Para", 1.5));
+
 	nbv.addParam(new RichString("Algorithm Name", "NBV"));
 	nbv.addParam(new RichBool("Run One Key NBV", false));
 
@@ -435,4 +435,5 @@ void
 
 	nbv.addParam(new RichDouble("Confidence Separation Value", 0.85));
 	nbv.addParam(new RichDouble("Max Ray Steps Para", 1.5));
+
 }
