@@ -91,6 +91,8 @@ public:
 	void     loadSkeletonFromSkel(QString fileName);
 	void     saveSkeletonAsSkel(QString fileName);
 
+  void saveFieldPoints();
+
 
 private:
 	void clearCMesh(CMesh& mesh);
