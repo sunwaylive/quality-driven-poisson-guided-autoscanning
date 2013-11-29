@@ -413,27 +413,4 @@ void
   nbv.addParam(new RichDouble("Confidence Separation Value", 0.85));
   nbv.addParam(new RichDouble("Max Ray Steps Para", 1.5));
 
-	nbv.addParam(new RichString("Algorithm Name", "NBV"));
-	nbv.addParam(new RichBool("Run One Key NBV", false));
-
-	nbv.addParam(new RichBool("Run Build Grid", false));
-	nbv.addParam(new RichBool("Run Propagate", false));
-	nbv.addParam(new RichBool("Run Propagate One Point", false));
-	nbv.addParam(new RichBool("Run Grid Segment", false));
-
-	nbv.addParam(new RichBool("Run Viewing Clustering", false));
-	nbv.addParam(new RichBool("Run Extract Views Into Bins", false));
-	nbv.addParam(new RichBool("Run Viewing Extract", false));
-
-	nbv.addParam(new RichDouble("Grid resolution", 40.f));
-	nbv.addParam(new RichBool("Test Other Inside Segment", false));
-
-	nbv.addParam(new RichBool("Use Confidence Separation", false));
-	nbv.addParam(new RichBool("Use Average Confidence", false));
-	nbv.addParam(new RichBool("Use NBV Test1", false));
-	nbv.addParam(new RichBool("Use Max Propagation", true));
-
-	nbv.addParam(new RichDouble("Confidence Separation Value", 0.85));
-	nbv.addParam(new RichDouble("Max Ray Steps Para", 1.5));
-
 }
