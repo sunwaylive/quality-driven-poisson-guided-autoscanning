@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -42,19 +42,6 @@
       <string>Compute Next Best View </string>
      </property>
     </widget>
-    <widget class="QLabel" name="label">
-     <property name="geometry">
-      <rect>
-       <x>29</x>
-       <y>17</y>
-       <width>111</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Horizontal Range :</string>
-     </property>
-    </widget>
     <widget class="QLabel" name="label_5">
      <property name="geometry">
       <rect>
@@ -66,28 +53,6 @@
      </property>
      <property name="text">
       <string>Merge scan results with Init-scan:</string>
-     </property>
-    </widget>
-    <widget class="QDoubleSpinBox" name="vertical_dist">
-     <property name="geometry">
-      <rect>
-       <x>158</x>
-       <y>43</y>
-       <width>62</width>
-       <height>22</height>
-      </rect>
-     </property>
-     <property name="decimals">
-      <number>10</number>
-     </property>
-     <property name="maximum">
-      <double>5.000000000000000</double>
-     </property>
-     <property name="singleStep">
-      <double>0.100000000000000</double>
-     </property>
-     <property name="value">
-      <double>0.600000000000000</double>
      </property>
     </widget>
     <widget class="Line" name="line_2">
@@ -139,19 +104,6 @@
       <string>Reset</string>
      </property>
     </widget>
-    <widget class="QLabel" name="label_2">
-     <property name="geometry">
-      <rect>
-       <x>29</x>
-       <y>43</y>
-       <width>111</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Vertical Range :</string>
-     </property>
-    </widget>
     <widget class="QPushButton" name="pushButton_scan">
      <property name="geometry">
       <rect>
@@ -178,28 +130,6 @@
       <string>Choose scan candidates:</string>
      </property>
     </widget>
-    <widget class="QDoubleSpinBox" name="horizon_dist">
-     <property name="geometry">
-      <rect>
-       <x>158</x>
-       <y>17</y>
-       <width>62</width>
-       <height>22</height>
-      </rect>
-     </property>
-     <property name="decimals">
-      <number>10</number>
-     </property>
-     <property name="maximum">
-      <double>5.000000000000000</double>
-     </property>
-     <property name="singleStep">
-      <double>0.100000000000000</double>
-     </property>
-     <property name="value">
-      <double>1.000000000000000</double>
-     </property>
-    </widget>
     <widget class="QPushButton" name="pushButton_merge">
      <property name="geometry">
       <rect>
@@ -216,8 +146,8 @@
     <widget class="QGroupBox" name="groupBox">
      <property name="geometry">
       <rect>
-       <x>8</x>
-       <y>2</y>
+       <x>0</x>
+       <y>0</y>
        <width>241</width>
        <height>121</height>
       </rect>
@@ -260,19 +190,111 @@
        <double>1.000000000000000</double>
       </property>
      </widget>
-    </widget>
-    <widget class="QLabel" name="label_3">
-     <property name="geometry">
-      <rect>
-       <x>29</x>
-       <y>70</y>
-       <width>111</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Max Distance :</string>
-     </property>
+     <widget class="QDoubleSpinBox" name="horizon_dist">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>14</y>
+        <width>62</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="decimals">
+       <number>10</number>
+      </property>
+      <property name="maximum">
+       <double>5.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.100000000000000</double>
+      </property>
+      <property name="value">
+       <double>1.000000000000000</double>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="max_dist">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>67</y>
+        <width>62</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="decimals">
+       <number>10</number>
+      </property>
+      <property name="maximum">
+       <double>5.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.100000000000000</double>
+      </property>
+      <property name="value">
+       <double>1.500000000000000</double>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_2">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>40</y>
+        <width>111</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Vertical Range :</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>16</y>
+        <width>111</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Horizontal Range :</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_3">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>70</y>
+        <width>111</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Max Distance :</string>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="vertical_dist">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>40</y>
+        <width>62</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="decimals">
+       <number>10</number>
+      </property>
+      <property name="maximum">
+       <double>5.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.100000000000000</double>
+      </property>
+      <property name="value">
+       <double>0.600000000000000</double>
+      </property>
+     </widget>
     </widget>
     <widget class="QPushButton" name="pushButton_initial_scan">
      <property name="geometry">
@@ -308,28 +330,6 @@
        <width>231</width>
        <height>81</height>
       </rect>
-     </property>
-    </widget>
-    <widget class="QDoubleSpinBox" name="max_dist">
-     <property name="geometry">
-      <rect>
-       <x>158</x>
-       <y>70</y>
-       <width>62</width>
-       <height>22</height>
-      </rect>
-     </property>
-     <property name="decimals">
-      <number>10</number>
-     </property>
-     <property name="maximum">
-      <double>5.000000000000000</double>
-     </property>
-     <property name="singleStep">
-      <double>0.100000000000000</double>
-     </property>
-     <property name="value">
-      <double>1.500000000000000</double>
      </property>
     </widget>
    </widget>
@@ -585,7 +585,7 @@
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>30</y>
+       <y>80</y>
        <width>181</width>
        <height>31</height>
       </rect>
@@ -598,7 +598,7 @@
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>80</y>
+       <y>130</y>
        <width>181</width>
        <height>31</height>
       </rect>
@@ -611,7 +611,7 @@
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>130</y>
+       <y>180</y>
        <width>181</width>
        <height>31</height>
       </rect>
@@ -624,13 +624,52 @@
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>180</y>
+       <y>270</y>
        <width>181</width>
        <height>31</height>
       </rect>
      </property>
      <property name="text">
       <string>Step4: Run New Scan</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_show_scan_window">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>230</y>
+       <width>111</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Show Scan Window</string>
+     </property>
+    </widget>
+    <widget class="Line" name="line_3">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>60</y>
+       <width>221</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_setup_initial_scans">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>20</y>
+       <width>181</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Setup Inital Scans</string>
      </property>
     </widget>
    </widget>

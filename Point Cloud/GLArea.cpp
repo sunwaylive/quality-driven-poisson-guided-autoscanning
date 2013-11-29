@@ -4,17 +4,17 @@
 #define PI 3.1415926535897932384
 
 GLArea::GLArea(QWidget *parent): QGLWidget(/*QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer |QGL::SampleBuffers),*/ parent),
-	               para(global_paraMgr.getGlareaParameterSet()),
-								 glDrawer(global_paraMgr.getDrawerParameterSet()),
-								 dataMgr(global_paraMgr.getDataParameterSet()),
-								 wlop(global_paraMgr.getWLopParameterSet()),
-								 norSmoother(global_paraMgr.getNormalSmootherParameterSet()),
-								 skeletonization(global_paraMgr.getSkeletonParameterSet()),
-								 upsampler(global_paraMgr.getUpsamplingParameterSet()),
-                 poisson(global_paraMgr.getPoissonParameterSet()),
-                 camera(global_paraMgr.getCameraParameterSet()),
-								 paintMutex(QMutex::NonRecursive),
-                 nbv(global_paraMgr.getNBVParameterSet())
+	para(global_paraMgr.getGlareaParameterSet()),
+	glDrawer(global_paraMgr.getDrawerParameterSet()),
+	dataMgr(global_paraMgr.getDataParameterSet()),
+	wlop(global_paraMgr.getWLopParameterSet()),
+	norSmoother(global_paraMgr.getNormalSmootherParameterSet()),
+	skeletonization(global_paraMgr.getSkeletonParameterSet()),
+	upsampler(global_paraMgr.getUpsamplingParameterSet()),
+	poisson(global_paraMgr.getPoissonParameterSet()),
+	camera(global_paraMgr.getCameraParameterSet()),
+	paintMutex(QMutex::NonRecursive),
+	nbv(global_paraMgr.getNBVParameterSet())
 {
 	setMouseTracking(true); 
 	isDragging = false;
@@ -89,16 +89,16 @@ void GLArea::initializeGL()
 	trackball.center = Point3f(0, 0, 0);
 	trackball.radius = 1;
 
-  // force to open anti
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  //glBlendFunc(GL_ONE, GL_ZERO);  
-  glEnable(GL_BLEND);
-  glEnable(GL_POINT_SMOOTH);
-  glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-  glEnable(GL_LINE_SMOOTH);
-  glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-  glEnable(GL_POLYGON_SMOOTH);
-  glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+	// force to open anti
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glBlendFunc(GL_ONE, GL_ZERO);  
+	glEnable(GL_BLEND);
+	glEnable(GL_POINT_SMOOTH);
+	glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+	glEnable(GL_LINE_SMOOTH);
+	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+	glEnable(GL_POLYGON_SMOOTH);
+	glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 
 
 	glLoadIdentity(); 
@@ -140,348 +140,351 @@ void GLArea::paintGL()
 {
 	paintMutex.lock();{
 
-	if (is_paintGL_locked)
-	{
-		goto PAINT_RETURN;
-	}
-
-	lightOnOff(para->getBool("Light On or Off"));
-
-	GLColor color(global_paraMgr.drawer.getColor("Background Color"));
-	glClearColor(color.r, color.g, color.b, 1); 
-
-	Point3f lightPos = para->getPoint3f("Light Position");
-	float lpos[4];
-	lpos[0] = lightPos[0];
-	lpos[1] = lightPos[1];
-	lpos[2] = lightPos[2];
-	lpos[3] = 0;
-	glLightfv(GL_LIGHT0, GL_POSITION, lpos);       
-	lpos[0] = -lightPos[0];
-	lpos[1] = -lightPos[1];
-	lpos[2] = -lightPos[2];
-	lpos[3] = 0;
-	glLightfv(GL_LIGHT1, GL_POSITION, lpos);       
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);   
-
-	double SnapResolutionScale = global_paraMgr.glarea.getDouble("Snapshot Resolution");
-	if (takeSnapTile)
-	{
-		double normal_width = global_paraMgr.drawer.getDouble("Normal Line Width");
-		double dot_size = global_paraMgr.drawer.getDouble("Sample Dot Size");
-    double iso_size = global_paraMgr.drawer.getDouble("ISO Dot Size");
-		double original_dot_size = global_paraMgr.drawer.getDouble("Original Dot Size");
-
-		global_paraMgr.drawer.setValue("Normal Line Width", DoubleValue(normal_width * SnapResolutionScale * SnapResolutionScale * snapDrawScal));
-		global_paraMgr.drawer.setValue("Sample Dot Size", DoubleValue(dot_size * SnapResolutionScale * SnapResolutionScale * snapDrawScal));
-    global_paraMgr.drawer.setValue("ISO Dot Size", DoubleValue(iso_size * SnapResolutionScale * SnapResolutionScale * snapDrawScal));		
-    global_paraMgr.drawer.setValue("Original Dot Size", DoubleValue(original_dot_size * SnapResolutionScale * SnapResolutionScale * snapDrawScal));
-	}
-
-	glLoadIdentity();
-	gluLookAt(0, 0, -3, 0, 0, 0, 0, 1, 0); 
-
-	if (takeSnapTile)
-	{
-		setView();// high resolution snapshot
-	}
-
-	drawLightBall();
-
-	//Drawing the scene 
-	glPushMatrix();
-	trackball.GetView();
-
-	Point3f c = -gl_box.Center();
-	double radius = 2.0f/gl_box.Diag();
-
-	trackball.Apply(false);
-
-	glPushMatrix();
-	glScalef(radius, radius, radius);
-	glTranslatef(c[0], c[1], c[2]);
-
-	View<float> view;
-	view.GetView();
-	Point3f viewpoint = view.ViewPoint();
-	glDrawer.setViewPoint(viewpoint);
-
-	if (dataMgr.isSamplesEmpty() && dataMgr.isOriginalEmpty())
-	{
-		goto PAINT_RETURN;
-	}
-
-	glDrawer.updateDrawer(pickList);
-
-
-  // have problems...
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  //glBlendFunc(GL_ONE, GL_ZERO)
-
-  if(para->getBool("Show Samples"))  
-	{
-		if(para->getBool("Show Samples Quad"))
-			glDrawer.draw(GLDrawer::QUADE, dataMgr.getCurrentSamples());
-		if(para->getBool("Show Samples Dot"))
-			glDrawer.draw(GLDrawer::DOT, dataMgr.getCurrentSamples());
-		if(para->getBool("Show Samples Circle"))
-			glDrawer.draw(GLDrawer::CIRCLE, dataMgr.getCurrentSamples());	
-		if (para->getBool("Show Samples Sphere"))
-			glDrawer.draw(GLDrawer::SPHERE, dataMgr.getCurrentSamples());	
-	}
-
-	if (para->getBool("Show Normal")) 
-	{
-    if (para->getBool("Show NBV Candidates"))
-    {
-      if (!dataMgr.isNBVGridsEmpty())
-      {
-        glDrawer.draw(GLDrawer::NORMAL, dataMgr.getNbvCandidates());
-      }
-    }else if (para->getBool("Show NBV Grids"))
-    {
-      if (!dataMgr.isNBVGridsEmpty())
-      {
-        glDrawer.draw(GLDrawer::NORMAL, dataMgr.getAllNBVGridCenters());
-      } 
-    }
-    else if (para->getBool("Show ISO Points"))
-    {
-      glDrawer.draw(GLDrawer::NORMAL, dataMgr.getCurrentIsoPoints());
-    }
-		else if(para->getBool("Show Samples"))
+		if (is_paintGL_locked)
 		{
-			glDrawer.draw(GLDrawer::NORMAL, dataMgr.getCurrentSamples());
+			goto PAINT_RETURN;
 		}
-		else
+
+		lightOnOff(para->getBool("Light On or Off"));
+
+		GLColor color(global_paraMgr.drawer.getColor("Background Color"));
+		glClearColor(color.r, color.g, color.b, 1); 
+
+		Point3f lightPos = para->getPoint3f("Light Position");
+		float lpos[4];
+		lpos[0] = lightPos[0];
+		lpos[1] = lightPos[1];
+		lpos[2] = lightPos[2];
+		lpos[3] = 0;
+		glLightfv(GL_LIGHT0, GL_POSITION, lpos);       
+		lpos[0] = -lightPos[0];
+		lpos[1] = -lightPos[1];
+		lpos[2] = -lightPos[2];
+		lpos[3] = 0;
+		glLightfv(GL_LIGHT1, GL_POSITION, lpos);       
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);   
+
+		double SnapResolutionScale = global_paraMgr.glarea.getDouble("Snapshot Resolution");
+		if (takeSnapTile)
+		{
+			double normal_width = global_paraMgr.drawer.getDouble("Normal Line Width");
+			double dot_size = global_paraMgr.drawer.getDouble("Sample Dot Size");
+			double iso_size = global_paraMgr.drawer.getDouble("ISO Dot Size");
+			double original_dot_size = global_paraMgr.drawer.getDouble("Original Dot Size");
+
+			global_paraMgr.drawer.setValue("Normal Line Width", DoubleValue(normal_width * SnapResolutionScale * SnapResolutionScale * snapDrawScal));
+			global_paraMgr.drawer.setValue("Sample Dot Size", DoubleValue(dot_size * SnapResolutionScale * SnapResolutionScale * snapDrawScal));
+			global_paraMgr.drawer.setValue("ISO Dot Size", DoubleValue(iso_size * SnapResolutionScale * SnapResolutionScale * snapDrawScal));		
+			global_paraMgr.drawer.setValue("Original Dot Size", DoubleValue(original_dot_size * SnapResolutionScale * SnapResolutionScale * snapDrawScal));
+		}
+
+		glLoadIdentity();
+		gluLookAt(0, 0, -3, 0, 0, 0, 0, 1, 0); 
+
+		if (takeSnapTile)
+		{
+			setView();// high resolution snapshot
+		}
+
+		drawLightBall();
+
+		//Drawing the scene 
+		glPushMatrix();
+		trackball.GetView();
+
+		Point3f c = -gl_box.Center();
+		double radius = 2.0f/gl_box.Diag();
+
+		trackball.Apply(false);
+
+		glPushMatrix();
+		glScalef(radius, radius, radius);
+		glTranslatef(c[0], c[1], c[2]);
+
+		View<float> view;
+		view.GetView();
+		Point3f viewpoint = view.ViewPoint();
+		glDrawer.setViewPoint(viewpoint);
+
+		if (dataMgr.isSamplesEmpty() && dataMgr.isOriginalEmpty() && dataMgr.isModelEmpty())
+		{
+			goto PAINT_RETURN;
+		}
+
+		glDrawer.updateDrawer(pickList);
+
+
+		// have problems...
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		//glBlendFunc(GL_ONE, GL_ZERO)
+
+		if (para->getBool("Show Model"))
+		{
+			//different from drawing dot
+			if (!dataMgr.isModelEmpty())
+			{
+				glw.m = dataMgr.getCurrentModel();
+				//glw.Draw(GLW::DMWire, GLW::CMPerMesh, GLW::TMNone);
+				glw.Draw(GLW::DMSmooth, GLW::CMPerMesh, GLW::TMNone);
+			}
+		}
+
+		if(para->getBool("Show Samples"))  
+		{
+			if(para->getBool("Show Samples Quad"))
+				glDrawer.draw(GLDrawer::QUADE, dataMgr.getCurrentSamples());
+			if(para->getBool("Show Samples Dot"))
+				glDrawer.draw(GLDrawer::DOT, dataMgr.getCurrentSamples());
+			if(para->getBool("Show Samples Circle"))
+				glDrawer.draw(GLDrawer::CIRCLE, dataMgr.getCurrentSamples());	
+			if (para->getBool("Show Samples Sphere"))
+				glDrawer.draw(GLDrawer::SPHERE, dataMgr.getCurrentSamples());	
+		}
+
+		if (para->getBool("Show Normal")) 
+		{
+			if (para->getBool("Show NBV Candidates"))
+			{
+				if (!dataMgr.isNBVGridsEmpty())
+				{
+					glDrawer.draw(GLDrawer::NORMAL, dataMgr.getNbvCandidates());
+				}
+			}else if (para->getBool("Show NBV Grids"))
+			{
+				if (!dataMgr.isNBVGridsEmpty())
+				{
+					glDrawer.draw(GLDrawer::NORMAL, dataMgr.getAllNBVGridCenters());
+				} 
+			}
+			else if (para->getBool("Show ISO Points"))
+			{
+				glDrawer.draw(GLDrawer::NORMAL, dataMgr.getCurrentIsoPoints());
+			}
+			else if(para->getBool("Show Samples"))
+			{
+				glDrawer.draw(GLDrawer::NORMAL, dataMgr.getCurrentSamples());
+			}
+			else
+			{
+				if(!dataMgr.isOriginalEmpty())
+					glDrawer.draw(GLDrawer::NORMAL, dataMgr.getCurrentOriginal());
+			}
+
+
+		}
+
+
+		if(para->getBool("Show Original"))
 		{
 			if(!dataMgr.isOriginalEmpty())
-				glDrawer.draw(GLDrawer::NORMAL, dataMgr.getCurrentOriginal());
+			{
+				if(para->getBool("Show Original Quad"))
+					glDrawer.draw(GLDrawer::QUADE, dataMgr.getCurrentOriginal());
+				if(para->getBool("Show Original Dot"))
+					glDrawer.draw(GLDrawer::DOT, dataMgr.getCurrentOriginal());
+				if(para->getBool("Show Original Circle"))
+					glDrawer.draw(GLDrawer::CIRCLE, dataMgr.getCurrentOriginal());
+				if (para->getBool("Show Original Sphere"))
+					glDrawer.draw(GLDrawer::SPHERE, dataMgr.getCurrentOriginal());	
+			}		
+		}
+
+		if (para->getBool("Show ISO Points"))
+		{
+			if (!dataMgr.isIsoPointsEmpty())
+			{
+				//glDrawer.draw(GLDrawer::DOT, dataMgr.getCurrentIsoPoints());
+				if(para->getBool("Show Samples Quad"))
+					glDrawer.draw(GLDrawer::QUADE, dataMgr.getCurrentIsoPoints());
+				if(para->getBool("Show Samples Dot"))
+					glDrawer.draw(GLDrawer::DOT, dataMgr.getCurrentIsoPoints());
+				if(para->getBool("Show Samples Circle"))
+					glDrawer.draw(GLDrawer::CIRCLE, dataMgr.getCurrentIsoPoints());	
+				if (para->getBool("Show Samples Sphere"))
+					glDrawer.draw(GLDrawer::SPHERE, dataMgr.getCurrentIsoPoints());	
+			}
+		}
+
+		if (para->getBool("Show Skeleton"))
+		{
+			glDrawer.drawCurveSkeleton(*dataMgr.getCurrentSkeleton());
+		}
+
+		if (!(takeSnapTile && para->getBool("No Snap Radius")))
+		{
+			glDrawer.drawPickPoint(dataMgr.getCurrentSamples(), pickList, para->getBool("Show Samples Dot"));
+		}
+
+		if (isDragging && para->getBool("Multiply Pick Point"))
+		{
+			drawPickRect();
+		}
+
+		if (para->getBool("Show NBV Grids"))
+		{
+			CMesh *nbv_grids = dataMgr.getAllNBVGridCenters();
+			if (NULL == nbv_grids) return;
+
+			if(!nbv_grids->vert.empty())
+			{
+				glDrawer.draw(GLDrawer::DOT, nbv_grids);
+				//if (global_paraMgr.nbv.getBool("Use Confidence Separation"))
+				//{
+				//  glDrawer.draw(GLDrawer::QUADE, nbv_grids);
+				//}
+				//else
+				//{
+				//  glDrawer.draw(GLDrawer::DOT, nbv_grids);
+				//}
+			}
+
+		}
+
+		if (para->getBool("Show NBV Candidates"))
+		{
+			CMesh *nbv_candidates = dataMgr.getNbvCandidates();
+
+			if(!nbv_candidates->vert.empty()) 
+				glDrawer.draw(GLDrawer::DOT, nbv_candidates);
+		}
+		//fix, it doesn't work
+		if (para->getBool("Show Scan Candidates"))
+		{
+			//init a default camera for debugging
+			//fix it
+			vcc::Camera current_camera;
+			//get and set parameters from UI
+			double h_dist = global_paraMgr.camera.getDouble("Camera Horizon Dist");
+			double v_dist = global_paraMgr.camera.getDouble("Camera Vertical Dist");
+			double max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
+			double dist_to_model = global_paraMgr.camera.getDouble("Camera Dist To Model");
+			current_camera.horizon_dist = h_dist;
+			current_camera.vertical_dist = v_dist;
+			current_camera.max_distance = max_dist;
+
+			//draw selected scan candidates
+			vector<ScanCandidate> *selected_candidates = dataMgr.getSelectedScanCandidates();
+			if (!selected_candidates->empty())
+			{
+				vector<ScanCandidate>::iterator it = selected_candidates->begin();
+				for (; it != selected_candidates->end(); ++it)
+				{
+					current_camera.pos = it->first;
+					current_camera.direction = it->second;
+					//if it is initial scan, we should consider dist_to_model
+					if (global_paraMgr.camera.getBool("Is Init Camera Show"))
+						current_camera.pos =  current_camera.pos * dist_to_model;
+
+					current_camera.computeUpAndRight();
+					CVertex v;
+					v.P()[0] = current_camera.pos.X();
+					v.P()[1] = current_camera.pos.Y();
+					v.P()[2] = current_camera.pos.Z();
+					glDrawer.drawSphere(v);
+					glDrawer.drawCamera(current_camera);
+				}
+			}
+		}
+
+		if (para->getBool("Show Scanned Mesh"))
+		{
+			//draw scanned mesh
+			if (!dataMgr.isScannedResultsEmpty())
+			{
+				vector<CMesh* > *scanned_results = dataMgr.getScannedResults();
+				for (vector<CMesh* >::iterator it = scanned_results->begin(); 
+					it != scanned_results->end(); ++it)
+				{
+					if ((*it)->vert.empty()) continue;
+					//if the scanned mesh is unvisible, then continue
+					if (!((*it)->vert[0].is_scanned_visible)) continue;
+
+					glDrawer.draw(GLDrawer::DOT, *it);
+				}
+			}
+		}
+
+		if (para->getBool("Show Bounding Box"))
+		{
+			Box3f box = dataMgr.getCurrentOriginal()->bbox;
+			glBoxWire(box);
+
+			Box3f standard_box;
+			standard_box.min = Point3f(-1, -1, -1);
+			standard_box.max = Point3f(1, 1, 1);
+			glBoxWire(standard_box);
+
+			CoordinateFrame(standard_box.Diag()/2.0).Render(this, NULL);
 		}
 
 
-	}
+		/* The following are semitransparent, careful for the rendering order*/
+		glDepthMask(GL_FALSE);
 
- 	if(para->getBool("Show Original"))
- 	{
- 		if(!dataMgr.isOriginalEmpty())
- 		{
- 			if(para->getBool("Show Original Quad"))
- 				glDrawer.draw(GLDrawer::QUADE, dataMgr.getCurrentOriginal());
- 			if(para->getBool("Show Original Dot"))
- 				glDrawer.draw(GLDrawer::DOT, dataMgr.getCurrentOriginal());
- 			if(para->getBool("Show Original Circle"))
- 				glDrawer.draw(GLDrawer::CIRCLE, dataMgr.getCurrentOriginal());
-			if (para->getBool("Show Original Sphere"))
-				glDrawer.draw(GLDrawer::SPHERE, dataMgr.getCurrentOriginal());	
- 		}		
- 	}
+		if (global_paraMgr.poisson.getBool("Show Slices Mode"))
+		{
+			glDisable(GL_LIGHTING);
+			glDisable(GL_CULL_FACE);
+			if (!global_paraMgr.poisson.getBool("Show Transparent Slices"))
+			{
+				if (global_paraMgr.poisson.getBool("Show X Slices"))
+				{
+					glDrawer.drawSlice((*dataMgr.getCurrentSlices())[0], 1);
+				}
+				if (global_paraMgr.poisson.getBool("Show Y Slices"))
+				{
+					glDrawer.drawSlice((*dataMgr.getCurrentSlices())[1], 1);
+				}
+				if (global_paraMgr.poisson.getBool("Show Z Slices"))
+				{
+					glDrawer.drawSlice((*dataMgr.getCurrentSlices())[2], 1);
+				}
+			}
+			else
+			{
+				double trans_value = para->getDouble("Radius Ball Transparency");
+				if (global_paraMgr.poisson.getBool("Show X Slices"))
+				{
+					glDrawer.drawSlice((*dataMgr.getCurrentSlices())[0], trans_value);
+				}
+				if (global_paraMgr.poisson.getBool("Show Y Slices"))
+				{
+					glDrawer.drawSlice((*dataMgr.getCurrentSlices())[1], trans_value);
+				}
+				if (global_paraMgr.poisson.getBool("Show Z Slices"))
+				{
+					glDrawer.drawSlice((*dataMgr.getCurrentSlices())[2], trans_value);
+				}
+			}
+			//glEnable(GL_CULL_FACE);
+		}
 
-  if (para->getBool("Show ISO Points"))
-  {
-    if (!dataMgr.isIsoPointsEmpty())
-    {
-      //glDrawer.draw(GLDrawer::DOT, dataMgr.getCurrentIsoPoints());
-      if(para->getBool("Show Samples Quad"))
-        glDrawer.draw(GLDrawer::QUADE, dataMgr.getCurrentIsoPoints());
-      if(para->getBool("Show Samples Dot"))
-        glDrawer.draw(GLDrawer::DOT, dataMgr.getCurrentIsoPoints());
-      if(para->getBool("Show Samples Circle"))
-        glDrawer.draw(GLDrawer::CIRCLE, dataMgr.getCurrentIsoPoints());	
-      if (para->getBool("Show Samples Sphere"))
-        glDrawer.draw(GLDrawer::SPHERE, dataMgr.getCurrentIsoPoints());	
-    }
-  }
+		if (para->getBool("Show Radius")&& !(takeSnapTile && para->getBool("No Snap Radius"))) 
+		{
+			drawNeighborhoodRadius();
+		}
 
-	if (para->getBool("Show Skeleton"))
-	{
-		glDrawer.drawCurveSkeleton(*dataMgr.getCurrentSkeleton());
-	}
-
-	if (!(takeSnapTile && para->getBool("No Snap Radius")))
-	{
-		glDrawer.drawPickPoint(dataMgr.getCurrentSamples(), pickList, para->getBool("Show Samples Dot"));
-	}
-
-	if (isDragging && para->getBool("Multiply Pick Point"))
-	{
-		drawPickRect();
-	}
-
-  //get object model and draw it out
-  if (para->getBool("Show Model"))
-  {
-    //different from drawing dot
-    glw.m = dataMgr.getCurrentModel();
-    //glw.Draw(GLW::DMWire, GLW::CMPerMesh, GLW::TMNone);
-    glw.Draw(GLW::DMSmooth, GLW::CMPerMesh, GLW::TMNone);
-  }
-
-  if (para->getBool("Show NBV Grids"))
-  {
-    CMesh *nbv_grids = dataMgr.getAllNBVGridCenters();
-    if (NULL == nbv_grids) return;
-
-    if(!nbv_grids->vert.empty())
-    {
-      glDrawer.draw(GLDrawer::DOT, nbv_grids);
-      //if (global_paraMgr.nbv.getBool("Use Confidence Separation"))
-      //{
-      //  glDrawer.draw(GLDrawer::QUADE, nbv_grids);
-      //}
-      //else
-      //{
-      //  glDrawer.draw(GLDrawer::DOT, nbv_grids);
-      //}
-    }
-     
-  }
-
-  if (para->getBool("Show NBV Candidates"))
-  {
-    CMesh *nbv_candidates = dataMgr.getNbvCandidates();
-
-    if(!nbv_candidates->vert.empty()) 
-      glDrawer.draw(GLDrawer::DOT, nbv_candidates);
-  }
-  //fix, it doesn't work
-  if (para->getBool("Show Scan Candidates"))
-  {
-    //init a default camera for debugging
-    //fix it
-    vcc::Camera current_camera;
-    //get and set parameters from UI
-    double h_dist = global_paraMgr.camera.getDouble("Camera Horizon Dist");
-    double v_dist = global_paraMgr.camera.getDouble("Camera Vertical Dist");
-    double max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
-    double dist_to_model = global_paraMgr.camera.getDouble("Camera Dist To Model");
-    current_camera.horizon_dist = h_dist;
-    current_camera.vertical_dist = v_dist;
-    current_camera.max_distance = max_dist;
-
-    //draw selected scan candidates
-    vector<ScanCandidate> *selected_candidates = dataMgr.getSelectedScanCandidates();
-    if (!selected_candidates->empty())
-    {
-      vector<ScanCandidate>::iterator it = selected_candidates->begin();
-      for (; it != selected_candidates->end(); ++it)
-      {
-        current_camera.pos = it->first;
-        current_camera.direction = it->second;
-        //if it is initial scan, we should consider dist_to_model
-        if (global_paraMgr.camera.getBool("Is Init Camera Show"))
-          current_camera.pos =  current_camera.pos * dist_to_model;
-        
-        current_camera.computeUpAndRight();
-        CVertex v;
-        v.P()[0] = current_camera.pos.X();
-        v.P()[1] = current_camera.pos.Y();
-        v.P()[2] = current_camera.pos.Z();
-        glDrawer.drawSphere(v);
-        glDrawer.drawCamera(current_camera);
-      }
-    }
-  }
-
-  if (para->getBool("Show Scanned Mesh"))
-  {
-    //draw scanned mesh
-    if (!dataMgr.isScannedResultsEmpty())
-    {
-      vector<CMesh* > *scanned_results = dataMgr.getScannedResults();
-      for (vector<CMesh* >::iterator it = scanned_results->begin(); 
-             it != scanned_results->end(); ++it)
-      {
-        if ((*it)->vert.empty()) continue;
-        //if the scanned mesh is unvisible, then continue
-        if (!((*it)->vert[0].is_scanned_visible)) continue;
-
-        glDrawer.draw(GLDrawer::DOT, *it);
-      }
-    }
-  }
-
-  if (para->getBool("Show Bounding Box"))
-  {
-    Box3f box = dataMgr.getCurrentOriginal()->bbox;
-    glBoxWire(box);
-
-    Box3f standard_box;
-    standard_box.min = Point3f(-1, -1, -1);
-    standard_box.max = Point3f(1, 1, 1);
-    glBoxWire(standard_box);
-
-    CoordinateFrame(standard_box.Diag()/2.0).Render(this, NULL);
-  }
+		glDepthMask(GL_TRUE);
 
 
-  /* The following are semitransparent, careful for the rendering order*/
-  glDepthMask(GL_FALSE);
+		glPopMatrix();
+		glPopMatrix();
 
-  if (global_paraMgr.poisson.getBool("Show Slices Mode"))
-  {
-    glDisable(GL_LIGHTING);
-    glDisable(GL_CULL_FACE);
-    if (!global_paraMgr.poisson.getBool("Show Transparent Slices"))
-    {
-      if (global_paraMgr.poisson.getBool("Show X Slices"))
-      {
-        glDrawer.drawSlice((*dataMgr.getCurrentSlices())[0], 1);
-      }
-      if (global_paraMgr.poisson.getBool("Show Y Slices"))
-      {
-        glDrawer.drawSlice((*dataMgr.getCurrentSlices())[1], 1);
-      }
-      if (global_paraMgr.poisson.getBool("Show Z Slices"))
-      {
-        glDrawer.drawSlice((*dataMgr.getCurrentSlices())[2], 1);
-      }
-    }
-    else
-    {
-      double trans_value = para->getDouble("Radius Ball Transparency");
-      if (global_paraMgr.poisson.getBool("Show X Slices"))
-      {
-        glDrawer.drawSlice((*dataMgr.getCurrentSlices())[0], trans_value);
-      }
-      if (global_paraMgr.poisson.getBool("Show Y Slices"))
-      {
-        glDrawer.drawSlice((*dataMgr.getCurrentSlices())[1], trans_value);
-      }
-      if (global_paraMgr.poisson.getBool("Show Z Slices"))
-      {
-        glDrawer.drawSlice((*dataMgr.getCurrentSlices())[2], trans_value);
-      }
-    }
-    //glEnable(GL_CULL_FACE);
-  }
+		if (takeSnapTile){
+			cout << "snap shot!" << endl;
+			pasteTile();
 
-  if (para->getBool("Show Radius")&& !(takeSnapTile && para->getBool("No Snap Radius"))) 
-  {
-    drawNeighborhoodRadius();
-  }
+			double normal_width = global_paraMgr.drawer.getDouble("Normal Line Width");
+			double dot_size = global_paraMgr.drawer.getDouble("Sample Dot Size");
+			double iso_size = global_paraMgr.drawer.getDouble("ISO Dot Size");
+			double original_dot_size = global_paraMgr.drawer.getDouble("Original Dot Size");
 
-  glDepthMask(GL_TRUE);
-
-
-	glPopMatrix();
-	glPopMatrix();
-
-	if (takeSnapTile){
-		cout << "snap shot!" << endl;
-		pasteTile();
-
-		double normal_width = global_paraMgr.drawer.getDouble("Normal Line Width");
-		double dot_size = global_paraMgr.drawer.getDouble("Sample Dot Size");
-    double iso_size = global_paraMgr.drawer.getDouble("ISO Dot Size");
-		double original_dot_size = global_paraMgr.drawer.getDouble("Original Dot Size");
-
-		global_paraMgr.drawer.setValue("Normal Line Width", DoubleValue(normal_width / (SnapResolutionScale * SnapResolutionScale * snapDrawScal)));
-		global_paraMgr.drawer.setValue("Sample Dot Size", DoubleValue(dot_size / (SnapResolutionScale * SnapResolutionScale * snapDrawScal)));
-    global_paraMgr.drawer.setValue("ISO Dot Size", DoubleValue(iso_size / (SnapResolutionScale * SnapResolutionScale * snapDrawScal)));		
-    global_paraMgr.drawer.setValue("Original Dot Size", DoubleValue(original_dot_size / (SnapResolutionScale * SnapResolutionScale * snapDrawScal)));
-	}
+			global_paraMgr.drawer.setValue("Normal Line Width", DoubleValue(normal_width / (SnapResolutionScale * SnapResolutionScale * snapDrawScal)));
+			global_paraMgr.drawer.setValue("Sample Dot Size", DoubleValue(dot_size / (SnapResolutionScale * SnapResolutionScale * snapDrawScal)));
+			global_paraMgr.drawer.setValue("ISO Dot Size", DoubleValue(iso_size / (SnapResolutionScale * SnapResolutionScale * snapDrawScal)));		
+			global_paraMgr.drawer.setValue("Original Dot Size", DoubleValue(original_dot_size / (SnapResolutionScale * SnapResolutionScale * snapDrawScal)));
+		}
 
 	}
 PAINT_RETURN:
@@ -503,15 +506,15 @@ void GLArea::lightOnOff(bool _val)
 
 void GLArea::initAfterOpenFile()
 {
-  dataMgr.getInitRadiuse();
+	dataMgr.getInitRadiuse();
 	initSetting();
 	//emit needUpdateStatus();
 }
 
 void GLArea::initSetting()
 {
-  dataMgr.recomputeQuad();
-  initView();
+	dataMgr.recomputeQuad();
+	initView();
 	wlop.setFirstIterate();
 	skeletonization.setFirstIterate();
 	emit needUpdateStatus();
@@ -528,10 +531,10 @@ void GLArea::initView()
 	{
 		gl_box = dataMgr.getCurrentSamples()->bbox;
 	}
-  else if(!dataMgr.isModelEmpty())
-  {
-    gl_box = dataMgr.getCurrentModel()->bbox;
-  }
+	else if(!dataMgr.isModelEmpty())
+	{
+		gl_box = dataMgr.getCurrentModel()->bbox;
+	}
 }
 
 void GLArea::runPointCloudAlgorithm(PointCloudAlgorithm& algorithm)
@@ -564,20 +567,20 @@ void GLArea::openByDrop(QString fileName)
 {
 	if(fileName.endsWith("ply"))
 	{
-    if (fileName.contains("model"))
-    {
-      dataMgr.loadPlyToModel(fileName);
-    }else if (fileName.contains("camera"))
-    {
-      dataMgr.loadCameraModel(fileName);
-    }else if (fileName.contains("original"))
+		if (fileName.contains("model"))
+		{
+			dataMgr.loadPlyToModel(fileName);
+		}else if (fileName.contains("camera"))
+		{
+			dataMgr.loadCameraModel(fileName);
+		}else if (fileName.contains("original"))
 		{
 			dataMgr.loadPlyToOriginal(fileName);
 		}
-    else if (fileName.contains("_iso"))
-    {
-      dataMgr.loadPlyToISO(fileName);
-    }
+		else if (fileName.contains("_iso"))
+		{
+			dataMgr.loadPlyToISO(fileName);
+		}
 		else
 		{
 			dataMgr.loadPlyToSample(fileName);
@@ -600,10 +603,10 @@ void GLArea::openByDrop(QString fileName)
 	{
 		dataMgr.loadImage(fileName);
 	}
-  if(fileName.endsWith("xyz"))
-  {
-    dataMgr.loadXYZN(fileName);
-  }
+	if(fileName.endsWith("xyz"))
+	{
+		dataMgr.loadXYZN(fileName);
+	}
 
 	initAfterOpenFile();
 	updateGL();
@@ -611,17 +614,21 @@ void GLArea::openByDrop(QString fileName)
 
 void GLArea::loadDefaultModel()
 {
+	dataMgr.loadPlyToModel("child_model.ply");
+	dataMgr.loadPlyToOriginal("child_original.ply");
+	dataMgr.loadPlyToSample("child_sample.ply");
+
 	//dataMgr.loadPlyToSample("default.ply");
 	//dataMgr.loadPlyToOriginal("default_original.ply");
-  //dataMgr.loadSkeletonFromSkel("Yoga1 MC Labeled.skel");
-  //dataMgr.loadSkeletonFromSkel("default.skel");
-  
-  //dataMgr.loadSkeletonFromSkel("yoga0.skel");
-  dataMgr.loadSkeletonFromSkel("wlop2 + iso.skel");
-  
-  //dataMgr.loadPlyToModel("model.ply"); 
-  //dataMgr.loadPlyToOriginal("model.ply");
-  dataMgr.loadCameraModel("camera.ply");
+	//dataMgr.loadSkeletonFromSkel("Yoga1 MC Labeled.skel");
+	//dataMgr.loadSkeletonFromSkel("default.skel");
+
+	//dataMgr.loadSkeletonFromSkel("yoga0.skel");
+	//dataMgr.loadSkeletonFromSkel("wlop2 + iso.skel");
+
+	//dataMgr.loadPlyToModel("model.ply"); 
+	//dataMgr.loadPlyToOriginal("model.ply");
+	//dataMgr.loadCameraModel("camera.ply");
 	initAfterOpenFile();
 	updateGL();
 }
@@ -656,7 +663,7 @@ void GLArea::drawPickRect()
 
 	// Closing 2D
 	glPopAttrib();
-	glPopMatrix(); // restore modelview
+	glPopMatrix(); // restore model view
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
@@ -665,139 +672,139 @@ void GLArea::drawPickRect()
 
 void GLArea::drawNeighborhoodRadius()
 {
-  if (dataMgr.getCurrentSamples()->vert.empty()) return;
+	if (dataMgr.getCurrentSamples()->vert.empty()) return;
 
-  Point3f p;
-  if(!pickList.empty() && pickList[0] >= 0)
-  {
-    int id = pickList[0];
-    if (id >= 0 && id < dataMgr.getCurrentSamples()->vert.size())
-    {
-      p = dataMgr.getCurrentSamples()->vert[id].P();
-    }
-    else
-    {
-      p = dataMgr.getCurrentSamples()->vert[0].P();
-    }
-  }
-  else
-  {
-    p = dataMgr.getCurrentSamples()->vert[0].P();
-  }
+	Point3f p;
+	if(!pickList.empty() && pickList[0] >= 0)
+	{
+		int id = pickList[0];
+		if (id >= 0 && id < dataMgr.getCurrentSamples()->vert.size())
+		{
+			p = dataMgr.getCurrentSamples()->vert[id].P();
+		}
+		else
+		{
+			p = dataMgr.getCurrentSamples()->vert[0].P();
+		}
+	}
+	else
+	{
+		p = dataMgr.getCurrentSamples()->vert[0].P();
+	}
 
-  double h_Gaussian_para = global_paraMgr.wLop.getDouble("H Gaussian Para");
-  double grid_radius = global_paraMgr.data.getDouble("CGrid Radius");
+	double h_Gaussian_para = global_paraMgr.wLop.getDouble("H Gaussian Para");
+	double grid_radius = global_paraMgr.data.getDouble("CGrid Radius");
 
-  if (!takeSnapTile && para->getBool("Show Red Radius Line"))
-  {
-    glColor3f(1, 0, 0);
-    glLineWidth(3);
+	if (!takeSnapTile && para->getBool("Show Red Radius Line"))
+	{
+		glColor3f(1, 0, 0);
+		glLineWidth(3);
 
-    glBegin(GL_LINES);
+		glBegin(GL_LINES);
 
-    glVertex3f(p[0], p[1], p[2]);
-    glVertex3f(p[0], p[1] + grid_radius, p[2]);
-    glEnd();
-  }
+		glVertex3f(p[0], p[1], p[2]);
+		glVertex3f(p[0], p[1] + grid_radius, p[2]);
+		glEnd();
+	}
 
-  //glColorMaterial(GL_FRONT,GL_AMBIENT_AND_DIFFUSE);
-  //glEnable(GL_DEPTH_TEST);
-  //draw transparent ball
-  //static const GLfloat light_position[] = {1.0f, 1.0f, -1.0f, 1.0f};
-  //static const GLfloat light_ambient[]   = {0.2f, 0.2f, 0.2f, 1.0f};
-  //static const GLfloat light_diffuse[]   = {1.0f, 1.0f, 1.0f, 1.0f};
-  //static const GLfloat light_specular[] = {1.0f, 1.0f, 1.0f, 1.0f};
+	//glColorMaterial(GL_FRONT,GL_AMBIENT_AND_DIFFUSE);
+	//glEnable(GL_DEPTH_TEST);
+	//draw transparent ball
+	//static const GLfloat light_position[] = {1.0f, 1.0f, -1.0f, 1.0f};
+	//static const GLfloat light_ambient[]   = {0.2f, 0.2f, 0.2f, 1.0f};
+	//static const GLfloat light_diffuse[]   = {1.0f, 1.0f, 1.0f, 1.0f};
+	//static const GLfloat light_specular[] = {1.0f, 1.0f, 1.0f, 1.0f};
 
-  //glLightfv(GL_LIGHT0, GL_AMBIENT,   light_ambient);
-  //glLightfv(GL_LIGHT0, GL_DIFFUSE,   light_diffuse);
-  //glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+	//glLightfv(GL_LIGHT0, GL_AMBIENT,   light_ambient);
+	//glLightfv(GL_LIGHT0, GL_DIFFUSE,   light_diffuse);
+	//glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
 
-  //glEnable(GL_LIGHT0);
-  //glEnable(GL_LIGHTING);
-  // glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_LIGHT0);
+	//glEnable(GL_LIGHTING);
+	// glEnable(GL_DEPTH_TEST);
 
-  glMatrixMode(GL_MODELVIEW_MATRIX);
+	glMatrixMode(GL_MODELVIEW_MATRIX);
 
-  glColorMaterial(GL_FRONT,GL_AMBIENT_AND_DIFFUSE);
-  double trans_value = para->getDouble("Radius Ball Transparency");
-  glColor4f(0,0,1,trans_value);
-  glShadeModel(GL_SMOOTH);
+	glColorMaterial(GL_FRONT,GL_AMBIENT_AND_DIFFUSE);
+	double trans_value = para->getDouble("Radius Ball Transparency");
+	glColor4f(0,0,1,trans_value);
+	glShadeModel(GL_SMOOTH);
 
-  // if (para->getBool("Show Samples Dot"))
-  // {
-  //   glDepthMask(GL_FALSE);//not for quad
-  // }
-  // else
-  // {
-  //   glDepthMask(GL_FALSE);
-  //   glDisable(GL_DEPTH_TEST);
-  // }
-  //glEnable(GL_CULL_FACE);
+	// if (para->getBool("Show Samples Dot"))
+	// {
+	//   glDepthMask(GL_FALSE);//not for quad
+	// }
+	// else
+	// {
+	//   glDepthMask(GL_FALSE);
+	//   glDisable(GL_DEPTH_TEST);
+	// }
+	//glEnable(GL_CULL_FACE);
 
-  CMesh* samples = dataMgr.getCurrentSamples();
+	CMesh* samples = dataMgr.getCurrentSamples();
 
-  if (para->getBool("Show All Radius") && samples->vn < 1000)
-  {
-    for(int i = 0; i < samples->vert.size(); i++)
-    {
-      CVertex& v = samples->vert[i];
-      glPushMatrix();
-      glTranslatef(v.P()[0], v.P()[1], v.P()[2]);
-      glutSolidSphere(grid_radius  / sqrt(h_Gaussian_para), 40, 40);
-      glPopMatrix();
-    }
-  }
-  else
-  {
-    glPushMatrix();
-    glTranslatef(p[0], p[1], p[2]);
-    glutSolidSphere(grid_radius  / sqrt(h_Gaussian_para), 40, 40);
+	if (para->getBool("Show All Radius") && samples->vn < 1000)
+	{
+		for(int i = 0; i < samples->vert.size(); i++)
+		{
+			CVertex& v = samples->vert[i];
+			glPushMatrix();
+			glTranslatef(v.P()[0], v.P()[1], v.P()[2]);
+			glutSolidSphere(grid_radius  / sqrt(h_Gaussian_para), 40, 40);
+			glPopMatrix();
+		}
+	}
+	else
+	{
+		glPushMatrix();
+		glTranslatef(p[0], p[1], p[2]);
+		glutSolidSphere(grid_radius  / sqrt(h_Gaussian_para), 40, 40);
 
-    if (para->getBool("Show Red Radius Line") 
-      && para->getBool("Show Skeleton")
-      && !dataMgr.getCurrentSkeleton()->isEmpty())
-    {
-      double branch_merge_radius = global_paraMgr.skeleton.getDouble("Branches Merge Max Dist");
-      glColor4f(0,1,0.5,0.4);
-      glutSolidSphere(branch_merge_radius, 40, 40);
+		if (para->getBool("Show Red Radius Line") 
+			&& para->getBool("Show Skeleton")
+			&& !dataMgr.getCurrentSkeleton()->isEmpty())
+		{
+			double branch_merge_radius = global_paraMgr.skeleton.getDouble("Branches Merge Max Dist");
+			glColor4f(0,1,0.5,0.4);
+			glutSolidSphere(branch_merge_radius, 40, 40);
 
-    }
-    glPopMatrix();
-  }
+		}
+		glPopMatrix();
+	}
 
 
-  //if (global_paraMgr.poisson.getBool("Show Slices Mode") &&
-  //    global_paraMgr.poisson.getBool("Show Transparent Slices"))
-  //{
-  //  glDisable(GL_LIGHTING);
-  //  glDisable(GL_CULL_FACE);
-  //  if (global_paraMgr.poisson.getBool("Show X Slices"))
-  //  {
-  //    glDrawer.drawSlice((*dataMgr.getCurrentSlices())[0], trans_value);
-  //  }
-  //  if (global_paraMgr.poisson.getBool("Show Y Slices"))
-  //  {
-  //    glDrawer.drawSlice((*dataMgr.getCurrentSlices())[1], trans_value);
-  //  }
-  //  if (global_paraMgr.poisson.getBool("Show Z Slices"))
-  //  {
-  //    glDrawer.drawSlice((*dataMgr.getCurrentSlices())[2], trans_value);
-  //  }
-  //  glEnable(GL_CULL_FACE);
-  //}
+	//if (global_paraMgr.poisson.getBool("Show Slices Mode") &&
+	//    global_paraMgr.poisson.getBool("Show Transparent Slices"))
+	//{
+	//  glDisable(GL_LIGHTING);
+	//  glDisable(GL_CULL_FACE);
+	//  if (global_paraMgr.poisson.getBool("Show X Slices"))
+	//  {
+	//    glDrawer.drawSlice((*dataMgr.getCurrentSlices())[0], trans_value);
+	//  }
+	//  if (global_paraMgr.poisson.getBool("Show Y Slices"))
+	//  {
+	//    glDrawer.drawSlice((*dataMgr.getCurrentSlices())[1], trans_value);
+	//  }
+	//  if (global_paraMgr.poisson.getBool("Show Z Slices"))
+	//  {
+	//    glDrawer.drawSlice((*dataMgr.getCurrentSlices())[2], trans_value);
+	//  }
+	//  glEnable(GL_CULL_FACE);
+	//}
 
-  if (para->getBool("Show Samples Dot"))
-  {
-    glDepthMask(GL_TRUE);
-  }
+	if (para->getBool("Show Samples Dot"))
+	{
+		glDepthMask(GL_TRUE);
+	}
 
-  glDisable(GL_LIGHTING);
-  glDisable(GL_LIGHT0);
-  glDisable(GL_BLEND);
-  glDisable(GL_CULL_FACE);
+	glDisable(GL_LIGHTING);
+	glDisable(GL_LIGHT0);
+	glDisable(GL_BLEND);
+	glDisable(GL_CULL_FACE);
 
-  //initLight();
-  //glPopAttrib();
+	//initLight();
+	//glPopAttrib();
 }
 
 void GLArea::drawLightBall()
@@ -835,19 +842,19 @@ void GLArea::drawLightBall()
 void GLArea::changeColor(QString paraName)
 {
 	QColor qcolor;
-  if (global_paraMgr.drawer.hasParameter(paraName))
-  {
-    qcolor = global_paraMgr.drawer.getColor(paraName);
-  }
-  else if (global_paraMgr.glarea.hasParameter(paraName))
-  {
-    qcolor = global_paraMgr.glarea.getColor(paraName);
-  }
-  else
-  {
-    return;
-  }
-  
+	if (global_paraMgr.drawer.hasParameter(paraName))
+	{
+		qcolor = global_paraMgr.drawer.getColor(paraName);
+	}
+	else if (global_paraMgr.glarea.hasParameter(paraName))
+	{
+		qcolor = global_paraMgr.glarea.getColor(paraName);
+	}
+	else
+	{
+		return;
+	}
+
 	qcolor = QColorDialog::getColor(qcolor);
 
 	if(qcolor.isValid()){
@@ -878,15 +885,15 @@ void GLArea::changeColor(QString paraName)
 		}
 
 
-    if (global_paraMgr.drawer.hasParameter(paraName))
-    {
-      global_paraMgr.drawer.setValue(paraName, ColorValue(qcolor));
-    }
-    else if (global_paraMgr.glarea.hasParameter(paraName))
-    {
-      global_paraMgr.glarea.setValue(paraName, ColorValue(qcolor));
-    }
-		
+		if (global_paraMgr.drawer.hasParameter(paraName))
+		{
+			global_paraMgr.drawer.setValue(paraName, ColorValue(qcolor));
+		}
+		else if (global_paraMgr.glarea.hasParameter(paraName))
+		{
+			global_paraMgr.glarea.setValue(paraName, ColorValue(qcolor));
+		}
+
 
 	} 
 }
@@ -1134,7 +1141,7 @@ void GLArea::saveSnapshot()
 	double SnapResolutionScale = para->getDouble("Snapshot Resolution");
 	ss.resolution = SnapResolutionScale;
 	snapDrawScal = 1. / SnapResolutionScale;
-	
+
 	totalCols = totalRows = ss.resolution;
 	tileRow = tileCol = 0;
 	ss.setOutDir(current_snap_path);
@@ -1148,7 +1155,7 @@ void GLArea::saveSnapshot()
 		double snap_id = para->getDouble("Snapshot Index");
 		global_paraMgr.setGlobalParameter("Snapshot Index", DoubleValue(snap_id));
 		emit needUpdateStatus();
-	
+
 		para->setValue("Snapshot Index", DoubleValue(snape_idx));
 	}
 
@@ -1180,38 +1187,38 @@ void GLArea::runWlop()
 		dataMgr.subSamples();
 	}
 
-  global_paraMgr.glarea.setValue("GLarea Busying", BoolValue(true));
+	global_paraMgr.glarea.setValue("GLarea Busying", BoolValue(true));
 
-  bool is_break = false;
-  int iterate_time = global_paraMgr.wLop.getDouble("Num Of Iterate Time");
-  if (global_paraMgr.wLop.getBool("Run One Key WLOP"))
-  {
-    iterate_time = 1.0;
-  }
+	bool is_break = false;
+	int iterate_time = global_paraMgr.wLop.getDouble("Num Of Iterate Time");
+	if (global_paraMgr.wLop.getBool("Run One Key WLOP"))
+	{
+		iterate_time = 1.0;
+	}
 
 	for (int i = 0; i < iterate_time; i++)
 	{
-    if (global_paraMgr.glarea.getBool("Algorithom Stop") || is_break)
-    {
-      is_break = true;
-      break;
-    }
+		if (global_paraMgr.glarea.getBool("Algorithom Stop") || is_break)
+		{
+			is_break = true;
+			break;
+		}
 
 		runPointCloudAlgorithm(wlop);
 		if (para->getBool("SnapShot Each Iteration"))
 		{
 			saveSnapshot();
 		}
-    emit needUpdateStatus();
+		emit needUpdateStatus();
 	}
-  
-  if (is_break)
-  {
-    global_paraMgr.skeleton.setValue("The Skeletonlization Process Should Stop", BoolValue(false));
-    global_paraMgr.glarea.setValue("Algorithom Stop", BoolValue(false));
-    global_paraMgr.glarea.setValue("GLarea Busying", BoolValue(false));
-    return;
-  }
+
+	if (is_break)
+	{
+		global_paraMgr.skeleton.setValue("The Skeletonlization Process Should Stop", BoolValue(false));
+		global_paraMgr.glarea.setValue("Algorithom Stop", BoolValue(false));
+		global_paraMgr.glarea.setValue("GLarea Busying", BoolValue(false));
+		return;
+	}
 
 	para->setValue("Running Algorithm Name",
 		StringValue(wlop.getParameterSet()->getString("Algorithm Name")));
@@ -1223,22 +1230,22 @@ void GLArea::runWlop()
 
 	global_paraMgr.wLop.setValue("Run Anisotropic LOP", BoolValue(false));
 
-	
+
 }
 
 void GLArea::runSkeletonization_linear()
 {
-  if (dataMgr.isSamplesEmpty())
-  {
-    return;
-  }
+	if (dataMgr.isSamplesEmpty())
+	{
+		return;
+	}
 
-  runPointCloudAlgorithm(skeletonization);
+	runPointCloudAlgorithm(skeletonization);
 
-  para->setValue("Running Algorithm Name",
-    StringValue(skeletonization.getParameterSet()->getString("Algorithm Name")));
+	para->setValue("Running Algorithm Name",
+		StringValue(skeletonization.getParameterSet()->getString("Algorithm Name")));
 
-  emit needUpdateStatus();
+	emit needUpdateStatus();
 }
 
 void GLArea::runSkeletonization_paralleled()
@@ -1247,60 +1254,60 @@ void GLArea::runSkeletonization_paralleled()
 	{
 		return;
 	}
-  global_paraMgr.glarea.setValue("GLarea Busying", BoolValue(true));
+	global_paraMgr.glarea.setValue("GLarea Busying", BoolValue(true));
 
-  global_paraMgr.skeleton.setValue("The Skeletonlization Process Should Stop", BoolValue(false));
-  double current_radius = global_paraMgr.skeleton.getDouble("CGrid Radius");
-  global_paraMgr.skeleton.setValue("Initial Radius", DoubleValue(current_radius));
+	global_paraMgr.skeleton.setValue("The Skeletonlization Process Should Stop", BoolValue(false));
+	double current_radius = global_paraMgr.skeleton.getDouble("CGrid Radius");
+	global_paraMgr.skeleton.setValue("Initial Radius", DoubleValue(current_radius));
 
 
-  bool is_break = false;
-  int MAX_SKELETON_ITERATE = 500;
-  //if (global_paraMgr.skeleton.getBool("Run Auto Wlop One Step"))
-  //{
-  //  MAX_SKELETON_ITERATE = 1;
-  //}
+	bool is_break = false;
+	int MAX_SKELETON_ITERATE = 500;
+	//if (global_paraMgr.skeleton.getBool("Run Auto Wlop One Step"))
+	//{
+	//  MAX_SKELETON_ITERATE = 1;
+	//}
 
-  for (int i = 0; i < MAX_SKELETON_ITERATE; i++)
-  {
-    if (global_paraMgr.glarea.getBool("Algorithom Stop") || is_break)
-    {
-      is_break = true;
-      break;
-    }
-    //paintMutex.lock();
-    global_paraMgr.skeleton.setValue("Run Auto Wlop One Step", BoolValue(true));
-    runPointCloudAlgorithm(skeletonization);
-    global_paraMgr.skeleton.setValue("Run Auto Wlop One Step", BoolValue(true));
-   // paintMutex.unlock();
+	for (int i = 0; i < MAX_SKELETON_ITERATE; i++)
+	{
+		if (global_paraMgr.glarea.getBool("Algorithom Stop") || is_break)
+		{
+			is_break = true;
+			break;
+		}
+		//paintMutex.lock();
+		global_paraMgr.skeleton.setValue("Run Auto Wlop One Step", BoolValue(true));
+		runPointCloudAlgorithm(skeletonization);
+		global_paraMgr.skeleton.setValue("Run Auto Wlop One Step", BoolValue(true));
+		// paintMutex.unlock();
 
-    if (global_paraMgr.skeleton.getBool("The Skeletonlization Process Should Stop"))
-    {
-      break;
-    }
-    emit needUpdateStatus();
-  }
-  global_paraMgr.glarea.setValue("GLarea Busying", BoolValue(false));
-  
-  if (is_break)
-  {
-    global_paraMgr.skeleton.setValue("The Skeletonlization Process Should Stop", BoolValue(false));
-    global_paraMgr.glarea.setValue("Algorithom Stop", BoolValue(false));
-    global_paraMgr.glarea.setValue("GLarea Busying", BoolValue(false));
-    return;
-  }
+		if (global_paraMgr.skeleton.getBool("The Skeletonlization Process Should Stop"))
+		{
+			break;
+		}
+		emit needUpdateStatus();
+	}
+	global_paraMgr.glarea.setValue("GLarea Busying", BoolValue(false));
 
-  if (global_paraMgr.skeleton.getBool("Run Auto Wlop One Stage"))
-  {
-    global_paraMgr.skeleton.setValue("Run Auto Wlop One Stage", BoolValue(false));
-    emit needUpdateStatus();
-    return;
-  }
+	if (is_break)
+	{
+		global_paraMgr.skeleton.setValue("The Skeletonlization Process Should Stop", BoolValue(false));
+		global_paraMgr.glarea.setValue("Algorithom Stop", BoolValue(false));
+		global_paraMgr.glarea.setValue("GLarea Busying", BoolValue(false));
+		return;
+	}
+
+	if (global_paraMgr.skeleton.getBool("Run Auto Wlop One Stage"))
+	{
+		global_paraMgr.skeleton.setValue("Run Auto Wlop One Stage", BoolValue(false));
+		emit needUpdateStatus();
+		return;
+	}
 
 	para->setValue("Running Algorithm Name",
 		StringValue(skeletonization.getParameterSet()->getString("Algorithm Name")));
-	
-	
+
+
 }
 
 
@@ -1321,42 +1328,42 @@ void GLArea::runUpsampling()
 
 void GLArea::runPoisson()
 {
-  if (dataMgr.isOriginalEmpty())
-  {
-    return;
-  }
+	if (dataMgr.isOriginalEmpty())
+	{
+		return;
+	}
 
-  runPointCloudAlgorithm(poisson);
+	runPointCloudAlgorithm(poisson);
 
-  para->setValue("Running Algorithm Name",
-    StringValue(poisson.getParameterSet()->getString("Algorithm Name")));
+	para->setValue("Running Algorithm Name",
+		StringValue(poisson.getParameterSet()->getString("Algorithm Name")));
 
-  emit needUpdateStatus();
+	emit needUpdateStatus();
 }
 
 void GLArea::runCamera()
 {
-  if (dataMgr.isModelEmpty())  return ;
+	if (dataMgr.isModelEmpty())  return ;
 
-  runPointCloudAlgorithm(camera);
+	runPointCloudAlgorithm(camera);
 
-  para->setValue("Running Algorithm Name", 
-    StringValue(camera.getParameterSet()->getString("Algorithm Name")));
+	para->setValue("Running Algorithm Name", 
+		StringValue(camera.getParameterSet()->getString("Algorithm Name")));
 
-  emit needUpdateStatus();
+	emit needUpdateStatus();
 }
 
 void
-GLArea::runNBV()
+	GLArea::runNBV()
 {
-  //fix: this should be iso_points
-  //if (dataMgr.isModelEmpty()) return;
+	//fix: this should be iso_points
+	//if (dataMgr.isModelEmpty()) return;
 
-  runPointCloudAlgorithm(nbv);
+	runPointCloudAlgorithm(nbv);
 
-  para->setValue("Running Algorithm Name", 
-    StringValue(camera.getParameterSet()->getString("Algorithm Name")));
-  emit needUpdateStatus();
+	para->setValue("Running Algorithm Name", 
+		StringValue(camera.getParameterSet()->getString("Algorithm Name")));
+	emit needUpdateStatus();
 }
 void GLArea::runNormalSmoothing()
 {
@@ -1400,7 +1407,7 @@ void GLArea::saveView(QString fileName)
 
 	CMesh* samples = dataMgr.getCurrentSamples();
 	//Point3d cut_pos = samples->vert[0].P();
-	
+
 
 	outfile << global_paraMgr.data.getDouble("CGrid Radius") << endl;
 
@@ -1456,13 +1463,13 @@ void GLArea::saveView(QString fileName)
 	}
 
 	outfile << global_paraMgr.glarea.getDouble("Radius Ball Transparency");
-	
-  outfile << global_paraMgr.drawer.getDouble("ISO Dot Size") << endl;
 
-  outfile << global_paraMgr.glarea.getDouble("Slice Color Scale") << endl;
-  outfile << global_paraMgr.glarea.getDouble("ISO Interval Size") << endl;
-  outfile << global_paraMgr.glarea.getDouble("Confidence Color Scale") << endl;
-  outfile << global_paraMgr.glarea.getDouble("ISO Value Shift") << endl;
+	outfile << global_paraMgr.drawer.getDouble("ISO Dot Size") << endl;
+
+	outfile << global_paraMgr.glarea.getDouble("Slice Color Scale") << endl;
+	outfile << global_paraMgr.glarea.getDouble("ISO Interval Size") << endl;
+	outfile << global_paraMgr.glarea.getDouble("Confidence Color Scale") << endl;
+	outfile << global_paraMgr.glarea.getDouble("ISO Value Shift") << endl;
 
 
 	outfile.close();
@@ -1581,20 +1588,20 @@ void GLArea::loadView(QString fileName)
 	infile >> temp;
 	global_paraMgr.glarea.setValue("Radius Ball Transparency", DoubleValue(temp));
 
-  infile >> temp;
-  global_paraMgr.drawer.setValue("ISO Dot Size", DoubleValue(temp));
+	infile >> temp;
+	global_paraMgr.drawer.setValue("ISO Dot Size", DoubleValue(temp));
 
-  infile >> temp;
-  global_paraMgr.glarea.setValue("Slice Color Scale", DoubleValue(temp));
+	infile >> temp;
+	global_paraMgr.glarea.setValue("Slice Color Scale", DoubleValue(temp));
 
-  infile >> temp;
-  global_paraMgr.glarea.setValue("ISO Interval Size", DoubleValue(temp));
+	infile >> temp;
+	global_paraMgr.glarea.setValue("ISO Interval Size", DoubleValue(temp));
 
-  infile >> temp;
-  global_paraMgr.glarea.setValue("Confidence Color Scale", DoubleValue(temp));
+	infile >> temp;
+	global_paraMgr.glarea.setValue("Confidence Color Scale", DoubleValue(temp));
 
-  infile >> temp;
-  global_paraMgr.glarea.setValue("ISO Value Shift", DoubleValue(temp));
+	infile >> temp;
+	global_paraMgr.glarea.setValue("ISO Value Shift", DoubleValue(temp));
 
 	infile.close();
 	emit needUpdateStatus();
@@ -1607,194 +1614,194 @@ void GLArea::wheelEvent(QWheelEvent *e)
 	const int WHEEL_STEP = 120;
 	double change_rate = 0.05;
 	double change = (e->delta() < 0) ? (1 + change_rate) : (1 - change_rate);
-  
-  double change_rate2 = 0.015;
-  double change2 = (e->delta() < 0) ? (1 + change_rate2) : (1 - change_rate2);
-	
-  double size_temp = 0.0;
 
-  if (global_paraMgr.nbv.getBool("Use Confidence Separation")
-      && (e->modifiers() & Qt::ControlModifier)
-      && (e->modifiers() & Qt::AltModifier)
-      && (e->modifiers() & Qt::ShiftModifier)
-      && !global_paraMgr.poisson.getBool("Show Slices Mode"))
-  {
-    size_temp = global_paraMgr.nbv.getDouble("Confidence Separation Value");
-    size_temp *= change2;
-    size_temp = (std::min)((std::max)(size_temp, 1e-10), 0.995);
+	double change_rate2 = 0.015;
+	double change2 = (e->delta() < 0) ? (1 + change_rate2) : (1 - change_rate2);
 
-    if (size_temp > 0.994)
-    {
-      size_temp = 0.9995;
-    }
-    global_paraMgr.nbv.setValue("Confidence Separation Value", DoubleValue(size_temp));
-    cout << "Confidence Separation Value" << size_temp << endl;
-    return;
-  }
-	
-  if (global_paraMgr.poisson.getBool("Show Slices Mode"))
+	double size_temp = 0.0;
+
+	if (global_paraMgr.nbv.getBool("Use Confidence Separation")
+		&& (e->modifiers() & Qt::ControlModifier)
+		&& (e->modifiers() & Qt::AltModifier)
+		&& (e->modifiers() & Qt::ShiftModifier)
+		&& !global_paraMgr.poisson.getBool("Show Slices Mode"))
 	{
-    if ((e->modifiers() & Qt::ShiftModifier)
-        && (e->modifiers() & Qt::ControlModifier)
-        && (e->modifiers() & Qt::AltModifier))
-    {
-      size_temp = global_paraMgr.poisson.getDouble("Show Slice Percentage");
-      size_temp *= change;
-      size_temp = (std::min)((std::max)(size_temp, 1e-10), 0.99);
+		size_temp = global_paraMgr.nbv.getDouble("Confidence Separation Value");
+		size_temp *= change2;
+		size_temp = (std::min)((std::max)(size_temp, 1e-10), 0.995);
 
-      global_paraMgr.poisson.setValue("Show Slice Percentage", DoubleValue(size_temp));
-      cout << "Slice Color Percentage" << size_temp << endl;
-
-      global_paraMgr.poisson.setValue("Run Slice", BoolValue(true));
-      runPoisson();
-      global_paraMgr.poisson.setValue("Run Slice", BoolValue(false));
-    }
-    else if( (e->modifiers() & Qt::ShiftModifier) && (e->modifiers() & Qt::ControlModifier) )
-    {
-      size_temp = global_paraMgr.glarea.getDouble("Slice Color Scale");
-      size_temp *= change2;
-      size_temp = (std::max)(size_temp, 1e-10);
-
-      global_paraMgr.glarea.setValue("Slice Color Scale", DoubleValue(size_temp));
-      cout << "Slice Color Scale" << size_temp << endl;
-    }
-    else if ((e->modifiers() & Qt::ShiftModifier) && (e->modifiers() & Qt::AltModifier))
-    {
-      size_temp = global_paraMgr.glarea.getDouble("Radius Ball Transparency") * change;
-      global_paraMgr.glarea.setValue("Radius Ball Transparency", DoubleValue(size_temp));
-      cout << "trans: " << size_temp << endl;
-      if(size_temp < 0)
-      {
-      	size_temp = 0;
-      }
-    }
-    else if( (e->modifiers() & Qt::AltModifier) && (e->modifiers() & Qt::ControlModifier) )
-    {
-      if ((para->getBool("Show ISO Points") || para->getBool("Show Samples")) && !para->getBool("Show Normal"))
-      {
-        size_temp = global_paraMgr.glarea.getDouble("ISO Value Shift");
-        if(e->delta() < 0)
-        {
-          size_temp += 0.02;
-        }
-        else
-        {
-          size_temp -= 0.02;
-        }
-        global_paraMgr.glarea.setValue("ISO Value Shift", DoubleValue(size_temp));
-        cout << "ISO Value Shift" << size_temp << endl;
-      }
-      else
-      {
-        size_temp = global_paraMgr.drawer.getDouble("Normal Line Length");
-        global_paraMgr.drawer.setValue("Normal Line Length", DoubleValue(size_temp * change));
-      }
-    }
-    else
-    {
-      switch(e->modifiers())
-      {
-      case Qt::ControlModifier:
-        size_temp = global_paraMgr.poisson.getDouble("Current X Slice Position");
-        size_temp *= change2;
-        size_temp = (std::max)(size_temp, 1e-5);
-        size_temp = (std::min)(size_temp, 0.999);
-
-        global_paraMgr.poisson.setValue("Current X Slice Position", DoubleValue(size_temp)); 
-        cout << "X position: " << size_temp << endl;
-        emit needUpdateStatus();
-        global_paraMgr.poisson.setValue("Run Slice", BoolValue(true));
-        runPoisson();
-        global_paraMgr.poisson.setValue("Run Slice", BoolValue(false));
-        break;
-
-      case Qt::ShiftModifier:
-        size_temp = global_paraMgr.poisson.getDouble("Current Y Slice Position");
-        size_temp *= change2;
-        size_temp = (std::max)(size_temp, 1e-10);
-        size_temp = (std::min)(size_temp, 1.0);
-        global_paraMgr.poisson.setValue("Current Y Slice Position", DoubleValue(size_temp)); 
-        cout << "Y position: " << size_temp << endl;
-
-        global_paraMgr.poisson.setValue("Run Slice", BoolValue(true));
-        runPoisson();
-        global_paraMgr.poisson.setValue("Run Slice", BoolValue(false));
-        emit needUpdateStatus();
-        break;
-
-      case  Qt::AltModifier:
-        size_temp = global_paraMgr.poisson.getDouble("Current Z Slice Position");
-        size_temp *= change2;
-        size_temp = (std::max)(size_temp, 1e-5);
-        size_temp = (std::min)(size_temp, 0.999);
-        global_paraMgr.poisson.setValue("Current Z Slice Position", DoubleValue(size_temp));      
-        cout << "Z position: " << size_temp << endl;
-
-        global_paraMgr.poisson.setValue("Run Slice", BoolValue(true));
-        runPoisson();
-        global_paraMgr.poisson.setValue("Run Slice", BoolValue(false));
-
-        emit needUpdateStatus();
-        break;
-
-      default:
-        trackball.MouseWheel( e->delta()/ float(WHEEL_STEP));
-        break;
-    }
-
-    global_paraMgr.poisson.setValue("Run Slice", BoolValue(true));
-    runPoisson();
-    global_paraMgr.poisson.setValue("Run Slice", BoolValue(false));
-
-    return;
+		if (size_temp > 0.994)
+		{
+			size_temp = 0.9995;
+		}
+		global_paraMgr.nbv.setValue("Confidence Separation Value", DoubleValue(size_temp));
+		cout << "Confidence Separation Value" << size_temp << endl;
+		return;
 	}
-    return;
-  }
+
+	if (global_paraMgr.poisson.getBool("Show Slices Mode"))
+	{
+		if ((e->modifiers() & Qt::ShiftModifier)
+			&& (e->modifiers() & Qt::ControlModifier)
+			&& (e->modifiers() & Qt::AltModifier))
+		{
+			size_temp = global_paraMgr.poisson.getDouble("Show Slice Percentage");
+			size_temp *= change;
+			size_temp = (std::min)((std::max)(size_temp, 1e-10), 0.99);
+
+			global_paraMgr.poisson.setValue("Show Slice Percentage", DoubleValue(size_temp));
+			cout << "Slice Color Percentage" << size_temp << endl;
+
+			global_paraMgr.poisson.setValue("Run Slice", BoolValue(true));
+			runPoisson();
+			global_paraMgr.poisson.setValue("Run Slice", BoolValue(false));
+		}
+		else if( (e->modifiers() & Qt::ShiftModifier) && (e->modifiers() & Qt::ControlModifier) )
+		{
+			size_temp = global_paraMgr.glarea.getDouble("Slice Color Scale");
+			size_temp *= change2;
+			size_temp = (std::max)(size_temp, 1e-10);
+
+			global_paraMgr.glarea.setValue("Slice Color Scale", DoubleValue(size_temp));
+			cout << "Slice Color Scale" << size_temp << endl;
+		}
+		else if ((e->modifiers() & Qt::ShiftModifier) && (e->modifiers() & Qt::AltModifier))
+		{
+			size_temp = global_paraMgr.glarea.getDouble("Radius Ball Transparency") * change;
+			global_paraMgr.glarea.setValue("Radius Ball Transparency", DoubleValue(size_temp));
+			cout << "trans: " << size_temp << endl;
+			if(size_temp < 0)
+			{
+				size_temp = 0;
+			}
+		}
+		else if( (e->modifiers() & Qt::AltModifier) && (e->modifiers() & Qt::ControlModifier) )
+		{
+			if ((para->getBool("Show ISO Points") || para->getBool("Show Samples")) && !para->getBool("Show Normal"))
+			{
+				size_temp = global_paraMgr.glarea.getDouble("ISO Value Shift");
+				if(e->delta() < 0)
+				{
+					size_temp += 0.02;
+				}
+				else
+				{
+					size_temp -= 0.02;
+				}
+				global_paraMgr.glarea.setValue("ISO Value Shift", DoubleValue(size_temp));
+				cout << "ISO Value Shift" << size_temp << endl;
+			}
+			else
+			{
+				size_temp = global_paraMgr.drawer.getDouble("Normal Line Length");
+				global_paraMgr.drawer.setValue("Normal Line Length", DoubleValue(size_temp * change));
+			}
+		}
+		else
+		{
+			switch(e->modifiers())
+			{
+			case Qt::ControlModifier:
+				size_temp = global_paraMgr.poisson.getDouble("Current X Slice Position");
+				size_temp *= change2;
+				size_temp = (std::max)(size_temp, 1e-5);
+				size_temp = (std::min)(size_temp, 0.999);
+
+				global_paraMgr.poisson.setValue("Current X Slice Position", DoubleValue(size_temp)); 
+				cout << "X position: " << size_temp << endl;
+				emit needUpdateStatus();
+				global_paraMgr.poisson.setValue("Run Slice", BoolValue(true));
+				runPoisson();
+				global_paraMgr.poisson.setValue("Run Slice", BoolValue(false));
+				break;
+
+			case Qt::ShiftModifier:
+				size_temp = global_paraMgr.poisson.getDouble("Current Y Slice Position");
+				size_temp *= change2;
+				size_temp = (std::max)(size_temp, 1e-10);
+				size_temp = (std::min)(size_temp, 1.0);
+				global_paraMgr.poisson.setValue("Current Y Slice Position", DoubleValue(size_temp)); 
+				cout << "Y position: " << size_temp << endl;
+
+				global_paraMgr.poisson.setValue("Run Slice", BoolValue(true));
+				runPoisson();
+				global_paraMgr.poisson.setValue("Run Slice", BoolValue(false));
+				emit needUpdateStatus();
+				break;
+
+			case  Qt::AltModifier:
+				size_temp = global_paraMgr.poisson.getDouble("Current Z Slice Position");
+				size_temp *= change2;
+				size_temp = (std::max)(size_temp, 1e-5);
+				size_temp = (std::min)(size_temp, 0.999);
+				global_paraMgr.poisson.setValue("Current Z Slice Position", DoubleValue(size_temp));      
+				cout << "Z position: " << size_temp << endl;
+
+				global_paraMgr.poisson.setValue("Run Slice", BoolValue(true));
+				runPoisson();
+				global_paraMgr.poisson.setValue("Run Slice", BoolValue(false));
+
+				emit needUpdateStatus();
+				break;
+
+			default:
+				trackball.MouseWheel( e->delta()/ float(WHEEL_STEP));
+				break;
+			}
+
+			global_paraMgr.poisson.setValue("Run Slice", BoolValue(true));
+			runPoisson();
+			global_paraMgr.poisson.setValue("Run Slice", BoolValue(false));
+
+			return;
+		}
+		return;
+	}
 
 	if( (e->modifiers() & Qt::AltModifier) && (e->modifiers() & Qt::ControlModifier) )
 	{
-    if ((para->getBool("Show ISO Points") || para->getBool("Show Samples")) && !para->getBool("Show Normal"))
-    {
-      size_temp = global_paraMgr.glarea.getDouble("ISO Value Shift");
-      if(e->delta() < 0)
-      {
-        size_temp += 0.02;
-      }
-      else
-      {
-        size_temp -= 0.02;
-      }
-      global_paraMgr.glarea.setValue("ISO Value Shift", DoubleValue(size_temp));
-      cout << "ISO Value Shift" << size_temp << endl;
-    }
-    else
-    {
-      size_temp = global_paraMgr.drawer.getDouble("Normal Line Length");
-      global_paraMgr.drawer.setValue("Normal Line Length", DoubleValue(size_temp * change));
-    }
+		if ((para->getBool("Show ISO Points") || para->getBool("Show Samples")) && !para->getBool("Show Normal"))
+		{
+			size_temp = global_paraMgr.glarea.getDouble("ISO Value Shift");
+			if(e->delta() < 0)
+			{
+				size_temp += 0.02;
+			}
+			else
+			{
+				size_temp -= 0.02;
+			}
+			global_paraMgr.glarea.setValue("ISO Value Shift", DoubleValue(size_temp));
+			cout << "ISO Value Shift" << size_temp << endl;
+		}
+		else
+		{
+			size_temp = global_paraMgr.drawer.getDouble("Normal Line Length");
+			global_paraMgr.drawer.setValue("Normal Line Length", DoubleValue(size_temp * change));
+		}
 	}
 	else if( (e->modifiers() & Qt::ShiftModifier) && (e->modifiers() & Qt::ControlModifier) )
 	{
-    if (para->getBool("Show Skeleton") /*&& !dataMgr.isSkeletonEmpty()*/)
-    {
-      size_temp = global_paraMgr.skeleton.getDouble("Branches Merge Max Dist");
-      global_paraMgr.skeleton.setValue("Branches Merge Max Dist", DoubleValue(size_temp * change));
-    }
-    if (global_paraMgr.drawer.getBool("Show Confidence Color"))
-    {
-      size_temp = global_paraMgr.glarea.getDouble("Confidence Color Scale");
-      global_paraMgr.glarea.setValue("Confidence Color Scale", DoubleValue(size_temp * change));
-      cout << "Confidence color scale threshold = " << size_temp * change << endl;
-    }
+		if (para->getBool("Show Skeleton") /*&& !dataMgr.isSkeletonEmpty()*/)
+		{
+			size_temp = global_paraMgr.skeleton.getDouble("Branches Merge Max Dist");
+			global_paraMgr.skeleton.setValue("Branches Merge Max Dist", DoubleValue(size_temp * change));
+		}
+		if (global_paraMgr.drawer.getBool("Show Confidence Color"))
+		{
+			size_temp = global_paraMgr.glarea.getDouble("Confidence Color Scale");
+			global_paraMgr.glarea.setValue("Confidence Color Scale", DoubleValue(size_temp * change));
+			cout << "Confidence color scale threshold = " << size_temp * change << endl;
+		}
 
 	}
 	else if((e->modifiers() & Qt::ShiftModifier) && (e->modifiers() & Qt::AltModifier))
 	{
-    size_temp = global_paraMgr.glarea.getDouble("ISO Interval Size");
-    size_temp *= change;
-    size_temp = (std::max)(size_temp, 1e-6);
-    global_paraMgr.glarea.setValue("ISO Interval Size", DoubleValue(size_temp));
-    cout << "ISO scale step = " << size_temp << endl;
+		size_temp = global_paraMgr.glarea.getDouble("ISO Interval Size");
+		size_temp *= change;
+		size_temp = (std::max)(size_temp, 1e-6);
+		global_paraMgr.glarea.setValue("ISO Interval Size", DoubleValue(size_temp));
+		cout << "ISO scale step = " << size_temp << endl;
 	}
 	else
 	{
@@ -1802,11 +1809,11 @@ void GLArea::wheelEvent(QWheelEvent *e)
 		{
 		case Qt::ControlModifier:
 
-      if (para->getBool("Show Skeleton") && !dataMgr.isSkeletonEmpty())
-      {
-        size_temp = global_paraMgr.drawer.getDouble("Skeleton Node Size");
-        global_paraMgr.drawer.setValue("Skeleton Node Size", DoubleValue(size_temp * change));
-      }
+			if (para->getBool("Show Skeleton") && !dataMgr.isSkeletonEmpty())
+			{
+				size_temp = global_paraMgr.drawer.getDouble("Skeleton Node Size");
+				global_paraMgr.drawer.setValue("Skeleton Node Size", DoubleValue(size_temp * change));
+			}
 			else if(para->getBool("Show Original") && para->getBool("Show Original Sphere") )
 			{
 				size_temp = global_paraMgr.drawer.getDouble("Original Draw Width");
@@ -1830,12 +1837,12 @@ void GLArea::wheelEvent(QWheelEvent *e)
 
 				global_paraMgr.drawer.setValue("Original Dot Size", DoubleValue(size_temp));
 
-        if (para->getBool("Show ISO Points"))
-        {
-          size_temp = global_paraMgr.drawer.getDouble("ISO Dot Size") * change;
-          size_temp = (std::max)(size_temp, 1.0);
-          global_paraMgr.drawer.setValue("ISO Dot Size", DoubleValue(size_temp));
-        }
+				if (para->getBool("Show ISO Points"))
+				{
+					size_temp = global_paraMgr.drawer.getDouble("ISO Dot Size") * change;
+					size_temp = (std::max)(size_temp, 1.0);
+					global_paraMgr.drawer.setValue("ISO Dot Size", DoubleValue(size_temp));
+				}
 			}
 			else if(para->getBool("Show Samples") &&  para->getBool("Show Samples Dot") )
 			{
@@ -1846,12 +1853,12 @@ void GLArea::wheelEvent(QWheelEvent *e)
 				}
 				global_paraMgr.drawer.setValue("Sample Dot Size", DoubleValue(size_temp));
 
-        if (para->getBool("Show ISO Points"))
-        {
-          size_temp = global_paraMgr.drawer.getDouble("ISO Dot Size") * change;
-          size_temp = (std::max)(size_temp, 1.0);
-          global_paraMgr.drawer.setValue("ISO Dot Size", DoubleValue(size_temp));
-        }
+				if (para->getBool("Show ISO Points"))
+				{
+					size_temp = global_paraMgr.drawer.getDouble("ISO Dot Size") * change;
+					size_temp = (std::max)(size_temp, 1.0);
+					global_paraMgr.drawer.setValue("ISO Dot Size", DoubleValue(size_temp));
+				}
 			}
 			else if(para->getBool("Show Samples") &&  para->getBool("Show Samples Quad") )
 			{
@@ -1872,12 +1879,12 @@ void GLArea::wheelEvent(QWheelEvent *e)
 				}
 				global_paraMgr.drawer.setValue("Original Dot Size", DoubleValue(size_temp));
 			}
-      else  if (para->getBool("Show ISO Points") &&  para->getBool("Show Samples Dot") )
-      {
-        size_temp = global_paraMgr.drawer.getDouble("ISO Dot Size") * change;
-        size_temp = (std::max)(size_temp, 1.0);
-        global_paraMgr.drawer.setValue("ISO Dot Size", DoubleValue(size_temp));
-      }     
+			else  if (para->getBool("Show ISO Points") &&  para->getBool("Show Samples Dot") )
+			{
+				size_temp = global_paraMgr.drawer.getDouble("ISO Dot Size") * change;
+				size_temp = (std::max)(size_temp, 1.0);
+				global_paraMgr.drawer.setValue("ISO Dot Size", DoubleValue(size_temp));
+			}     
 			else
 			{
 				size_temp = global_paraMgr.drawer.getDouble("Sample Draw Width");
@@ -1891,24 +1898,24 @@ void GLArea::wheelEvent(QWheelEvent *e)
 
 		case Qt::ShiftModifier:
 
-      if (para->getBool("Show Skeleton") && !dataMgr.isSkeletonEmpty())
-      {
-        size_temp = global_paraMgr.drawer.getDouble("Skeleton Bone Width");
-        global_paraMgr.drawer.setValue("Skeleton Bone Width", DoubleValue(size_temp * change));
-      }
-      else
-      {
-        size_temp = global_paraMgr.data.getDouble("Down Sample Num");
-        global_paraMgr.setGlobalParameter("Down Sample Num", DoubleValue(size_temp * change));
-        emit needUpdateStatus();
-      }
+			if (para->getBool("Show Skeleton") && !dataMgr.isSkeletonEmpty())
+			{
+				size_temp = global_paraMgr.drawer.getDouble("Skeleton Bone Width");
+				global_paraMgr.drawer.setValue("Skeleton Bone Width", DoubleValue(size_temp * change));
+			}
+			else
+			{
+				size_temp = global_paraMgr.data.getDouble("Down Sample Num");
+				global_paraMgr.setGlobalParameter("Down Sample Num", DoubleValue(size_temp * change));
+				emit needUpdateStatus();
+			}
 
 			break;
 
 		case  Qt::AltModifier:
 			size_temp = global_paraMgr.data.getDouble("CGrid Radius");
 			global_paraMgr.setGlobalParameter("CGrid Radius", DoubleValue(size_temp * change));
-      global_paraMgr.setGlobalParameter("Initial Radius", DoubleValue(size_temp * change));
+			global_paraMgr.setGlobalParameter("Initial Radius", DoubleValue(size_temp * change));
 
 			initSetting();
 			break;
@@ -2030,14 +2037,14 @@ void GLArea::mouseReleaseEvent(QMouseEvent *e)
 			RGBPickList.assign(3, -1);
 			RGB_counter = 0;
 
-      if (!dataMgr.isSamplesEmpty() && !pickList.empty())
-      {
-        CMesh* samples = dataMgr.getCurrentSamples();
-        int index = pickList[0];
-        CVertex v = samples->vert.at(index);
-        //cout << "iso value: " << v.eigen_confidence << endl;
-        cout << "Index: " << v.m_index << endl;
-      }
+			if (!dataMgr.isSamplesEmpty() && !pickList.empty())
+			{
+				CMesh* samples = dataMgr.getCurrentSamples();
+				int index = pickList[0];
+				CVertex v = samples->vert.at(index);
+				//cout << "iso value: " << v.eigen_confidence << endl;
+				cout << "Index: " << v.m_index << endl;
+			}
 		}
 	}
 

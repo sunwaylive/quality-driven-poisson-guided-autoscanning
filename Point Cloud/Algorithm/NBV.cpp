@@ -61,12 +61,12 @@ NBV::run()
   }
 }
 
-void NBV::runOneKeyNBV()
+void 
+NBV::runOneKeyNBV()
 {
   buildGrid();
   propagate();
   viewExtractionIntoBins();
-
 }
 
 void

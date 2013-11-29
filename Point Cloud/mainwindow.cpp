@@ -100,7 +100,7 @@ void MainWindow::initConnect()
 	connect(ui.actionLight_On_Off, SIGNAL(toggled(bool)), this, SLOT(lightOnOff(bool)));
 	connect(ui.actionShow_Individual_Color, SIGNAL(toggled(bool)), this, SLOT(showIndividualColor(bool)));
 	connect(ui.actionShow_Samples,SIGNAL(toggled(bool)),this,SLOT(showSamples(bool)));
-  connect(ui.actionShow_Model, SIGNAL(toggled(bool)), this, SLOT(showModel(bool)));
+	connect(ui.actionShow_Model, SIGNAL(toggled(bool)), this, SLOT(showModel(bool)));
 	connect(ui.actionShow_Original,SIGNAL(toggled(bool)),this,SLOT(showOriginal(bool)));
 	connect(ui.actionShow_Normals,SIGNAL(toggled(bool)),this,SLOT(showNormals(bool)));
 	connect(ui.actionShow_Neighborhood_Ball,SIGNAL(toggled(bool)),this,SLOT(showNeighborhoodBall(bool)));
@@ -469,6 +469,7 @@ void MainWindow::saveFile()
 		if (global_paraMgr.glarea.getBool("Show Samples"))
 		{
 			area->dataMgr.eraseRemovedSamples();
+			file.replace(".ply", "_sample.ply");
 			area->dataMgr.savePly(file, *area->dataMgr.getCurrentSamples());
 		}
 

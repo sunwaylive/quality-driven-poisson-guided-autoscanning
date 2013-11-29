@@ -45,10 +45,12 @@ void CameraParaDlg::initConnects()
   connect(ui->use_nbv_test1, SIGNAL(clicked(bool)), this, SLOT(useNbvTest1(bool)));
   connect(ui->use_max_propagation, SIGNAL(clicked(bool)), this, SLOT(useMaxConfidencePropagation(bool)));
 
+  connect(ui->pushButton_setup_initial_scans, SIGNAL(clicked()), this, SLOT(runSetupInitialScanns()));
   connect(ui->step1_run_WLOP, SIGNAL(clicked()), this, SLOT(runStep1WLOP()));
   connect(ui->step2_run_Poisson_Confidence, SIGNAL(clicked()), this, SLOT(runStep2PoissonConfidence()));
   connect(ui->step3_run_NBV, SIGNAL(clicked()), this, SLOT(runStep3NBVcandidates()));
-  connect(ui->step4_run_New_Scan, SIGNAL(clicked()), this, SLOT(runStep3NewScans()));
+  connect(ui->pushButton_show_scan_window, SIGNAL(clicked()), this, SLOT(runShowScanWindow()));
+  connect(ui->step4_run_New_Scan, SIGNAL(clicked()), this, SLOT(runStep4NewScans()));
 
 }
 
@@ -414,6 +416,14 @@ void CameraParaDlg::runViewClustering()
   global_paraMgr.nbv.setValue("Run Viewing Clustering", BoolValue(false));
 }
 
+void CameraParaDlg::runSetupInitialScanns()
+{
+	global_paraMgr.camera.setValue("Run Initial Scan", BoolValue(true));
+	area->runCamera();
+	global_paraMgr.camera.setValue("Run Initial Scan", BoolValue(false));
+	updateTableViewNBVCandidate();
+}
+
 void CameraParaDlg::runStep1WLOP()
 {
   area->dataMgr.downSamplesByNum();
@@ -445,10 +455,17 @@ void CameraParaDlg::runStep3NBVcandidates()
   global_paraMgr.nbv.setValue("Run One Key NBV", BoolValue(false));
 }
 
-void CameraParaDlg::runStep3NewScans()
+void CameraParaDlg::runStep4NewScans()
 {
   global_paraMgr.camera.setValue("Run One Key NewScans", BoolValue(true));
-  //area->runWlop();
+  area->runCamera();
   global_paraMgr.camera.setValue("Run One Key NewScans", BoolValue(false));
+  updateTabelViewScanResults();
+}
+
+void CameraParaDlg::runShowScanWindow()
+{
+	//cmd line invoke system command
+	system("scanwindow.exe");
 }
 
