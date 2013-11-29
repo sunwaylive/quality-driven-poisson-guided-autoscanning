@@ -4,7 +4,7 @@
 GLDrawer::GLDrawer(RichParameterSet* _para)
 {
 	para = _para;
-  generateRandomColorList();
+	generateRandomColorList();
 }
 
 
@@ -17,8 +17,8 @@ void GLDrawer::updateDrawer(vector<int>& pickList)
 	bCullFace = para->getBool("Need Cull Points");
 	bUseIndividualColor = para->getBool("Show Individual Color");
 	useNormalColor = para->getBool("Use Color From Normal");
-  useDifferBranchColor = para->getBool("Use Differ Branch Color");
-  bShowSlice = global_paraMgr.poisson.getBool("Show Slices Mode");
+	useDifferBranchColor = para->getBool("Use Differ Branch Color");
+	bShowSlice = global_paraMgr.poisson.getBool("Show Slices Mode");
 
 	original_draw_width = para->getDouble("Original Draw Width");
 	sample_draw_width = para->getDouble("Sample Draw Width");
@@ -28,7 +28,7 @@ void GLDrawer::updateDrawer(vector<int>& pickList)
 	normal_width = para->getDouble("Normal Line Width");
 	normal_length  = para->getDouble("Normal Line Length");
 	sample_dot_size = para->getDouble("Sample Dot Size");
-  iso_dot_size = para->getDouble("ISO Dot Size");
+	iso_dot_size = para->getDouble("ISO Dot Size");
 	original_dot_size = para->getDouble("Original Dot Size");
 	normal_color = para->getColor("Normal Line Color");
 	feature_color = para->getColor("Feature Color");
@@ -40,19 +40,19 @@ void GLDrawer::updateDrawer(vector<int>& pickList)
 	skel_bone_width = para->getDouble("Skeleton Bone Width") / 10000.;
 	skel_node_size = para->getDouble("Skeleton Node Size") / 10000.;
 
-  slice_color_scale = global_paraMgr.glarea.getDouble("Slice Color Scale");
-  iso_step_size = global_paraMgr.glarea.getDouble("ISO Interval Size");
-  bUseIsoInteral = global_paraMgr.glarea.getBool("Use ISO Interval");
-  bUseConfidenceColor = global_paraMgr.drawer.getBool("Show Confidence Color");
-  cofidence_color_scale = global_paraMgr.glarea.getDouble("Confidence Color Scale");
-  iso_value_shift = global_paraMgr.glarea.getDouble("ISO Value Shift");
-  bShowGridCenters = global_paraMgr.glarea.getBool("Show NBV Grids");
-  bShowNBVCandidates = global_paraMgr.glarea.getBool("Show NBV Candidates");
-  
-  bUseConfidenceSeparation = global_paraMgr.nbv.getBool("Use Confidence Separation");
-  confidence_Separation_value = global_paraMgr.nbv.getDouble("Confidence Separation Value");
+	slice_color_scale = global_paraMgr.glarea.getDouble("Slice Color Scale");
+	iso_step_size = global_paraMgr.glarea.getDouble("ISO Interval Size");
+	bUseIsoInteral = global_paraMgr.glarea.getBool("Use ISO Interval");
+	bUseConfidenceColor = global_paraMgr.drawer.getBool("Show Confidence Color");
+	cofidence_color_scale = global_paraMgr.glarea.getDouble("Confidence Color Scale");
+	iso_value_shift = global_paraMgr.glarea.getDouble("ISO Value Shift");
+	bShowGridCenters = global_paraMgr.glarea.getBool("Show NBV Grids");
+	bShowNBVCandidates = global_paraMgr.glarea.getBool("Show NBV Candidates");
 
-  
+	bUseConfidenceSeparation = global_paraMgr.nbv.getBool("Use Confidence Separation");
+	confidence_Separation_value = global_paraMgr.nbv.getDouble("Confidence Separation Value");
+
+
 	if (!pickList.empty())
 	{
 		curr_pick_indx = pickList[0];
@@ -85,19 +85,19 @@ void GLDrawer::draw(DrawType type, CMesh* _mesh)
 			continue;
 		}
 
-    if (bUseConfidenceSeparation && vi->is_grid_center)
-    {
-      if (vi->eigen_confidence < confidence_Separation_value)
-      {
-        continue;
-      }
-    }
+		if (bUseConfidenceSeparation && vi->is_grid_center)
+		{
+			if (vi->eigen_confidence < confidence_Separation_value)
+			{
+				continue;
+			}
+		}
 
 		Point3f& p = vi->P();      
 		Point3f& normal = vi->N();
 
-    if(!(bCullFace && !vi->is_original) || isCanSee(p, normal))		
-    {
+		if(!(bCullFace && !vi->is_original) || isCanSee(p, normal))		
+		{
 			switch(type)
 			{
 			case DOT:
@@ -135,93 +135,93 @@ bool GLDrawer::isCanSee(const Point3f& pos, const Point3f& normal)
 }
 
 GLColor GLDrawer::isoValue2color(double iso_value, 
-                                 double scale_threshold,
-                                 double shift,
-                                 bool need_negative)
+	double scale_threshold,
+	double shift,
+	bool need_negative)
 {
-  iso_value += shift;
-  //if (!bShowSlice)
-  //{
-  //  iso_value += shift;
-  //}
-  
-  if (scale_threshold <= 0)
-  {
-    scale_threshold = 1;
-  }
+	iso_value += shift;
+	//if (!bShowSlice)
+	//{
+	//  iso_value += shift;
+	//}
 
-  iso_value = (std::min)((std::max)(iso_value, -scale_threshold), scale_threshold);
-  
-  bool is_inside = true;
-  if (iso_value < 0)
-  {
-    if (!need_negative)
-    {
-      iso_value = 0;
-    }
-    else
-    {
-      iso_value /= -scale_threshold;
-    }
-  }
-  else
-  {
-    iso_value /= scale_threshold;
-    is_inside = false;
-  }
+	if (scale_threshold <= 0)
+	{
+		scale_threshold = 1;
+	}
 
-  vector<Point3f> base_colors(5);
-  double step_size = 1.0 / (base_colors.size()-1);
-  int base_id = iso_value / step_size;
-  if (base_id == base_colors.size()-1)
-  {
-    base_id = base_colors.size()-2;
-  }
-  Point3f mixed_color;
+	iso_value = (std::min)((std::max)(iso_value, -scale_threshold), scale_threshold);
 
-  if (is_inside && need_negative)
-  {
-    base_colors[4] = Point3f(0.0, 0.0, 1.0);
-    base_colors[3] = Point3f(0.0, 0.7, 1.0);
-    base_colors[2] = Point3f(0.0, 1.0, 1.0);
-    base_colors[1] = Point3f(0.0, 1.0, 0.7);
-    base_colors[0] = Point3f(0.0, 1.0, 0.0);
-  }
-  else
-  {
-    base_colors[4] = Point3f(1.0, 0.0, 0.0);
-    base_colors[3] = Point3f(1.0, 0.7, 0.0);
-    base_colors[2] = Point3f(1.0, 1.0, 0.0);
-    base_colors[1] = Point3f(0.7, 1.0, 0.0);
-    base_colors[0] = Point3f(0.0, 1.0, 0.0);
-  }
+	bool is_inside = true;
+	if (iso_value < 0)
+	{
+		if (!need_negative)
+		{
+			iso_value = 0;
+		}
+		else
+		{
+			iso_value /= -scale_threshold;
+		}
+	}
+	else
+	{
+		iso_value /= scale_threshold;
+		is_inside = false;
+	}
 
-  mixed_color = base_colors[base_id] * (base_id * step_size + step_size - iso_value)
-                + base_colors[base_id + 1] * (iso_value - base_id * step_size);
+	vector<Point3f> base_colors(5);
+	double step_size = 1.0 / (base_colors.size()-1);
+	int base_id = iso_value / step_size;
+	if (base_id == base_colors.size()-1)
+	{
+		base_id = base_colors.size()-2;
+	}
+	Point3f mixed_color;
 
-  return GLColor(mixed_color.X() / float(step_size), 
-                 mixed_color.Y() / float(step_size), 
-                 mixed_color.Z() / float(step_size));
+	if (is_inside && need_negative)
+	{
+		base_colors[4] = Point3f(0.0, 0.0, 1.0);
+		base_colors[3] = Point3f(0.0, 0.7, 1.0);
+		base_colors[2] = Point3f(0.0, 1.0, 1.0);
+		base_colors[1] = Point3f(0.0, 1.0, 0.7);
+		base_colors[0] = Point3f(0.0, 1.0, 0.0);
+	}
+	else
+	{
+		base_colors[4] = Point3f(1.0, 0.0, 0.0);
+		base_colors[3] = Point3f(1.0, 0.7, 0.0);
+		base_colors[2] = Point3f(1.0, 1.0, 0.0);
+		base_colors[1] = Point3f(0.7, 1.0, 0.0);
+		base_colors[0] = Point3f(0.0, 1.0, 0.0);
+	}
+
+	mixed_color = base_colors[base_id] * (base_id * step_size + step_size - iso_value)
+		+ base_colors[base_id + 1] * (iso_value - base_id * step_size);
+
+	return GLColor(mixed_color.X() / float(step_size), 
+		mixed_color.Y() / float(step_size), 
+		mixed_color.Z() / float(step_size));
 }
 
 GLColor GLDrawer::getColorByType(const CVertex& v)
 {
-  if (v.is_model)
-  {
-    return cBlack;
-  }
+	if (v.is_model)
+	{
+		return cBlack;
+	}
 
-  if (v.is_scanned && v.is_scanned_visible)
-  {
-    return cRed;
-  }
+	if (v.is_scanned && v.is_scanned_visible)
+	{
+		return cRed;
+	}
 
 	if (v.is_original)
 	{
-    if (bUseConfidenceColor && v.eigen_confidence >= -0.5)
-    {
-      return isoValue2color(v.eigen_confidence, cofidence_color_scale, iso_value_shift, true);
-    }
+		if (bUseConfidenceColor && v.eigen_confidence >= -0.5)
+		{
+			return isoValue2color(v.eigen_confidence, cofidence_color_scale, iso_value_shift, true);
+		}
 		return original_color;
 	}
 
@@ -250,81 +250,81 @@ GLColor GLDrawer::getColorByType(const CVertex& v)
 
 	}
 
-  //if (bShowNBVCandidates && v.is_iso)
-  //{
-  //  return cBlue;
-  //}
+	//if (bShowNBVCandidates && v.is_iso)
+	//{
+	//  return cBlue;
+	//}
 
-  if (bUseConfidenceColor && !v.is_iso && v.eigen_confidence >= -0.5)
-  {
-    return isoValue2color(v.eigen_confidence, cofidence_color_scale, iso_value_shift, true);
-  }
+	if (bUseConfidenceColor && !v.is_iso && v.eigen_confidence >= -0.5)
+	{
+		return isoValue2color(v.eigen_confidence, cofidence_color_scale, iso_value_shift, true);
+	}
 
-  if (bUseConfidenceColor && v.is_iso)
-  {
-    return isoValue2color(v.eigen_confidence, cofidence_color_scale, iso_value_shift, true);
-  }
+	if (bUseConfidenceColor && v.is_iso)
+	{
+		return isoValue2color(v.eigen_confidence, cofidence_color_scale, iso_value_shift, true);
+	}
 	if (bUseIndividualColor && v.is_iso)
 	{
-    if (v.is_iso && v.is_hole)
-    {
-      return feature_color;
-    }
+		if (v.is_iso && v.is_hole)
+		{
+			return feature_color;
+		}
 		//Color4b c = v.C();
-  //  return GLColor((255 - slice_color_scale * c.X())/255., c.Y()/255., c.Z()/255., 1.);
-    return isoValue2color(v.eigen_confidence, slice_color_scale, iso_value_shift, true);
+		//  return GLColor((255 - slice_color_scale * c.X())/255., c.Y()/255., c.Z()/255., 1.);
+		return isoValue2color(v.eigen_confidence, slice_color_scale, iso_value_shift, true);
 	}
-  else if (v.is_iso)
-  {
-    if (v.is_boundary)        return cRed;
-    if (v.is_view_candidates) return cOrange;
-    if (v.is_hole)            return cBlue;
-    
-    return cGreen;
-  }
+	else if (v.is_iso)
+	{
+		if (v.is_boundary)        return cRed;
+		if (v.is_view_candidates) return cOrange;
+		if (v.is_hole)            return cBlue;
+
+		return cGreen;
+	}
 	else if (v.is_fixed_sample)
 	{
 		return feature_color;
 	}
 
-  if (v.is_grid_center)
-  {
-    if (v.is_ray_hit) 
-    {
-      return isoValue2color(v.eigen_confidence, slice_color_scale, iso_value_shift, true);
-    }
+	if (v.is_grid_center)
+	{
+		if (v.is_ray_hit) 
+		{
+			return isoValue2color(v.eigen_confidence, slice_color_scale, iso_value_shift, true);
+		}
 
-    if (v.is_ray_stop) return cOrange;
-    
-    return cBlack;
-  }
-  
+		if (v.is_ray_stop) return cOrange;
+
+		return cBlack;
+	}
+
 	return sample_color;
 }
 
 void GLDrawer::drawDot(const CVertex& v)
 {
 
-  //if (bShowGridCenters && v.is_grid_center && !v.is_ray_stop)
-  //{
-  //  return;
-  //}
+	//if (bShowGridCenters && v.is_grid_center && !v.is_ray_stop)
+	//{
+	//  return;
+	//}
 
 
 
 	int size;
-  if (v.is_model)
-  {
-    size = original_dot_size;
-  }
-  else if (v.is_original)
+	if (v.is_model)
 	{
 		size = original_dot_size;
 	}
-  else if(v.is_iso)
-  {
-    size = iso_dot_size;
-  }
+	else if (v.is_original)
+	{
+		size = original_dot_size;
+	}
+	else if(v.is_iso)
+	{
+		size = iso_dot_size;
+	}
 	else
 	{
 		size = sample_dot_size;
@@ -337,11 +337,11 @@ void GLDrawer::drawDot(const CVertex& v)
 	glColor4f(color.r, color.g, color.b, 1);
 	Point3f p = v.P();
 
-  //p.X() += 2 * int(v.eigen_confidence / iso_step_size);
-  if (bUseIsoInteral)
-  {
-    p.X() += 2 * int(v.eigen_confidence / iso_step_size);
-  }
+	//p.X() += 2 * int(v.eigen_confidence / iso_step_size);
+	if (bUseIsoInteral)
+	{
+		p.X() += 2 * int(v.eigen_confidence / iso_step_size);
+	}
 
 	glVertex3f(p[0], p[1], p[2]);
 	glEnd(); 
@@ -358,7 +358,7 @@ void GLDrawer::drawSphere(const CVertex& v)
 	{
 		radius = sample_draw_width;
 	}
-	
+
 	GLColor color = getColorByType(v);
 	glColor4f(color.r, color.g, color.b, 1);
 
@@ -415,7 +415,7 @@ void GLDrawer::drawCircle(const CVertex& v)
 void GLDrawer::drawQuade(const CVertex& v)
 {
 	double h = sample_draw_width;
-	
+
 	GLColor color = getColorByType(v);
 	glColor4f(color.r, color.g, color.b, 1);
 
@@ -426,7 +426,7 @@ void GLDrawer::drawQuade(const CVertex& v)
 
 	//const double *m = v.m;
 	glBegin(GL_QUADS);
-	
+
 	Point3f temp_V = V1 ^ normal;
 	float temp = temp_V * V0;
 
@@ -494,28 +494,28 @@ void GLDrawer::drawNormal(const CVertex& v)
 //wei begin
 void GLDrawer::drawCamera(vcc::Camera& camera)
 {
-  //get the five control points of the cone
-  Point3f far_end = camera.pos + camera.direction * camera.max_distance;
-  Point3f top_right = far_end + camera.right * camera.horizon_dist / 2 
-                        + camera.up * camera.vertical_dist / 2;
-  Point3f top_left = far_end + camera.right * (-camera.horizon_dist) / 2
-                        + camera.up * camera.vertical_dist / 2; 
-  Point3f bottom_right = far_end + camera.right * camera.horizon_dist / 2
-                        + camera.up * (-camera.vertical_dist / 2);
-  Point3f bottom_left = far_end + camera.right * (-camera.horizon_dist / 2)
-                        + camera.up * (-camera.vertical_dist / 2);
+	//get the five control points of the cone
+	Point3f far_end = camera.pos + camera.direction * camera.max_distance;
+	Point3f top_right = far_end + camera.right * camera.horizon_dist / 2 
+		+ camera.up * camera.vertical_dist / 2;
+	Point3f top_left = far_end + camera.right * (-camera.horizon_dist) / 2
+		+ camera.up * camera.vertical_dist / 2; 
+	Point3f bottom_right = far_end + camera.right * camera.horizon_dist / 2
+		+ camera.up * (-camera.vertical_dist / 2);
+	Point3f bottom_left = far_end + camera.right * (-camera.horizon_dist / 2)
+		+ camera.up * (-camera.vertical_dist / 2);
 
-  glBegin(GL_LINES);
-  glColor3f(1.0, 0.0, 0.0);
-  glVertex(camera.pos); glVertex(top_left);
-  glVertex(camera.pos); glVertex(top_right);
-  glVertex(camera.pos); glVertex(bottom_left);
-  glVertex(camera.pos); glVertex(bottom_right);
-  glVertex(top_right); glVertex(top_left);
-  glVertex(top_left); glVertex(bottom_left);
-  glVertex(bottom_left); glVertex(bottom_right);
-  glVertex(bottom_right); glVertex(top_right);
-  glEnd();
+	glBegin(GL_LINES);
+	glColor3f(1.0, 0.0, 0.0);
+	glVertex(camera.pos); glVertex(top_left);
+	glVertex(camera.pos); glVertex(top_right);
+	glVertex(camera.pos); glVertex(bottom_left);
+	glVertex(camera.pos); glVertex(bottom_right);
+	glVertex(top_right); glVertex(top_left);
+	glVertex(top_left); glVertex(bottom_left);
+	glVertex(bottom_left); glVertex(bottom_right);
+	glVertex(bottom_right); glVertex(top_right);
+	glEnd();
 }
 //wei end
 
@@ -642,10 +642,10 @@ void GLDrawer::cleanPickPoint()
 
 void GLDrawer::glDrawBranches(vector<Branch>& branches, GLColor gl_color)
 {
-  if (useDifferBranchColor && random_color_list.size() < branches.size())
-  {
-    generateRandomColorList(branches.size() * 2);
-  }
+	if (useDifferBranchColor && random_color_list.size() < branches.size())
+	{
+		generateRandomColorList(branches.size() * 2);
+	}
 
 	for(int i = 0; i < branches.size(); i++)
 	{
@@ -674,10 +674,10 @@ void GLDrawer::glDrawBranches(vector<Branch>& branches, GLColor gl_color)
 			{
 				glDrawSphere(p0, GLColor(feature_color), skel_node_size * 1.1, 40);
 			}
-      else if (useDifferBranchColor)
-      {
-        glDrawSphere(p0, GLColor(random_color_list[i]), skel_node_size, 40);
-      }
+			else if (useDifferBranchColor)
+			{
+				glDrawSphere(p0, GLColor(random_color_list[i]), skel_node_size, 40);
+			}
 			else
 			{
 				glDrawSphere(p0, GLColor(skel_node_color), skel_node_size, 40);
@@ -691,14 +691,14 @@ void GLDrawer::glDrawBranches(vector<Branch>& branches, GLColor gl_color)
 
 			if (skel_bone_width > 0.0003)
 			{
-        if (useDifferBranchColor)
-        {
-          glDrawCylinder(p0, p1, random_color_list[i], skel_bone_width);
-        }
-        else
-        {
-          glDrawCylinder(p0, p1, gl_color, skel_bone_width);
-        }
+				if (useDifferBranchColor)
+				{
+					glDrawCylinder(p0, p1, random_color_list[i], skel_bone_width);
+				}
+				else
+				{
+					glDrawCylinder(p0, p1, gl_color, skel_bone_width);
+				}
 			}
 		}
 
@@ -787,57 +787,57 @@ void GLDrawer::drawCurveSkeleton(Skeleton& skeleton)
 
 void GLDrawer::generateRandomColorList(int num)
 {
-  if (num <= 1000)
-    num = 1000;
+	if (num <= 1000)
+		num = 1000;
 
-  random_color_list.clear();
+	random_color_list.clear();
 
-  srand(time(NULL));
-  for(int i = 0; i < num; i++)
-  {
-    double r = (rand() % 1000) * 0.001;
-    double g = (rand() % 1000) * 0.001;
-    double b = (rand() % 1000) * 0.001;
-    random_color_list.push_back(GLColor(r, g, b));
-  }
+	srand(time(NULL));
+	for(int i = 0; i < num; i++)
+	{
+		double r = (rand() % 1000) * 0.001;
+		double g = (rand() % 1000) * 0.001;
+		double b = (rand() % 1000) * 0.001;
+		random_color_list.push_back(GLColor(r, g, b));
+	}
 }
 
 
 void GLDrawer::drawSlice(Slice& slice, double trans_val)
 {
-  if (slice.slice_nodes.empty())
-  {
-    return;
-  }
-  Point3f p0, p1, p2, p3;
+	if (slice.slice_nodes.empty())
+	{
+		return;
+	}
+	Point3f p0, p1, p2, p3;
 
-  //glPolygonMode(GL_SMOOTH);
-  glShadeModel(GL_SMOOTH);   
+	//glPolygonMode(GL_SMOOTH);
+	glShadeModel(GL_SMOOTH);   
 
-  for (int i = 0; i < slice.res -1; i++)
-  {
-    for (int j = 0; j < slice.res -1; j++)
-    {
-      CVertex v0 = slice.slice_nodes[i * slice.res + j];
-      CVertex v1 = slice.slice_nodes[i * slice.res + j + 1];
-      CVertex v2 = slice.slice_nodes[(i+1) * slice.res + j + 1];
-      CVertex v3 = slice.slice_nodes[(i+1) * slice.res + j];
+	for (int i = 0; i < slice.res -1; i++)
+	{
+		for (int j = 0; j < slice.res -1; j++)
+		{
+			CVertex v0 = slice.slice_nodes[i * slice.res + j];
+			CVertex v1 = slice.slice_nodes[i * slice.res + j + 1];
+			CVertex v2 = slice.slice_nodes[(i+1) * slice.res + j + 1];
+			CVertex v3 = slice.slice_nodes[(i+1) * slice.res + j];
 
-      //GLColor c0 = getColorByType(v0);
-      //GLColor c1 = getColorByType(v1);
-      //GLColor c2 = getColorByType(v2);
-      //GLColor c3 = getColorByType(v3);
+			//GLColor c0 = getColorByType(v0);
+			//GLColor c1 = getColorByType(v1);
+			//GLColor c2 = getColorByType(v2);
+			//GLColor c3 = getColorByType(v3);
 
-      GLColor c0 = isoValue2color(v0.eigen_confidence, slice_color_scale, iso_value_shift, true);
-      GLColor c1 = isoValue2color(v1.eigen_confidence, slice_color_scale, iso_value_shift, true);
-      GLColor c2 = isoValue2color(v2.eigen_confidence, slice_color_scale, iso_value_shift, true);
-      GLColor c3 = isoValue2color(v3.eigen_confidence, slice_color_scale, iso_value_shift, true);
-      glBegin(GL_QUADS);
-      glColor4f(c0.r, c0.g, c0.b, trans_val); glVertex3f(v0.P().X(), v0.P().Y(), v0.P().Z());
-      glColor4f(c1.r, c1.g, c1.b, trans_val); glVertex3f(v1.P().X(), v1.P().Y(), v1.P().Z());
-      glColor4f(c2.r, c2.g, c2.b, trans_val); glVertex3f(v2.P().X(), v2.P().Y(), v2.P().Z());
-      glColor4f(c3.r, c3.g, c3.b, trans_val); glVertex3f(v3.P().X(), v3.P().Y(), v3.P().Z());
-      glEnd();
-    }
-  }
+			GLColor c0 = isoValue2color(v0.eigen_confidence, slice_color_scale, iso_value_shift, true);
+			GLColor c1 = isoValue2color(v1.eigen_confidence, slice_color_scale, iso_value_shift, true);
+			GLColor c2 = isoValue2color(v2.eigen_confidence, slice_color_scale, iso_value_shift, true);
+			GLColor c3 = isoValue2color(v3.eigen_confidence, slice_color_scale, iso_value_shift, true);
+			glBegin(GL_QUADS);
+			glColor4f(c0.r, c0.g, c0.b, trans_val); glVertex3f(v0.P().X(), v0.P().Y(), v0.P().Z());
+			glColor4f(c1.r, c1.g, c1.b, trans_val); glVertex3f(v1.P().X(), v1.P().Y(), v1.P().Z());
+			glColor4f(c2.r, c2.g, c2.b, trans_val); glVertex3f(v2.P().X(), v2.P().Y(), v2.P().Z());
+			glColor4f(c3.r, c3.g, c3.b, trans_val); glVertex3f(v3.P().X(), v3.P().Y(), v3.P().Z());
+			glEnd();
+		}
+	}
 }

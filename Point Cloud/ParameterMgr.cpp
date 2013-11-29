@@ -23,9 +23,9 @@ ParameterMgr::ParameterMgr(void)
 	initNormalSmootherParameter();
 	initSkeletonParameter();
 	initUpsamplingParameter();
-  initPoissonParameter();
-  initCameraParameter();
-  initNBVParameter();
+	initPoissonParameter();
+	initCameraParameter();
+	initNBVParameter();
 }
 
 ParameterMgr::~ParameterMgr(void)
@@ -49,8 +49,8 @@ void ParameterMgr::setGlobalParameter(QString paraName,Value& val)
 		skeleton.setValue(paraName, val);
 	if (upsampling.hasParameter(paraName))
 		upsampling.setValue(paraName, val);
-  if (poisson.hasParameter(paraName))
-    poisson.setValue(paraName, val);
+	if (poisson.hasParameter(paraName))
+		poisson.setValue(paraName, val);
 }
 
 void ParameterMgr::initDataMgrParameter()
@@ -68,20 +68,20 @@ void ParameterMgr::initGlareaParameter()
 	glarea.addParam(new RichBool("Light On or Off", false) );
 
 	glarea.addParam(new RichBool("Show Normal", false) );
-	
+
 	glarea.addParam(new RichBool("Show Samples", true) );
 	glarea.addParam(new RichBool("Show Samples Quad", false) );
 	glarea.addParam(new RichBool("Show Samples Dot", true) );
 	glarea.addParam(new RichBool("Show Samples Circle", false) );
 	glarea.addParam(new RichBool("Show Samples Sphere", false) );
-  glarea.addParam(new RichBool("Show ISO Points", true) );
-  glarea.addParam(new RichBool("Use ISO Interval", false) );
-  glarea.addParam(new RichBool("Show NBV Grids", false));
-  glarea.addParam(new RichBool("Show NBV Candidates", false));
-  glarea.addParam(new RichBool("Show Scan Candidates", true));
-  glarea.addParam(new RichBool("Show Scanned Mesh", true));
+	glarea.addParam(new RichBool("Show ISO Points", true) );
+	glarea.addParam(new RichBool("Use ISO Interval", false) );
+	glarea.addParam(new RichBool("Show NBV Grids", false));
+	glarea.addParam(new RichBool("Show NBV Candidates", false));
+	glarea.addParam(new RichBool("Show Scan Candidates", true));
+	glarea.addParam(new RichBool("Show Scanned Mesh", true));
 
-  glarea.addParam(new RichBool("Show Model", true));
+	glarea.addParam(new RichBool("Show Model", true));
 	glarea.addParam(new RichBool("Show Original", false) );
 	glarea.addParam(new RichBool("Show Original Quad", false) );
 	glarea.addParam(new RichBool("Show Original Dot", true) );
@@ -96,11 +96,11 @@ void ParameterMgr::initGlareaParameter()
 	glarea.addParam(new RichBool("Show Red Radius Line", true));
 	glarea.addParam(new RichBool("Multiply Pick Point", true) );
 
-  glarea.addParam(new RichBool("Show Bounding Box", true));
+	glarea.addParam(new RichBool("Show Bounding Box", true));
 
 
 	glarea.addParam(new RichBool("GLarea Busying", false) );
-  glarea.addParam(new RichBool("Algorithom Stop", false) );
+	glarea.addParam(new RichBool("Algorithom Stop", false) );
 
 
 	glarea.addParam(new RichPoint3f("Light Position", vcg::Point3f(-4.0, -4.0, -4.0)));
@@ -116,14 +116,14 @@ void ParameterMgr::initGlareaParameter()
 	glarea.addParam(new RichDouble("Snapshot Resolution", 2));
 	glarea.addParam(new RichDouble("Snapshot Index", 1));
 	glarea.addParam(new RichDouble("Radius Ball Transparency", 0.3));
-  glarea.addParam(new RichDouble("Slice Color Scale", 1));
-  glarea.addParam(new RichDouble("ISO Interval Size", 50));
-  glarea.addParam(new RichDouble("Confidence Color Scale", 0.5));
-  glarea.addParam(new RichDouble("ISO Value Shift", 0.00));
+	glarea.addParam(new RichDouble("Slice Color Scale", 1));
+	glarea.addParam(new RichDouble("ISO Interval Size", 50));
+	glarea.addParam(new RichDouble("Confidence Color Scale", 0.5));
+	glarea.addParam(new RichDouble("ISO Value Shift", 0.00));
 
 	glarea.addParam(new RichBool("SnapShot Each Iteration", false));
 	glarea.addParam(new RichBool("No Snap Radius", false));
-  glarea.addParam(new RichBool("All Octree Nodes", false));
+	glarea.addParam(new RichBool("All Octree Nodes", false));
 
 }
 
@@ -137,13 +137,13 @@ void ParameterMgr::initDrawerParameter()
 	drawer.addParam(new RichBool("Skeleton Light", true));
 	drawer.addParam(new RichBool("Show Individual Color", true));
 	drawer.addParam(new RichBool("Use Color From Normal", false));
-  drawer.addParam(new RichBool("Use Differ Branch Color", false));
-  drawer.addParam(new RichBool("Show Confidence Color", true));
+	drawer.addParam(new RichBool("Use Differ Branch Color", false));
+	drawer.addParam(new RichBool("Show Confidence Color", true));
 
 	drawer.addParam(new RichDouble("Original Draw Width", 0.0015));
 	drawer.addParam(new RichDouble("Sample Draw Width", 0.005));
 	drawer.addParam(new RichDouble("Sample Dot Size", 6));
-  drawer.addParam(new RichDouble("ISO Dot Size", 4));
+	drawer.addParam(new RichDouble("ISO Dot Size", 4));
 	drawer.addParam(new RichDouble("Original Dot Size", 1));
 	drawer.addParam(new RichDouble("Normal Line Width", 2));
 	drawer.addParam(new RichDouble("Normal Line Length", 0.12));
@@ -168,7 +168,7 @@ void ParameterMgr::initDrawerParameter()
 void ParameterMgr::initWLopParameter()
 {
 	wLop.addParam(new RichString("Algorithm Name", "WLOP") );
-  wLop.addParam(new RichBool("Run One Key WLOP", false));
+	wLop.addParam(new RichBool("Run One Key WLOP", false));
 
 	wLop.addParam(new RichDouble("Num Of Iterate Time", 5));
 
@@ -186,19 +186,19 @@ void ParameterMgr::initWLopParameter()
 
 void ParameterMgr::initSkeletonParameter()
 {
-  /// 
-  skeleton.addParam(new RichDouble("Repulsion Power", 1.0));
-  skeleton.addParam(new RichDouble("Average Power", 2.0));
+	/// 
+	skeleton.addParam(new RichDouble("Repulsion Power", 1.0));
+	skeleton.addParam(new RichDouble("Average Power", 2.0));
 
 
-  /// 
-  skeleton.addParam(new RichDouble("Num Of Iterate Time", 1));
+	/// 
+	skeleton.addParam(new RichDouble("Num Of Iterate Time", 1));
 	skeleton.addParam(new RichString("Algorithm Name", "Skeletonization") );
-	
+
 	skeleton.addParam(new RichDouble("CGrid Radius", grid_r));
 	skeleton.addParam(new RichDouble("H Gaussian Para", 4));
 	skeleton.addParam(new RichBool("Need Compute Density", true));
-		
+
 	skeleton.addParam(new RichDouble("Current Movement Error", 0.0));
 	skeleton.addParam(new RichBool("Run Auto Wlop One Step", false));
 	skeleton.addParam(new RichBool("Run Auto Wlop One Stage", false));
@@ -207,7 +207,7 @@ void ParameterMgr::initSkeletonParameter()
 	skeleton.addParam(new RichBool("Step1 Detect Skeleton Feature", false));
 	skeleton.addParam(new RichBool("Step2 Run Search New Branchs", false));
 	skeleton.addParam(new RichBool("Step3 Clean And Update Radius", false));
-  skeleton.addParam(new RichBool("Run Skeletonlization", false));
+	skeleton.addParam(new RichBool("Run Skeletonlization", false));
 
 	//init
 	skeleton.addParam(new RichDouble("Max Iterate Time", 55));
@@ -251,9 +251,9 @@ void ParameterMgr::initSkeletonParameter()
 	skeleton.addParam(new RichDouble("Curve Segment Length", 0.051));
 	skeleton.addParam(new RichInt("Fix Original Mode", 4)); // 1 for noisy , 4 for clean
 
-  skeleton.addParam(new RichBool("Run ALL Segment", false));
-  skeleton.addParam(new RichBool("Need Segment Right Away", true));
-  skeleton.addParam(new RichDouble("Max Stop Radius", 1.99));
+	skeleton.addParam(new RichBool("Run ALL Segment", false));
+	skeleton.addParam(new RichBool("Need Segment Right Away", true));
+	skeleton.addParam(new RichDouble("Max Stop Radius", 1.99));
 
 	//strategy...
 	skeleton.addParam(new RichBool("Use Nearby Combine Strategy", true));
@@ -322,73 +322,74 @@ void ParameterMgr::initUpsamplingParameter()
 
 void ParameterMgr::initPoissonParameter()
 {
-  poisson.addParam(new RichString("Algorithm Name", "Poisson") );
-  poisson.addParam(new RichDouble("CGrid Radius", 0.08) );
-  poisson.addParam(new RichDouble("View Candidates Distance", 0.85));
+	poisson.addParam(new RichString("Algorithm Name", "Poisson") );
+	poisson.addParam(new RichDouble("CGrid Radius", 0.08) );
+	poisson.addParam(new RichDouble("View Candidates Distance", 0.85));
 
-  poisson.addParam(new RichBool("Run One Key PoissonConfidence", false));
+	poisson.addParam(new RichBool("Run One Key PoissonConfidence", false));
 
-  poisson.addParam(new RichBool("Run Extract All Octree Nodes", false));
-  poisson.addParam(new RichBool("Run Extract MC Points", false));
+	poisson.addParam(new RichBool("Run Extract All Octree Nodes", false));
+	poisson.addParam(new RichBool("Run Extract MC Points", false));
 
-  poisson.addParam(new RichBool("Run Poisson On Original", true));
-  poisson.addParam(new RichBool("Run Generate Poisson Field", false));
-
-
-  poisson.addParam(new RichBool("Run Poisson On Samples", false));  
-  poisson.addParam(new RichBool("Run Label ISO Points", false));
-  poisson.addParam(new RichBool("Run Label Smooth", false));
-  poisson.addParam(new RichBool("Run Label Boundary Points", false));
-  poisson.addParam(new RichBool("Run Compute View Candidates", false));
-  poisson.addParam(new RichBool("Run View Candidates Clustering", false));
-
-  poisson.addParam(new RichBool("Run Slice", false));
-  poisson.addParam(new RichBool("Run Clear Slice", false));
-  poisson.addParam(new RichDouble("Max Depth", 7));
-
-  poisson.addParam(new RichBool("Show Slices Mode", false));
-  poisson.addParam(new RichBool("Parallel Slices Mode", false));
-
-  poisson.addParam(new RichBool("Show X Slices", false));
-  poisson.addParam(new RichBool("Show Y Slices", false));
-  poisson.addParam(new RichBool("Show Z Slices", false));
-  poisson.addParam(new RichBool("Show Transparent Slices", false));
-  poisson.addParam(new RichDouble("Current X Slice Position", 0.5));
-  poisson.addParam(new RichDouble("Current Y Slice Position", 0.5));
-  poisson.addParam(new RichDouble("Current Z Slice Position", 0.5));
-  poisson.addParam(new RichDouble("Show Slice Percentage", 0.75));
-  poisson.addParam(new RichDouble("Poisson Disk Sample Number", 3500));
+	poisson.addParam(new RichBool("Run Poisson On Original", true));
+	poisson.addParam(new RichBool("Run Generate Poisson Field", false));
 
 
-  poisson.addParam(new RichBool("Use Confidence 1", false));
-  poisson.addParam(new RichBool("Use Confidence 2", false));
-  poisson.addParam(new RichBool("Use Confidence 3", false));
-  poisson.addParam(new RichBool("Use Confidence 4", true));
-  poisson.addParam(new RichBool("Compute Original Confidence", false));
-  poisson.addParam(new RichBool("Compute Sample Confidence", false));
-  poisson.addParam(new RichBool("Compute ISO Confidence", false));
-  poisson.addParam(new RichBool("Use Sort Confidence Combination", true));
+	poisson.addParam(new RichBool("Run Poisson On Samples", false));  
+	poisson.addParam(new RichBool("Run Label ISO Points", false));
+	poisson.addParam(new RichBool("Run Label Smooth", false));
+	poisson.addParam(new RichBool("Run Label Boundary Points", false));
+	poisson.addParam(new RichBool("Run Compute View Candidates", false));
+	poisson.addParam(new RichBool("Run View Candidates Clustering", false));
+
+	poisson.addParam(new RichBool("Run Slice", false));
+	poisson.addParam(new RichBool("Run Clear Slice", false));
+	poisson.addParam(new RichDouble("Max Depth", 7));
+
+	poisson.addParam(new RichBool("Show Slices Mode", false));
+	poisson.addParam(new RichBool("Parallel Slices Mode", false));
+
+	poisson.addParam(new RichBool("Show X Slices", false));
+	poisson.addParam(new RichBool("Show Y Slices", false));
+	poisson.addParam(new RichBool("Show Z Slices", false));
+	poisson.addParam(new RichBool("Show Transparent Slices", false));
+	poisson.addParam(new RichDouble("Current X Slice Position", 0.5));
+	poisson.addParam(new RichDouble("Current Y Slice Position", 0.5));
+	poisson.addParam(new RichDouble("Current Z Slice Position", 0.5));
+	poisson.addParam(new RichDouble("Show Slice Percentage", 0.75));
+	poisson.addParam(new RichDouble("Poisson Disk Sample Number", 3500));
+
+
+	poisson.addParam(new RichBool("Use Confidence 1", false));
+	poisson.addParam(new RichBool("Use Confidence 2", false));
+	poisson.addParam(new RichBool("Use Confidence 3", false));
+	poisson.addParam(new RichBool("Use Confidence 4", true));
+	poisson.addParam(new RichBool("Compute Original Confidence", false));
+	poisson.addParam(new RichBool("Compute Sample Confidence", false));
+	poisson.addParam(new RichBool("Compute ISO Confidence", false));
+	poisson.addParam(new RichBool("Use Sort Confidence Combination", true));
 }
 
 void ParameterMgr::initCameraParameter()
 {
-  camera.addParam(new RichString("Algorithm Name", "Camera") );
-  camera.addParam(new RichBool("Run One Key NewScans", false));
+	camera.addParam(new RichString("Algorithm Name", "Camera") );
+	camera.addParam(new RichBool("Run One Key NewScans", false));
 
-  camera.addParam(new RichBool("Run Initial Scan", false));
-  camera.addParam(new RichBool("Run NBV Scan", false));
-  camera.addParam(new RichBool("Run Virtual Scan", false));
-  camera.addParam(new RichDouble("Camera Resolution",1.0f / 100.0f));
-  camera.addParam(new RichDouble("Camera Max Dist", 2.1f));
-  camera.addParam(new RichDouble("Camera Horizon Dist", 1.0f));
-  camera.addParam(new RichDouble("Camera Vertical Dist", 0.6f));
-  camera.addParam(new RichDouble("Camera Dist To Model", 1.0f));
-  camera.addParam(new RichBool("Is Init Camera Show", false));
+	camera.addParam(new RichBool("Run Initial Scan", false));
+	camera.addParam(new RichBool("Run NBV Scan", false));
+	camera.addParam(new RichBool("Run Virtual Scan", false));
+	camera.addParam(new RichDouble("Camera Resolution",1.0f / 100.0f));
+	camera.addParam(new RichDouble("Camera Max Dist", 2.1f));
+	camera.addParam(new RichDouble("Camera Horizon Dist", 1.0f));
+	camera.addParam(new RichDouble("Camera Vertical Dist", 0.6f));
+	camera.addParam(new RichDouble("Camera Dist To Model", 1.0f));
+	camera.addParam(new RichBool("Is Init Camera Show", false));
 }
 
 void
-ParameterMgr::initNBVParameter()
+	ParameterMgr::initNBVParameter()
 {
+<<<<<<< HEAD
   nbv.addParam(new RichString("Algorithm Name", "NBV"));
   nbv.addParam(new RichBool("Run One Key NBV", false));
 
@@ -412,4 +413,28 @@ ParameterMgr::initNBVParameter()
 
   nbv.addParam(new RichDouble("Confidence Separation Value", 0.85));
   nbv.addParam(new RichDouble("Max Ray Steps Para", 1.5));
+=======
+	nbv.addParam(new RichString("Algorithm Name", "NBV"));
+	nbv.addParam(new RichBool("Run One Key NBV", false));
+
+	nbv.addParam(new RichBool("Run Build Grid", false));
+	nbv.addParam(new RichBool("Run Propagate", false));
+	nbv.addParam(new RichBool("Run Propagate One Point", false));
+	nbv.addParam(new RichBool("Run Grid Segment", false));
+
+	nbv.addParam(new RichBool("Run Viewing Clustering", false));
+	nbv.addParam(new RichBool("Run Extract Views Into Bins", false));
+	nbv.addParam(new RichBool("Run Viewing Extract", false));
+
+	nbv.addParam(new RichDouble("Grid resolution", 40.f));
+	nbv.addParam(new RichBool("Test Other Inside Segment", false));
+
+	nbv.addParam(new RichBool("Use Confidence Separation", false));
+	nbv.addParam(new RichBool("Use Average Confidence", false));
+	nbv.addParam(new RichBool("Use NBV Test1", false));
+	nbv.addParam(new RichBool("Use Max Propagation", true));
+
+	nbv.addParam(new RichDouble("Confidence Separation Value", 0.85));
+	nbv.addParam(new RichDouble("Max Ray Steps Para", 1.5));
+>>>>>>> 99939e19753eec9a8e3f0feff0e7ba030de111f9
 }

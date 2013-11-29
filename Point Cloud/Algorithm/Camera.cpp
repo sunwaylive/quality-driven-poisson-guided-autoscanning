@@ -17,6 +17,7 @@ void vcc::Camera::setInput(DataMgr* pData)
      scan_candidates = pData->getAllScanCandidates();
      current_scanned_mesh = pData->getCurrentScannedMesh();
      scanned_results = pData->getScannedResults();
+	 nbv_candidates = pData->getNbvCandidates();
      //get current pos and direction
      /*direction = pData->getCameraDirection();
      pos = pData->getCameraPos();*/
@@ -48,6 +49,11 @@ void vcc::Camera::run()
   {
     runNBVScan();
     return;
+  }
+  if (para->getBool("Run One Key NewScans"))
+  {
+	  runOneKeyNewScan();
+	  return;
   }
 }
 
@@ -129,7 +135,7 @@ void vcc::Camera::runInitialScan()
   vector<ScanCandidate>::iterator it = init_scan_candidates->begin();
   for (; it != init_scan_candidates->end(); ++it)
   {
-    //init scan should consideer dist to model
+    //init scan should consider dist to model
     pos = it->first * dist_to_model;
     direction = it->second;
     /********* call runVirtualScan() *******/
@@ -167,7 +173,7 @@ void vcc::Camera::runNBVScan()
   }
   scanned_results->clear();
 
-  //traverse the nbv_candidates and do virtual scan
+  //traverse the scan_candidates and do virtual scan
   vector<ScanCandidate>::iterator it = scan_candidates->begin();
   for (; it != scan_candidates->end(); ++it)
   {
@@ -178,6 +184,27 @@ void vcc::Camera::runNBVScan()
 
     scanned_results->push_back(current_scanned_mesh);
   }
+}
+
+void
+vcc::Camera::runOneKeyNewScan()
+{
+	//clear default scan_candidate
+	scan_candidates->clear();
+
+	//fix:for test, just scan the point who has the biggest confidence
+	int max_idx = 0;
+	float max_confidence = nbv_candidates->vert[0].eigen_confidence;
+	for (int i = 0; i < nbv_candidates->vert.size(); ++i)
+	{
+		if (nbv_candidates->vert[i].eigen_confidence > max_confidence)
+			max_idx = i;
+	}
+	
+	ScanCandidate s = make_pair(nbv_candidates->vert[max_idx].P(), nbv_candidates->vert[max_idx].N());
+	scan_candidates->push_back(s);
+	runNBVScan();
+	cout<<"one key new scan finished!"<<endl;
 }
 
 void vcc::Camera::computeUpAndRight()

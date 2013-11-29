@@ -4,12 +4,12 @@
 DataMgr::DataMgr(RichParameterSet* _para)
 {
 	para = _para;
-  camera_pos = Point3f(0.0f, 0.0f, 1.0f);
-  camera_direction = Point3f(0.0f, 0.0f, -1.0f);
+	camera_pos = Point3f(0.0f, 0.0f, 1.0f);
+	camera_direction = Point3f(0.0f, 0.0f, -1.0f);
 
-  initDefaultScanCamera();
+	initDefaultScanCamera();
 
-  slices.assign(3, Slice());
+	slices.assign(3, Slice());
 }
 
 DataMgr::~DataMgr(void)
@@ -28,29 +28,29 @@ void DataMgr::clearCMesh(CMesh& mesh)
 
 void DataMgr::initDefaultScanCamera()
 {
-  //default cameras for initial scanning, pair<pos, direction>
-  //x axis
-  init_scan_candidates.push_back(make_pair(Point3f(1.0f, 0.0f, 0.0f), Point3f(-1.0f, 0.0f, 0.0f)));
-  init_scan_candidates.push_back(make_pair(Point3f(-1.0f, 0.0f, 0.0f), Point3f(1.0f, 0.0f, 0.0f)));
-  //y axis
-  init_scan_candidates.push_back(make_pair(Point3f(0.0f, 1.0f, 0.0f), Point3f(0.0f, -1.0f, 0.0f)));
-  init_scan_candidates.push_back(make_pair(Point3f(0.0f, -1.0f, 0.0f), Point3f(0.0f, 1.0f, 0.0f)));
-  //z axis
-  /*init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f), Point3f(0.0f, 0.0f, -1.0f)));
-  init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, -1.0f), Point3f(0.0f, 0.0f, 1.0f)));*/
+	//default cameras for initial scanning, pair<pos, direction>
+	//x axis
+	init_scan_candidates.push_back(make_pair(Point3f(1.0f, 0.0f, 0.0f), Point3f(-1.0f, 0.0f, 0.0f)));
+	init_scan_candidates.push_back(make_pair(Point3f(-1.0f, 0.0f, 0.0f), Point3f(1.0f, 0.0f, 0.0f)));
+	//y axis
+	init_scan_candidates.push_back(make_pair(Point3f(0.0f, 1.0f, 0.0f), Point3f(0.0f, -1.0f, 0.0f)));
+	init_scan_candidates.push_back(make_pair(Point3f(0.0f, -1.0f, 0.0f), Point3f(0.0f, 1.0f, 0.0f)));
+	//z axis
+	/*init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f), Point3f(0.0f, 0.0f, -1.0f)));
+	init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, -1.0f), Point3f(0.0f, 0.0f, 1.0f)));*/
 
-  //this should be deleted, for UI debug
-  //for test
-  scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f), Point3f(0.0f, 0.0f, -1.0f)));
-  //x axis
-  scan_candidates.push_back(make_pair(Point3f(1.0f, 0.0f, 0.0f), Point3f(-1.0f, 0.0f, 0.0f)));
-  //scan_candidates.push_back(make_pair(Point3f(-1.0f, 0.0f, 0.0f), Point3f(1.0f, 0.0f, 0.0f)));
-  ////y axis
-  //scan_candidates.push_back(make_pair(Point3f(0.0f, 1.0f, 0.0f), Point3f(0.0f, -1.0f, 0.0f)));
-  //scan_candidates.push_back(make_pair(Point3f(0.0f, -1.0f, 0.0f), Point3f(0.0f, 1.0f, 0.0f)));
-  ////z axis
-  //scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f), Point3f(0.0f, 0.0f, -1.0f)));
-  //scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, -1.0f), Point3f(0.0f, 0.0f, 1.0f)));
+	//this should be deleted, for UI debug
+	//for test
+	scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f), Point3f(0.0f, 0.0f, -1.0f)));
+	//x axis
+	scan_candidates.push_back(make_pair(Point3f(1.0f, 0.0f, 0.0f), Point3f(-1.0f, 0.0f, 0.0f)));
+	//scan_candidates.push_back(make_pair(Point3f(-1.0f, 0.0f, 0.0f), Point3f(1.0f, 0.0f, 0.0f)));
+	////y axis
+	//scan_candidates.push_back(make_pair(Point3f(0.0f, 1.0f, 0.0f), Point3f(0.0f, -1.0f, 0.0f)));
+	//scan_candidates.push_back(make_pair(Point3f(0.0f, -1.0f, 0.0f), Point3f(0.0f, 1.0f, 0.0f)));
+	////z axis
+	//scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f), Point3f(0.0f, 0.0f, -1.0f)));
+	//scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, -1.0f), Point3f(0.0f, 0.0f, 1.0f)));
 }
 
 bool DataMgr::isSamplesEmpty()
@@ -60,7 +60,7 @@ bool DataMgr::isSamplesEmpty()
 
 bool DataMgr::isModelEmpty()
 {
-  return model.vert.empty();
+	return model.vert.empty();
 }
 
 bool DataMgr::isOriginalEmpty()
@@ -70,57 +70,56 @@ bool DataMgr::isOriginalEmpty()
 
 bool DataMgr::isSkeletonEmpty()
 {
-  return skeleton.isEmpty();
+	return skeleton.isEmpty();
 }
 
 bool DataMgr::isIsoPointsEmpty()
 {
-  return iso_points.vert.empty();
+	return iso_points.vert.empty();
 }
 
 bool DataMgr::isFieldPointsEmpty()
 {
-  return field_points.vert.empty();
+	return field_points.vert.empty();
 }
 
 bool DataMgr::isScannedMeshEmpty()
 {
-  return current_scanned_mesh.vert.empty();
+	return current_scanned_mesh.vert.empty();
 }
 
 bool DataMgr::isScannedResultsEmpty()
 {
-  return scanned_results.empty();
+	return scanned_results.empty();
 }
 
 bool DataMgr::isNBVGridsEmpty()
 {
-  return all_nbv_grid_centers.vert.empty();
+	return all_nbv_grid_centers.vert.empty();
 }
 
 void DataMgr::loadPlyToModel(QString fileName)
 {
-  clearCMesh(model);
-  curr_file_name = fileName;
+	clearCMesh(model);
+	curr_file_name = fileName;
 
-  int mask = tri::io::Mask::IOM_ALL;
-  int err = tri::io::Importer<CMesh>::Open(model, curr_file_name.toAscii().data(), mask);
-  if (err)
-  {
-    cout<<"Failed to read model: "<< err <<"\n";
-    return;
-  }
-  cout<<"object model loaded \n";
+	int mask = tri::io::Mask::IOM_ALL;
+	int err = tri::io::Importer<CMesh>::Open(model, curr_file_name.toAscii().data(), mask);
+	if (err)
+	{
+		cout<<"Failed to read model: "<< err <<"\n";
+		return;
+	}
 
-  CMesh::VertexIterator vi;
-  int idx = 0;
-  for (vi = model.vert.begin(); vi != model.vert.end(); ++vi)
-  {
-    vi->is_model = true;
-    vi->m_index = idx++;
-    model.bbox.Add(vi->P());
-  }
-  model.vn = model.vert.size();
+	CMesh::VertexIterator vi;
+	int idx = 0;
+	for (vi = model.vert.begin(); vi != model.vert.end(); ++vi)
+	{
+		vi->is_model = true;
+		vi->m_index = idx++;
+		model.bbox.Add(vi->P());
+	}
+	model.vn = model.vert.size();
 }
 
 void DataMgr::loadPlyToOriginal(QString fileName)
@@ -179,65 +178,65 @@ void DataMgr::loadPlyToSample(QString fileName)
 
 void DataMgr::loadPlyToISO(QString fileName)
 {
-  clearCMesh(iso_points);
-  curr_file_name = fileName;
+	clearCMesh(iso_points);
+	curr_file_name = fileName;
 
-  int mask= tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL ;
-  mask += tri::io::Mask::IOM_VERTCOLOR;
-  mask += tri::io::Mask::IOM_BITPOLYGONAL;
+	int mask= tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL ;
+	mask += tri::io::Mask::IOM_VERTCOLOR;
+	mask += tri::io::Mask::IOM_BITPOLYGONAL;
 
-  int err = tri::io::Importer<CMesh>::Open(iso_points, curr_file_name.toAscii().data(), mask);  
-  if(err) 
-  {
-    cout << "Failed reading mesh: " << err << "\n";
-    return;
-  }  
+	int err = tri::io::Importer<CMesh>::Open(iso_points, curr_file_name.toAscii().data(), mask);  
+	if(err) 
+	{
+		cout << "Failed reading mesh: " << err << "\n";
+		return;
+	}  
 
-  CMesh::VertexIterator vi;
-  int idx = 0;
-  for(vi = iso_points.vert.begin(); vi != iso_points.vert.end(); ++vi)
-  {
-    vi->is_iso = true;
-    vi->m_index = idx++;
-    iso_points.bbox.Add(vi->P());
-  }
-  iso_points.vn = iso_points.vert.size();
+	CMesh::VertexIterator vi;
+	int idx = 0;
+	for(vi = iso_points.vert.begin(); vi != iso_points.vert.end(); ++vi)
+	{
+		vi->is_iso = true;
+		vi->m_index = idx++;
+		iso_points.bbox.Add(vi->P());
+	}
+	iso_points.vn = iso_points.vert.size();
 }
 
 void DataMgr::loadXYZN(QString fileName)
 {
-  clearCMesh(samples);
-  ifstream infile;
-  infile.open(fileName.toStdString().c_str());
+	clearCMesh(samples);
+	ifstream infile;
+	infile.open(fileName.toStdString().c_str());
 
-  int i = 0;
-  while(!infile.eof())
-  {
-    CVertex v;
-    float temp = 0.;
-    for (int j=0; j<3; j++)
-    {
+	int i = 0;
+	while(!infile.eof())
+	{
+		CVertex v;
+		float temp = 0.;
+		for (int j=0; j<3; j++)
+		{
 
-      infile >> temp;
-      v.P()[j] = temp;
-    }
+			infile >> temp;
+			v.P()[j] = temp;
+		}
 
 
-    for (int j=0; j<3; j++) {
-      infile >> v.N()[j];
-    }
+		for (int j=0; j<3; j++) {
+			infile >> v.N()[j];
+		}
 
-    v.m_index = i++;
+		v.m_index = i++;
 
-    samples.vert.push_back(v);
-    samples.bbox.Add(v.P());
-  }
+		samples.vert.push_back(v);
+		samples.bbox.Add(v.P());
+	}
 
- // mesh.vert.erase(mesh.vert.end()-1);
-  samples.vert.pop_back();
-  samples.vn = samples.vert.size();
+	// mesh.vert.erase(mesh.vert.end()-1);
+	samples.vert.pop_back();
+	samples.vn = samples.vert.size();
 
-  infile.close();
+	infile.close();
 
 
 
@@ -287,64 +286,64 @@ void DataMgr::loadImage(QString fileName)
 
 void DataMgr::loadCameraModel(QString fileName)
 {
-  clearCMesh(camera_model);
-  curr_file_name = fileName;
-  int mask = tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL;
-  mask += tri::io::Mask::IOM_FACEFLAGS;
+	clearCMesh(camera_model);
+	curr_file_name = fileName;
+	int mask = tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL;
+	mask += tri::io::Mask::IOM_FACEFLAGS;
 
-  int err = tri::io::Importer<CMesh>::Open(camera_model, curr_file_name.toAscii().data(), mask);
-  if (err)
-  {
-    cout<<"Failed to read camera model: "<< err << "\n";
-    return;
-  }
-  cout<<"camera model loaded \n";
+	int err = tri::io::Importer<CMesh>::Open(camera_model, curr_file_name.toAscii().data(), mask);
+	if (err)
+	{
+		cout<<"Failed to read camera model: "<< err << "\n";
+		return;
+	}
+	cout<<"camera model loaded \n";
 }
 
 CMesh* DataMgr::getCurrentIsoPoints()
 {
-  if(&iso_points == NULL)
-  {
-    return NULL;
-  }
+	if(&iso_points == NULL)
+	{
+		return NULL;
+	}
 
-  if(iso_points.vert.empty())
-  {
-    return & iso_points;
-  }
+	if(iso_points.vert.empty())
+	{
+		return & iso_points;
+	}
 
-  return & iso_points;
+	return & iso_points;
 }
 
 CMesh* DataMgr::getCurrentFieldPoints()
 {
-  if(&field_points == NULL)
-  {
-    return NULL;
-  }
+	if(&field_points == NULL)
+	{
+		return NULL;
+	}
 
-  if(field_points.vert.empty())
-  {
-    return & field_points;
-  }
+	if(field_points.vert.empty())
+	{
+		return & field_points;
+	}
 
-  return & field_points;
+	return & field_points;
 }
 
 
 CMesh* DataMgr::getCurrentSamples()
 {
-  if(&samples == NULL)
-  {
-    //cout << "DataMgr::getCurrentSamples samples = NULL!!" <<endl;
-    return NULL;
-  }
+	if(&samples == NULL)
+	{
+		//cout << "DataMgr::getCurrentSamples samples = NULL!!" <<endl;
+		return NULL;
+	}
 
 	if(samples.vert.empty())
 	{
 		//cout << "DataMgr::getCurrentSamples samples.vert.empty()!!" <<endl;
 		//return NULL;
-    return & samples;
+		return & samples;
 	}
 
 	return & samples;
@@ -352,16 +351,16 @@ CMesh* DataMgr::getCurrentSamples()
 
 CMesh* DataMgr::getCurrentModel()
 {
-  return &model;
+	return &model;
 }
 
 CMesh* DataMgr::getCurrentOriginal()
 {
-  if(&original == NULL)
-  {
-    //cout << "DataMgr::getCurrentOriginal() samples = NULL!!" <<endl;
-    return NULL;
-  }
+	if(&original == NULL)
+	{
+		//cout << "DataMgr::getCurrentOriginal() samples = NULL!!" <<endl;
+		return NULL;
+	}
 
 	if(original.vert.empty())
 	{
@@ -379,90 +378,90 @@ Skeleton* DataMgr::getCurrentSkeleton()
 
 CMesh* DataMgr::getCameraModel()
 {
-  return &camera_model;
+	return &camera_model;
 }
 
 Point3f& DataMgr::getCameraPos()
 {
-  return camera_pos;
+	return camera_pos;
 }
 
 Point3f& DataMgr::getCameraDirection()
 {
-  return camera_direction;
+	return camera_direction;
 }
 
 double DataMgr::getCameraResolution()
 {
-  return camera_resolution;
+	return camera_resolution;
 }
 
 double DataMgr::getCameraHorizonDist()
 {
-  return camera_horizon_dist;
+	return camera_horizon_dist;
 }
 
 double DataMgr::getCameraVerticalDist()
 {
-  return camera_vertical_dist;
+	return camera_vertical_dist;
 }
 
 double DataMgr::getCameraMaxDistance()
 {
-  return camera_max_distance;
+	return camera_max_distance;
 }
 
 double DataMgr::getCameraMaxAngle()
 {
-  return camera_max_angle;
+	return camera_max_angle;
 }
 
 vector<NBVGrid>*
-DataMgr::getAllNBVGrids()
+	DataMgr::getAllNBVGrids()
 {
-  return &all_nbv_grids;
+	return &all_nbv_grids;
 }
 
 CMesh*
-DataMgr::getAllNBVGridCenters()
+	DataMgr::getAllNBVGridCenters()
 {
-  return &all_nbv_grid_centers;
+	return &all_nbv_grid_centers;
 }
 
 CMesh*
-DataMgr::getNbvCandidates()
+	DataMgr::getNbvCandidates()
 {
-  return &nbv_candidates;
+	return &nbv_candidates;
 }
 
 vector<ScanCandidate>* DataMgr::getInitCameraScanCandidates()
 {
-  return &init_scan_candidates;
+	return &init_scan_candidates;
 }
 
 vector<ScanCandidate>* DataMgr::getAllScanCandidates()
 {
-  return &scan_candidates;
+	return &scan_candidates;
 }
 
 vector<ScanCandidate>* DataMgr::getSelectedScanCandidates()
 {
-  return &selected_scan_candidates;
+	return &selected_scan_candidates;
 }
 
 CMesh* DataMgr::getCurrentScannedMesh()
 {
-  return &current_scanned_mesh;
+	return &current_scanned_mesh;
 }
 
 vector<CMesh* >* DataMgr::getScannedResults()
 {
-  return &scanned_results;
+	return &scanned_results;
 }
 
 Slices* DataMgr::getCurrentSlices()
 {
-  return &slices;
+	return &slices;
 }
 
 void DataMgr::recomputeBox()
@@ -489,34 +488,34 @@ void DataMgr::recomputeBox()
 double DataMgr::getInitRadiuse()
 {
 	double init_para = para->getDouble("Init Radius Para");
-  if (isOriginalEmpty() && isModelEmpty())
-  {
-    global_paraMgr.setGlobalParameter("CGrid Radius", DoubleValue(init_radius));
-    global_paraMgr.setGlobalParameter("Initial Radius", DoubleValue(init_radius));
-    return init_radius;
-  }
+	if (isOriginalEmpty() && isModelEmpty())
+	{
+		global_paraMgr.setGlobalParameter("CGrid Radius", DoubleValue(init_radius));
+		global_paraMgr.setGlobalParameter("Initial Radius", DoubleValue(init_radius));
+		return init_radius;
+	}
 
-  Box3f box;
+	Box3f box;
 	if (!isOriginalEmpty())   box = original.bbox;
 	else if (!isModelEmpty()) box = model.bbox;
 
-  if ( abs(box.min.X() - box.max.X()) < 1e-5 ||   
-    abs(box.min.Y() - box.max.Y()) < 1e-5 ||   
-    abs(box.min.Z() - box.max.Z()) < 1e-5 )
-  {
-    double diagonal_length = sqrt((box.min - box.max).SquaredNorm());
-    double original_size = sqrt(double(original.vn));
-    init_radius = 2 * init_para * diagonal_length / original_size;
-  }
-  else
-  {
-    double diagonal_length = sqrt((box.min - box.max).SquaredNorm());
-    double original_size = pow(double(original.vn), 0.333);
-    init_radius = init_para * diagonal_length / original_size;
-  }
- 
-  global_paraMgr.setGlobalParameter("CGrid Radius", DoubleValue(init_radius));
-  global_paraMgr.setGlobalParameter("Initial Radius", DoubleValue(init_radius));
+	if ( abs(box.min.X() - box.max.X()) < 1e-5 ||   
+		abs(box.min.Y() - box.max.Y()) < 1e-5 ||   
+		abs(box.min.Z() - box.max.Z()) < 1e-5 )
+	{
+		double diagonal_length = sqrt((box.min - box.max).SquaredNorm());
+		double original_size = sqrt(double(original.vn));
+		init_radius = 2 * init_para * diagonal_length / original_size;
+	}
+	else
+	{
+		double diagonal_length = sqrt((box.min - box.max).SquaredNorm());
+		double original_size = pow(double(original.vn), 0.333);
+		init_radius = init_para * diagonal_length / original_size;
+	}
+
+	global_paraMgr.setGlobalParameter("CGrid Radius", DoubleValue(init_radius));
+	global_paraMgr.setGlobalParameter("Initial Radius", DoubleValue(init_radius));
 
 	return init_radius;
 }
@@ -550,10 +549,10 @@ void DataMgr::downSamplesByNum(bool use_random_downsample)
 	{
 		int index = nCard[i]; //could be not random!
 
-    if (!use_random_downsample)
-    {
-      index = i;
-    }
+		if (!use_random_downsample)
+		{
+			index = i;
+		}
 
 		CVertex& v = original.vert[index];
 		samples.vert.push_back(v);
@@ -566,7 +565,7 @@ void DataMgr::downSamplesByNum(bool use_random_downsample)
 		vi->is_original = false;
 	}
 
-  getInitRadiuse();
+	getInitRadiuse();
 }
 
 void DataMgr::subSamples()
@@ -585,7 +584,7 @@ void DataMgr::subSamples()
 	}
 
 	downSamplesByNum();
-  getInitRadiuse();
+	getInitRadiuse();
 }
 
 
@@ -593,9 +592,9 @@ void DataMgr::savePly(QString fileName, CMesh& mesh)
 {
 	int mask= tri::io::Mask::IOM_VERTNORMAL ;
 	//mask += tri::io::Mask::IOM_VERTCOLOR;
-  mask += tri::io::Mask::IOM_ALL;
+	mask += tri::io::Mask::IOM_ALL;
 	mask += tri::io::Mask::IOM_BITPOLYGONAL;
-  mask += tri::io::Mask::IOM_FACEINDEX;
+	mask += tri::io::Mask::IOM_FACEINDEX;
 
 	if (fileName.endsWith("ply"))
 		tri::io::ExporterPLY<CMesh>::Save(mesh, fileName.toAscii().data(), mask, false);
@@ -603,89 +602,89 @@ void DataMgr::savePly(QString fileName, CMesh& mesh)
 
 void DataMgr::normalizeROSA_Mesh(CMesh& mesh)
 {
-  if (mesh.vert.empty())
-  {
-    return;
-  }
-  Box3f box = mesh.bbox;
-  mesh.bbox.SetNull();
-  float max_x = abs((box.min - box.max).X());
-  float max_y = abs((box.min - box.max).Y());
-  float max_z = abs((box.min - box.max).Z());
-  float max_length = max_x > max_y ? max_x : max_y;
-  max_length = max_length > max_z ? max_length : max_z;
+	if (mesh.vert.empty())
+	{
+		return;
+	}
+	Box3f box = mesh.bbox;
+	mesh.bbox.SetNull();
+	float max_x = abs((box.min - box.max).X());
+	float max_y = abs((box.min - box.max).Y());
+	float max_z = abs((box.min - box.max).Z());
+	float max_length = max_x > max_y ? max_x : max_y;
+	max_length = max_length > max_z ? max_length : max_z;
 
-  Box3f box_temp;
-  for(int i = 0; i < mesh.vert.size(); i++)
-  {
-    Point3f& p = mesh.vert[i].P();
+	Box3f box_temp;
+	for(int i = 0; i < mesh.vert.size(); i++)
+	{
+		Point3f& p = mesh.vert[i].P();
 
-    p -= box.min;
-    p /= max_length;
+		p -= box.min;
+		p /= max_length;
 
-    p -= Point3f(0.5, .5, .5);
-    //p *= 2.0;
+		p -= Point3f(0.5, .5, .5);
+		//p *= 2.0;
 
-    mesh.vert[i].N().Normalize(); 
-    box_temp.Add(p);
-  }
+		mesh.vert[i].N().Normalize(); 
+		box_temp.Add(p);
+	}
 
-  Point3f mid_point = (box_temp.min + box_temp.max) / 2.0;
+	Point3f mid_point = (box_temp.min + box_temp.max) / 2.0;
 
-  for(int i = 0; i < mesh.vert.size(); i++)
-  {
-    Point3f& p = mesh.vert[i].P();
-    p -= mid_point;
-    mesh.bbox.Add(p);
-  }
+	for(int i = 0; i < mesh.vert.size(); i++)
+	{
+		Point3f& p = mesh.vert[i].P();
+		p -= mid_point;
+		mesh.bbox.Add(p);
+	}
 }
 
 
 Box3f DataMgr::normalizeAllMesh()
 {
 	Box3f box;
-  if (!isModelEmpty())
-  {
-    for (int i = 0; i < model.vert.size(); ++i)
-    {
-      box.Add(model.vert[i].P());
-    }
+	if (!isModelEmpty())
+	{
+		for (int i = 0; i < model.vert.size(); ++i)
+		{
+			box.Add(model.vert[i].P());
+		}
 
-    model.bbox = box;
-    normalizeROSA_Mesh(model);
-    recomputeBox();
+		model.bbox = box;
+		normalizeROSA_Mesh(model);
+		recomputeBox();
 
-    return model.bbox;
-  }
-  else
-  {
-    if (!isSamplesEmpty())
-    {
-      for (int i = 0; i < samples.vert.size(); ++i)
-      {
-        box.Add(samples.vert[i].P());
-      }
-    }
-    if (!isOriginalEmpty())
-    {
-      for (int i = 0; i < original.vert.size(); ++i)
-      {
-        box.Add(original.vert[i].P());
-      }
-      original.bbox =box;
-    }
+		return model.bbox;
+	}
+	else
+	{
+		if (!isSamplesEmpty())
+		{
+			for (int i = 0; i < samples.vert.size(); ++i)
+			{
+				box.Add(samples.vert[i].P());
+			}
+		}
+		if (!isOriginalEmpty())
+		{
+			for (int i = 0; i < original.vert.size(); ++i)
+			{
+				box.Add(original.vert[i].P());
+			}
+			original.bbox =box;
+		}
 
-    samples.bbox = box;
+		samples.bbox = box;
 
-    normalizeROSA_Mesh(samples);
-    normalizeROSA_Mesh(original);
-    normalizeROSA_Mesh(iso_points);
+		normalizeROSA_Mesh(samples);
+		normalizeROSA_Mesh(original);
+		normalizeROSA_Mesh(iso_points);
 
-    recomputeBox();
-    getInitRadiuse();
+		recomputeBox();
+		getInitRadiuse();
 
-    return samples.bbox;
-  }
+		return samples.bbox;
+	}
 }
 
 
@@ -716,20 +715,20 @@ void DataMgr::clearData()
 {
 	clearCMesh(original);
 	clearCMesh(samples);
-  clearCMesh(iso_points);
-  clearCMesh(field_points);
+	clearCMesh(iso_points);
+	clearCMesh(field_points);
 
-  //clearCMesh(model);  
-  clearCMesh(current_scanned_mesh);
+	//clearCMesh(model);  
+	clearCMesh(current_scanned_mesh);
 
-  clearCMesh(all_nbv_grid_centers);
-  clearCMesh(nbv_candidates);
-  clearCMesh(current_scanned_mesh);
+	clearCMesh(all_nbv_grid_centers);
+	clearCMesh(nbv_candidates);
+	clearCMesh(current_scanned_mesh);
 
 
 
 	skeleton.clear();
-  slices.clear();
+	slices.clear();
 }
 
 void DataMgr::recomputeQuad()
@@ -738,14 +737,14 @@ void DataMgr::recomputeQuad()
 	{
 		samples.vert[i].recompute_m_render();
 	}
-  for (int i = 0; i < iso_points.vert.size(); i++)
-  {
-    iso_points.vert[i].recompute_m_render();
-  }
-  for (int i = 0; i < original.vert.size(); i++)
-  {
-    original.vert[i].recompute_m_render();
-  }
+	for (int i = 0; i < iso_points.vert.size(); i++)
+	{
+		iso_points.vert[i].recompute_m_render();
+	}
+	for (int i = 0; i < original.vert.size(); i++)
+	{
+		original.vert[i].recompute_m_render();
+	}
 }
 
 
@@ -812,17 +811,17 @@ void DataMgr::saveSkeletonAsSkel(QString fileName)
 
 	//strStream << "SkelRadius " << 0 << endl;
 	//strStream << endl;
-  
-  strStream << "SkelRadius " << skeleton.size << endl;
-  for (int i = 0; i < skeleton.branches.size(); i++)
-  {
-    for (int j = 0; j < skeleton.branches[i].curve.size(); j++)
-    {
-      double skel_radius = skeleton.branches[i].curve[j].skel_radius;
-      strStream << skel_radius << "	"; 
-    }
-  }
-  strStream << endl;
+
+	strStream << "SkelRadius " << skeleton.size << endl;
+	for (int i = 0; i < skeleton.branches.size(); i++)
+	{
+		for (int j = 0; j < skeleton.branches[i].curve.size(); j++)
+		{
+			double skel_radius = skeleton.branches[i].curve[j].skel_radius;
+			strStream << skel_radius << "	"; 
+		}
+	}
+	strStream << endl;
 
 	strStream << "Confidence_Sigma	" << samples.vert.size() << endl;
 	for(int i = 0; i < samples.vert.size(); i++)
@@ -854,13 +853,13 @@ void DataMgr::saveSkeletonAsSkel(QString fileName)
 	}
 	strStream << endl;
 
-  strStream << "Sample_radius " << samples.vert.size() << endl;
-  for(int i = 0; i < samples.vert.size(); i++)
-  {
-    CVertex& v = samples.vert[i];
-    strStream << 0 << "	"; 
-  }
-  strStream << endl;
+	strStream << "Sample_radius " << samples.vert.size() << endl;
+	for(int i = 0; i < samples.vert.size(); i++)
+	{
+		CVertex& v = samples.vert[i];
+		strStream << 0 << "	"; 
+	}
+	strStream << endl;
 
 	strStream << "Skel_isVirtual " << skeleton.size << endl;
 	for (int i = 0; i < skeleton.branches.size(); i++)
@@ -874,49 +873,49 @@ void DataMgr::saveSkeletonAsSkel(QString fileName)
 	strStream << endl;
 
 
-  strStream << "Corresponding_sample_index " << skeleton.size << endl;
-  for (int i = 0; i < skeleton.branches.size(); i++)
-  {
-    for (int j = 0; j < skeleton.branches[i].curve.size(); j++)
-    {
-      int index = skeleton.branches[i].curve[j].m_index;
-      strStream << index << "	"; 
-    }
-  }
-  strStream << endl;
+	strStream << "Corresponding_sample_index " << skeleton.size << endl;
+	for (int i = 0; i < skeleton.branches.size(); i++)
+	{
+		for (int j = 0; j < skeleton.branches[i].curve.size(); j++)
+		{
+			int index = skeleton.branches[i].curve[j].m_index;
+			strStream << index << "	"; 
+		}
+	}
+	strStream << endl;
 
-  strStream << "IN " << iso_points.vert.size() << endl;
-  for(int i = 0; i < iso_points.vert.size(); i++)
-  {
-    CVertex& v = iso_points.vert[i];
-    strStream << v.P()[0] << "	" << v.P()[1] << "	" << v.P()[2] << "	";
-    strStream << v.N()[0] << "	" << v.N()[1] << "	" << v.N()[2] << "	" << endl;
-  }
-  strStream << endl;
+	strStream << "IN " << iso_points.vert.size() << endl;
+	for(int i = 0; i < iso_points.vert.size(); i++)
+	{
+		CVertex& v = iso_points.vert[i];
+		strStream << v.P()[0] << "	" << v.P()[1] << "	" << v.P()[2] << "	";
+		strStream << v.N()[0] << "	" << v.N()[1] << "	" << v.N()[2] << "	" << endl;
+	}
+	strStream << endl;
 
-  strStream << "ISO_Value	" << iso_points.vert.size() << endl;
-  for(int i = 0; i < iso_points.vert.size(); i++)
-  {
-    double sigma = iso_points.vert[i].eigen_confidence;
-    strStream << sigma << "	"; 
-  }
-  strStream << endl;
+	strStream << "ISO_Value	" << iso_points.vert.size() << endl;
+	for(int i = 0; i < iso_points.vert.size(); i++)
+	{
+		double sigma = iso_points.vert[i].eigen_confidence;
+		strStream << sigma << "	"; 
+	}
+	strStream << endl;
 
-  strStream << "Is_hole " << iso_points.vert.size() << endl;
-  for(int i = 0; i < iso_points.vert.size(); i++)
-  {
-    CVertex& v = iso_points.vert[i];
-    strStream << v.is_hole << "	"; 
-  }
-  strStream << endl;
+	strStream << "Is_hole " << iso_points.vert.size() << endl;
+	for(int i = 0; i < iso_points.vert.size(); i++)
+	{
+		CVertex& v = iso_points.vert[i];
+		strStream << v.is_hole << "	"; 
+	}
+	strStream << endl;
 
-  //strStream << "Is_hole " << iso_points.vert.size() << endl;
-  //for(int i = 0; i < iso_points.vert.size(); i++)
-  //{
-  //  CVertex& v = iso_points.vert[i];
-  //  strStream << v.is_hole << "	"; 
-  //}
-  //strStream << endl;
+	//strStream << "Is_hole " << iso_points.vert.size() << endl;
+	//for(int i = 0; i < iso_points.vert.size(); i++)
+	//{
+	//  CVertex& v = iso_points.vert[i];
+	//  strStream << v.is_hole << "	"; 
+	//}
+	//strStream << endl;
 
 	outfile.write( strStream.str().c_str(), strStream.str().size() ); 
 	outfile.close();
@@ -927,11 +926,11 @@ void DataMgr::saveSkeletonAsSkel(QString fileName)
 
 void DataMgr::loadSkeletonFromSkel(QString fileName)
 {
-  clearData();
+	clearData();
 	//clearCMesh(samples);
 	//clearCMesh(original);
- // clearCMesh(iso_points);
- // clearCMesh(field_points);
+	// clearCMesh(iso_points);
+	// clearCMesh(field_points);
 
 	skeleton.clear();
 
@@ -1020,56 +1019,56 @@ void DataMgr::loadSkeletonFromSkel(QString fileName)
 	sem >> str;
 	if (str == "EN")
 	{
-    sem >> num;
-    for (int i = 0; i < num; i++)
-    {
-      int a, b;
-      sem >> a >> b;
-    }
+		sem >> num;
+		for (int i = 0; i < num; i++)
+		{
+			int a, b;
+			sem >> a >> b;
+		}
 	}
 
 	sem >> str;
 	if (str == "BN")
 	{
-    sem >> num;
-    for (int i = 0; i < num; i++)
-    {
-      sem >> str;
-      sem >> num2;
+		sem >> num;
+		for (int i = 0; i < num; i++)
+		{
+			sem >> str;
+			sem >> num2;
 
-      for(int j = 0; j < num2; j++)
-      {
-        int id;
-        sem >> id;
+			for(int j = 0; j < num2; j++)
+			{
+				int id;
+				sem >> id;
 
-    }
-	}
+			}
+		}
 
-	if (!sem.eof())
-	{
+		if (!sem.eof())
+		{
+			sem >> str;
+			if (str == "S_onedge")
+			{
+				sem >> num;
+				for (int i = 0; i < num; i++)
+				{
+					bool b;
+					sem >> b;
+					samples.vert[i].is_fixed_sample = b;
+				}
+			}
+		}
+
 		sem >> str;
-		if (str == "S_onedge")
+		if (str == "GroupID")
 		{
 			sem >> num;
 			for (int i = 0; i < num; i++)
 			{
-				bool b;
-				sem >> b;
-				samples.vert[i].is_fixed_sample = b;
+				int id;
+				sem >> id;
+
 			}
-		}
-	}
-
-	sem >> str;
-	if (str == "GroupID")
-	{
-		sem >> num;
-		for (int i = 0; i < num; i++)
-		{
-			int id;
-			sem >> id;
-
-      }
 		}
 	}
 
@@ -1078,18 +1077,18 @@ void DataMgr::loadSkeletonFromSkel(QString fileName)
 	{
 		sem >> num;
 
-    if (num > 1)
-    {
-      double radius;
-      for (int i = 0; i < skeleton.branches.size(); i++)
-      {
-        for (int j = 0; j < skeleton.branches[i].curve.size(); j++)
-        {
-          sem >> radius;
-          skeleton.branches[i].curve[j].skel_radius = radius;
-        }
-      }
-    }
+		if (num > 1)
+		{
+			double radius;
+			for (int i = 0; i < skeleton.branches.size(); i++)
+			{
+				for (int j = 0; j < skeleton.branches[i].curve.size(); j++)
+				{
+					sem >> radius;
+					skeleton.branches[i].curve[j].skel_radius = radius;
+				}
+			}
+		}
 
 	}
 
@@ -1110,18 +1109,18 @@ void DataMgr::loadSkeletonFromSkel(QString fileName)
 	{
 		sem >> num;
 
-    if (num > 1)
-    {
-      double radius;
-      for (int i = 0; i < skeleton.branches.size(); i++)
-      {
-        for (int j = 0; j < skeleton.branches[i].curve.size(); j++)
-        {
-          sem >> radius;
-          //skeleton.branches[i].curve[j].skel_radius = radius;
-        }
-      }
-    }
+		if (num > 1)
+		{
+			double radius;
+			for (int i = 0; i < skeleton.branches.size(); i++)
+			{
+				for (int j = 0; j < skeleton.branches[i].curve.size(); j++)
+				{
+					sem >> radius;
+					//skeleton.branches[i].curve[j].skel_radius = radius;
+				}
+			}
+		}
 
 	}
 
@@ -1129,18 +1128,18 @@ void DataMgr::loadSkeletonFromSkel(QString fileName)
 	if (str == "Alpha")
 	{
 		sem >> num;
-    double Alpha;
-    if (num > 1)
-    {
-      for (int i = 0; i < skeleton.branches.size(); i++)
-      {
-        for (int j = 0; j < skeleton.branches[i].curve.size(); j++)
-        {
-          sem >> Alpha;
-          //skeleton.curves[i][j].alpha = Alpha;
-        }
-      }
-    }
+		double Alpha;
+		if (num > 1)
+		{
+			for (int i = 0; i < skeleton.branches.size(); i++)
+			{
+				for (int j = 0; j < skeleton.branches[i].curve.size(); j++)
+				{
+					sem >> Alpha;
+					//skeleton.curves[i][j].alpha = Alpha;
+				}
+			}
+		}
 
 	}
 
@@ -1177,13 +1176,13 @@ void DataMgr::loadSkeletonFromSkel(QString fileName)
 	sem >> str;
 	if (str == "Sample_radius")
 	{
-    sem >> num;
-    for (int i = 0; i < num; i++)
-    {
-      double temp;
-      sem >> temp;
-      //samples.vert[i].saved_radius = temp;
-    }
+		sem >> num;
+		for (int i = 0; i < num; i++)
+		{
+			double temp;
+			sem >> temp;
+			//samples.vert[i].saved_radius = temp;
+		}
 	}
 
 	sem >> str;
@@ -1201,87 +1200,87 @@ void DataMgr::loadSkeletonFromSkel(QString fileName)
 		}
 	}
 
-  sem >> str;
-  if (str == "Corresponding_sample_index")
-  {
-    sem >> num;
-    int temp;
-    for (int i = 0; i < skeleton.branches.size(); i++)
-    {
-      for (int j = 0; j < skeleton.branches[i].curve.size(); j++)
-      {
-        sem >> temp;
-        skeleton.branches[i].curve[j].m_index = temp;
-      }
-    }
-  }
-  
+	sem >> str;
+	if (str == "Corresponding_sample_index")
+	{
+		sem >> num;
+		int temp;
+		for (int i = 0; i < skeleton.branches.size(); i++)
+		{
+			for (int j = 0; j < skeleton.branches[i].curve.size(); j++)
+			{
+				sem >> temp;
+				skeleton.branches[i].curve[j].m_index = temp;
+			}
+		}
+	}
+
 
 	skeleton.generateBranchSampleMap();
 
 
-  sem >> str;
-  if (str == "IN")
-  {
-    sem >> num;
-    for (int i = 0; i < num; i++)
-    {
-      CVertex v;
-      v.is_original = false;
-      v.is_iso = true;
-      v.m_index = i;
-      sem >> v.P()[0] >> v.P()[1] >> v.P()[2];
-      sem >> v.N()[0] >> v.N()[1] >> v.N()[2];
-      iso_points.vert.push_back(v);
-      iso_points.bbox.Add(v.P());
-    }
-    iso_points.vn = iso_points.vert.size();
-  }
+	sem >> str;
+	if (str == "IN")
+	{
+		sem >> num;
+		for (int i = 0; i < num; i++)
+		{
+			CVertex v;
+			v.is_original = false;
+			v.is_iso = true;
+			v.m_index = i;
+			sem >> v.P()[0] >> v.P()[1] >> v.P()[2];
+			sem >> v.N()[0] >> v.N()[1] >> v.N()[2];
+			iso_points.vert.push_back(v);
+			iso_points.bbox.Add(v.P());
+		}
+		iso_points.vn = iso_points.vert.size();
+	}
 
 
-  sem >> str;
-  if (str == "ISO_Value")
-  {
-    sem >> num;
-    for (int i = 0; i < num; i++)
-    {
-      double sigma;
-      sem >> sigma;
-      iso_points.vert[i].eigen_confidence = sigma;
-    }
-  }
+	sem >> str;
+	if (str == "ISO_Value")
+	{
+		sem >> num;
+		for (int i = 0; i < num; i++)
+		{
+			double sigma;
+			sem >> sigma;
+			iso_points.vert[i].eigen_confidence = sigma;
+		}
+	}
 
-  if (!sem.eof())
-  {
-    sem >> str;
-    if (str == "Is_hole")
-    {
-      sem >> num;
-      for (int i = 0; i < num; i++)
-      {
-        bool b;
-        sem >> b;
-        iso_points.vert[i].is_hole = b;
-      }
-    }
-  }
+	if (!sem.eof())
+	{
+		sem >> str;
+		if (str == "Is_hole")
+		{
+			sem >> num;
+			for (int i = 0; i < num; i++)
+			{
+				bool b;
+				sem >> b;
+				iso_points.vert[i].is_hole = b;
+			}
+		}
+	}
 
-  sem >> str;
-  /*if (str == "VN")
-  {
-  sem >> num;
-  for (int i = 0; i < num; i++)
-  {
-  CVertex v;
-  v.is_original = false;
-  v.is_iso = false;
-  v.is_view_candidates = true;
-  v.m_index = i;
-  sem >> v.P()[0] >> v.P()[1] >> v.P()[2];
-  sem >> v.N()[0] >> v.N()[1] >> v.N()[2];
-  view_candidates.vert.push_back(v);
-  view_candidates.bbox.Add(v.P());
-  }
-  view_candidates.vn = iso_points.vert.size();
-  }*/
+	sem >> str;
+	/*if (str == "VN")
+	{
+	sem >> num;
+	for (int i = 0; i < num; i++)
+	{
+	CVertex v;
+	v.is_original = false;
+	v.is_iso = false;
+	v.is_view_candidates = true;
+	v.m_index = i;
+	sem >> v.P()[0] >> v.P()[1] >> v.P()[2];
+	sem >> v.N()[0] >> v.N()[1] >> v.N()[2];
+	view_candidates.vert.push_back(v);
+	view_candidates.bbox.Add(v.P());
+	}
+	view_candidates.vn = iso_points.vert.size();
+	}*/
 }

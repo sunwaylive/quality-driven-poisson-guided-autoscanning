@@ -59,7 +59,7 @@ public:
 public:
 	GLArea(QWidget *parent = 0);
 	~GLArea(void);
-  
+
 	void initializeGL();
 	void resizeGL(int w, int h);
 	void paintGL(); 
@@ -74,11 +74,11 @@ public:
 	void runWlop();
 	void runNormalSmoothing();
 	void runSkeletonization_paralleled();
-  void runSkeletonization_linear();
+	void runSkeletonization_linear();
 	void runUpsampling();
-  void runPoisson();
-  void runCamera();
-  void runNBV();
+	void runPoisson();
+	void runCamera();
+	void runNBV();
 
 	void cleanPickPoints();
 
@@ -87,7 +87,7 @@ public:
 	void outputColor(ostream& out, QColor& color);
 	QColor inputColor(istream& in);
 	void readRGBNormal(QString fileName);
-	
+
 	void removePickPoint();
 
 signals:
@@ -121,7 +121,7 @@ private: // For pick points function
 	vector<int> friendPickList;
 	vector<int> fatherPickList;
 	vector<int> RGBPickList;
-	
+
 	void addPointByPick();
 	void changePointByPick();
 	int RGB_counter;
@@ -153,14 +153,14 @@ private: // For snapshot
 	Point3f rotate_normal;
 	Point3f rotate_pos;
 
-  vcg::GlTrimesh<CMesh> glw; //绘制网格的对象
+	vcg::GlTrimesh<CMesh> glw; //绘制网格的对象
 
 public:
 	void saveSnapshot();
 	void changeColor(QString paraName);
 
 public:
-  void poissonTest();
+	void poissonTest();
 
 private:
 	vcg::Trackball trackball;
@@ -179,14 +179,14 @@ private:
 public:
 	DataMgr dataMgr;
 	GLDrawer glDrawer;	
-	
+
 	WLOP              wlop;
-  NormalSmoother    norSmoother;
-  Skeletonization   skeletonization;
-  Upsampler         upsampler;
-  Poisson           poisson;
-  vcc::Camera       camera;
-  NBV               nbv;
+	NormalSmoother    norSmoother;
+	Skeletonization   skeletonization;
+	Upsampler         upsampler;
+	Poisson           poisson;
+	vcc::Camera       camera;
+	NBV               nbv;
 
 	RichParameterSet* para;
 };

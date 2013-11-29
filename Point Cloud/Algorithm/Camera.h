@@ -32,6 +32,7 @@ namespace vcc{
     void runInitialScan();
     void runNBVScan();
     void runVirtualScan();
+	void runOneKeyNewScan();
 
   public:
      void computeUpAndRight();
@@ -43,6 +44,7 @@ namespace vcc{
     vector<ScanCandidate>*   init_scan_candidates;//for initialization
     vector<ScanCandidate>*   scan_candidates;     //for nbv computing
     CMesh*                   current_scanned_mesh;
+	CMesh*                   nbv_candidates;
     //fix: this should be released in "compute nbv" function
     vector<CMesh* >*         scanned_results;
     double                   dist_to_model;
