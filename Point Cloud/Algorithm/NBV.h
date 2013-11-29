@@ -43,19 +43,20 @@ private:
 
 
 private:
-  RichParameterSet *para;
-  CMesh            *model;
-  CMesh            *original;
-  CMesh            *iso_points;
-  CMesh            *all_nbv_grid_centers;
-  CMesh            *nbv_candidates;
-  CMesh            *field_points;
-  double           grid_resolution;
-  Point3f          whole_space_box_max;
-  Point3f          whole_space_box_min;
-  int              x_max; //max index num of x-axis 
-  int              y_max;
-  int              z_max;
+  RichParameterSet      *para;
+  CMesh                 *model;
+  CMesh                 *original;
+  CMesh                 *iso_points;
+  CMesh                 *all_nbv_grid_centers;
+  CMesh                 *nbv_candidates;
+  vector<ScanCandidate> *scan_candidates;
+  CMesh                 *field_points;
+  double                grid_resolution;
+  Point3f               whole_space_box_max;
+  Point3f               whole_space_box_min;
+  int                   x_max; //max index num of x-axis 
+  int                   y_max;
+  int                   z_max;
   std::vector<NBVGrid>  *all_nbv_grids; //grids in all the space
 
   static int       view_bins_each_axis;

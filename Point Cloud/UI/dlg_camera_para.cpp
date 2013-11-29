@@ -461,6 +461,7 @@ void CameraParaDlg::runStep3NBVcandidates()
   global_paraMgr.nbv.setValue("Run One Key NBV", BoolValue(true));
   area->runNBV();
   global_paraMgr.nbv.setValue("Run One Key NBV", BoolValue(false));
+  updateTableViewNBVCandidate();
 }
 
 void CameraParaDlg::runStep4NewScans()

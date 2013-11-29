@@ -189,21 +189,9 @@ void vcc::Camera::runNBVScan()
 void
 vcc::Camera::runOneKeyNewScan()
 {
-	//clear default scan_candidate
-	scan_candidates->clear();
-
-	//fix:for test, just scan the point who has the biggest confidence
-	int max_idx = 0;
-	float max_confidence = nbv_candidates->vert[0].eigen_confidence;
-	for (int i = 0; i < nbv_candidates->vert.size(); ++i)
-	{
-		if (nbv_candidates->vert[i].eigen_confidence > max_confidence)
-			max_idx = i;
-	}
-	
-	ScanCandidate s = make_pair(nbv_candidates->vert[max_idx].P(), nbv_candidates->vert[max_idx].N());
-	scan_candidates->push_back(s);
 	runNBVScan();
+
+	//merge
 	cout<<"one key new scan finished!"<<endl;
 }
 
