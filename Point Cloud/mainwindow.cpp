@@ -578,6 +578,11 @@ void MainWindow::saveSkel()
 
 void MainWindow::saveFieldPoints()
 {
+  global_paraMgr.poisson.setValue("Run Normalize Field Confidence", BoolValue(true));  
+  area->runPoisson();
+  global_paraMgr.poisson.setValue("Run Normalize Field Confidence", BoolValue(false));  
+
+
   QString file = QFileDialog::getSaveFileName(this, "Save filed as", "", "*.field");
   if(!file.size()) return;
 

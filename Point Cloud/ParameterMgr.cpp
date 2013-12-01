@@ -341,6 +341,7 @@ void ParameterMgr::initPoissonParameter()
 	poisson.addParam(new RichBool("Run Label Boundary Points", false));
 	poisson.addParam(new RichBool("Run Compute View Candidates", false));
 	poisson.addParam(new RichBool("Run View Candidates Clustering", false));
+  poisson.addParam(new RichBool("Run Normalize Field Confidence", false));
 
 	poisson.addParam(new RichBool("Run Slice", false));
 	poisson.addParam(new RichBool("Run Clear Slice", false));

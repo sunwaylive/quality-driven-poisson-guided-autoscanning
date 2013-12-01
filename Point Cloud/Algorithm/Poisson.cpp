@@ -194,6 +194,12 @@ void Poisson::run()
     return;
   }
 
+  if (para->getBool("Run Normalize Field Confidence"))
+  {
+    normalizeConfidence(field_points->vert, 0);
+    return;
+  }
+
   runPoisson();
 }
 
@@ -1436,3 +1442,5 @@ void Poisson::normalizeConfidence(vector<CVertex>& vertexes, float delta)
   }
 
 }
+
+

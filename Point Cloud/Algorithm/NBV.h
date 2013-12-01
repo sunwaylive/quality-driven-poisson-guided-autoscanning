@@ -41,6 +41,9 @@ private:
   void     setGridUnHit(vector<int>& hit_grids_idx);
   vector<float> confidence_weight_sum;
 
+  double computeLocalScores(CVertex& view_t, CVertex& iso_v, 
+                           double& optimal_D, double& half_D2, double& sigma_threshold);
+
 
 private:
   RichParameterSet *para;
