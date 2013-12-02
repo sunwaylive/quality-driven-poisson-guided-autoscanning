@@ -98,6 +98,11 @@ bool DataMgr::isNBVGridsEmpty()
   return all_nbv_grid_centers.vert.empty();
 }
 
+bool DataMgr::isNBVCandidatesEmpty()
+{
+  return nbv_candidates.vert.empty();
+}
+
 void DataMgr::loadPlyToModel(QString fileName)
 {
   clearCMesh(model);
@@ -910,13 +915,23 @@ void DataMgr::saveSkeletonAsSkel(QString fileName)
   }
   strStream << endl;
 
-  //strStream << "Is_hole " << iso_points.vert.size() << endl;
-  //for(int i = 0; i < iso_points.vert.size(); i++)
-  //{
-  //  CVertex& v = iso_points.vert[i];
-  //  strStream << v.is_hole << "	"; 
-  //}
-  //strStream << endl;
+  strStream << "CandidateN " << nbv_candidates.vert.size() << endl;
+  for(int i = 0; i < nbv_candidates.vert.size(); i++)
+  {
+    CVertex& v = nbv_candidates.vert[i];
+    strStream << v.P()[0] << "	" << v.P()[1] << "	" << v.P()[2] << "	";
+    strStream << v.N()[0] << "	" << v.N()[1] << "	" << v.N()[2] << "	" << endl;
+  }
+  strStream << endl;
+
+
+  strStream << "Candidate_Confidence	" << nbv_candidates.vert.size() << endl;
+  for(int i = 0; i < nbv_candidates.vert.size(); i++)
+  {
+    double sigma = nbv_candidates.vert[i].eigen_confidence;
+    strStream << sigma << "	"; 
+  }
+  strStream << endl;
 
 	outfile.write( strStream.str().c_str(), strStream.str().size() ); 
 	outfile.close();
@@ -1182,7 +1197,6 @@ void DataMgr::loadSkeletonFromSkel(QString fileName)
     {
       double temp;
       sem >> temp;
-      //samples.vert[i].saved_radius = temp;
     }
 	}
 
@@ -1263,6 +1277,37 @@ void DataMgr::loadSkeletonFromSkel(QString fileName)
         sem >> b;
         iso_points.vert[i].is_hole = b;
       }
+    }
+  }
+
+  sem >> str;
+  if (str == "CandidateN")
+  {
+    sem >> num;
+    for (int i = 0; i < num; i++)
+    {
+      CVertex v;
+      v.is_original = false;
+      //v.is_grid_center = true;
+      v.m_index = i;
+      sem >> v.P()[0] >> v.P()[1] >> v.P()[2];
+      sem >> v.N()[0] >> v.N()[1] >> v.N()[2];
+      cout << v.N()[0] << " " << v.N()[1] << endl; 
+      nbv_candidates.vert.push_back(v);
+      nbv_candidates.bbox.Add(v.P());
+    }
+    nbv_candidates.vn = nbv_candidates.vert.size();
+  }
+
+  sem >> str;
+  if (str == "Candidate_Confidence")
+  {
+    sem >> num;
+    for (int i = 0; i < num; i++)
+    {
+      double sigma;
+      sem >> sigma;
+      nbv_candidates.vert[i].eigen_confidence = sigma;
     }
   }
 
