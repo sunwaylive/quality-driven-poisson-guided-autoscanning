@@ -91,7 +91,7 @@ public:
 	void     loadSkeletonFromSkel(QString fileName);
 	void     saveSkeletonAsSkel(QString fileName);
 
-  void saveFieldPoints();
+  void     saveFieldPoints(QString fileName);
 
 
 private:

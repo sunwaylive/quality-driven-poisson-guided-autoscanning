@@ -350,9 +350,7 @@ NBV::propagate()
           deltaZ = z / length;
 
           //int hit_stop_time = 0;
-          for (int k = 0; k <= max_steps; ++k)
-            //for (int k = 0; k <= 100000; ++k)
-            //while (1)        
+          for (int k = 0; k <= max_steps; ++k)     
           {
             n_indexX = n_indexX + deltaX;
             n_indexY = n_indexY + deltaY;
@@ -398,12 +396,16 @@ NBV::propagate()
               if (confidence_weight * iso_confidence > t.eigen_confidence)
               {
                 t.eigen_confidence = confidence_weight * iso_confidence;
+                t.N() = (v.P()-t.P()).Normalize();
+                t.remember_iso_index = v.m_index;
+                //t.N() = -v.N();
+                //t.m_index = v.m_index;
               }
             }
             else
             {
-              //t.eigen_confidence += coefficient1 * iso_confidence;
-              t.eigen_confidence += confidence_weight * 1.0;              
+              t.eigen_confidence += coefficient1 * iso_confidence;
+              //t.eigen_confidence += confidence_weight * 1.0;              
             }
 
             if (use_average_confidence)
@@ -786,13 +788,13 @@ void NBV::viewClustering()
   double cos_sigma = cos(sigma / 180.0 * 3.1415926);
   double sharpness_bandwidth = std::pow((std::max)(1e-8, 1 - cos_sigma), 2);
 
-  //GlobalFun::computeBallNeighbors(view_candidates, NULL, 
-  //                                radius, view_candidates->bbox);
-  GlobalFun::computeAnnNeigbhors(nbv_candidates->vert,
-    nbv_candidates->vert, 
-    15,
-    false,
-    "runViewCandidatesClustering");
+  GlobalFun::computeBallNeighbors(nbv_candidates, NULL, 
+                                  radius, nbv_candidates->bbox);
+  //GlobalFun::computeAnnNeigbhors(nbv_candidates->vert,
+  //  nbv_candidates->vert, 
+  //  15,
+  //  false,
+  //  "runViewCandidatesClustering");
 
   vector<CVertex> update_temp;
   for(int i = 0; i < nbv_candidates->vert.size(); i++)
@@ -841,8 +843,155 @@ void NBV::viewClustering()
 }
 
 
+double NBV::computeLocalScores(CVertex& view_t, CVertex& iso_v, 
+                               double& optimal_D, double& half_D2, double& sigma_threshold)
+{
+  double sum_weight = 0.0;
+  iso_v.neighbors.push_back(iso_v.m_index);
+  for(int i = 0; i < iso_v.neighbors.size(); i++)
+  {
+    int neighbor_index = iso_v.neighbors[i];
+    CVertex& t = iso_points->vert[neighbor_index];
+
+    Point3f diff = t.P() - view_t.P();
+    double dist2 = diff.SquaredNorm();
+    double dist = sqrt(dist2);
+    Point3f view_direction = diff.Normalize();
+
+    double w1 = exp(-(dist - optimal_D) * (dist - optimal_D) / half_D2);
+    double w2 = exp(-pow(1-iso_v.N()*view_direction, 2)/sigma_threshold);
+
+    sum_weight += w1 * w2 * (1-t.eigen_confidence);
+  }
+
+  return sum_weight;
+}
+
 void NBV::updateViewDirections()
 {
   cout << "NBV::updateViewDirections" << endl;
 
+  double radius = global_paraMgr.wLop.getDouble("CGrid Radius"); 
+  radius *= 3.0;
+
+  double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
+
+  double optimal_D = camera_max_dist / 2.0f;
+  double half_D = optimal_D / 2.0f; //wsh    
+  double half_D2 = half_D * half_D;
+  double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
+  double sigma_threshold = pow(max(1e-8, 1-cos(sigma/180.0*3.1415926)), 2);
+
+  double radius2 = radius * radius;
+  double iradius16 = -4/radius2;
+
+  GlobalFun::computeBallNeighbors(iso_points, NULL, 
+                                  radius, iso_points->bbox);
+
+  for (int i = 0; i < nbv_candidates->vert.size(); i++)
+  //for (int i = 0; i < 1; i++)  
+  {
+    CVertex& nbvc = nbv_candidates->vert[i];
+    int iso_index = nbvc.remember_iso_index;
+    if (iso_index < 0)
+    {
+      continue;
+    }
+
+    CVertex& iso_v = iso_points->vert[i];
+
+    float max_score = 0;
+    int best_iso_index = -1;
+
+    double v_score = computeLocalScores(nbvc, iso_v, optimal_D, half_D2, sigma_threshold);
+    max_score = v_score;
+    best_iso_index = iso_index;
+
+
+    for (int j = 0; j < iso_v.neighbors.size(); j++)
+    {
+      int neighbor_index = iso_v.neighbors[j];
+      if (neighbor_index == iso_v.m_index)
+      {
+        continue;
+      }
+      CVertex& t = iso_points->vert[neighbor_index];
+      
+      double t_score = computeLocalScores(nbvc, t, optimal_D, half_D2, sigma_threshold);
+
+      if (t_score > max_score)
+      {
+        max_score = t_score;
+        best_iso_index = neighbor_index;
+      }
+    }
+
+    Point3f best_direction_pos = iso_points->vert[best_iso_index];
+    nbvc.N() = (best_direction_pos - nbvc.P()).Normalize();
+    nbvc.remember_iso_index = best_iso_index;
+  }
+
 }
+
+//void NBV::updateViewDirections()
+//{
+//  cout << "NBV::updateViewDirections" << endl;
+//
+//  double radius = global_paraMgr.wLop.getDouble("CGrid Radius"); 
+//  radius *= 3.0;
+//
+//  double radius2 = radius * radius;
+//  double iradius16 = -4/radius2;
+//
+//  GlobalFun::computeBallNeighbors(iso_points, NULL, 
+//                                  radius, iso_points->bbox);
+//
+//  for (int i = 0; i < nbv_candidates->vert.size(); i++)
+//  {
+//    CVertex& nbvc = nbv_candidates->vert[i];
+//    int iso_index = nbvc.remember_iso_index;
+//    if (iso_index < 0)
+//    {
+//      continue;
+//    }
+//
+//    CVertex& v = iso_points->vert[i];
+//
+//    float mini_sum_confidence = GlobalFun::getDoubleMAXIMUM();
+//    int best_iso_index = -1;
+//    float sum_confidence = 0.0;
+//    for (int j = 0; j < v.neighbors.size(); j++)
+//    {
+//      int neighbor_index = v.neighbors[j];
+//      CVertex& t = iso_points->vert[neighbor_index];
+//      sum_confidence += t.eigen_confidence;
+//    }
+//    mini_sum_confidence = sum_confidence;
+//    best_iso_index = iso_index;
+//
+//
+//    for (int j = 0; j < v.neighbors.size(); j++)
+//    {
+//      int neighbor_index = v.neighbors[j];
+//      CVertex& t = iso_points->vert[neighbor_index];
+//      float neighbor_sum_confidence = 0.;
+//
+//      for (int k = 0; k < t.neighbors.size(); k++)
+//      {
+//        int neighbor_neighbor_index = t.neighbors[k];
+//        CVertex& u = iso_points->vert[neighbor_neighbor_index];
+//        neighbor_sum_confidence += u.eigen_confidence;
+//      }
+//
+//      if (neighbor_sum_confidence < mini_sum_confidence)
+//      {
+//        mini_sum_confidence = neighbor_sum_confidence;
+//        best_iso_index = neighbor_index;
+//      }
+//    }
+//
+//    Point3f best_direction_pos = iso_points->vert[best_iso_index];
+//    nbvc.N() = (best_direction_pos - nbvc.P()).Normalize();
+//  }
+//
+//}
