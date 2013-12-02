@@ -42,11 +42,12 @@ private slots:
   void showSelectedScannedMesh(QModelIndex index);
   void mergeScannedMeshWithOriginal();
   void getCameraHorizonDist(double _val);
-	void getCameraVerticalDist(double _val);
+  void getCameraVerticalDist(double _val);
   void getCameraMaxDist(double _val);
   void getCameraDistToModel(double _val);
   void getGridResolution(double _val);
   void getMaxRaySteps(double _val);
+  void getIsoBottomDelta(double _val);
   void buildGrid();
   void propagate();
   void propagateOnePoint();
@@ -54,6 +55,7 @@ private slots:
   void extractViewCandidates();
   void extractViewIntoBins();
   void runViewClustering();
+  void runSetIsoBottomConfidence();
   void runUpdateViewDirections();
 
   void runSetupInitialScanns();

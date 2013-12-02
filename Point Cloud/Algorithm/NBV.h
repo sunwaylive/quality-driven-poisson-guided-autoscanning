@@ -32,6 +32,7 @@ private:
   void viewExtraction();
   void viewExtractionIntoBins();
   void viewClustering();
+  void setIsoBottomConfidence();
   void updateViewDirections();
 
   void normalizeConfidence(vector<CVertex>& vertexes, float delta);
@@ -39,8 +40,6 @@ private:
   int      round(double x);
   quadrant getQuadrantIdx(double a, double b); //two parameters deciding the quadrant
   void     setGridUnHit(vector<int>& hit_grids_idx);
-  vector<float> confidence_weight_sum;
-
   double computeLocalScores(CVertex& view_t, CVertex& iso_v, 
                            double& optimal_D, double& half_D2, double& sigma_threshold);
 
@@ -61,6 +60,6 @@ private:
   int                   y_max;
   int                   z_max;
   std::vector<NBVGrid>  *all_nbv_grids; //grids in all the space
-
-  static int       view_bins_each_axis;
+  vector<float>         confidence_weight_sum;
+  static int            view_bins_each_axis;
 };

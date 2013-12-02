@@ -44,6 +44,8 @@ void CameraParaDlg::initConnects()
   connect(ui->use_average_confidence,SIGNAL(clicked(bool)),this,SLOT(useAverageConfidence(bool)));
   connect(ui->use_nbv_test1, SIGNAL(clicked(bool)), this, SLOT(useNbvTest1(bool)));
   connect(ui->use_max_propagation, SIGNAL(clicked(bool)), this, SLOT(useMaxConfidencePropagation(bool)));
+  connect(ui->doubleSpinBox_bottom_delta, SIGNAL(valueChanged(double)), this, SLOT(getIsoBottomDelta(double)));
+  connect(ui->pushButton_set_iso_bottom_confidence, SIGNAL(clicked()), this, SLOT(runSetIsoBottomConfidence()));
   connect(ui->update_view_directions, SIGNAL(clicked()), this, SLOT(runUpdateViewDirections()));
 
   connect(ui->pushButton_setup_initial_scans, SIGNAL(clicked()), this, SLOT(runSetupInitialScanns()));
@@ -360,6 +362,11 @@ void CameraParaDlg::getMaxRaySteps(double _val)
   global_paraMgr.nbv.setValue("Max Ray Steps Para", DoubleValue(_val));
 }
 
+void CameraParaDlg::getIsoBottomDelta(double _val)
+{
+  global_paraMgr.nbv.setValue("Iso Bottom Delta", DoubleValue(_val));
+}
+
 void
 CameraParaDlg::buildGrid()
 {
@@ -415,6 +422,13 @@ void CameraParaDlg::runViewClustering()
   global_paraMgr.nbv.setValue("Run Viewing Clustering", BoolValue(true));
   area->runNBV();
   global_paraMgr.nbv.setValue("Run Viewing Clustering", BoolValue(false));
+}
+
+void CameraParaDlg::runSetIsoBottomConfidence()
+{
+  global_paraMgr.nbv.setValue("Run Set Iso Bottom Confidence", BoolValue(true));
+  area->runNBV();
+  global_paraMgr.nbv.setValue("Run Set Iso Bottom Confidence", BoolValue(false));
 }
 
 void CameraParaDlg::runUpdateViewDirections()

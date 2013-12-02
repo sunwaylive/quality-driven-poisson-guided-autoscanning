@@ -60,6 +60,11 @@ NBV::run()
     runOneKeyNBV();
   }
 
+  if (para->getBool("Run Set Iso Bottom Confidence"))
+  {
+    setIsoBottomConfidence();
+  }
+
   if (para->getBool("Run Update View Directions"))
   {
     updateViewDirections();
@@ -865,6 +870,26 @@ double NBV::computeLocalScores(CVertex& view_t, CVertex& iso_v,
   }
 
   return sum_weight;
+}
+
+void NBV::setIsoBottomConfidence()
+{
+	if (iso_points == NULL) 
+	{
+		cout<<"iso_points empty!"<<endl;
+		return;
+	}
+
+	Point3f bbox_min = iso_points->bbox.min;
+	double bottom_delta = global_paraMgr.nbv.getDouble("Iso Bottom Delta");
+	for (int i = 0; i < iso_points->vert.size(); ++i)
+	{
+		CVertex &v = iso_points->vert[i];
+		if (v.P().X() < bbox_min.X() + bottom_delta)
+		{
+			v.eigen_confidence = 1.0f;
+		}
+	}
 }
 
 void NBV::updateViewDirections()

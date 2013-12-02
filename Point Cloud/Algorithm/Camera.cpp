@@ -193,7 +193,7 @@ vcc::Camera::runOneKeyNewScan()
 
 	//merge
 	vector<CMesh*>::iterator it_scan_result = scanned_results->begin();
-	for (; it_scan_result != scanned_results->end(); ++it)
+	for (; it_scan_result != scanned_results->end(); ++it_scan_result)
 	{
 		CMesh *r = *it_scan_result;
 		for (int i = 0; i < r->vert.size(); ++i)
