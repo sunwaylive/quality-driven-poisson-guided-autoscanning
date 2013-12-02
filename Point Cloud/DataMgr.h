@@ -106,8 +106,8 @@ public:
   CMesh                  iso_points;
   CMesh                  field_points;
   CMesh                  camera_model;
-  std::vector<NBVGrid>   all_nbv_grids;
-  CMesh                  all_nbv_grid_centers;
+  std::vector<NBVGrid>   view_grids;
+  CMesh                  view_grid_points;
   CMesh                  nbv_candidates;
   Point3f                camera_pos;
   Point3f                camera_direction;
