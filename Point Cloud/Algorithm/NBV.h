@@ -34,6 +34,9 @@ private:
   void viewClustering();
   void updateViewDirections();
 
+
+
+
   void normalizeConfidence(vector<CVertex>& vertexes, float delta);
   double   getAbsMax(double x, double y, double z);
   int      round(double x);

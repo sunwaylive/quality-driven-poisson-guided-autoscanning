@@ -246,7 +246,7 @@ void GLArea::paintGL()
 		{
 			if (para->getBool("Show NBV Candidates"))
 			{
-				if (!dataMgr.isNBVGridsEmpty())
+				if (!dataMgr.isNBVCandidatesEmpty())
 				{
 					glDrawer.draw(GLDrawer::NORMAL, dataMgr.getNbvCandidates());
 				}
