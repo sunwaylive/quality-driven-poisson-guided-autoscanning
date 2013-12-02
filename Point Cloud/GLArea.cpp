@@ -1448,6 +1448,8 @@ void GLArea::saveView(QString fileName)
 	//outfile << global_paraMgr.skeleton.getDouble("Branch Search Max Dist Yellow") << endl;
 	//outfile << global_paraMgr.skeleton.getDouble("Branches Merge Max Dist Orange") << endl;
 
+  outfile << -1 << " " << -1 << " " << -1 << " " << -1 << endl;
+
 	outfile << global_paraMgr.wLop.getDouble("Repulsion Mu") << endl;
 	outfile << global_paraMgr.wLop.getDouble("Repulsion Mu2") << endl;
 
