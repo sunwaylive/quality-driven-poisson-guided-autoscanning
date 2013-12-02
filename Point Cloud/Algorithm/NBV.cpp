@@ -831,33 +831,48 @@ void NBV::viewClustering()
 double NBV::computeLocalScores(CVertex& view_t, CVertex& iso_v, 
                                double& optimal_D, double& half_D2, double& sigma_threshold)
 {
+  //return (1.0-iso_v.eigen_confidence);
+
   double sum_weight = 0.0;
-  iso_v.neighbors.push_back(iso_v.m_index);
+  //iso_v.neighbors.push_back(iso_v.m_index);
+  double max_weight = 0.0;
+
   for(int i = 0; i < iso_v.neighbors.size(); i++)
   {
     int neighbor_index = iso_v.neighbors[i];
     CVertex& t = iso_points->vert[neighbor_index];
 
-    Point3f diff = t.P() - view_t.P();
+    Point3f diff = view_t.P()-t.P();
     double dist2 = diff.SquaredNorm();
     double dist = sqrt(dist2);
     Point3f view_direction = diff.Normalize();
 
-    double w1 = exp(-(dist - optimal_D) * (dist - optimal_D) / half_D2);
-    double w2 = exp(-pow(1-iso_v.N()*view_direction, 2)/sigma_threshold);
-
-    sum_weight += w1 * w2 * (1-t.eigen_confidence);
+    //double w1 = exp(-(dist - optimal_D) * (dist - optimal_D) / half_D2);
+    double w1 = 1.0;    
+    //double w2 = exp(-pow(1-t.N()*view_direction, 2)/sigma_threshold);
+    double w2 = 1.0;
+    double weight = w1 * w2 * (1.0-t.eigen_confidence); 
+    sum_weight += weight;
+    if (weight > max_weight)
+    {
+      max_weight = weight;
+    }
   }
 
   return sum_weight;
+  //return sum_weight / iso_v.neighbors.size();
+  //return max_weight;
+
 }
 
 void NBV::updateViewDirections()
 {
   cout << "NBV::updateViewDirections" << endl;
+  normalizeConfidence(iso_points->vert, 0.0);
 
   double radius = global_paraMgr.wLop.getDouble("CGrid Radius"); 
-  radius *= 3.0;
+  radius *= 2.0;
+  //double radius = 0.3;
 
   double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
 
@@ -872,9 +887,15 @@ void NBV::updateViewDirections()
 
   GlobalFun::computeBallNeighbors(iso_points, NULL, 
                                   radius, iso_points->bbox);
+  for (int i = 0; i < iso_points->vert.size(); i++)
+  {
+    CVertex& v = iso_points->vert[i];
+    v.neighbors.push_back(v.m_index);
+    v.m_index = i;
+  }
 
   for (int i = 0; i < nbv_candidates->vert.size(); i++)
-  //for (int i = 0; i < 1; i++)  
+  //for (int i = 0; i < 3; i++)  
   {
     CVertex& nbvc = nbv_candidates->vert[i];
     int iso_index = nbvc.remember_iso_index;
@@ -883,23 +904,20 @@ void NBV::updateViewDirections()
       continue;
     }
 
-    CVertex& iso_v = iso_points->vert[i];
+    CVertex& iso_v = iso_points->vert[iso_index];
 
-    float max_score = 0;
-    int best_iso_index = -1;
+    float max_score = 0.;
+    int best_iso_index = -1.;
 
-    double v_score = computeLocalScores(nbvc, iso_v, optimal_D, half_D2, sigma_threshold);
-    max_score = v_score;
-    best_iso_index = iso_index;
+    //double v_score = computeLocalScores(nbvc, iso_v, optimal_D, half_D2, sigma_threshold);
+    //max_score = v_score;
+    //best_iso_index = iso_index;
 
 
     for (int j = 0; j < iso_v.neighbors.size(); j++)
     {
       int neighbor_index = iso_v.neighbors[j];
-      if (neighbor_index == iso_v.m_index)
-      {
-        continue;
-      }
+
       CVertex& t = iso_points->vert[neighbor_index];
       
       double t_score = computeLocalScores(nbvc, t, optimal_D, half_D2, sigma_threshold);
@@ -911,7 +929,8 @@ void NBV::updateViewDirections()
       }
     }
 
-    Point3f best_direction_pos = iso_points->vert[best_iso_index];
+    cout << "Max scores:  " << max_score << endl;
+    Point3f best_direction_pos = iso_points->vert[best_iso_index].P();
     nbvc.N() = (best_direction_pos - nbvc.P()).Normalize();
     nbvc.remember_iso_index = best_iso_index;
   }
