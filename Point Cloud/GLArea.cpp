@@ -623,7 +623,11 @@ void GLArea::loadDefaultModel()
 
 	//dataMgr.loadSkeletonFromSkel("yoga0.skel");
 	//dataMgr.loadSkeletonFromSkel("wlop2 + iso.skel");
-  dataMgr.loadSkeletonFromSkel("default.skel");
+  //dataMgr.loadSkeletonFromSkel("default.skel");
+
+  dataMgr.loadSkeletonFromSkel("cube3.skel");
+
+  
 
 	//dataMgr.loadPlyToModel("model.ply"); 
 	//dataMgr.loadPlyToOriginal("model.ply");
@@ -1410,6 +1414,7 @@ void GLArea::saveView(QString fileName)
 
 	outfile << global_paraMgr.data.getDouble("CGrid Radius") << endl;
 
+  outfile << -1 << " " << -1 << " " << -1 << endl;	
 
 	//outfile << cut_pos[0] << " " << cut_pos[1] << " " << cut_pos[2] << endl;	
 	outfile << global_paraMgr.drawer.getDouble("Sample Dot Size") << endl;
@@ -1443,6 +1448,8 @@ void GLArea::saveView(QString fileName)
 	//outfile << global_paraMgr.skeleton.getDouble("Branch Search Max Dist Yellow") << endl;
 	//outfile << global_paraMgr.skeleton.getDouble("Branches Merge Max Dist Orange") << endl;
 
+  outfile << -1 << " " << -1 << " " << -1 << " " << -1 << endl;
+
 	outfile << global_paraMgr.wLop.getDouble("Repulsion Mu") << endl;
 	outfile << global_paraMgr.wLop.getDouble("Repulsion Mu2") << endl;
 
@@ -1461,7 +1468,7 @@ void GLArea::saveView(QString fileName)
 		outfile << global_paraMgr.skeleton.getDouble("CGrid Radius") << endl;
 	}
 
-	outfile << global_paraMgr.glarea.getDouble("Radius Ball Transparency");
+	outfile << global_paraMgr.glarea.getDouble("Radius Ball Transparency") <<endl;
 
 	outfile << global_paraMgr.drawer.getDouble("ISO Dot Size") << endl;
 
@@ -1476,7 +1483,8 @@ void GLArea::saveView(QString fileName)
 
 void GLArea::loadView(QString fileName)
 {
-	ifstream infile(fileName.toStdString().c_str());
+
+  ifstream infile(fileName.toStdString().c_str());
 	double temp;
 
 	string viewStr;

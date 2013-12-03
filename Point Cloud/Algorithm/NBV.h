@@ -52,7 +52,7 @@ private:
   CMesh                 *model;
   CMesh                 *original;
   CMesh                 *iso_points;
-  CMesh                 *all_nbv_grid_centers;
+  CMesh                 *view_grid_points;
   CMesh                 *nbv_candidates;
   vector<ScanCandidate> *scan_candidates;
   CMesh                 *field_points;
@@ -62,7 +62,7 @@ private:
   int                   x_max; //max index num of x-axis 
   int                   y_max;
   int                   z_max;
-  std::vector<NBVGrid>  *all_nbv_grids; //grids in all the space
+  std::vector<NBVGrid>  *view_grids; //grids in all the space
   vector<float>         confidence_weight_sum;
   static int            view_bins_each_axis;
 };

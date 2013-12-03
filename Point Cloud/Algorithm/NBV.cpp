@@ -119,8 +119,8 @@ NBV::setInput(DataMgr *pData)
     cout<<"ERROR: NBV::setInput empty!"<<endl;
   }
 
-  all_nbv_grid_centers = pData->getAllNBVGridCenters();
-  all_nbv_grids = pData->getAllNBVGrids();
+  view_grid_points = pData->getAllNBVGridCenters();
+  view_grids = pData->getAllNBVGrids();
   iso_points = pData->getCurrentIsoPoints();
   nbv_candidates = pData->getNbvCandidates();
   scan_candidates = pData->getAllScanCandidates();
@@ -158,8 +158,8 @@ NBV::buildGrid()
 
    //preallocate the memory
    int max_index = x_max * y_max * z_max;
-   all_nbv_grid_centers->vert.resize(max_index);
-   all_nbv_grids->resize(max_index);
+   view_grid_points->vert.resize(max_index);
+   view_grids->resize(max_index);
    //increase from whole_space_box_min
    for (int i = 0; i < x_max; ++i)
    {
@@ -170,7 +170,7 @@ NBV::buildGrid()
          //add the grid
          int index = i * y_max * z_max + j * z_max + k;
          NBVGrid grid(i, j, k);
-         (*all_nbv_grids)[index] = grid;
+         (*view_grids)[index] = grid;
          //add the center point of the grid
          CVertex t;
          t.P()[0] = whole_space_box_min.X() + i * grid_resolution;
@@ -178,12 +178,12 @@ NBV::buildGrid()
          t.P()[2] = whole_space_box_min.Z() + k * grid_resolution;
          t.m_index = index;
          t.is_grid_center = true;
-         all_nbv_grid_centers->vert[index] = t;
-         all_nbv_grid_centers->bbox.Add(t.P());
+         view_grid_points->vert[index] = t;
+         view_grid_points->bbox.Add(t.P());
        }
      }
    }
-   all_nbv_grid_centers->vn = max_index;
+   view_grid_points->vn = max_index;
    cout << "all: " << max_index << endl;
    cout << "x_max: " << x_max << endl;
    cout << "y_max: " << y_max << endl;
@@ -199,37 +199,37 @@ NBV::buildGrid()
 
    if (test_field_segment)
    {
-     GlobalFun::computeAnnNeigbhors(field_points->vert, all_nbv_grid_centers->vert, 1, false, "runGridNearestIsoPoint");
+     GlobalFun::computeAnnNeigbhors(field_points->vert, view_grid_points->vert, 1, false, "runGridNearestIsoPoint");
    }
    else
    {
-     GlobalFun::computeAnnNeigbhors(iso_points->vert, all_nbv_grid_centers->vert, 1, false, "runGridNearestIsoPoint");
+     GlobalFun::computeAnnNeigbhors(iso_points->vert, view_grid_points->vert, 1, false, "runGridNearestIsoPoint");
    }
    
-   for (int i = 0; i < all_nbv_grid_centers->vert.size(); ++i)
+   for (int i = 0; i < view_grid_points->vert.size(); ++i)
    {
-     Point3f &t = all_nbv_grid_centers->vert[i].P();
-     if (!all_nbv_grid_centers->vert[i].neighbors.empty())
+     Point3f &t = view_grid_points->vert[i].P();
+     if (!view_grid_points->vert[i].neighbors.empty())
      {
        if (test_field_segment)
        {
-         CVertex &nearest = field_points->vert[all_nbv_grid_centers->vert[i].neighbors[0]];
+         CVertex &nearest = field_points->vert[view_grid_points->vert[i].neighbors[0]];
          if (nearest.eigen_confidence > 0)
          {
-           all_nbv_grid_centers->vert[i].is_ray_stop = true; 
+           view_grid_points->vert[i].is_ray_stop = true; 
          }
        }
        else
        {
-         CVertex &nearest = iso_points->vert[all_nbv_grid_centers->vert[i].neighbors[0]];
+         CVertex &nearest = iso_points->vert[view_grid_points->vert[i].neighbors[0]];
          Point3f &v = nearest.P();
          double dist = GlobalFun::computeEulerDist(t, v);
          Point3f n = nearest.N();
-         Point3f l = all_nbv_grid_centers->vert[i].P() - nearest.P();
+         Point3f l = view_grid_points->vert[i].P() - nearest.P();
          if ((n * l < 0.0f && dist < grid_resolution * 2)
            /*|| (test_other_segment && dist < grid_resolution / 2)*/) //wsh change
          {
-           all_nbv_grid_centers->vert[i].is_ray_stop = true; 
+           view_grid_points->vert[i].is_ray_stop = true; 
          }  
        }
      }
@@ -237,9 +237,9 @@ NBV::buildGrid()
 
    if (use_grid_segment)
    {
-     for (int i = 0; i < all_nbv_grid_centers->vert.size(); ++i)
+     for (int i = 0; i < view_grid_points->vert.size(); ++i)
      {
-       CVertex &t = all_nbv_grid_centers->vert[i];
+       CVertex &t = view_grid_points->vert[i];
 
        if (!t.is_ray_stop)
        {
@@ -257,11 +257,11 @@ NBV::propagate()
   bool use_propagate_one_point = para->getBool("Run Propagate One Point");
   bool use_max_propagation = para->getBool("Use Max Propagation");
 
-  if (all_nbv_grid_centers)
+  if (view_grid_points)
   {
-    for (int i = 0; i < all_nbv_grid_centers->vert.size(); i++)
+    for (int i = 0; i < view_grid_points->vert.size(); i++)
     {
-      CVertex& t = all_nbv_grid_centers->vert[i];
+      CVertex& t = view_grid_points->vert[i];
       t.eigen_confidence = 0.0;
       t.N() = Point3f(0., 0., 0.);
       t.weight_sum = 0.0;
@@ -274,7 +274,7 @@ NBV::propagate()
 
   if (use_average_confidence)
   {
-    confidence_weight_sum.assign(all_nbv_grid_centers->vert.size(), 0.0);
+    confidence_weight_sum.assign(view_grid_points->vert.size(), 0.0);
   }
   normalizeConfidence(iso_points->vert, 0);
 
@@ -362,24 +362,24 @@ NBV::propagate()
             n_indexZ = n_indexZ + deltaZ;
             int index = round(n_indexX) * y_max * z_max + round(n_indexY) * z_max + round(n_indexZ);
 
-            if (index >= all_nbv_grid_centers->vert.size())
+            if (index >= view_grid_points->vert.size())
             {
               break;
             }
             //if the direction is into the model, or has been hit, then stop tracing
-            if (all_nbv_grid_centers->vert[index].is_ray_stop)
+            if (view_grid_points->vert[index].is_ray_stop)
             {
               break;
             }
 
-            if (all_nbv_grid_centers->vert[index].is_ray_hit)  continue;
+            if (view_grid_points->vert[index].is_ray_hit)  continue;
 
             //if the grid get first hit 
-            all_nbv_grid_centers->vert[index].is_ray_hit = true;
+            view_grid_points->vert[index].is_ray_hit = true;
             //do what we need in the next grid
-            NBVGrid &g = (*all_nbv_grids)[index];
+            NBVGrid &g = (*view_grids)[index];
             //1. set the confidence of the grid center
-            CVertex& t = all_nbv_grid_centers->vert[index];
+            CVertex& t = view_grid_points->vert[index];
             //double dist = GlobalFun::computeEulerDist(v.P(), t.P());
             Point3f diff = t.P() - v.P();
             double dist2 = diff.SquaredNorm();
@@ -511,24 +511,24 @@ NBV::propagate()
           n_indexZ = n_indexZ + deltaZ;
           int index = round(n_indexX) * y_max * z_max + round(n_indexY) * z_max + round(n_indexZ);
 
-          if (index >= all_nbv_grid_centers->vert.size())
+          if (index >= view_grid_points->vert.size())
           {
             break;
           }
           //if the direction is into the model, or has been hit, then stop tracing
-          if (all_nbv_grid_centers->vert[index].is_ray_stop)
+          if (view_grid_points->vert[index].is_ray_stop)
           {
             break;
           }
 
-          if (all_nbv_grid_centers->vert[index].is_ray_hit)  continue;
+          if (view_grid_points->vert[index].is_ray_hit)  continue;
 
           //if the grid get first hit 
-          all_nbv_grid_centers->vert[index].is_ray_hit = true;
+          view_grid_points->vert[index].is_ray_hit = true;
           //do what we need in the next grid
-          NBVGrid &g = (*all_nbv_grids)[index];
+          NBVGrid &g = (*view_grids)[index];
           //1. set the confidence of the grid center
-          CVertex& t = all_nbv_grid_centers->vert[index];
+          CVertex& t = view_grid_points->vert[index];
           //double dist = GlobalFun::computeEulerDist(v.P(), t.P());
           Point3f diff = t.P() - v.P();
           double dist2 = diff.SquaredNorm();
@@ -594,9 +594,9 @@ NBV::propagate()
 
   if (use_average_confidence)
   {
-    for (int i = 0; i < all_nbv_grid_centers->vert.size(); i++)
+    for (int i = 0; i < view_grid_points->vert.size(); i++)
     {
-      CVertex& t = all_nbv_grid_centers->vert[i];
+      CVertex& t = view_grid_points->vert[i];
       //if (t.weight_sum > 1e-10)
       //{
       //  t.N() /= -t.weight_sum;
@@ -617,7 +617,7 @@ NBV::propagate()
     }
   }
 
-  normalizeConfidence(all_nbv_grid_centers->vert, 0.);
+  normalizeConfidence(view_grid_points->vert, 0.);
 }
 
 void NBV::normalizeConfidence(vector<CVertex>& vertexes, float delta)
@@ -677,7 +677,7 @@ NBV::setGridUnHit(vector<int>& hit_grids_idx)
   vector<int>::iterator it;
   for (it = hit_grids_idx.begin(); it != hit_grids_idx.end(); ++it)
   {
-    all_nbv_grid_centers->vert[*it].is_ray_hit = false;
+    view_grid_points->vert[*it].is_ray_hit = false;
   }
 }
 
@@ -688,9 +688,9 @@ NBV::viewExtraction()
   nbv_candidates->vert.clear();
 
   int index = 0;
-  for (int i = 0; i < all_nbv_grid_centers->vert.size(); i++)
+  for (int i = 0; i < view_grid_points->vert.size(); i++)
   {
-    CVertex& v = all_nbv_grid_centers->vert[i];
+    CVertex& v = view_grid_points->vert[i];
     if (v.eigen_confidence > nbv_confidence_value)
     {
       v.m_index = index++;
@@ -730,9 +730,9 @@ NBV::viewExtractionIntoBins()
   
   //process each iso_point
   int index = 0;
-  for (int i = 0; i < all_nbv_grid_centers->vert.size(); ++i)
+  for (int i = 0; i < view_grid_points->vert.size(); ++i)
   {
-    CVertex &v = all_nbv_grid_centers->vert[i];
+    CVertex &v = view_grid_points->vert[i];
     
     //get the x,y,z index of each iso_points
     int t_indexX = static_cast<int>( floor((v.P()[0] - whole_space_box_min.X()) / bin_length_x ));
@@ -760,7 +760,7 @@ NBV::viewExtractionIntoBins()
     {
       for (int k = 0; k < NBV::view_bins_each_axis; ++k)
       {
-        nbv_candidates->vert.push_back(all_nbv_grid_centers->vert[view_bins[i][j][k]]);
+        nbv_candidates->vert.push_back(view_grid_points->vert[view_bins[i][j][k]]);
       }
     }
   }
@@ -851,25 +851,41 @@ void NBV::viewClustering()
 double NBV::computeLocalScores(CVertex& view_t, CVertex& iso_v, 
                                double& optimal_D, double& half_D2, double& sigma_threshold)
 {
+  //return (1.0-iso_v.eigen_confidence);
+
   double sum_weight = 0.0;
-  iso_v.neighbors.push_back(iso_v.m_index);
+  //iso_v.neighbors.push_back(iso_v.m_index);
+  double max_confidence = 0.0;
+
   for(int i = 0; i < iso_v.neighbors.size(); i++)
   {
     int neighbor_index = iso_v.neighbors[i];
     CVertex& t = iso_points->vert[neighbor_index];
 
-    Point3f diff = t.P() - view_t.P();
+    Point3f diff = view_t.P()-t.P();
     double dist2 = diff.SquaredNorm();
     double dist = sqrt(dist2);
     Point3f view_direction = diff.Normalize();
 
     double w1 = exp(-(dist - optimal_D) * (dist - optimal_D) / half_D2);
-    double w2 = exp(-pow(1-iso_v.N()*view_direction, 2)/sigma_threshold);
-
-    sum_weight += w1 * w2 * (1-t.eigen_confidence);
+    //double w1 = 1.0;    
+    double w2 = exp(-pow(1-t.N()*view_direction, 2)/sigma_threshold);
+    //double w2 = 1.0;
+    double weight = w1 * w2 * (1.0-t.eigen_confidence); 
+    sum_weight += weight;
+    if (t.eigen_confidence < max_confidence)
+    {
+      max_confidence = t.eigen_confidence;
+    }
   }
 
+  //return sum_weight * max_confidence;
+
   return sum_weight;
+
+  //return sum_weight / iso_v.neighbors.size();
+  //return max_weight;
+
 }
 
 void NBV::setIsoBottomConfidence()
@@ -895,9 +911,11 @@ void NBV::setIsoBottomConfidence()
 void NBV::updateViewDirections()
 {
   cout << "NBV::updateViewDirections" << endl;
+  normalizeConfidence(iso_points->vert, 0.0);
 
   double radius = global_paraMgr.wLop.getDouble("CGrid Radius"); 
-  radius *= 3.0;
+  radius *= 2.0;
+  //double radius = 0.3;
 
   double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
 
@@ -912,9 +930,15 @@ void NBV::updateViewDirections()
 
   GlobalFun::computeBallNeighbors(iso_points, NULL, 
                                   radius, iso_points->bbox);
+  for (int i = 0; i < iso_points->vert.size(); i++)
+  {
+    CVertex& v = iso_points->vert[i];
+    v.neighbors.push_back(v.m_index);
+    v.m_index = i;
+  }
 
   for (int i = 0; i < nbv_candidates->vert.size(); i++)
-  //for (int i = 0; i < 1; i++)  
+  //for (int i = 0; i < 3; i++)  
   {
     CVertex& nbvc = nbv_candidates->vert[i];
     int iso_index = nbvc.remember_iso_index;
@@ -923,23 +947,20 @@ void NBV::updateViewDirections()
       continue;
     }
 
-    CVertex& iso_v = iso_points->vert[i];
+    CVertex& iso_v = iso_points->vert[iso_index];
 
-    float max_score = 0;
-    int best_iso_index = -1;
+    float max_score = 0.;
+    int best_iso_index = -1.;
 
-    double v_score = computeLocalScores(nbvc, iso_v, optimal_D, half_D2, sigma_threshold);
-    max_score = v_score;
-    best_iso_index = iso_index;
+    //double v_score = computeLocalScores(nbvc, iso_v, optimal_D, half_D2, sigma_threshold);
+    //max_score = v_score;
+    //best_iso_index = iso_index;
 
 
     for (int j = 0; j < iso_v.neighbors.size(); j++)
     {
       int neighbor_index = iso_v.neighbors[j];
-      if (neighbor_index == iso_v.m_index)
-      {
-        continue;
-      }
+
       CVertex& t = iso_points->vert[neighbor_index];
       
       double t_score = computeLocalScores(nbvc, t, optimal_D, half_D2, sigma_threshold);
@@ -951,7 +972,8 @@ void NBV::updateViewDirections()
       }
     }
 
-    Point3f best_direction_pos = iso_points->vert[best_iso_index];
+    cout << "Max scores:  " << max_score << endl;
+    Point3f best_direction_pos = iso_points->vert[best_iso_index].P();
     nbvc.N() = (best_direction_pos - nbvc.P()).Normalize();
     nbvc.remember_iso_index = best_iso_index;
   }

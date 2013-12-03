@@ -628,7 +628,7 @@ void DataMgr::normalizeROSA_Mesh(CMesh& mesh)
     p -= box.min;
     p /= max_length;
 
-    p -= Point3f(0.5, .5, .5);
+    //p -= Point3f(0.5, .5, .5);
     //p *= 2.0;
 
     mesh.vert[i].N().Normalize(); 
@@ -930,6 +930,14 @@ void DataMgr::saveSkeletonAsSkel(QString fileName)
   {
     double sigma = nbv_candidates.vert[i].eigen_confidence;
     strStream << sigma << "	"; 
+  }
+  strStream << endl;
+
+  strStream << "Remember_ISO_Index " << nbv_candidates.vert.size() << endl;
+  for(int i = 0; i < nbv_candidates.vert.size(); i++)
+  {
+    int id = nbv_candidates.vert[i].remember_iso_index;
+    strStream << id << "	"; 
   }
   strStream << endl;
 
@@ -1312,6 +1320,18 @@ void DataMgr::loadSkeletonFromSkel(QString fileName)
   }
 
   sem >> str;
+  if (str == "Remember_ISO_Index")
+  {
+    sem >> num;
+    for (int i = 0; i < num; i++)
+    {
+      int id;
+      sem >> id;
+      nbv_candidates.vert[i].remember_iso_index = id;
+    }
+  }
+
+  sem >> str;
   /*if (str == "VN")
   {
   sem >> num;
@@ -1358,7 +1378,9 @@ void DataMgr::saveFieldPoints(QString fileName)
     cout<<" error ----- "<<endl;
 
 
-  for (int i = 0; i < field_points.vert.size(); i++)
+  //for (int i = 0; i < field_points.vert.size(); i++)
+  cout << view_grid_points.vert.size() << " grides" << endl;
+  for (int i = 0; i < view_grid_points.vert.size(); i++)  
   {
     CVertex& v = field_points.vert[i];
     float eigen_value = v.eigen_confidence * 255;
