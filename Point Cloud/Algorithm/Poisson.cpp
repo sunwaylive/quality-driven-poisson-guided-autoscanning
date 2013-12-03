@@ -1293,6 +1293,21 @@ void Poisson::runComputeIsoConfidence()
   //ofstream file2("confidence_2_gradient.txt");
   //ofstream file3("confidence_3_combine.txt");
 
+  if (para->getBool("Use Confidence 2"))
+  {
+
+  }
+
+  if (para->getBool("Use Confidence 2"))
+  {
+
+  }
+
+  if (para->getBool("Use Confidence 3"))
+  {
+
+  }
+
   if (para->getBool("Use Confidence 4"))
   {
     runLabelISO();
