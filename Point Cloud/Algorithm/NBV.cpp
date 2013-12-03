@@ -60,6 +60,11 @@ NBV::run()
     runOneKeyNBV();
   }
 
+  if (para->getBool("Run Set Iso Bottom Confidence"))
+  {
+    setIsoBottomConfidence();
+  }
+
   if (para->getBool("Run Update View Directions"))
   {
     updateViewDirections();
@@ -72,6 +77,20 @@ NBV::runOneKeyNBV()
   buildGrid();
   propagate();
   viewExtractionIntoBins();
+
+  //clear default scan_candidate
+  scan_candidates->clear();
+  //fix:for test, just scan the point who has the biggest confidence
+  int max_idx = 0;
+  float max_confidence = nbv_candidates->vert[0].eigen_confidence;
+  for (int i = 0; i < nbv_candidates->vert.size(); ++i)
+  {
+	  if (nbv_candidates->vert[i].eigen_confidence > max_confidence)
+		  max_idx = i;
+  }
+
+  ScanCandidate s = make_pair(nbv_candidates->vert[max_idx].P(), nbv_candidates->vert[max_idx].N());
+  scan_candidates->push_back(s);
 }
 
 void
@@ -104,6 +123,7 @@ NBV::setInput(DataMgr *pData)
   all_nbv_grids = pData->getAllNBVGrids();
   iso_points = pData->getCurrentIsoPoints();
   nbv_candidates = pData->getNbvCandidates();
+  scan_candidates = pData->getAllScanCandidates();
 }
 
 void
@@ -866,6 +886,26 @@ double NBV::computeLocalScores(CVertex& view_t, CVertex& iso_v,
   //return sum_weight / iso_v.neighbors.size();
   //return max_weight;
 
+}
+
+void NBV::setIsoBottomConfidence()
+{
+	if (iso_points == NULL) 
+	{
+		cout<<"iso_points empty!"<<endl;
+		return;
+	}
+
+	Point3f bbox_min = iso_points->bbox.min;
+	double bottom_delta = global_paraMgr.nbv.getDouble("Iso Bottom Delta");
+	for (int i = 0; i < iso_points->vert.size(); ++i)
+	{
+		CVertex &v = iso_points->vert[i];
+		if (v.P().X() < bbox_min.X() + bottom_delta)
+		{
+			v.eigen_confidence = 1.0f;
+		}
+	}
 }
 
 void NBV::updateViewDirections()

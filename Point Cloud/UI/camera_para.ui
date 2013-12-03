@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>264</width>
-    <height>704</height>
+    <width>285</width>
+    <height>908</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,10 +16,10 @@
   <widget class="QTabWidget" name="tabWidget">
    <property name="geometry">
     <rect>
-     <x>0</x>
+     <x>8</x>
      <y>1</y>
      <width>261</width>
-     <height>701</height>
+     <height>891</height>
     </rect>
    </property>
    <property name="currentIndex">
@@ -340,7 +340,7 @@
     <widget class="QGroupBox" name="groupBox_2">
      <property name="geometry">
       <rect>
-       <x>10</x>
+       <x>18</x>
        <y>10</y>
        <width>221</width>
        <height>171</height>
@@ -352,7 +352,7 @@
      <widget class="QPushButton" name="pushButton_build_grid">
       <property name="geometry">
        <rect>
-        <x>20</x>
+        <x>28</x>
         <y>20</y>
         <width>181</width>
         <height>31</height>
@@ -365,7 +365,7 @@
      <widget class="QPushButton" name="pushButton_propagate">
       <property name="geometry">
        <rect>
-        <x>20</x>
+        <x>28</x>
         <y>90</y>
         <width>181</width>
         <height>31</height>
@@ -378,7 +378,7 @@
      <widget class="QPushButton" name="pushButton_propagate_one">
       <property name="geometry">
        <rect>
-        <x>20</x>
+        <x>28</x>
         <y>130</y>
         <width>181</width>
         <height>31</height>
@@ -391,7 +391,7 @@
      <widget class="QPushButton" name="pushButton_grid_segment">
       <property name="geometry">
        <rect>
-        <x>20</x>
+        <x>28</x>
         <y>50</y>
         <width>181</width>
         <height>31</height>
@@ -405,7 +405,7 @@
     <widget class="QDoubleSpinBox" name="grid_resolution">
      <property name="geometry">
       <rect>
-       <x>159</x>
+       <x>167</x>
        <y>190</y>
        <width>62</width>
        <height>22</height>
@@ -427,7 +427,7 @@
     <widget class="QLabel" name="label_7">
      <property name="geometry">
       <rect>
-       <x>30</x>
+       <x>38</x>
        <y>190</y>
        <width>111</width>
        <height>16</height>
@@ -440,7 +440,7 @@
     <widget class="QCheckBox" name="use_other_inside_segment">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>28</x>
        <y>300</y>
        <width>201</width>
        <height>16</height>
@@ -453,7 +453,7 @@
     <widget class="QCheckBox" name="use_confidence_Separation">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>28</x>
        <y>470</y>
        <width>201</width>
        <height>16</height>
@@ -466,7 +466,7 @@
     <widget class="QDoubleSpinBox" name="max_ray_steps">
      <property name="geometry">
       <rect>
-       <x>160</x>
+       <x>168</x>
        <y>220</y>
        <width>62</width>
        <height>22</height>
@@ -488,7 +488,7 @@
     <widget class="QLabel" name="label_8">
      <property name="geometry">
       <rect>
-       <x>21</x>
+       <x>29</x>
        <y>220</y>
        <width>121</width>
        <height>20</height>
@@ -501,7 +501,7 @@
     <widget class="QCheckBox" name="use_average_confidence">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>28</x>
        <y>330</y>
        <width>201</width>
        <height>16</height>
@@ -514,7 +514,7 @@
     <widget class="QCheckBox" name="use_nbv_test1">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>28</x>
        <y>440</y>
        <width>201</width>
        <height>16</height>
@@ -527,7 +527,7 @@
     <widget class="QCheckBox" name="use_max_propagation">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>28</x>
        <y>360</y>
        <width>201</width>
        <height>16</height>
@@ -540,7 +540,7 @@
     <widget class="QPushButton" name="extract_view_candidates">
      <property name="geometry">
       <rect>
-       <x>30</x>
+       <x>38</x>
        <y>500</y>
        <width>181</width>
        <height>31</height>
@@ -553,7 +553,7 @@
     <widget class="QPushButton" name="cluster_view_candidates">
      <property name="geometry">
       <rect>
-       <x>30</x>
+       <x>38</x>
        <y>590</y>
        <width>181</width>
        <height>31</height>
@@ -566,7 +566,7 @@
     <widget class="QPushButton" name="pushButton_extract_views_into_bins">
      <property name="geometry">
       <rect>
-       <x>30</x>
+       <x>38</x>
        <y>540</y>
        <width>181</width>
        <height>31</height>
@@ -579,14 +579,56 @@
     <widget class="QPushButton" name="update_view_directions">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>630</y>
+       <x>40</x>
+       <y>710</y>
        <width>181</width>
        <height>31</height>
       </rect>
      </property>
      <property name="text">
       <string>Update View Directions</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_set_iso_bottom_confidence">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>667</y>
+       <width>181</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Set Iso Bottom Confidence</string>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="doubleSpinBox_bottom_delta">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>636</y>
+       <width>62</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="maximum">
+      <double>10.000000000000000</double>
+     </property>
+     <property name="singleStep">
+      <double>0.200000000000000</double>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_9">
+     <property name="geometry">
+      <rect>
+       <x>44</x>
+       <y>637</y>
+       <width>101</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Bottom Delta:</string>
      </property>
     </widget>
    </widget>

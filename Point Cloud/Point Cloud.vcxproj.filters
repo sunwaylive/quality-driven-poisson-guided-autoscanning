@@ -440,9 +440,6 @@
     <ClInclude Include="coordinateframe.h">
       <Filter>Helper</Filter>
     </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_camera_para.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="Poisson\BSplineData.h">
       <Filter>Poisson</Filter>
     </ClInclude>
@@ -472,6 +469,9 @@
     </ClInclude>
     <ClInclude Include="Poisson\MemoryUsage.h">
       <Filter>Poisson</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_camera_para.h">
+      <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
