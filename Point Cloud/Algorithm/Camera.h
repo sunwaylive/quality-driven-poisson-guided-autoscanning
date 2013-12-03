@@ -40,7 +40,7 @@ namespace vcc{
     void runInitialScan();
     void runNBVScan();
     void runVirtualScan();
-	void runOneKeyNewScan();
+	  void runOneKeyNewScan();
 
   public:
      void computeUpAndRight();
@@ -61,10 +61,11 @@ namespace vcc{
     Point3f                  up;
     Point3f                  right;
     double                   resolution;
-    double                   max_distance;
-    double                   min_distance;
-    double                   horizon_dist;  //total horizontal range
-    double                   vertical_dist; //total vertical range
+    double                   far_distance;
+    double                   near_distance;
+    double                   far_horizon_dist;  //far horizontal range
+    double                   far_vertical_dist;  //far vertical range
+    CameraParameter          camera_para;
   };
 
 }

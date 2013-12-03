@@ -491,19 +491,18 @@ void GLDrawer::drawNormal(const CVertex& v)
 	//glEnable(GL_LIGHTING);
 }
 
-//wei begin
 void GLDrawer::drawCamera(vcc::Camera& camera)
 {
 	//get the five control points of the cone
-	Point3f far_end = camera.pos + camera.direction * camera.max_distance;
-	Point3f top_right = far_end + camera.right * camera.horizon_dist / 2 
-		+ camera.up * camera.vertical_dist / 2;
-	Point3f top_left = far_end + camera.right * (-camera.horizon_dist) / 2
-		+ camera.up * camera.vertical_dist / 2; 
-	Point3f bottom_right = far_end + camera.right * camera.horizon_dist / 2
-		+ camera.up * (-camera.vertical_dist / 2);
-	Point3f bottom_left = far_end + camera.right * (-camera.horizon_dist / 2)
-		+ camera.up * (-camera.vertical_dist / 2);
+	Point3f far_end = camera.pos + camera.direction * camera.far_distance;
+	Point3f top_right = far_end + camera.right * camera.far_horizon_dist / 2 
+		+ camera.up * camera.far_vertical_dist / 2;
+	Point3f top_left = far_end + camera.right * (-camera.far_horizon_dist) / 2
+		+ camera.up * camera.far_vertical_dist / 2; 
+	Point3f bottom_right = far_end + camera.right * camera.far_horizon_dist / 2
+		+ camera.up * (-camera.far_vertical_dist / 2);
+	Point3f bottom_left = far_end + camera.right * (-camera.far_horizon_dist / 2)
+		+ camera.up * (-camera.far_vertical_dist / 2);
 
 	glBegin(GL_LINES);
 	glColor3f(1.0, 0.0, 0.0);
@@ -517,7 +516,6 @@ void GLDrawer::drawCamera(vcc::Camera& camera)
 	glVertex(bottom_right); glVertex(top_right);
 	glEnd();
 }
-//wei end
 
 void GLDrawer::drawPickPoint(CMesh* samples, vector<int>& pickList, bool bShow_as_dot)
 {
@@ -802,6 +800,44 @@ void GLDrawer::generateRandomColorList(int num)
 	}
 }
 
+void GLDrawer::drawGrid(const CMesh *cube_mesh, const int grid_num_each_edge = 3)
+{
+  Point3f cube_box_max = cube_mesh->bbox.max;
+  Point3f cube_box_min = cube_mesh->bbox.min;
+  double grid_length = (cube_box_max - cube_box_min).X() / grid_num_each_edge;
+  Point3f grid_diagonal = Point3f(grid_length, grid_length, grid_length);
+
+  for (int i = 0; i < grid_num_each_edge; ++i)
+  {
+    for (int j = 0; j < grid_num_each_edge; ++j)
+    {
+      for (int k = 0; k < grid_num_each_edge; ++k)
+      {
+        Point3f grid_min = cube_box_min + Point3f(i * grid_length, j * grid_length, k * grid_length);
+        Point3f grid_max = grid_min + grid_diagonal;
+        double min_x = grid_min.X(), min_y = grid_min.Y(), min_z = grid_min.Z();
+        double max_x = grid_max.X(), max_y = grid_max.Y(), max_z = grid_max.Z();
+        glBegin(GL_LINES);
+        glColor3f(1.0, 1.0, 0.0);
+        glVertex3f(min_x, min_y, min_z); glVertex3f(max_x, min_y, min_z);
+        glVertex3f(max_x, min_y, min_z); glVertex3f(max_x, min_y, max_z);
+        glVertex3f(max_x, min_y, max_z); glVertex3f(min_x, min_y, max_z);
+        glVertex3f(min_x, min_y, max_z); glVertex3f(min_x, min_y, min_z);
+
+        glVertex3f(min_x, max_y, min_z); glVertex3f(max_x, max_y, min_z);
+        glVertex3f(max_x, max_y, min_z); glVertex3f(max_x, max_y, max_z);
+        glVertex3f(max_x, max_y, max_z); glVertex3f(min_x, max_y, max_z);
+        glVertex3f(min_x, max_y, max_z); glVertex3f(min_x, max_y, min_z);
+
+        glVertex3f(min_x, min_y, min_z); glVertex3f(min_x, max_y, min_z);
+        glVertex3f(max_x, min_y, min_z); glVertex3f(max_x, max_y, min_z);
+        glVertex3f(max_x, min_y, max_z); glVertex3f(max_x, max_y, max_z);
+        glVertex3f(min_x, min_y, max_z); glVertex3f(min_x, max_y, max_z);
+        glEnd();
+      }
+    }
+  }
+}
 
 void GLDrawer::drawSlice(Slice& slice, double trans_val)
 {

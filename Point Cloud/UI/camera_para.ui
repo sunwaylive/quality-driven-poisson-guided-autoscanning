@@ -634,59 +634,91 @@
     <widget class="QGroupBox" name="groupBox_3">
      <property name="geometry">
       <rect>
-       <x>12</x>
+       <x>10</x>
        <y>10</y>
-       <width>221</width>
+       <width>241</width>
        <height>101</height>
       </rect>
      </property>
      <property name="title">
-      <string>Scanner parameters</string>
+      <string>Camera parameters</string>
      </property>
      <widget class="QLabel" name="label_11">
       <property name="geometry">
        <rect>
-        <x>50</x>
-        <y>20</y>
-        <width>91</width>
+        <x>12</x>
+        <y>21</y>
+        <width>111</width>
         <height>16</height>
        </rect>
       </property>
       <property name="text">
-       <string>max distance :</string>
+       <string>far distance(cm) :</string>
       </property>
      </widget>
-     <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+     <widget class="QDoubleSpinBox" name="doubleSpinBox_near_distance">
       <property name="geometry">
        <rect>
-        <x>150</x>
+        <x>175</x>
         <y>45</y>
         <width>62</width>
         <height>22</height>
        </rect>
       </property>
+      <property name="value">
+       <double>17.000000000000000</double>
+      </property>
      </widget>
-     <widget class="QDoubleSpinBox" name="doubleSpinBox">
+     <widget class="QDoubleSpinBox" name="doubleSpinBox_far_distance">
       <property name="geometry">
        <rect>
-        <x>150</x>
+        <x>175</x>
         <y>20</y>
         <width>62</width>
         <height>22</height>
        </rect>
+      </property>
+      <property name="value">
+       <double>30.000000000000000</double>
       </property>
      </widget>
      <widget class="QLabel" name="label_12">
       <property name="geometry">
        <rect>
-        <x>50</x>
-        <y>45</y>
-        <width>91</width>
+        <x>13</x>
+        <y>47</y>
+        <width>121</width>
         <height>16</height>
        </rect>
       </property>
       <property name="text">
-       <string>min distance :</string>
+       <string>near distance(cm) :</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_13">
+      <property name="geometry">
+       <rect>
+        <x>13</x>
+        <y>70</y>
+        <width>161</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>predicted model size(cm) :</string>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="doubleSpinBox_predicted_model_size">
+      <property name="geometry">
+       <rect>
+        <x>175</x>
+        <y>70</y>
+        <width>62</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="value">
+       <double>20.000000000000000</double>
       </property>
      </widget>
     </widget>

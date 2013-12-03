@@ -335,8 +335,8 @@ void GLArea::paintGL()
 				//{
 				//  glDrawer.draw(GLDrawer::DOT, nbv_grids);
 				//}
+        glDrawer.drawGrid(nbv_grids, 3);
 			}
-
 		}
 
 		if (para->getBool("Show NBV Candidates"))
@@ -357,9 +357,9 @@ void GLArea::paintGL()
 			double v_dist = global_paraMgr.camera.getDouble("Camera Vertical Dist");
 			double max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
 			double dist_to_model = global_paraMgr.camera.getDouble("Camera Dist To Model");
-			current_camera.horizon_dist = h_dist;
-			current_camera.vertical_dist = v_dist;
-			current_camera.max_distance = max_dist;
+			current_camera.far_horizon_dist = h_dist;
+			current_camera.far_vertical_dist = v_dist;
+			current_camera.far_distance = max_dist;
 
 			//draw selected scan candidates
 			vector<ScanCandidate> *selected_candidates = dataMgr.getSelectedScanCandidates();
@@ -612,10 +612,11 @@ void GLArea::openByDrop(QString fileName)
 
 void GLArea::loadDefaultModel()
 {
-	//dataMgr.loadPlyToModel("child_model.ply");
+	dataMgr.loadPlyToModel("child_model.ply");
+  dataMgr.loadSkeletonFromSkel("child.skel");
 	//dataMgr.loadPlyToOriginal("child_original.ply");
 	//dataMgr.loadPlyToSample("child_sample.ply");
-
+  //dataMgr.loadPlyToISO("child_iso.ply");
 	//dataMgr.loadPlyToSample("default.ply");
 	//dataMgr.loadPlyToOriginal("default_original.ply");
 	//dataMgr.loadSkeletonFromSkel("Yoga1 MC Labeled.skel");
@@ -625,7 +626,7 @@ void GLArea::loadDefaultModel()
 	//dataMgr.loadSkeletonFromSkel("wlop2 + iso.skel");
   //dataMgr.loadSkeletonFromSkel("default.skel");
 
-  dataMgr.loadSkeletonFromSkel("cube3.skel");
+  //dataMgr.loadSkeletonFromSkel("cube3.skel");
 
   
 

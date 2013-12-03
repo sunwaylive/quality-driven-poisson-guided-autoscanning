@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/mainwindow">
+    <file>Icons/apn.ico</file>
     <file>Icons/upsample-xw5.jpg</file>
     <file>Icons/90.png</file>
     <file>Icons/91.png</file>

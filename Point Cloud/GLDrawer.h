@@ -58,6 +58,7 @@ public:
 	void drawCurveSkeleton(Skeleton& skeleton);
   void drawCamera(vcc::Camera& camera);
   void drawSlice(Slice& slice, double trans_value);
+  void drawGrid(const CMesh *cube_mesh, const int grid_num_each_edge);
 
 	void updateDrawer(vector<int>& pickList);
 
@@ -69,8 +70,8 @@ public:
   //cut from private
   void glDrawLine(Point3f& p0, Point3f& p1, GLColor color, double width);
   void drawSphere(const CVertex& v);
-private:
 
+private:
 	GLColor getColorByType(const CVertex& v);
 	void draw(DrawType type);
 	bool isCanSee(const Point3f& pos,  const Point3f& normal);

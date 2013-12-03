@@ -135,6 +135,12 @@ NBV::clear()
 void
 NBV::buildGrid()
 {
+  if (iso_points == NULL)
+  {
+    cout<<"iso_points empty!"<<endl<<" Build Grids Failed!"<<endl;
+    return ;
+  }
+
    bool use_grid_segment = para->getBool("Run Grid Segment");
   //fix: this should be model->bbox.max
    Point3f bbox_max = iso_points->bbox.max;
@@ -143,11 +149,14 @@ NBV::buildGrid()
    double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
 
    float scan_box_size = camera_max_dist + 0.5;
-   whole_space_box_min = Point3f(-scan_box_size, -scan_box_size, -scan_box_size);
-   whole_space_box_max = Point3f(scan_box_size, scan_box_size, scan_box_size);
-
-   //compute the size of the 3D space
+   whole_space_box_min = bbox_min - Point3f(camera_max_dist, camera_max_dist, camera_max_dist);
+   whole_space_box_max = bbox_max + Point3f(camera_max_dist, camera_max_dist, camera_max_dist);
+      //compute the size of the 3D space
    Point3f dif = whole_space_box_max - whole_space_box_min;
+   //change the whole space box into a cube
+   double max_length = std::max(dif.X(), std::max(dif.Y(), dif.Z()));
+   whole_space_box_max = whole_space_box_min + Point3f(max_length, max_length, max_length);
+   dif = whole_space_box_max - whole_space_box_min;
    //divide the box into grid
    x_max = static_cast<int> (dif.X() / grid_resolution);
    y_max = static_cast<int> (dif.Y() / grid_resolution);
@@ -257,6 +266,13 @@ NBV::propagate()
   bool use_propagate_one_point = para->getBool("Run Propagate One Point");
   bool use_max_propagation = para->getBool("Use Max Propagation");
 
+  double predicted_model_length = global_paraMgr.camera.getDouble("Predicted Model Size");
+  double n_dist = global_paraMgr.camera.getDouble("Camera Near Distance");
+  double f_dist = global_paraMgr.camera.getDouble("Camera Far Distance");
+  //normalize near and far dist to virtual environment
+  n_dist /= predicted_model_length;
+  f_dist /= predicted_model_length;
+  
   if (view_grid_points)
   {
     for (int i = 0; i < view_grid_points->vert.size(); i++)
@@ -332,11 +348,11 @@ NBV::propagate()
       double deltaX, deltaY, deltaZ;
 
       //double half_D = optimal_D / 2.0f;
-      double optimal_D = camera_max_dist / 2.0f;
+      double optimal_D = (n_dist + f_dist) / 2.0f;
       double half_D = optimal_D / 2.0f; //wsh    
       double half_D2 = half_D * half_D;
       double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
-      double sigma_threshold = pow(max(1e-8, 1-cos(sigma/180.0*3.1415926)), 2);
+      double sigma_threshold = pow(max(1e-8, 1-cos(sigma / 180.0 * 3.1415926)), 2);
 
       //1. for each point, propagate to all discrete directions
       for (a = 0.0f; a < PI; a += angle_delta)
@@ -387,7 +403,7 @@ NBV::propagate()
 
             Point3f view_direction = diff.Normalize();
             double coefficient1 = exp(-(dist - optimal_D) * (dist - optimal_D) / half_D2);
-            double coefficient2 = exp(-pow(1-v.N()*view_direction, 2)/sigma_threshold);
+            double coefficient2 = exp(-pow(1-v.N() * view_direction, 2) / sigma_threshold);
 
             float iso_confidence = 1 - v.eigen_confidence;
             float view_weight = iso_confidence * coefficient2;          
@@ -477,7 +493,7 @@ NBV::propagate()
     double deltaX, deltaY, deltaZ;
 
     //double half_D = optimal_D / 2.0f;
-    double optimal_D = camera_max_dist / 2.0f;
+    double optimal_D = (n_dist + f_dist)) / 2.0f;
     double half_D = optimal_D / 2.0f; //wsh    
     double half_D2 = half_D * half_D;
     //for debug
