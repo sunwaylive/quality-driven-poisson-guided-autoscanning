@@ -95,7 +95,7 @@ bool DataMgr::isScannedResultsEmpty()
 
 bool DataMgr::isNBVGridsEmpty()
 {
-  return all_nbv_grid_centers.vert.empty();
+  return view_grid_points.vert.empty();
 }
 
 bool DataMgr::isNBVCandidatesEmpty()
@@ -425,13 +425,13 @@ double DataMgr::getCameraMaxAngle()
 vector<NBVGrid>*
 DataMgr::getAllNBVGrids()
 {
-  return &all_nbv_grids;
+  return &view_grids;
 }
 
 CMesh*
 DataMgr::getAllNBVGridCenters()
 {
-  return &all_nbv_grid_centers;
+  return &view_grid_points;
 }
 
 CMesh*
@@ -727,7 +727,7 @@ void DataMgr::clearData()
   //clearCMesh(model);  
   clearCMesh(current_scanned_mesh);
 
-  clearCMesh(all_nbv_grid_centers);
+  clearCMesh(view_grid_points);
   clearCMesh(nbv_candidates);
   clearCMesh(current_scanned_mesh);
 

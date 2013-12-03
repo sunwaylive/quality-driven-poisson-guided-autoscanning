@@ -885,7 +885,7 @@ void NBV::setIsoBottomConfidence()
 	for (int i = 0; i < iso_points->vert.size(); ++i)
 	{
 		CVertex &v = iso_points->vert[i];
-		if (v.P().X() < bbox_min.X() + bottom_delta)
+		if (v.P().Z() < bbox_min.Z() + bottom_delta)
 		{
 			v.eigen_confidence = 1.0f;
 		}

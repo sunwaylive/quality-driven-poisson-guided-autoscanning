@@ -16,8 +16,8 @@
   <widget class="QTabWidget" name="tabWidget">
    <property name="geometry">
     <rect>
-     <x>8</x>
-     <y>1</y>
+     <x>10</x>
+     <y>10</y>
      <width>261</width>
      <height>891</height>
     </rect>
@@ -340,8 +340,8 @@
     <widget class="QGroupBox" name="groupBox_2">
      <property name="geometry">
       <rect>
-       <x>18</x>
-       <y>10</y>
+       <x>13</x>
+       <y>110</y>
        <width>221</width>
        <height>171</height>
       </rect>
@@ -405,8 +405,8 @@
     <widget class="QDoubleSpinBox" name="grid_resolution">
      <property name="geometry">
       <rect>
-       <x>167</x>
-       <y>190</y>
+       <x>160</x>
+       <y>290</y>
        <width>62</width>
        <height>22</height>
       </rect>
@@ -427,8 +427,8 @@
     <widget class="QLabel" name="label_7">
      <property name="geometry">
       <rect>
-       <x>38</x>
-       <y>190</y>
+       <x>31</x>
+       <y>290</y>
        <width>111</width>
        <height>16</height>
       </rect>
@@ -440,8 +440,8 @@
     <widget class="QCheckBox" name="use_other_inside_segment">
      <property name="geometry">
       <rect>
-       <x>28</x>
-       <y>300</y>
+       <x>30</x>
+       <y>350</y>
        <width>201</width>
        <height>16</height>
       </rect>
@@ -466,8 +466,8 @@
     <widget class="QDoubleSpinBox" name="max_ray_steps">
      <property name="geometry">
       <rect>
-       <x>168</x>
-       <y>220</y>
+       <x>161</x>
+       <y>320</y>
        <width>62</width>
        <height>22</height>
       </rect>
@@ -488,8 +488,8 @@
     <widget class="QLabel" name="label_8">
      <property name="geometry">
       <rect>
-       <x>29</x>
-       <y>220</y>
+       <x>22</x>
+       <y>320</y>
        <width>121</width>
        <height>20</height>
       </rect>
@@ -501,8 +501,8 @@
     <widget class="QCheckBox" name="use_average_confidence">
      <property name="geometry">
       <rect>
-       <x>28</x>
-       <y>330</y>
+       <x>30</x>
+       <y>380</y>
        <width>201</width>
        <height>16</height>
       </rect>
@@ -527,8 +527,8 @@
     <widget class="QCheckBox" name="use_max_propagation">
      <property name="geometry">
       <rect>
-       <x>28</x>
-       <y>360</y>
+       <x>30</x>
+       <y>410</y>
        <width>201</width>
        <height>16</height>
       </rect>
@@ -630,6 +630,65 @@
      <property name="text">
       <string>Bottom Delta:</string>
      </property>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_3">
+     <property name="geometry">
+      <rect>
+       <x>12</x>
+       <y>10</y>
+       <width>221</width>
+       <height>101</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Scanner parameters</string>
+     </property>
+     <widget class="QLabel" name="label_11">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>20</y>
+        <width>91</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>max distance :</string>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>45</y>
+        <width>62</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="doubleSpinBox">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>20</y>
+        <width>62</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_12">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>45</y>
+        <width>91</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>min distance :</string>
+      </property>
+     </widget>
     </widget>
    </widget>
    <widget class="QWidget" name="tab_3">

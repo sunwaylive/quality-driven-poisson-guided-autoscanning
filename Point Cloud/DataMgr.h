@@ -49,13 +49,13 @@ public:
   bool      isNBVGridsEmpty();
   bool      isNBVCandidatesEmpty();
 
-  CMesh*                   getCurrentModel();
-  CMesh*                   getCurrentSamples();
-  CMesh*                   getCurrentOriginal();
-  CMesh*                   getCurrentIsoPoints();
-  CMesh*                   getCurrentFieldPoints();
-  Slices*                  getCurrentSlices();
-  Skeleton*                getCurrentSkeleton();
+  CMesh*                  getCurrentModel();
+  CMesh*                  getCurrentSamples();
+  CMesh*                  getCurrentOriginal();
+  CMesh*                  getCurrentIsoPoints();
+  CMesh*                  getCurrentFieldPoints();
+  Slices*                 getCurrentSlices();
+  Skeleton*               getCurrentSkeleton();
   
 
   CMesh*                  getCameraModel();
