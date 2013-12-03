@@ -628,7 +628,7 @@ void DataMgr::normalizeROSA_Mesh(CMesh& mesh)
     p -= box.min;
     p /= max_length;
 
-    p -= Point3f(0.5, .5, .5);
+    //p -= Point3f(0.5, .5, .5);
     //p *= 2.0;
 
     mesh.vert[i].N().Normalize(); 

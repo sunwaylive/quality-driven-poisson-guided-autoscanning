@@ -835,7 +835,7 @@ double NBV::computeLocalScores(CVertex& view_t, CVertex& iso_v,
 
   double sum_weight = 0.0;
   //iso_v.neighbors.push_back(iso_v.m_index);
-  double max_weight = 0.0;
+  double max_confidence = 0.0;
 
   for(int i = 0; i < iso_v.neighbors.size(); i++)
   {
@@ -847,19 +847,22 @@ double NBV::computeLocalScores(CVertex& view_t, CVertex& iso_v,
     double dist = sqrt(dist2);
     Point3f view_direction = diff.Normalize();
 
-    //double w1 = exp(-(dist - optimal_D) * (dist - optimal_D) / half_D2);
-    double w1 = 1.0;    
-    //double w2 = exp(-pow(1-t.N()*view_direction, 2)/sigma_threshold);
-    double w2 = 1.0;
+    double w1 = exp(-(dist - optimal_D) * (dist - optimal_D) / half_D2);
+    //double w1 = 1.0;    
+    double w2 = exp(-pow(1-t.N()*view_direction, 2)/sigma_threshold);
+    //double w2 = 1.0;
     double weight = w1 * w2 * (1.0-t.eigen_confidence); 
     sum_weight += weight;
-    if (weight > max_weight)
+    if (t.eigen_confidence < max_confidence)
     {
-      max_weight = weight;
+      max_confidence = t.eigen_confidence;
     }
   }
 
+  //return sum_weight * max_confidence;
+
   return sum_weight;
+
   //return sum_weight / iso_v.neighbors.size();
   //return max_weight;
 

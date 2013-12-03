@@ -1468,7 +1468,7 @@ void GLArea::saveView(QString fileName)
 		outfile << global_paraMgr.skeleton.getDouble("CGrid Radius") << endl;
 	}
 
-	outfile << global_paraMgr.glarea.getDouble("Radius Ball Transparency");
+	outfile << global_paraMgr.glarea.getDouble("Radius Ball Transparency") <<endl;
 
 	outfile << global_paraMgr.drawer.getDouble("ISO Dot Size") << endl;
 
