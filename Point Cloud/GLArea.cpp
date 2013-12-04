@@ -350,7 +350,7 @@ void GLArea::paintGL()
 
       if(!view_grid_points->vert.empty())
       {
-        glDrawer.drawGrid(view_grid_points, 2);
+        glDrawer.drawGrid(view_grid_points, 3);
       }
 		}
 
@@ -399,7 +399,7 @@ void GLArea::paintGL()
 					it != scanned_results->end(); ++it)
 				{
 					if ((*it)->vert.empty()) continue;
-					//if the scanned mesh is unvisible, then continue
+					//if the scanned mesh is invisible, then continue
 					if (!((*it)->vert[0].is_scanned_visible)) continue;
 
 					glDrawer.draw(GLDrawer::DOT, *it);
@@ -616,7 +616,7 @@ void GLArea::openByDrop(QString fileName)
 
 void GLArea::loadDefaultModel()
 {
-	dataMgr.loadPlyToModel("child_model.ply");
+	//dataMgr.loadPlyToModel("child_model.ply");
   //dataMgr.loadSkeletonFromSkel("child.skel");
 	dataMgr.loadPlyToOriginal("child_original.ply");
 	dataMgr.loadPlyToSample("child_sample.ply");
@@ -2101,14 +2101,14 @@ void GLArea::removePickPoint()
 	{		
 		for (int i = 0; i < pickList.size(); i++)
 		{
-			samples->vert[pickList[i]].is_skel_ignore = true;
+			samples->vert[pickList[i]].is_ignore = true;
 		}
 
 		vector<CVertex> save_sample_vert;
 		for (int i = 0; i < samples->vert.size(); i++)
 		{
 			CVertex& v = samples->vert[i];
-			if (!v.is_skel_ignore)
+			if (!v.is_ignore)
 			{
 				save_sample_vert.push_back(v);
 			}

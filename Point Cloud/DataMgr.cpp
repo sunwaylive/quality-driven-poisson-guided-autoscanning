@@ -478,7 +478,7 @@ void DataMgr::recomputeBox()
 	CMesh::VertexIterator vi;
 	for(vi = samples.vert.begin(); vi != samples.vert.end(); ++vi) 
 	{
-		if (vi->is_skel_ignore)
+		if (vi->is_ignore)
 		{
 			continue;
 		}
@@ -701,7 +701,7 @@ void DataMgr::eraseRemovedSamples()
 	for (int i = 0; i < samples.vert.size(); i++)
 	{
 		CVertex& v = samples.vert[i];
-		if (!v.is_skel_ignore)
+		if (!v.is_ignore)
 		{
 			temp_mesh.push_back(v);
 		}

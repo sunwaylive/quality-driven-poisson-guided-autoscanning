@@ -80,7 +80,7 @@ void GLDrawer::draw(DrawType type, CMesh* _mesh)
 			glLoadName(qcnt);
 		}
 
-		if (vi->is_skel_ignore)
+		if (vi->is_ignore)
 		{
 			continue;
 		}

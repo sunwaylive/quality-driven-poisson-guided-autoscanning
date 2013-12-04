@@ -409,7 +409,7 @@ void GlobalFun::computeEigenIgnoreBranchedPoints(CMesh* _samples)
 		for(int j = 0; j < iter->neighbors.size(); j++)
 		{
 			CVertex& t = _samples->vert[iter->neighbors[j]];
-			if (t.is_skel_branch || t.is_skel_ignore)
+			if (t.is_skel_branch || t.is_ignore)
 			{
 				continue;
 			}

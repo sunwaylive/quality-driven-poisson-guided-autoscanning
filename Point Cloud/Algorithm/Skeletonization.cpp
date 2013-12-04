@@ -244,7 +244,7 @@ void Skeletonization::initVertexes()
 		vi->neighbors.clear();
 		vi->original_neighbors.clear();
 
-		if (vi->is_skel_ignore)
+		if (vi->is_ignore)
 		{
 			continue;
 		}
@@ -342,7 +342,7 @@ void Skeletonization::computeRepulsionTerm(CMesh* samples)
 	{
 		CVertex& v = samples->vert[i];
 
-		if (v.is_fixed_sample || v.is_skel_ignore)//Here is different from WLOP
+		if (v.is_fixed_sample || v.is_ignore)//Here is different from WLOP
 		{
 			repulsion_weight_sum[i] = 0.;
 			continue;
@@ -495,7 +495,7 @@ double Skeletonization::wlopIterate()
 	for(int i = 0; i < samples->vert.size(); i++)
 	{
 		CVertex& v = samples->vert[i];
-		if (v.is_fixed_sample || v.is_skel_ignore)
+		if (v.is_fixed_sample || v.is_ignore)
 		{
 			continue;
 		}
@@ -807,7 +807,7 @@ Branch Skeletonization::searchOneBranchFromDirection(int begin_idx, Point3f head
 		for (int i = 0; i < curr_v.neighbors.size(); i++)
 		{
 			CVertex& t = samples->vert[curr_v.neighbors[i]];
-			if (t.is_skel_ignore)
+			if (t.is_ignore)
 			{
 				continue;
 			}
@@ -908,7 +908,7 @@ void Skeletonization::growVirtualTailUntilStop(Branch& branch)
 		for (int j = 0; j < v.neighbors.size(); j++)
 		{
 			CVertex& t = samples->vert[v.neighbors[j]];
-			if (!t.is_skel_ignore)
+			if (!t.is_ignore)
 			{
 				double dist2 = GlobalFun::computeEulerDistSquare(v.P(), t.P());
 				if (dist2 < too_close_dist2 && !t.is_skel_virtual)
@@ -1654,7 +1654,7 @@ void Skeletonization::cleanPointsNearBranches()
           double dist2 = GlobalFun::computeEulerDistSquare(v.P(), t.P());
           if (dist2 < clean_dist2)
           {
-            //t.is_skel_ignore = true;
+            //t.is_ignore = true;
             t.remove();
           }
         }
@@ -1663,7 +1663,7 @@ void Skeletonization::cleanPointsNearBranches()
 
     //if (v.is_fixed_sample && !v.is_skel_branch)
     //{
-    //  v.is_skel_ignore = true;
+    //  v.is_ignore = true;
     //}
   }
 
@@ -1970,7 +1970,7 @@ void Skeletonization::updateVirtualHeadFollowSamples(Branch& branch)
 
       if (use_kill_too_close_strategy && dist < too_close_dist && !t.is_skel_virtual)
       {
-        t.is_skel_ignore = true;
+        t.is_ignore = true;
         continue;
       }
 
@@ -2002,7 +2002,7 @@ void Skeletonization::updateVirtualHeadFollowSamples(Branch& branch)
       //double dist = GlobalFun::computeEulerDist(real_head_P, t.P());
       if (use_kill_too_close_strategy && dist2 < too_close_dist2 && !t.is_skel_virtual)
       {
-        t.is_skel_ignore = true;
+        t.is_ignore = true;
       }
 
       if (dist2 < follow_dist2 && dist2 > too_close_dist2)

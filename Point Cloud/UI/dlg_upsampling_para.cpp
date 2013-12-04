@@ -173,12 +173,12 @@ void UpsamplingParaDlg::getBeginIndex(double _val)
 
 		for (int i = 0; i < samples->vert.size(); i++)
 		{
-			samples->vert[i].is_skel_ignore = false;
+			samples->vert[i].is_ignore = false;
 		}
 
 		for (int i = video_begin_index+1; i < samples->vert.size(); i++)
 		{
-			samples->vert[i].is_skel_ignore = true;
+			samples->vert[i].is_ignore = true;
 		}
 	}
 
@@ -225,7 +225,7 @@ void UpsamplingParaDlg::applyPlayVideo()
 
 	for (int i = current_index+1; i < samples->vert.size(); i++)
 	{
-		samples->vert[i].is_skel_ignore = true;
+		samples->vert[i].is_ignore = true;
 	}
 
 
@@ -246,7 +246,7 @@ void UpsamplingParaDlg::applyPlayVideo()
 
 		for (int i = last_index; i < current_index; i++)
 		{
-			samples->vert[i].is_skel_ignore = false;
+			samples->vert[i].is_ignore = false;
 		}
 
 		last_index = current_index;
@@ -254,7 +254,7 @@ void UpsamplingParaDlg::applyPlayVideo()
 
 	for (int i = 0; i < end_index; i++)
 	{
-		samples->vert[i].is_skel_ignore = false;
+		samples->vert[i].is_ignore = false;
 	}
 	area->saveSnapshot();
 	area->updateGL();

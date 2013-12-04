@@ -81,7 +81,6 @@ void NormalSmoother::runAnisotropicPCA()
 	double radius = para->getDouble("CGrid Radius");
 	AnistropicPca<vector<CVertex> >::ComputeAPcaNormalsByKNN(mesh->vert.begin(), mesh->vert.end(), 10, 
 		radius, para->getDouble("Sharpe Feature Bandwidth Sigma"));
-
 }
 
 
@@ -93,7 +92,7 @@ void NormalSmoother::initVertexes()
 	m_box = Box3f();
 	for(vi = mesh->vert.begin(); vi != mesh->vert.end(); ++vi) 
 	{
-		if (vi->is_skel_ignore)
+		if (vi->is_ignore)
 		{
 			continue;
 		}

@@ -58,7 +58,7 @@ public:
 	int m_index;
 
 	bool is_fixed_sample; //feature points (blue color) 
-	bool is_skel_ignore;
+	bool is_ignore;
 
 	/* for skeletonization */
 	float eigen_confidence; //record ISO value for Poisson
@@ -109,7 +109,7 @@ public:
 		is_fixed_sample(false),
 		eigen_confidence(-1),
 		is_skel_branch(false),
-		is_skel_ignore(false),
+		is_ignore(false),
 		is_skel_virtual(false),
     is_fixed_original(false),
 		eigen_vector0(Point3f(1, 0, 0)),
@@ -125,33 +125,33 @@ public:
 	{
 		neighbors.clear();
 		original_neighbors.clear();
-		is_skel_ignore = true;
+		is_ignore = true;
 		P() = Point3f(88888888888.8, 88888888888.8, 88888888888.8);
 	}
 
 	bool isSample_Moving()
 	{
-		return (!is_skel_ignore && !is_fixed_sample && !is_skel_branch);
+		return (!is_ignore && !is_fixed_sample && !is_skel_branch);
 	}
 
 	bool isSample_JustMoving()
 	{
-		return (!is_skel_ignore && !is_fixed_sample && !is_skel_virtual && !is_skel_branch);
+		return (!is_ignore && !is_fixed_sample && !is_skel_virtual && !is_skel_branch);
 	}
 
 	bool isSample_MovingAndVirtual()
 	{
-		return (!is_skel_ignore && !is_fixed_sample && is_skel_virtual && !is_skel_branch);
+		return (!is_ignore && !is_fixed_sample && is_skel_virtual && !is_skel_branch);
 	}
 
 	bool isSample_JustFixed()
 	{
-		return (!is_skel_ignore && is_fixed_sample && !is_skel_virtual && !is_skel_branch);
+		return (!is_ignore && is_fixed_sample && !is_skel_virtual && !is_skel_branch);
 	}
 
 	bool isSample_FixedAndBranched()
 	{
-		return (!is_skel_ignore && is_fixed_sample && !is_skel_virtual && is_skel_branch);
+		return (!is_ignore && is_fixed_sample && !is_skel_virtual && is_skel_branch);
 	}
 
 
