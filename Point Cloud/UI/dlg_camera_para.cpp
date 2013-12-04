@@ -27,6 +27,9 @@ void CameraParaDlg::initConnects()
   connect(ui->tableView_scan_candidates, SIGNAL(clicked(QModelIndex)), this, SLOT(showSelectedScannCandidates(QModelIndex)));
   connect(ui->tableView_scan_results, SIGNAL(clicked(QModelIndex)), this, SLOT(showSelectedScannedMesh(QModelIndex)));
   connect(ui->pushButton_merge, SIGNAL(clicked()), this, SLOT(mergeScannedMeshWithOriginal()));
+  connect(ui->doubleSpinBox_far_distance, SIGNAL(valueChanged(double)), this, SLOT(getCameraFarDistance(double)));
+  connect(ui->doubleSpinBox_near_distance, SIGNAL(valueChanged(double)), this, SLOT(getCameraNearDistance(double)));
+  connect(ui->doubleSpinBox_predicted_model_size, SIGNAL(valueChanged(double)), this, SLOT(getPredictedModelSize(double)));
   connect(ui->pushButton_build_grid, SIGNAL(clicked()), this, SLOT(buildGrid()));
   connect(ui->pushButton_propagate, SIGNAL(clicked()), this, SLOT(propagate()));
   connect(ui->pushButton_propagate_one, SIGNAL(clicked()), this, SLOT(propagateOnePoint()));
@@ -365,6 +368,21 @@ void CameraParaDlg::getMaxRaySteps(double _val)
 void CameraParaDlg::getIsoBottomDelta(double _val)
 {
   global_paraMgr.nbv.setValue("Iso Bottom Delta", DoubleValue(_val));
+}
+
+void CameraParaDlg::getCameraFarDistance(double _val)
+{
+  global_paraMgr.camera.setValue("Camera Far Distance", DoubleValue(_val));
+}
+
+void CameraParaDlg::getCameraNearDistance(double _val)
+{
+  global_paraMgr.camera.setValue("Camera Near Distance", DoubleValue(_val));
+}
+
+void CameraParaDlg::getPredictedModelSize(double _val)
+{
+  global_paraMgr.camera.setValue("Predicted Model Size", DoubleValue(_val));
 }
 
 void

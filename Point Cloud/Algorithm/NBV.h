@@ -31,13 +31,11 @@ private:
 
   void viewExtraction();
   void viewExtractionIntoBins();
+  void extractViewIntoBinsUsingDist();
   void viewClustering();
   void setIsoBottomConfidence();
   void updateViewDirections();
-
-
-
-
+  
   void normalizeConfidence(vector<CVertex>& vertexes, float delta);
   double   getAbsMax(double x, double y, double z);
   int      round(double x);
@@ -45,7 +43,7 @@ private:
   void     setGridUnHit(vector<int>& hit_grids_idx);
   double computeLocalScores(CVertex& view_t, CVertex& iso_v, 
                            double& optimal_D, double& half_D2, double& sigma_threshold);
-
+  int getIsoPointsViewBinIndex(Point3f& p, int which_axis);
 
 private:
   RichParameterSet      *para;

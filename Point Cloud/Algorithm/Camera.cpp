@@ -21,9 +21,9 @@ void vcc::Camera::setInput(DataMgr* pData)
      //get current pos and direction
      /*direction = pData->getCameraDirection();
      pos = pData->getCameraPos();*/
-     horizon_dist = global_paraMgr.camera.getDouble("Camera Horizon Dist");
-     vertical_dist = global_paraMgr.camera.getDouble("Camera Vertical Dist");
-     max_distance = global_paraMgr.camera.getDouble("Camera Max Dist");
+     far_horizon_dist = global_paraMgr.camera.getDouble("Camera Horizon Dist");
+     far_vertical_dist = global_paraMgr.camera.getDouble("Camera Vertical Dist");
+     far_distance = global_paraMgr.camera.getDouble("Camera Max Dist");
      dist_to_model = global_paraMgr.camera.getDouble("Camera Dist To Model");
      resolution = global_paraMgr.camera.getDouble("Camera Resolution");
    }else
@@ -66,11 +66,11 @@ void vcc::Camera::runVirtualScan()
   Point3f viewray = (-pos).Normalize();
   
   //compute the end point of viewray
-  Point3f viewray_end = pos + viewray * max_distance;
+  Point3f viewray_end = pos + viewray * far_distance;
 
   //sweep and scan
-  int n_point_hr_half  = static_cast<int>(0.5f * horizon_dist / resolution);
-  int n_point_ver_half = static_cast<int>(0.5f * vertical_dist / resolution);
+  int n_point_hr_half  = static_cast<int>(0.5f * far_horizon_dist / resolution);
+  int n_point_ver_half = static_cast<int>(0.5f * far_vertical_dist / resolution);
 
   int index = 0; 
   for (int i = - n_point_hr_half; i < n_point_hr_half; ++i)

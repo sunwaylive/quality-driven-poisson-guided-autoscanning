@@ -49,13 +49,13 @@ public:
   bool      isNBVGridsEmpty();
   bool      isNBVCandidatesEmpty();
 
-  CMesh*                   getCurrentModel();
-  CMesh*                   getCurrentSamples();
-  CMesh*                   getCurrentOriginal();
-  CMesh*                   getCurrentIsoPoints();
-  CMesh*                   getCurrentFieldPoints();
-  Slices*                  getCurrentSlices();
-  Skeleton*                getCurrentSkeleton();
+  CMesh*                  getCurrentModel();
+  CMesh*                  getCurrentSamples();
+  CMesh*                  getCurrentOriginal();
+  CMesh*                  getCurrentIsoPoints();
+  CMesh*                  getCurrentFieldPoints();
+  Slices*                 getCurrentSlices();
+  Skeleton*               getCurrentSkeleton();
   
 
   CMesh*                  getCameraModel();
@@ -67,7 +67,7 @@ public:
   double                  getCameraMaxDistance();
   double                  getCameraMaxAngle();
   vector<NBVGrid>*        getAllNBVGrids();
-  CMesh*                  getAllNBVGridCenters();
+  CMesh*                  getViewGridPoints();
   CMesh*                  getNbvCandidates();
   vector<ScanCandidate>*  getInitCameraScanCandidates();
   vector<ScanCandidate>*  getAllScanCandidates();

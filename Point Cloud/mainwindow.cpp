@@ -121,7 +121,7 @@ void MainWindow::initConnect()
   connect(ui.actionShow_NBV_Grids, SIGNAL(toggled(bool)), this, SLOT(showNBVGrids(bool)));
   connect(ui.actionShow_NBV_Candidates, SIGNAL(toggled(bool)), this, SLOT(showNBVCandidates(bool)));
   connect(ui.actionShow_Scan_Candidates, SIGNAL(toggled(bool)), this, SLOT(showScanCandidates(bool)));
-  connect(ui.actionShow_Current_Scanned_Mesh, SIGNAL(toggle(bool)), this, SLOT(showScannedMesh(bool)));
+  connect(ui.actionShow_Current_Scanned_Mesh, SIGNAL(toggled(bool)), this, SLOT(showScannedMesh(bool)));
 
 	connect(sample_draw_type,SIGNAL(triggered(QAction *)),this,SLOT(setSmapleType(QAction *)));
 	connect(original_draw_type,SIGNAL(triggered(QAction *)),this,SLOT(setOriginalType(QAction *)));

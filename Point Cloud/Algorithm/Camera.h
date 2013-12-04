@@ -8,6 +8,14 @@ namespace vcc{
 
   using namespace std;
 
+  struct CameraParameter{
+    double near_dist;
+    double far_dist;
+    double near_width;
+    double far_width;
+    double angle;
+  };
+
   class Camera : public PointCloudAlgorithm
   {
   public :
@@ -32,7 +40,7 @@ namespace vcc{
     void runInitialScan();
     void runNBVScan();
     void runVirtualScan();
-	void runOneKeyNewScan();
+	  void runOneKeyNewScan();
 
   public:
      void computeUpAndRight();
@@ -44,7 +52,7 @@ namespace vcc{
     vector<ScanCandidate>*   init_scan_candidates;//for initialization
     vector<ScanCandidate>*   scan_candidates;     //for nbv computing
     CMesh*                   current_scanned_mesh;
-	CMesh*                   nbv_candidates;
+	  CMesh*                   nbv_candidates;
     //fix: this should be released in "compute nbv" function
     vector<CMesh* >*         scanned_results;
     double                   dist_to_model;
@@ -53,10 +61,11 @@ namespace vcc{
     Point3f                  up;
     Point3f                  right;
     double                   resolution;
-    double                   max_distance;
-    double                   min_distance;
-    double                   horizon_dist;  //total horizontal range
-    double                   vertical_dist; //total vertical range
+    double                   far_distance;
+    double                   near_distance;
+    double                   far_horizon_dist;  //far horizontal range
+    double                   far_vertical_dist;  //far vertical range
+    CameraParameter          camera_para;
   };
 
 }

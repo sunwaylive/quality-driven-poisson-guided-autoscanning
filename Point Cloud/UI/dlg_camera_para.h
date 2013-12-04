@@ -48,6 +48,9 @@ private slots:
   void getGridResolution(double _val);
   void getMaxRaySteps(double _val);
   void getIsoBottomDelta(double _val);
+  void getCameraFarDistance(double _val);
+  void getCameraNearDistance(double _val);
+  void getPredictedModelSize(double _val);
   void buildGrid();
   void propagate();
   void propagateOnePoint();

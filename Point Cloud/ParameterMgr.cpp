@@ -387,6 +387,9 @@ void ParameterMgr::initCameraParameter()
 	camera.addParam(new RichDouble("Camera Vertical Dist", 0.6f));
 	camera.addParam(new RichDouble("Camera Dist To Model", 1.0f));
 	camera.addParam(new RichBool("Is Init Camera Show", false));
+  camera.addParam(new RichDouble("Camera Far Distance", 30.0f));
+  camera.addParam(new RichDouble("Camera Near Distance", 17.0f));
+  camera.addParam(new RichDouble("Predicted Model Size", 20.0f));
 }
 
 void
