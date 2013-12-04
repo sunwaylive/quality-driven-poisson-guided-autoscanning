@@ -429,7 +429,7 @@ DataMgr::getAllNBVGrids()
 }
 
 CMesh*
-DataMgr::getAllNBVGridCenters()
+DataMgr::getViewGridPoints()
 {
   return &view_grid_points;
 }

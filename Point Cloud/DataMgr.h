@@ -67,7 +67,7 @@ public:
   double                  getCameraMaxDistance();
   double                  getCameraMaxAngle();
   vector<NBVGrid>*        getAllNBVGrids();
-  CMesh*                  getAllNBVGridCenters();
+  CMesh*                  getViewGridPoints();
   CMesh*                  getNbvCandidates();
   vector<ScanCandidate>*  getInitCameraScanCandidates();
   vector<ScanCandidate>*  getAllScanCandidates();

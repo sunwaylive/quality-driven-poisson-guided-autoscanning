@@ -1,6 +1,6 @@
 #include "NBV.h"
 
-int NBV::view_bins_each_axis = 3;
+int NBV::view_bins_each_axis = 2;
 
 NBV::NBV(RichParameterSet *_para)
 {
@@ -117,9 +117,10 @@ NBV::setInput(DataMgr *pData)
   }else
   {
     cout<<"ERROR: NBV::setInput empty!"<<endl;
+    return;
   }
 
-  view_grid_points = pData->getAllNBVGridCenters();
+  view_grid_points = pData->getViewGridPoints();
   view_grids = pData->getAllNBVGrids();
   iso_points = pData->getCurrentIsoPoints();
   nbv_candidates = pData->getNbvCandidates();
@@ -151,7 +152,7 @@ NBV::buildGrid()
    float scan_box_size = camera_max_dist + 0.5;
    whole_space_box_min = bbox_min - Point3f(camera_max_dist, camera_max_dist, camera_max_dist);
    whole_space_box_max = bbox_max + Point3f(camera_max_dist, camera_max_dist, camera_max_dist);
-      //compute the size of the 3D space
+   //compute the size of the 3D space
    Point3f dif = whole_space_box_max - whole_space_box_min;
    //change the whole space box into a cube
    double max_length = std::max(dif.X(), std::max(dif.Y(), dif.Z()));
@@ -745,27 +746,31 @@ NBV::viewExtractionIntoBins()
   }
   
   //process each iso_point
-  int index = 0;
+  int index = 0; 
   for (int i = 0; i < view_grid_points->vert.size(); ++i)
   {
     CVertex &v = view_grid_points->vert[i];
     
     //get the x,y,z index of each iso_points
-    int t_indexX = static_cast<int>( floor((v.P()[0] - whole_space_box_min.X()) / bin_length_x ));
-    int t_indexY = static_cast<int>( floor((v.P()[1] - whole_space_box_min.Y()) / bin_length_y ));
-    int t_indexZ = static_cast<int>( floor((v.P()[2] - whole_space_box_min.Z()) / bin_length_z ));
+    int t_indexX = getIsoPointsViewBinIndex(v.P(), 1);
+    int t_indexY = getIsoPointsViewBinIndex(v.P(), 2);
+    int t_indexZ = getIsoPointsViewBinIndex(v.P(), 3);
 
-    t_indexX = t_indexX >= NBV::view_bins_each_axis ? (NBV::view_bins_each_axis-1) : t_indexX;
-    t_indexY = t_indexY >= NBV::view_bins_each_axis ? (NBV::view_bins_each_axis-1) : t_indexY;
-    t_indexZ = t_indexZ >= NBV::view_bins_each_axis ? (NBV::view_bins_each_axis-1) : t_indexZ;
+    /*int t_indexX = static_cast<int>( floor((v.P()[0] - whole_space_box_min.X()) / bin_length_x ));
+    int t_indexY = static_cast<int>( floor((v.P()[1] - whole_space_box_min.Y()) / bin_length_y ));
+    int t_indexZ = static_cast<int>( floor((v.P()[2] - whole_space_box_min.Z()) / bin_length_z ));*/
+
+    /*t_indexX = (t_indexX >= NBV::view_bins_each_axis ? (NBV::view_bins_each_axis-1) : t_indexX);
+    t_indexY = (t_indexY >= NBV::view_bins_each_axis ? (NBV::view_bins_each_axis-1) : t_indexY);
+    t_indexZ = (t_indexZ >= NBV::view_bins_each_axis ? (NBV::view_bins_each_axis-1) : t_indexZ);*/
 
     int idx = t_indexX * NBV::view_bins_each_axis * NBV::view_bins_each_axis 
-                  + t_indexY * NBV::view_bins_each_axis + t_indexZ;
+                  + t_indexZ * NBV::view_bins_each_axis + t_indexY;
 
     if (v.eigen_confidence > bin_confidence[idx])
     {
       bin_confidence[idx] = v.eigen_confidence;
-      view_bins[t_indexX][t_indexY][t_indexZ] = v.m_index;
+      view_bins[t_indexX][t_indexZ][t_indexY] = v.m_index;
     }
   }
 
@@ -782,6 +787,21 @@ NBV::viewExtractionIntoBins()
   }
   nbv_candidates->vn = nbv_candidates->vert.size();
   cout << "candidate number: " << nbv_candidates->vn << endl;
+  //for debug
+  for (int i = 0; i < nbv_candidates->vert.size(); ++i)
+  {
+    CVertex &t = nbv_candidates->vert[i];
+    //get the x,y,z index of each iso_points
+    int t_indexX = static_cast<int>( floor((t.P()[0] - whole_space_box_min.X()) / bin_length_x ));
+    int t_indexY = static_cast<int>( floor((t.P()[1] - whole_space_box_min.Y()) / bin_length_y ));
+    int t_indexZ = static_cast<int>( floor((t.P()[2] - whole_space_box_min.Z()) / bin_length_z ));
+
+    t_indexX = (t_indexX >= NBV::view_bins_each_axis ? (NBV::view_bins_each_axis-1) : t_indexX);
+    t_indexY = (t_indexY >= NBV::view_bins_each_axis ? (NBV::view_bins_each_axis-1) : t_indexY);
+    t_indexZ = (t_indexZ >= NBV::view_bins_each_axis ? (NBV::view_bins_each_axis-1) : t_indexZ);
+    cout<<"x: "<<t_indexX<<" "<<"y: "<<t_indexY<<" "<<"z: "<<t_indexZ<<" "<<endl;
+    cout<<"x: "<<t.P()[0]<<" "<<"y: "<<t.P()[1]<<" "<<"z: "<<t.P()[2]<<" "<<endl;
+  }
 
   //release the memory
   delete [] bin_confidence;
@@ -795,6 +815,66 @@ NBV::viewExtractionIntoBins()
     delete view_bins[i];
   }
   delete view_bins;
+}
+
+void 
+NBV::extractViewIntoBinsUsingDist()
+{
+  nbv_candidates->vert.clear();
+  //get 27 grid center points
+  int grid_num_each_edge = 3;
+  double grid_length = (whole_space_box_max - whole_space_box_min).X() / grid_num_each_edge;
+  Point3f grid_diagonal = Point3f(grid_length, grid_length, grid_length); 
+  vector<Point3f> v_grid_centers;
+  v_grid_centers.resize(grid_num_each_edge * grid_num_each_edge * grid_num_each_edge);
+  double bin_confidence[27];
+  int view_bins[27];
+  memset(bin_confidence, 0, sizeof(bin_confidence));
+  memset(view_bins, 0, sizeof(view_bins));
+
+  for (int i = 0; i < grid_num_each_edge; ++i)
+  {
+    for (int j = 0; j < grid_num_each_edge; ++j)
+    {
+      for (int k = 0; k < grid_num_each_edge; ++k)
+      {
+        Point3f grid_min = whole_space_box_min + Point3f(i * grid_length, j * grid_length, k * grid_length);
+        Point3f grid_center = grid_min + grid_diagonal / 2.0f;
+        int idx = i * grid_num_each_edge * grid_num_each_edge + j * grid_num_each_edge + k ;
+        v_grid_centers[idx] = grid_center;
+      }
+    }
+  }
+
+  for (int i = 0; i < view_grid_points->vert.size(); ++i)
+  {
+    CVertex &v = view_grid_points->vert[i];
+    int nearest_grid_idx = 0;
+    double nearDistance = BIG;
+    //for each iso_point, get the nearest grid index
+    for ( int j = 0; j < v_grid_centers.size(); ++j)
+    {
+      double d = GlobalFun::computeEulerDistSquare(v.P(), v_grid_centers[j]);
+      if (d < nearDistance)
+      {
+        nearest_grid_idx = j;
+        nearDistance = d;
+      }
+    }
+
+    if (v.eigen_confidence > bin_confidence[nearest_grid_idx])
+    {
+      bin_confidence[nearest_grid_idx] = v.eigen_confidence;
+      view_bins[nearest_grid_idx] = v.m_index;
+    }
+  }
+
+  for (int i = 0; i < sizeof(view_bins) / sizeof(view_bins[0]); ++i)
+  {
+    nbv_candidates->vert.push_back(view_grid_points->vert[view_bins[i]]);
+  }
+  nbv_candidates->vn = nbv_candidates->vert.size();
+  cout << "candidate number: " << nbv_candidates->vn << endl;
 }
 
 void NBV::viewClustering()
@@ -922,6 +1002,33 @@ void NBV::setIsoBottomConfidence()
 			v.eigen_confidence = 1.0f;
 		}
 	}
+}
+
+int
+NBV::getIsoPointsViewBinIndex(Point3f& p, int which_axis)
+{
+  Point3f diff = whole_space_box_max - whole_space_box_min;
+  double bin_length_x = diff.X() / NBV::view_bins_each_axis;
+  double bin_length_y = diff.Y() / NBV::view_bins_each_axis;
+  double bin_length_z = diff.Z() / NBV::view_bins_each_axis;
+  double l = 0.0f;
+  double bl = 0.0f;
+
+  switch(which_axis)
+  {
+  case 1: { l = p.X() - whole_space_box_min.X(); bl = bin_length_x; }
+          break;
+  case 2: { l = p.Y() - whole_space_box_min.Y(); bl = bin_length_y; }
+         break;
+  case 3: { l = p.Z() - whole_space_box_min.Z(); bl = bin_length_z; }
+         break;
+  default: break;
+  }
+
+  if (l >= 0 && l <= bl) return 0;
+  else if(l > bl && l <= bl * 2) return 1;
+  else return 2;
+
 }
 
 void NBV::updateViewDirections()

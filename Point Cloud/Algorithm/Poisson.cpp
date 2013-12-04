@@ -109,7 +109,7 @@ void Poisson::setInput(DataMgr* pData)
 
     if (!pData->isNBVGridsEmpty() && global_paraMgr.nbv.getBool("Use Confidence Separation"))
     {
-      field_points = pData->getAllNBVGridCenters();
+      field_points = pData->getViewGridPoints();
 
     }
     else

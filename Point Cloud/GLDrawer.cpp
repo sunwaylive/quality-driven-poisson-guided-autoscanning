@@ -304,13 +304,10 @@ GLColor GLDrawer::getColorByType(const CVertex& v)
 
 void GLDrawer::drawDot(const CVertex& v)
 {
-
 	//if (bShowGridCenters && v.is_grid_center && !v.is_ray_stop)
 	//{
 	//  return;
 	//}
-
-
 
 	int size;
 	if (v.is_model)
@@ -818,7 +815,7 @@ void GLDrawer::drawGrid(const CMesh *cube_mesh, const int grid_num_each_edge = 3
         double min_x = grid_min.X(), min_y = grid_min.Y(), min_z = grid_min.Z();
         double max_x = grid_max.X(), max_y = grid_max.Y(), max_z = grid_max.Z();
         glBegin(GL_LINES);
-        glColor3f(1.0, 1.0, 0.0);
+        glColor3f(0.0, 0.0, 1.0);
         glVertex3f(min_x, min_y, min_z); glVertex3f(max_x, min_y, min_z);
         glVertex3f(max_x, min_y, min_z); glVertex3f(max_x, min_y, max_z);
         glVertex3f(max_x, min_y, max_z); glVertex3f(min_x, min_y, max_z);

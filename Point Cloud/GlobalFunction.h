@@ -40,13 +40,14 @@ namespace GlobalFun
 	void computeEigenWithTheta(CMesh* _samples, double radius);
 
 	void computeAnnNeigbhors(vector<CVertex> &datapts, vector<CVertex> &querypts, int numKnn, bool need_self_included, QString purpose);
-	void computeBallNeighbors(CMesh* mesh0, CMesh* mesh1, double radius, vcg::Box3f& box);
+	//mesh0: search set, mesh1: 
+  void computeBallNeighbors(CMesh* mesh0, CMesh* mesh1, double radius, vcg::Box3f& box);
 
 	void static  __cdecl self_neighbors(CGrid::iterator start, CGrid::iterator end, double radius);
 	void static  __cdecl other_neighbors(CGrid::iterator starta, CGrid::iterator enda, 
-		CGrid::iterator startb, CGrid::iterator endb, double radius);
+	CGrid::iterator startb, CGrid::iterator endb, double radius);
 	void static __cdecl find_original_neighbors(CGrid::iterator starta, CGrid::iterator enda, 
-		CGrid::iterator startb, CGrid::iterator endb, double radius); 
+	CGrid::iterator startb, CGrid::iterator endb, double radius); 
 
 	double computeEulerDist(Point3f& p1, Point3f& p2);
 	double computeEulerDistSquare(Point3f& p1, Point3f& p2);

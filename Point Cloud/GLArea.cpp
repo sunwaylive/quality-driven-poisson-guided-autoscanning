@@ -254,7 +254,7 @@ void GLArea::paintGL()
 			{
 				if (!dataMgr.isNBVGridsEmpty())
 				{
-					glDrawer.draw(GLDrawer::NORMAL, dataMgr.getAllNBVGridCenters());
+					glDrawer.draw(GLDrawer::NORMAL, dataMgr.getViewGridPoints());
 				} 
 			}
 			else if (para->getBool("Show ISO Points"))
@@ -321,7 +321,7 @@ void GLArea::paintGL()
 
 		if (para->getBool("Show NBV Grids"))
 		{
-			CMesh *nbv_grids = dataMgr.getAllNBVGridCenters();
+			CMesh *nbv_grids = dataMgr.getViewGridPoints();
 			if (NULL == nbv_grids) return;
 
 			if(!nbv_grids->vert.empty())
@@ -335,7 +335,6 @@ void GLArea::paintGL()
 				//{
 				//  glDrawer.draw(GLDrawer::DOT, nbv_grids);
 				//}
-        glDrawer.drawGrid(nbv_grids, 3);
 			}
 		}
 
@@ -345,14 +344,19 @@ void GLArea::paintGL()
 
 			if(!nbv_candidates->vert.empty()) 
 				glDrawer.draw(GLDrawer::DOT, nbv_candidates);
+
+      CMesh *view_grid_points = dataMgr.getViewGridPoints();
+      if (NULL == view_grid_points) return;
+
+      if(!view_grid_points->vert.empty())
+      {
+        glDrawer.drawGrid(view_grid_points, 2);
+      }
 		}
-		//fix, it doesn't work
+
 		if (para->getBool("Show Scan Candidates"))
 		{
-			//init a default camera for debugging
-			//fix it
 			vcc::Camera current_camera;
-			//get and set parameters from UI
 			double h_dist = global_paraMgr.camera.getDouble("Camera Horizon Dist");
 			double v_dist = global_paraMgr.camera.getDouble("Camera Vertical Dist");
 			double max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
@@ -613,9 +617,9 @@ void GLArea::openByDrop(QString fileName)
 void GLArea::loadDefaultModel()
 {
 	dataMgr.loadPlyToModel("child_model.ply");
-  dataMgr.loadSkeletonFromSkel("child.skel");
-	//dataMgr.loadPlyToOriginal("child_original.ply");
-	//dataMgr.loadPlyToSample("child_sample.ply");
+  //dataMgr.loadSkeletonFromSkel("child.skel");
+	dataMgr.loadPlyToOriginal("child_original.ply");
+	dataMgr.loadPlyToSample("child_sample.ply");
   //dataMgr.loadPlyToISO("child_iso.ply");
 	//dataMgr.loadPlyToSample("default.ply");
 	//dataMgr.loadPlyToOriginal("default_original.ply");
