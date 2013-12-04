@@ -60,6 +60,7 @@ void PoissonParaDlg::initConnects()
   connect(ui->pushButton_compute_confidence_original,SIGNAL(clicked()),this,SLOT(computeOriginalConfidence()));
   connect(ui->pushButton_compute_confidence_samples,SIGNAL(clicked()),this,SLOT(computeSamplesConfidence()));
   connect(ui->pushButton_compute_confidence_iso,SIGNAL(clicked()),this,SLOT(computeIsoConfidence()));
+  connect(ui->pushButton_compute_confidence_iso_new,SIGNAL(clicked()),this,SLOT(computeNewIsoConfidence()));  
   connect(ui->pushButton_clear_slice,SIGNAL(clicked()),this,SLOT(runClearSlice()));
 
 
@@ -141,9 +142,11 @@ void PoissonParaDlg::runPoissonAndExtractNodes()
 {
   global_paraMgr.poisson.setValue("Run Generate Poisson Field", BoolValue(true));
   global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(false));
+    global_paraMgr.poisson.setValue("Run Poisson On Samples", BoolValue(true));
   area->runPoisson();
   global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(true));
-  global_paraMgr.poisson.setValue("Run Generate Poisson Field", BoolValue(false));
+  global_paraMgr.poisson.setValue("Run Generate Poisson Field", BoolValue(true));
+    global_paraMgr.poisson.setValue("Run Poisson On Samples", BoolValue(false));
 }
 
 void PoissonParaDlg::runPoissonAndExtractMC()
@@ -331,6 +334,14 @@ void PoissonParaDlg::computeIsoConfidence()
   area->runPoisson();
   global_paraMgr.poisson.setValue("Compute ISO Confidence", BoolValue(false));  
 }
+
+void PoissonParaDlg::computeNewIsoConfidence()
+{
+  global_paraMgr.poisson.setValue("Compute New ISO Confidence", BoolValue(true));  
+  area->runPoisson();
+  global_paraMgr.poisson.setValue("Compute New ISO Confidence", BoolValue(false));  
+}
+
 
 
 

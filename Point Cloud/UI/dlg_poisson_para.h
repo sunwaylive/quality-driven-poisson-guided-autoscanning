@@ -59,10 +59,7 @@ private slots:
   void computeOriginalConfidence();
   void computeSamplesConfidence();
   void computeIsoConfidence();
-
-
-
-
+  void computeNewIsoConfidence();
 
 		
 private:

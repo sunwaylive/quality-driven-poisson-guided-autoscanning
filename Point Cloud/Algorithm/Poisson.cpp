@@ -200,6 +200,12 @@ void Poisson::run()
     return;
   }
 
+  if (para->getBool("Compute New ISO Confidence"))
+  {
+    runComputeNewIsoConfidence();
+    return;
+  }
+
   runPoisson();
 }
 
@@ -501,15 +507,15 @@ void Poisson::runPoisson()
 //  {
 //    HANDLE cur_thread=GetCurrentThread();
 //    FILETIME tcreat, texit, tkernel, tuser;
-//    if( GetThreadTimes( cur_thread , &tcreat , &texit , &tkernel , &tuser ) )
-//      printf( "Time (Wall/User/Kernel): %.2f / %.2f / %.2f\n" , PTime()-t , to_seconds( tuser ) , to_seconds( tkernel ) );
-//    else printf( "Time: %.2f\n" , PTime()-t );
+//    //if( GetThreadTimes( cur_thread , &tcreat , &texit , &tkernel , &tuser ) )
+//    //  printf( "Time (Wall/User/Kernel): %.2f / %.2f / %.2f\n" , PTime()-t , to_seconds( tuser ) , to_seconds( tkernel ) );
+//    //else printf( "Time: %.2f\n" , PTime()-t );
 //    HANDLE h = GetCurrentProcess();
 //    PROCESS_MEMORY_COUNTERS pmc;
 //    if( GetProcessMemoryInfo( h , &pmc , sizeof(pmc) ) ) printf( "Peak Memory (MB): %d\n" , pmc.PeakWorkingSetSize>>20 );
 //  }
 //#endif // _WIN32
-//
+
   vector<Point3D<float> > Pts(original->vn);
   vector<Point3D<float> > Nor(original->vn); 
 
@@ -570,32 +576,34 @@ void Poisson::runPoisson()
   double maxMemoryUsage;
   tree.maxMemoryUsage=0;
 
-    int pointCount = tree.setTree2(Pts, 
-                                   Nor,
-                                   Par.Depth , 
-                                   Par.MinDepth, 
-                                   kernelDepth , 
-                                   Real(Par.SamplesPerNode) , 
-                                   Par.Scale , 
-                                   Par.Confidence , 
-                                   Par.constraintWeight , 
-                                   Par.adaptiveExponent , 
-                                   xForm );
-
+  time.start("set tree");
+  int pointCount = tree.setTree2(Pts, 
+                                 Nor,
+                                 Par.Depth , 
+                                 Par.MinDepth, 
+                                 kernelDepth , 
+                                 Real(Par.SamplesPerNode) , 
+                                 Par.Scale , 
+                                 Par.Confidence , 
+                                 Par.constraintWeight , 
+                                 Par.adaptiveExponent , 
+                                 xForm );
+  time.end();
+  time.start("Solve Laplician");
 
   tree.ClipTree();
   tree.finalize( Par.IsoDivide );
   tree.SetLaplacianConstraints();
 
-    tree.LaplacianMatrixIteration( Par.SolverDivide, 
-                                   Par.ShowResidual , 
-                                   Par.MinIters , 
-                                   Par.SolverAccuracy , 
-                                   Par.MaxSolveDepth , 
-                                   Par.FixedIters );
+  tree.LaplacianMatrixIteration( Par.SolverDivide, 
+                                 Par.ShowResidual , 
+                                 Par.MinIters , 
+                                 Par.SolverAccuracy , 
+                                 Par.MaxSolveDepth , 
+                                 Par.FixedIters );
 
-   isoValue = tree.GetIsoValue();
-
+  isoValue = tree.GetIsoValue();
+  time.end();
 
   double estimate_scale = abs(isoValue);
   global_paraMgr.glarea.setValue("Slice Color Scale", DoubleValue(estimate_scale*2/3));
@@ -604,6 +612,7 @@ void Poisson::runPoisson()
   time.end();
   if (para->getBool("Run Generate Poisson Field") || para->getBool("Run One Key PoissonConfidence"))
   {
+    time.start("Generate Poisson Field");
     cout << "Run Generate Poisson Field" << endl;
 
     //global_paraMgr.glarea.setValue("Show ISO Points", BoolValue(false));
@@ -646,9 +655,10 @@ void Poisson::runPoisson()
     cout << "resolution:  " << res << endl;
 
     //normalizeConfidence(field_points->vert, 0);
-  }
 
-  
+    time.end();
+    if (para->getBool("Run Generate Poisson Field")) return;
+  }
 
   //iso_points->vert.clear();
   if (para->getBool("Run Extract MC Points") || para->getBool("Run One Key PoissonConfidence"))
@@ -657,7 +667,6 @@ void Poisson::runPoisson()
     //if(Par.IsoDivide){tree.GetMCIsoTriangles(isoValue,Par.IsoDivide,&mesh);}
     //else{tree.GetMCIsoTriangles(isoValue,&mesh);}
     tree.GetMCIsoTriangles( isoValue , Par.IsoDivide, &mesh , 0 , 1 , !Par.NonManifold , Par.PolygonMesh);
-
     time.end();
 
     ////out put
@@ -708,7 +717,8 @@ void Poisson::runPoisson()
     int inCoreFlag;
     int nr_faces=mesh.polygonCount();	
 
-    for (i=0; i < nr_faces; i++){
+    for (i=0; i < nr_faces; i++)
+    {
       //
       // create and fill a struct that the ply code can handle
       //
@@ -726,8 +736,7 @@ void Poisson::runPoisson()
         //tentative_mesh.face[i].V(j) = &tentative_mesh.vert[tIndex.idx[j]];
         if (polygon[j].inCore)
         {
-          new_face.V(j) = &tentative_mesh.vert[polygon[j].idx];
-         
+          new_face.V(j) = &tentative_mesh.vert[polygon[j].idx];         
         }
         else
         {
@@ -1166,8 +1175,8 @@ void Poisson::runComputeSampleConfidence()
     if (!para->getBool("Use Confidence 1"))
     {
       GlobalFun::computeBallNeighbors(samples, original, 
-        radius, 
-        original->bbox);
+                                      radius, 
+                                      original->bbox);
     }
 
 
@@ -1287,26 +1296,191 @@ void Poisson::runComputeSampleConfidence()
 
 }
 
+void Poisson::runComputeNewIsoConfidence()
+{
+  vector< vector<float>>confidences;
+
+  int factors = 0;
+  if (para->getBool("Use Confidence 1")) factors++;
+  if (para->getBool("Use Confidence 2")) factors++;
+  if (para->getBool("Use Confidence 3")) factors++;
+  if (para->getBool("Use Confidence 4")) factors++;
+
+  if (factors == 0)
+  {
+    return;
+  }
+
+  vector<float> temp(factors, 0);
+  confidences.assign(iso_points->vn, temp);
+
+  double radius = para->getDouble("CGrid Radius");
+
+  double radius2 = radius * radius;
+  double iradius16 = -4.0 / radius2;
+
+  bool b_already_compute_neighborhood = false;
+
+  Timer time;
+  int curr = 0;
+  if (para->getBool("Use Confidence 1"))
+  {
+    time.start("confidence 1");
+    GlobalFun::computeBallNeighbors(iso_points, original, 
+                                    radius, 
+                                    original->bbox);
+    b_already_compute_neighborhood = true;
+
+    //float sum_confidence = 0;
+    float min_confidence = GlobalFun::getDoubleMAXIMUM();
+    float max_confidence = 0;
+    for (int i = 0; i < iso_points->vert.size(); i++)
+    {
+      confidences[i][curr] = 1.;
+      CVertex& v = iso_points->vert[i];
+
+      if (v.original_neighbors.empty())
+      {
+        continue;
+      }
+      vector<int>* neighbors = &v.original_neighbors;
+      for (int j = 0; j < v.original_neighbors.size(); j++)
+      {
+        CVertex& t = original->vert[(*neighbors)[j]];
+        float dist2  = (v.P() - t.P()).SquaredNorm();
+        float den = exp(dist2*iradius16);
+
+        confidences[i][curr] += den;
+      }
+    }
+
+    float space = max_confidence - min_confidence;
+    curr++;
+    time.end();
+  }
+
+  if (para->getBool("Use Confidence 2"))
+  {
+    time.start("confidence 2");
+     GlobalFun::computeBallNeighbors(iso_points, NULL, 
+                                      radius, 
+                                      original->bbox);
+
+
+    double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
+    double sigma_threshold = pow(max(1e-8,1-cos(sigma/180.0*3.1415926)), 2);
+
+    float min_confidence = GlobalFun::getDoubleMAXIMUM();
+    float max_confidence = 0;
+    for (int i = 0; i < iso_points->vert.size(); i++)
+    {
+      confidences[i][curr] = 0.;
+
+      CVertex& v = iso_points->vert[i];
+      if (v.neighbors.empty())
+      {
+        continue;
+      }
+
+      vector<int>* neighbors = &v.neighbors;
+      double sum_w = 0;
+      for (int j = 0; j < v.neighbors.size(); j++)
+      {
+        CVertex& t = iso_points->vert[(*neighbors)[j]];
+        float dist2  = (v.P() - t.P()).SquaredNorm();
+        float w = exp(dist2 * iradius16);
+        double normal_diff = exp(-pow(1-v.N()*t.N(), 2)/sigma_threshold);
+
+        confidences[i][curr] += w * normal_diff;
+        sum_w += w;
+      }
+      confidences[i][curr] /= sum_w;
+    }
+    curr++;
+    time.end();
+  }
+
+  if (para->getBool("Use Confidence 3"))
+  {
+    time.start("confidence 3");
+    if (!b_already_compute_neighborhood)
+    {
+      GlobalFun::computeBallNeighbors(iso_points, original, 
+        radius, 
+        original->bbox);
+    }
+    else
+    {
+      b_already_compute_neighborhood = true;
+    }
+
+    for (int i = 0; i < iso_points->vert.size(); i++)
+    {
+      confidences[i][curr] = 0;
+
+      CVertex& v = iso_points->vert[i];
+      if (v.original_neighbors.empty())
+      {
+        cout << "empty original" << endl;
+        return;
+      }
+
+      vector<int>* neighbors = &v.original_neighbors;
+      double sum_w = 0;
+      for (int j = 0; j < v.original_neighbors.size(); j++)
+      {
+        CVertex& t = original->vert[(*neighbors)[j]];
+        Point3f diff = v.P() - t.P();
+        float dist2  = diff.SquaredNorm();
+        float w = exp(dist2 * iradius16);
+        //float w = 1.0;
+        
+        double hn = diff * v.N();
+        double proj = exp(hn * hn * iradius16);
+
+        confidences[i][curr] += w * proj;
+        sum_w += w;
+      }
+      confidences[i][curr] /= sum_w;
+    }
+    curr++;
+    time.end();
+  }
+
+  if (para->getBool("Use Confidence 4"))
+  {
+    time.start("confidence 4");
+    for (int i = 0; i < iso_points->vert.size(); i++)
+    {
+      CVertex& v = iso_points->vert[i];
+      confidences[i][curr] = v.eigen_confidence;
+    }
+    time.end();
+  }
+
+  time.start("multiply");
+  for (int i = 0; i < iso_points->vn; i++)
+  {
+    CVertex& v = iso_points->vert[i];
+    float multiply_confidence = 1.0;
+    for (int j = 0; j < factors; j++)
+    {
+      multiply_confidence *= confidences[i][j];
+    }
+    v.eigen_confidence = multiply_confidence;
+  }
+  time.end();
+
+  normalizeConfidence(iso_points->vert, 0);
+
+}
+
 void Poisson::runComputeIsoConfidence()
 {
   //ofstream file1("confidence_1_wlop.txt");
   //ofstream file2("confidence_2_gradient.txt");
   //ofstream file3("confidence_3_combine.txt");
 
-  if (para->getBool("Use Confidence 2"))
-  {
-
-  }
-
-  if (para->getBool("Use Confidence 2"))
-  {
-
-  }
-
-  if (para->getBool("Use Confidence 3"))
-  {
-
-  }
 
   if (para->getBool("Use Confidence 4"))
   {
@@ -1431,8 +1605,6 @@ void Poisson::runComputeIsoConfidence()
       //file3 << v.eigen_confidence << endl;
     }
   }
-
-
 
 }
 

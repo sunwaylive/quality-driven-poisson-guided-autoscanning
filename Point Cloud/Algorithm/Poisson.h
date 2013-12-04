@@ -42,6 +42,7 @@ private:
   void runComputeOriginalConfidence();
   void runComputeSampleConfidence();
   void runComputeIsoConfidence();
+  void runComputeNewIsoConfidence();
   
   
 private:

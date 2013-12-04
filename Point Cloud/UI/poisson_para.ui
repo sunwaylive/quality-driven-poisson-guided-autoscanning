@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -499,7 +499,20 @@
       </rect>
      </property>
      <property name="text">
-      <string>Label ISO points</string>
+      <string>Merge or Label ISO points</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_compute_confidence_iso_new">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>360</y>
+       <width>201</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Compute New Confidence on ISO</string>
      </property>
     </widget>
    </widget>

@@ -369,6 +369,8 @@ void ParameterMgr::initPoissonParameter()
 	poisson.addParam(new RichBool("Compute Sample Confidence", false));
 	poisson.addParam(new RichBool("Compute ISO Confidence", false));
 	poisson.addParam(new RichBool("Use Sort Confidence Combination", true));
+  poisson.addParam(new RichBool("Compute New ISO Confidence", false));
+
 }
 
 void ParameterMgr::initCameraParameter()

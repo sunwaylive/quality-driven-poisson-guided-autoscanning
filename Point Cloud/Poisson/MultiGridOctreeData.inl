@@ -1076,6 +1076,7 @@ int POctree< Degree , OutputDensity >::
 
   //// Read through once to get the center and scale
 
+  
 
   Point3D< Real > p , n;
   //while( pointStream->nextPoint( p , n ) )
@@ -1238,6 +1239,8 @@ int POctree< Degree , OutputDensity >::
     }
     cnt++;
   }
+
+  return 1;
 
   if( _boundaryType==0 ) pointWeightSum *= Real(4.);
   constraintWeight *= Real( pointWeightSum );
