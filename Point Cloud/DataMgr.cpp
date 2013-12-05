@@ -649,7 +649,7 @@ void DataMgr::normalizeROSA_Mesh(CMesh& mesh)
 Box3f DataMgr::normalizeAllMesh()
 {
 	Box3f box;
-  if (!isModelEmpty())
+  if (!isModelEmpty() && isSamplesEmpty() && isOriginalEmpty())
   {
     for (int i = 0; i < model.vert.size(); ++i)
     {

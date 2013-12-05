@@ -47,7 +47,7 @@ private:
 
 private:
   RichParameterSet      *para;
-  CMesh                 *model;
+  //CMesh                 *model;
   CMesh                 *original;
   CMesh                 *iso_points;
   CMesh                 *view_grid_points;
