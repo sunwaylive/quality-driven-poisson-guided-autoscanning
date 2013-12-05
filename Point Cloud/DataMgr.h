@@ -82,7 +82,7 @@ public:
 	void      downSamplesByNum(bool use_random_downsample = true);
 	void      subSamples();
 
-	void      normalizeROSA_Mesh(CMesh& mesh);
+	void      normalizeROSA_Mesh(CMesh& mesh, bool is_original = false);
 	Box3f     normalizeAllMesh();
 
   void     eraseRemovedSamples();
@@ -102,6 +102,7 @@ private:
 public:
   CMesh                  model;
   CMesh                  original;
+  Point3f                original_center_point;
   CMesh                  samples;
   CMesh                  iso_points;
   CMesh                  field_points;

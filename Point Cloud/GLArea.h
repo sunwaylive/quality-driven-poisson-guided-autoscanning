@@ -84,6 +84,7 @@ public:
 
 	void saveView(QString fileName);
 	void loadView(QString fileName);
+  void saveNBV(QString fileName);
 	void outputColor(ostream& out, QColor& color);
 	QColor inputColor(istream& in);
 	void readRGBNormal(QString fileName);

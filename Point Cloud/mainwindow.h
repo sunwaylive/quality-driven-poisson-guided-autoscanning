@@ -42,6 +42,7 @@ private slots:
 	void saveSnapshot();
 	void openImage();
 	void saveView();
+  void saveNBV();
 	void saveSkel();
   void getQianSample();
   void saveFieldPoints();

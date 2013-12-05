@@ -1481,9 +1481,40 @@ void GLArea::saveView(QString fileName)
 	outfile << global_paraMgr.glarea.getDouble("ISO Interval Size") << endl;
 	outfile << global_paraMgr.glarea.getDouble("Confidence Color Scale") << endl;
 	outfile << global_paraMgr.glarea.getDouble("ISO Value Shift") << endl;
-
+  outfile << global_paraMgr.data.getDouble("Max Normalize Length") <<endl;
+  outfile << dataMgr.original_center_point.X() << " "
+          << dataMgr.original_center_point.Y() << " "
+          << dataMgr.original_center_point.Z() << " "<<endl;
 
 	outfile.close();
+}
+
+void
+GLArea::saveNBV(QString fileName)
+{
+  CMesh* nbv_candidates = dataMgr.getNbvCandidates();
+  if (nbv_candidates == NULL) cout<<"No NBV!"<<endl;
+
+  Point3f original_center_point = dataMgr.original_center_point;
+  double max_normalize_length = global_paraMgr.data.getDouble("Max Normalize Length");
+  
+  CMesh nbv;
+  int index = 0;
+  for (int i = 0; i < nbv_candidates->vert.size(); ++i)
+  {
+    CVertex &v = nbv_candidates->vert[i];
+    if (v.is_ignore) continue;
+
+    CVertex t = v;
+    t.P() = (t.P() + original_center_point) * max_normalize_length;
+    t.m_index = index++;
+    nbv.vert.push_back(t);
+    nbv.bbox.Add(t.P());
+  }
+  nbv.vn = nbv.vert.size();
+
+  fileName.replace(".ply", "_nbv.ply");
+  dataMgr.savePly(fileName, nbv);
 }
 
 void GLArea::loadView(QString fileName)
@@ -1614,6 +1645,13 @@ void GLArea::loadView(QString fileName)
 
 	infile >> temp;
 	global_paraMgr.glarea.setValue("ISO Value Shift", DoubleValue(temp));
+
+  infile >> temp;
+  global_paraMgr.data.setValue("Max Normalize Length", DoubleValue(temp));
+
+  infile >> dataMgr.original_center_point[0]
+         >> dataMgr.original_center_point[1]
+         >> dataMgr.original_center_point[2];
 
 	infile.close();
 	emit needUpdateStatus();
