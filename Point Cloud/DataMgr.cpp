@@ -606,30 +606,21 @@ void DataMgr::savePly(QString fileName, CMesh& mesh)
 		tri::io::ExporterPLY<CMesh>::Save(mesh, fileName.toAscii().data(), mask, false);
 }
 
-void DataMgr::normalizeROSA_Mesh(CMesh& mesh)
+void DataMgr::normalizeROSA_Mesh(CMesh& mesh, bool is_original)
 {
-  if (mesh.vert.empty())
-  {
-    return;
-  }
-  Box3f box = mesh.bbox;
-  mesh.bbox.SetNull();
-  float max_x = abs((box.min - box.max).X());
-  float max_y = abs((box.min - box.max).Y());
-  float max_z = abs((box.min - box.max).Z());
-  float max_length = max_x > max_y ? max_x : max_y;
-  max_length = max_length > max_z ? max_length : max_z;
+  if (mesh.vert.empty()) return;
 
+  mesh.bbox.SetNull();
+  Box3f box = mesh.bbox;
+  
+  float max_length = global_paraMgr.data.getDouble("Max Normalize Length");
+  
   Box3f box_temp;
   for(int i = 0; i < mesh.vert.size(); i++)
   {
     Point3f& p = mesh.vert[i].P();
 
-    p -= box.min;
     p /= max_length;
-
-    //p -= Point3f(0.5, .5, .5);
-    //p *= 2.0;
 
     mesh.vert[i].N().Normalize(); 
     box_temp.Add(p);
@@ -643,6 +634,12 @@ void DataMgr::normalizeROSA_Mesh(CMesh& mesh)
     p -= mid_point;
     mesh.bbox.Add(p);
   }
+  
+  if (is_original)
+  {
+    this->original_center_point = mid_point;
+  }
+  
 }
 
 
@@ -682,8 +679,14 @@ Box3f DataMgr::normalizeAllMesh()
 
     samples.bbox = box;
 
+    float max_x = abs((box.min - box.max).X());
+    float max_y = abs((box.min - box.max).Y());
+    float max_z = abs((box.min - box.max).Z());
+    float max_length = std::max(max_x, std::max(max_y, max_z));
+    global_paraMgr.data.setValue("Max Normalize Length", DoubleValue(max_length));
+    
     normalizeROSA_Mesh(samples);
-    normalizeROSA_Mesh(original);
+    normalizeROSA_Mesh(original, true);
     normalizeROSA_Mesh(iso_points);
 
     recomputeBox();
