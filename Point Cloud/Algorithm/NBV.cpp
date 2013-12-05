@@ -83,7 +83,7 @@ NBV::runOneKeyNBV()
     updateViewDirections();
   }
   
-  viewClustering();
+  //viewClustering();
 
   //clear default scan_candidate
   scan_candidates->clear();
@@ -1197,7 +1197,7 @@ void NBV::updateViewDirections()
   double optimal_plane_width = global_paraMgr.camera.getDouble("Optimal Plane Width");
   optimal_plane_width /= predicted_model_length;
 
-  double radius = optimal_plane_width / 2.0;
+  double radius = optimal_plane_width / 3.0;
   cout << "plane radius" << endl;
   //double radius = global_paraMgr.wLop.getDouble("CGrid Radius"); 
   //radius *= 2.0;

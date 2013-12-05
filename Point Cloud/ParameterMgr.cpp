@@ -421,6 +421,7 @@ void
   nbv.addParam(new RichBool("Use Max Propagation", true));
 
   nbv.addParam(new RichDouble("Confidence Separation Value", 0.85));
+
   nbv.addParam(new RichDouble("Max Ray Steps Para", 1.5));
 
   nbv.addParam(new RichDouble("Confidence Filter Threshold", 0.4));

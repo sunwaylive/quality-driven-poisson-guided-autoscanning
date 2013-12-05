@@ -30,6 +30,8 @@ void CameraParaDlg::initConnects()
   connect(ui->doubleSpinBox_far_distance, SIGNAL(valueChanged(double)), this, SLOT(getCameraFarDistance(double)));
   connect(ui->doubleSpinBox_near_distance, SIGNAL(valueChanged(double)), this, SLOT(getCameraNearDistance(double)));
   connect(ui->doubleSpinBox_predicted_model_size, SIGNAL(valueChanged(double)), this, SLOT(getPredictedModelSize(double)));
+  connect(ui->doubleSpinBox_optimal_plane_width, SIGNAL(valueChanged(double)), this, SLOT(getOptimalPlaneWidth(double)));
+  
   connect(ui->pushButton_build_grid, SIGNAL(clicked()), this, SLOT(buildGrid()));
   connect(ui->pushButton_propagate, SIGNAL(clicked()), this, SLOT(propagate()));
   connect(ui->pushButton_propagate_one, SIGNAL(clicked()), this, SLOT(propagateOnePoint()));
@@ -67,6 +69,11 @@ bool CameraParaDlg::initWidgets()
   ui->max_dist->setValue(m_paras->camera.getDouble("Camera Max Dist"));
   ui->grid_resolution->setValue(m_paras->nbv.getDouble("Grid resolution"));
   ui->max_ray_steps->setValue(m_paras->nbv.getDouble("Max Ray Steps Para"));
+  
+  ui->doubleSpinBox_far_distance->setValue(m_paras->camera.getDouble("Camera Far Distance"));
+  ui->doubleSpinBox_near_distance->setValue(m_paras->camera.getDouble("Camera Near Distance"));
+  ui->doubleSpinBox_predicted_model_size->setValue(m_paras->camera.getDouble("Optimal Plane Width"));
+  ui->doubleSpinBox_optimal_plane_width->setValue(m_paras->camera.getDouble("Predicted Model Size"));
 
   Qt::CheckState state = m_paras->nbv.getBool("Test Other Inside Segment") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
   ui->use_other_inside_segment->setCheckState(state);
@@ -384,6 +391,12 @@ void CameraParaDlg::getPredictedModelSize(double _val)
 {
   global_paraMgr.camera.setValue("Predicted Model Size", DoubleValue(_val));
 }
+
+void CameraParaDlg::getOptimalPlaneWidth(double _val)
+{
+  global_paraMgr.camera.setValue("Predicted Model Size", DoubleValue(_val));
+}
+
 
 void
 CameraParaDlg::buildGrid()
