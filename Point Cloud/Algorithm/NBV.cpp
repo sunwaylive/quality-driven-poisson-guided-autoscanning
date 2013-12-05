@@ -78,6 +78,13 @@ NBV::runOneKeyNBV()
   propagate();
   viewExtractionIntoBins();
 
+  for (int i = 0; i < 4; i++)
+  {
+    updateViewDirections();
+  }
+  
+  viewClustering();
+
   //clear default scan_candidate
   scan_candidates->clear();
   //fix:for test, just scan the point who has the biggest confidence
@@ -350,8 +357,8 @@ NBV::propagate()
 
       //double half_D = optimal_D / 2.0f;
       double optimal_D = (n_dist + f_dist) / 2.0f;
-      double half_D = optimal_D / 2.0f; //wsh    
-      double half_D2 = half_D * half_D;
+      double half_D = optimal_D / 2.0f; //wsh，这里还有问题，应该是half_D = n_dist比较好。    
+      double half_D2 = half_D * half_D; //
       double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
       double sigma_threshold = pow(max(1e-8, 1-cos(sigma / 180.0 * 3.1415926)), 2);
 
@@ -394,7 +401,7 @@ NBV::propagate()
             //if the grid get first hit 
             view_grid_points->vert[index].is_ray_hit = true;
             //do what we need in the next grid
-            NBVGrid &g = (*view_grids)[index];
+            //NBVGrid &g = (*view_grids)[index];
             //1. set the confidence of the grid center
             CVertex& t = view_grid_points->vert[index];
             //double dist = GlobalFun::computeEulerDist(v.P(), t.P());
@@ -717,6 +724,7 @@ NBV::viewExtraction()
     }
   }
   nbv_candidates->vn = nbv_candidates->vert.size();
+
   cout << "candidate number: " << nbv_candidates->vn << endl;
 }
 
@@ -745,6 +753,8 @@ NBV::viewExtractionIntoBins()
     }
   }
   
+  
+
   //process each iso_point
   int index = 0; 
   for (int i = 0; i < view_grid_points->vert.size(); ++i)
@@ -785,8 +795,22 @@ NBV::viewExtractionIntoBins()
       }
     }
   }
+  
   nbv_candidates->vn = nbv_candidates->vert.size();
+  
+  double confidence_threshold = para->getDouble("Confidence Filter Threshold");
+  for (int i = 0; i < nbv_candidates->vert.size(); i++)
+  {
+    CVertex& v = nbv_candidates->vert[i];
+    if (v.eigen_confidence < confidence_threshold)
+    {
+      v.is_ignore = true;
+    }
+    nbv_candidates->vert[i].m_index = i;
+  }
   cout << "candidate number: " << nbv_candidates->vn << endl;
+
+
   //for debug
   //for (int i = 0; i < nbv_candidates->vert.size(); ++i)
   //{
@@ -874,75 +898,205 @@ NBV::extractViewIntoBinsUsingDist()
     nbv_candidates->vert.push_back(view_grid_points->vert[view_bins[i]]);
   }
   nbv_candidates->vn = nbv_candidates->vert.size();
+
+  for (int i = 0; i < nbv_candidates->vert.size(); i++)
+  {
+    nbv_candidates->vert[i].m_index = i;
+  }
   cout << "candidate number: " << nbv_candidates->vn << endl;
 
 }
 
 void NBV::viewClustering()
 {
-  //double radius = para->getDouble("CGrid Radius"); 
-  double radius = global_paraMgr.wLop.getDouble("CGrid Radius"); 
-  
-  double radius2 = radius * radius;
-  double iradius16 = -4/radius2;
+  if (nbv_scores.empty())
+  {
+    updateViewDirections();
+  }
 
-  double sigma = 45;
-  double cos_sigma = cos(sigma / 180.0 * 3.1415926);
-  double sharpness_bandwidth = std::pow((std::max)(1e-8, 1 - cos_sigma), 2);
-
-  GlobalFun::computeBallNeighbors(nbv_candidates, NULL, 
-                                  radius, nbv_candidates->bbox);
-  //GlobalFun::computeAnnNeigbhors(nbv_candidates->vert,
-  //  nbv_candidates->vert, 
-  //  15,
-  //  false,
-  //  "runViewCandidatesClustering");
-
-  vector<CVertex> update_temp;
-  for(int i = 0; i < nbv_candidates->vert.size(); i++)
+  double confidence_threshold = para->getDouble("Confidence Filter Threshold");
+  for (int i = 0; i < nbv_candidates->vert.size(); i++)
   {
     CVertex& v = nbv_candidates->vert[i];
-
-    //if (v.neighbors.size() <= 5)
-    if (v.neighbors.empty())
+    if (v.eigen_confidence < confidence_threshold)
     {
-      //update_temp.push_back(v);
-      continue;
+      v.is_ignore = true;
     }
-
-    Point3f average_positon = Point3f(0, 0, 0);
-    Point3f average_normal = Point3f(0, 0, 0);
-    double sum_weight = 0.0;
-
-    for (int j = 0; j < v.neighbors.size(); j++)
-    {
-      CVertex& t = nbv_candidates->vert[v.neighbors[j]];
-
-      Point3f diff = v.P() - t.P();
-      double dist2  = diff.SquaredNorm();
-
-      double dist_weight = exp(dist2 * iradius16);
-      double normal_weight = exp(-std::pow(1 - v.N() * t.N(), 2));
-      double weight = dist_weight;
-
-      average_positon += t.P() * weight;
-      average_normal += t.N() * weight;
-      sum_weight += weight;
-    }
-
-    CVertex temp_v = v;
-    temp_v.P() = average_positon / sum_weight;
-    temp_v.N() = average_normal / sum_weight;
-    update_temp.push_back(temp_v);
+    nbv_candidates->vert[i].m_index = i;
   }
 
-  nbv_candidates->vert.clear();
-  for (int i = 0; i < update_temp.size(); i++)
+  double predicted_model_length = global_paraMgr.camera.getDouble("Predicted Model Size");
+  double optimal_plane_width = global_paraMgr.camera.getDouble("Optimal Plane Width");
+  optimal_plane_width /= predicted_model_length;
+
+  double cluster_radius_threshold = optimal_plane_width / 3.0;
+  double cluster_radius_threshold2 = cluster_radius_threshold * cluster_radius_threshold;
+  cout << "cluster_radius:  " << cluster_radius_threshold << endl;
+
+  
+
+  while(1)
   {
-    nbv_candidates->vert.push_back(update_temp[i]);
+    bool find_new_cluster = false;
+    vector<int> nbv_cluster;
+    for(int i = 0; i < nbv_candidates->vert.size(); i++)
+    {
+      CVertex& v = nbv_candidates->vert[i];
+
+      if (v.is_ignore)
+      {
+        continue;
+      }
+
+      int v_iso_index = v.remember_iso_index;
+      if (v_iso_index < 0 || v_iso_index >= iso_points->vert.size())
+      {
+        cout << "iso index wrong!" << endl;
+        continue;
+      }
+      nbv_cluster.clear();
+      nbv_cluster.push_back(i);
+
+      CVertex& iso_v = iso_points->vert[v_iso_index];
+
+      for (int j = 0; j < nbv_candidates->vert.size(); j++)
+      {
+        if (i == j)
+        {
+          continue;
+        }
+
+        CVertex& t = nbv_candidates->vert[j];
+        if (t.is_ignore)
+        {
+          continue;
+        }
+
+        int t_iso_index = t.remember_iso_index;
+        if (t_iso_index < 0 || t_iso_index >= iso_points->vert.size())
+        {
+          cout << "iso index wrong!" << endl;
+          continue;
+        }
+
+        CVertex& iso_t = iso_points->vert[t_iso_index];
+
+        double iso_dist2 = GlobalFun::computeEulerDistSquare(iso_v.P(), iso_t.P());
+        if (iso_dist2 < cluster_radius_threshold2)
+        {
+          find_new_cluster = true;
+          nbv_cluster.push_back(j);
+        }
+      }
+
+      if (find_new_cluster)
+      {
+        break;
+      }
+    }
+
+    if (find_new_cluster)
+    {
+      cout << "cluster size: " << nbv_cluster.size() << endl;
+      double max_score = 0;
+      int best_index = -1;
+
+      for (int i = 0; i < nbv_cluster.size(); i++)
+      {
+        int nbv_index = nbv_cluster[i];
+        double score = nbv_scores[nbv_index];
+
+        if (score > max_score)
+        {
+          max_score = score;
+          best_index = nbv_index;
+        }
+      }
+
+      for (int i = 0; i < nbv_cluster.size(); i++)
+      {
+        int nbv_index = nbv_cluster[i];
+        CVertex& v = nbv_candidates->vert[nbv_index];
+
+        if (nbv_index != best_index)
+        {
+          v.is_ignore = true;
+        }
+      }
+    }
+    else
+    {
+      break;
+    }
   }
-  nbv_candidates->vn = nbv_candidates->vert.size(); 
+
+
 }
+//void NBV::viewClustering()
+//{
+//  //double radius = para->getDouble("CGrid Radius"); 
+//  double radius = global_paraMgr.wLop.getDouble("CGrid Radius"); 
+//  
+//  double radius2 = radius * radius;
+//  double iradius16 = -4/radius2;
+//
+//  double sigma = 45;
+//  double cos_sigma = cos(sigma / 180.0 * 3.1415926);
+//  double sharpness_bandwidth = std::pow((std::max)(1e-8, 1 - cos_sigma), 2);
+//
+//  GlobalFun::computeBallNeighbors(nbv_candidates, NULL, 
+//                                  radius, nbv_candidates->bbox);
+//  //GlobalFun::computeAnnNeigbhors(nbv_candidates->vert,
+//  //  nbv_candidates->vert, 
+//  //  15,
+//  //  false,
+//  //  "runViewCandidatesClustering");
+//
+//  vector<CVertex> update_temp;
+//  for(int i = 0; i < nbv_candidates->vert.size(); i++)
+//  {
+//    CVertex& v = nbv_candidates->vert[i];
+//
+//    //if (v.neighbors.size() <= 5)
+//    if (v.neighbors.empty())
+//    {
+//      //update_temp.push_back(v);
+//      continue;
+//    }
+//
+//    Point3f average_positon = Point3f(0, 0, 0);
+//    Point3f average_normal = Point3f(0, 0, 0);
+//    double sum_weight = 0.0;
+//
+//    for (int j = 0; j < v.neighbors.size(); j++)
+//    {
+//      CVertex& t = nbv_candidates->vert[v.neighbors[j]];
+//
+//      Point3f diff = v.P() - t.P();
+//      double dist2  = diff.SquaredNorm();
+//
+//      double dist_weight = exp(dist2 * iradius16);
+//      double normal_weight = exp(-std::pow(1 - v.N() * t.N(), 2));
+//      double weight = dist_weight;
+//
+//      average_positon += t.P() * weight;
+//      average_normal += t.N() * weight;
+//      sum_weight += weight;
+//    }
+//
+//    CVertex temp_v = v;
+//    temp_v.P() = average_positon / sum_weight;
+//    temp_v.N() = average_normal / sum_weight;
+//    update_temp.push_back(temp_v);
+//  }
+//
+//  nbv_candidates->vert.clear();
+//  for (int i = 0; i < update_temp.size(); i++)
+//  {
+//    nbv_candidates->vert.push_back(update_temp[i]);
+//  }
+//  nbv_candidates->vn = nbv_candidates->vert.size(); 
+//}
 
 
 double NBV::computeLocalScores(CVertex& view_t, CVertex& iso_v, 
@@ -1037,8 +1191,17 @@ void NBV::updateViewDirections()
   cout << "NBV::updateViewDirections" << endl;
   normalizeConfidence(iso_points->vert, 0.0);
 
-  double radius = global_paraMgr.wLop.getDouble("CGrid Radius"); 
-  radius *= 2.0;
+  nbv_scores.assign(nbv_candidates->vert.size(), 0.0);
+
+  double predicted_model_length = global_paraMgr.camera.getDouble("Predicted Model Size");
+  double optimal_plane_width = global_paraMgr.camera.getDouble("Optimal Plane Width");
+  optimal_plane_width /= predicted_model_length;
+
+  double radius = optimal_plane_width / 2.0;
+  cout << "plane radius" << endl;
+  //double radius = global_paraMgr.wLop.getDouble("CGrid Radius"); 
+  //radius *= 2.0;
+  
   //double radius = 0.3;
 
   double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
@@ -1062,7 +1225,6 @@ void NBV::updateViewDirections()
   }
 
   for (int i = 0; i < nbv_candidates->vert.size(); i++)
-  //for (int i = 0; i < 3; i++)  
   {
     CVertex& nbvc = nbv_candidates->vert[i];
     int iso_index = nbvc.remember_iso_index;
@@ -1076,15 +1238,9 @@ void NBV::updateViewDirections()
     float max_score = 0.;
     int best_iso_index = -1.;
 
-    //double v_score = computeLocalScores(nbvc, iso_v, optimal_D, half_D2, sigma_threshold);
-    //max_score = v_score;
-    //best_iso_index = iso_index;
-
-
     for (int j = 0; j < iso_v.neighbors.size(); j++)
     {
       int neighbor_index = iso_v.neighbors[j];
-
       CVertex& t = iso_points->vert[neighbor_index];
       
       double t_score = computeLocalScores(nbvc, t, optimal_D, half_D2, sigma_threshold);
@@ -1100,5 +1256,6 @@ void NBV::updateViewDirections()
     Point3f best_direction_pos = iso_points->vert[best_iso_index].P();
     nbvc.N() = (best_direction_pos - nbvc.P()).Normalize();
     nbvc.remember_iso_index = best_iso_index;
+    nbv_scores[i] = max_score;
   }
 }

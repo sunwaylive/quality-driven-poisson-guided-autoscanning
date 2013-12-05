@@ -388,9 +388,11 @@ void ParameterMgr::initCameraParameter()
 	camera.addParam(new RichDouble("Camera Vertical Dist", 0.6f));
 	camera.addParam(new RichDouble("Camera Dist To Model", 1.0f));
 	camera.addParam(new RichBool("Is Init Camera Show", false));
-  camera.addParam(new RichDouble("Camera Far Distance", 30.0f));
-  camera.addParam(new RichDouble("Camera Near Distance", 17.0f));
-  camera.addParam(new RichDouble("Predicted Model Size", 20.0f));
+
+  camera.addParam(new RichDouble("Camera Far Distance", 30.0f)); //cm
+  camera.addParam(new RichDouble("Camera Near Distance", 17.0f)); //cm
+  camera.addParam(new RichDouble("Optimal Plane Width", 10.0f)); //cm
+  camera.addParam(new RichDouble("Predicted Model Size", 15.0f)); //cm
 }
 
 void
@@ -421,5 +423,8 @@ void
 
   nbv.addParam(new RichDouble("Confidence Separation Value", 0.85));
   nbv.addParam(new RichDouble("Max Ray Steps Para", 1.5));
+
+  nbv.addParam(new RichDouble("Confidence Filter Threshold", 0.4));
+
 
 }
