@@ -34,7 +34,7 @@ private:
   void extractViewIntoBinsUsingDist();
   void viewClustering();
   void setIsoBottomConfidence();
-  void updateViewDirections();
+  bool updateViewDirections();
   
   void normalizeConfidence(vector<CVertex>& vertexes, float delta);
   double   getAbsMax(double x, double y, double z);

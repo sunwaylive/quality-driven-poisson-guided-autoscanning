@@ -80,7 +80,11 @@ NBV::runOneKeyNBV()
 
   for (int i = 0; i < 4; i++)
   {
-    updateViewDirections();
+    bool have_direction_move = updateViewDirections();
+    if (!have_direction_move)
+    {
+      break;
+    }
   }
   
   //viewClustering();
@@ -1186,8 +1190,10 @@ NBV::getIsoPointsViewBinIndex(Point3f& p, int which_axis)
 
 }
 
-void NBV::updateViewDirections()
+bool NBV::updateViewDirections()
 {
+  bool have_direction_move = false;
+
   cout << "NBV::updateViewDirections" << endl;
   normalizeConfidence(iso_points->vert, 0.0);
 
@@ -1201,7 +1207,6 @@ void NBV::updateViewDirections()
   cout << "plane radius" << endl;
   //double radius = global_paraMgr.wLop.getDouble("CGrid Radius"); 
   //radius *= 2.0;
-  
   //double radius = 0.3;
 
   double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
@@ -1252,10 +1257,16 @@ void NBV::updateViewDirections()
       }
     }
 
-    cout << "Max scores:  " << max_score << endl;
-    Point3f best_direction_pos = iso_points->vert[best_iso_index].P();
-    nbvc.N() = (best_direction_pos - nbvc.P()).Normalize();
-    nbvc.remember_iso_index = best_iso_index;
-    nbv_scores[i] = max_score;
+    if (best_iso_index != nbvc.remember_iso_index)
+    {
+      have_direction_move = true;
+      cout << "Max scores:  " << max_score << endl;
+      Point3f best_direction_pos = iso_points->vert[best_iso_index].P();
+      nbvc.N() = (best_direction_pos - nbvc.P()).Normalize();
+      nbvc.remember_iso_index = best_iso_index;
+      nbv_scores[i] = max_score;
+    }
   }
+
+  return have_direction_move;
 }
