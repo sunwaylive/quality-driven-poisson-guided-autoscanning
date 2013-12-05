@@ -1486,6 +1486,15 @@ void GLArea::saveView(QString fileName)
 	outfile.close();
 }
 
+void
+GLArea::saveNBV(QString fileName)
+{
+  ofstream outfile(fileName.toStdString().c_str());
+
+
+  outfile.close();
+}
+
 void GLArea::loadView(QString fileName)
 {
 

@@ -76,6 +76,7 @@ void MainWindow::initConnect()
 	connect(ui.actionClear_Data, SIGNAL(triggered()), this, SLOT(clearData()));
 	connect(ui.actionImport_Image, SIGNAL(triggered()), this, SLOT(openImage()));
 	connect(ui.actionSave_View, SIGNAL(triggered()), this, SLOT(saveView()));
+  connect(ui.actionSave_NBV, SIGNAL(triggered()), this, SLOT(saveNBV()));
 	connect(ui.actionSave_Skel, SIGNAL(triggered()), this, SLOT(saveSkel()));
   connect(ui.actionQianSample, SIGNAL(triggered()), this, SLOT(getQianSample()));
 	
@@ -562,6 +563,14 @@ void MainWindow::saveView()
 	QString file = QFileDialog::getSaveFileName(this, "Select a ply file", "", "*.View");
 	if(!file.size()) return;
 	area->saveView(file);
+}
+
+void MainWindow::saveNBV()
+{
+  QString file = QFileDialog::getSaveFileName(this, "Save NBV as...", "", "*.ply");
+  if (!file.size()) return;
+
+  area->saveNBV(file);
 }
 
 void MainWindow::saveSkel()
