@@ -42,7 +42,7 @@ private:
   quadrant getQuadrantIdx(double a, double b); //two parameters deciding the quadrant
   void     setGridUnHit(vector<int>& hit_grids_idx);
   double computeLocalScores(CVertex& view_t, CVertex& iso_v, 
-                           double& optimal_D, double& half_D2, double& sigma_threshold);
+                            double& optimal_D, double& half_D2, double& sigma_threshold);
   int getIsoPointsViewBinIndex(Point3f& p, int which_axis);
 
 private:
@@ -63,4 +63,5 @@ private:
   std::vector<NBVGrid>  *view_grids; //grids in all the space
   vector<float>         confidence_weight_sum;
   static int            view_bins_each_axis;
+  vector<double>        nbv_scores;
 };
