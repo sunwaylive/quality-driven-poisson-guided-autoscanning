@@ -9,14 +9,14 @@ NBV::NBV(RichParameterSet *_para)
   original = NULL;
   iso_points = NULL;
   field_points = NULL;
-  model = NULL;
+  //model = NULL;
 }
 
 NBV::~NBV()
 {
   original = NULL;
   iso_points = NULL;
-  model = NULL;
+  //model = NULL;
 }
 
 void
@@ -99,19 +99,19 @@ NBV::setInput(DataMgr *pData)
   if (!pData->getCurrentIsoPoints()->vert.empty())
   {
     CMesh *_original = pData->getCurrentOriginal();
-    CMesh *_model = pData->getCurrentModel();
+    //CMesh *_model = pData->getCurrentModel();
 
     if (NULL == _original)
     {
       cout<<"ERROR: NBV original == NULL !"<<endl;
       return;
     }
-    if (NULL == _model)
-    {
-      cout<<"ERROR: NBV model == NULL !"<<endl;
-      return;
-    }
-    model = _model;
+    //if (NULL == _model)
+    //{
+    //  cout<<"ERROR: NBV model == NULL !"<<endl;
+    //  return;
+    //}
+    //model = _model;
     original = _original;
     field_points = pData->getCurrentFieldPoints();
   }else
