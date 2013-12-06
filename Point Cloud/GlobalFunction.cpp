@@ -861,6 +861,19 @@ bool GlobalFun::computeMeshLineIntersectPoint(CMesh *target, Point3f& p, Point3f
   return has_intersect_point;
 }
 
+void
+GlobalFun::removeOutliers(CMesh *mesh, double radius)
+{
+  if (mesh == NULL) return;
+
+  computeBallNeighbors(mesh, NULL, radius, mesh->bbox);
+
+  for (int i = 0; i < mesh->vert.size(); ++i)
+  {
+    CVertex &v = mesh->vert[i];
+  }
+}
+
 //void Slice::build_slice(Point3f a, Point3f b, Point3f c, float c_length)
 //{
 //  cell_length = c_length;

@@ -66,6 +66,8 @@ namespace GlobalFun
   double computeTriangleArea_3(Point3f& v0, Point3f& v1, Point3f& v2);
   bool isPointInTriangle_3(Point3f& v0, Point3f& v1, Point3f& v2, Point3f& p);
   bool computeMeshLineIntersectPoint(CMesh *m0, Point3f& p, Point3f& line_dir, Point3f& result);
+
+  void removeOutliers(CMesh *m, double radius);
 }
 
 class Timer
@@ -77,7 +79,7 @@ public:
 		cout << endl;
 		starttime = clock();
 		mid_start = clock();
-		cout << "@@@@@ Time Count Strat For: " << str << endl;
+		cout << "@@@@@ Time Count Start For: " << str << endl;
 
 		_str = str;
 	}
