@@ -70,6 +70,7 @@ void MainWindow::initConnect()
 
 	connect(ui.actionImport_Ply, SIGNAL(triggered()), this, SLOT(openFile()));
 	connect(ui.actionSave_Ply, SIGNAL(triggered()), this, SLOT(saveFile()));
+  connect(ui.actionRemove_Outlier, SIGNAL(triggered()), this, SLOT(removeOutliers()));
 	connect(ui.actionDownSample, SIGNAL(triggered()), this, SLOT(downSample()));
 	connect(ui.actionSubSample, SIGNAL(triggered()), this, SLOT(subSample()));
 	connect(ui.actionNormalize, SIGNAL(triggered()), this, SLOT(normalizeData()));
@@ -490,6 +491,14 @@ void MainWindow::saveFile()
       area->dataMgr.savePly(file, *area->dataMgr.getCurrentSamples());
     }
   }
+}
+
+void
+MainWindow::removeOutliers()
+{
+  area->removeOutliers();
+  area->initView();
+  area->updateGL();
 }
 
 void MainWindow::downSample()

@@ -526,6 +526,11 @@ double DataMgr::getInitRadiuse()
 	return init_radius;
 }
 
+void
+DataMgr::removeOutliers()
+{
+
+}
 
 void DataMgr::downSamplesByNum(bool use_random_downsample)
 {

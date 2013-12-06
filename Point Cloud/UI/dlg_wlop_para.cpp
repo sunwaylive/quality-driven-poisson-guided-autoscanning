@@ -59,7 +59,7 @@ void WlopParaDlg::initConnects()
 		cerr << "cannot connect WlopParaDlg::applyWlop()." << endl;
 	}
 	connect(ui->anisotropic_lop_apply,SIGNAL(clicked()),this,SLOT(applyAnisotropicLop()));
-
+  connect(ui->doubleSpinBox_outlier_percentage, SIGNAL(valueChanged(double)), this, SLOT(getOutlierPercentage(double)));
 }
 
 
@@ -70,7 +70,7 @@ bool WlopParaDlg::initWidgets()
 	/*ui->rep_pow->setValue(m_paras->wLop.getDouble("Repulsion Power"));
 	ui->fit_pow->setValue(m_paras->wLop.getDouble("Average Power"));*/
 	ui->iter->setValue(m_paras->wLop.getDouble("Num Of Iterate Time"));
-	
+	ui->doubleSpinBox_outlier_percentage->setValue(m_paras->wLop.getDouble("Outlier Percentage"));
 	Qt::CheckState state = m_paras->wLop.getBool("Need Compute Density") ? (Qt::CheckState::Checked): (Qt::CheckState::Unchecked);
 	ui->compute_density->setCheckState(state);
 
@@ -92,12 +92,18 @@ void WlopParaDlg::setFrameConent()
 	adjustSize();
 }
 
+void
+WlopParaDlg::getOutlierPercentage(double _val)
+{
+  m_paras->wLop.setValue("Outlier Percentage", DoubleValue(_val));
+  area->updateGL();
+}
+
 void WlopParaDlg::getRadiusValues(double _val)
 {
 	m_paras->setGlobalParameter("CGrid Radius",DoubleValue(_val));
 	area->updateGL();
 }
-
 
 void WlopParaDlg::getRepPow(double _val)
 {

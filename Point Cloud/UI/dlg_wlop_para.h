@@ -28,6 +28,7 @@ class WlopParaDlg : public QFrame
 
 	private slots:
 		bool initWidgets();
+    void getOutlierPercentage(double _val);
 		void getRadiusValues(double _val);
 		void getRepPow(double _val);
 		void getFitPow(double _val);

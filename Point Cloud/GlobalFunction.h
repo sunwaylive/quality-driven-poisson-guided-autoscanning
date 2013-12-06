@@ -34,6 +34,13 @@ using namespace vcg;
 
 namespace GlobalFun
 {
+  struct DesityAndIndex{
+    int index;
+    double density;
+  };
+
+  bool cmp(DesityAndIndex a, DesityAndIndex b);
+
 	void computeKnnNeigbhors(vector<CVertex> &datapts, vector<CVertex> &querypts, int numKnn, bool need_self_included, QString purpose);
 	void computeEigen(CMesh* _samples);
 	void computeEigenIgnoreBranchedPoints(CMesh* _samples);
@@ -67,7 +74,7 @@ namespace GlobalFun
   bool isPointInTriangle_3(Point3f& v0, Point3f& v1, Point3f& v2, Point3f& p);
   bool computeMeshLineIntersectPoint(CMesh *m0, Point3f& p, Point3f& line_dir, Point3f& result);
 
-  void removeOutliers(CMesh *m, double radius);
+  void removeOutliers(CMesh *m, double radius, double remove_percent);
 }
 
 class Timer

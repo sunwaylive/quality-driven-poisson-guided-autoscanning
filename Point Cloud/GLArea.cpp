@@ -2110,6 +2110,29 @@ void GLArea::keyReleaseEvent ( QKeyEvent * e )
 	if(e->key()==Qt::Key_Alt) trackball.MouseUp(0,0, QT2VCG(Qt::NoButton, Qt::AltModifier ) );
 }
 
+void
+GLArea::removeOutliers()
+{
+  double outlier_percentage = global_paraMgr.wLop.getDouble("Outlier Percentage");
+
+  if (global_paraMgr.glarea.getBool("Show Original"))
+  {
+    GlobalFun::removeOutliers(dataMgr.getCurrentOriginal(), global_paraMgr.data.getDouble("CGrid Radius") / 8, outlier_percentage);
+    cout<<"has removed original outliers"<<endl;
+  }
+
+  if (global_paraMgr.glarea.getBool("Show Samples"))
+  {
+    GlobalFun::removeOutliers(dataMgr.getCurrentSamples(), global_paraMgr.data.getDouble("CGrid Radius"), outlier_percentage);
+    cout<<"has removed samples outliers"<<endl;
+  }
+
+  if (global_paraMgr.glarea.getBool("Show ISO Points"))
+  {
+    GlobalFun::removeOutliers(dataMgr.getCurrentIsoPoints(), global_paraMgr.data.getDouble("CGrid Radius"), outlier_percentage);
+    cout<<"has removed ISO points outliers"<<endl;
+  }
+}
 
 void GLArea::removePickPoint()
 {

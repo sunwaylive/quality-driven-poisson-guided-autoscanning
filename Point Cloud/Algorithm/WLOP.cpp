@@ -268,15 +268,10 @@ void WLOP::computeDensity(bool isOriginal, double radius)
 
 	for(int i = 0; i < mesh->vert.size(); i++)
 	{
-		if (isOriginal)
-		{
-			CVertex& v = mesh->vert[i];
-			original_density[i] = 1. / original_density[i];
-		}
-		else
-		{
-			samples_density[i] = sqrt(samples_density[i]);
-		}
+		if (isOriginal)	
+      original_density[i] = 1. / original_density[i];
+		else	
+      samples_density[i] = sqrt(samples_density[i]);
 	}
 
 }
