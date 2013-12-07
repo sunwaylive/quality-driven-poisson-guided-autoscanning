@@ -72,8 +72,8 @@ bool CameraParaDlg::initWidgets()
   
   ui->doubleSpinBox_far_distance->setValue(m_paras->camera.getDouble("Camera Far Distance"));
   ui->doubleSpinBox_near_distance->setValue(m_paras->camera.getDouble("Camera Near Distance"));
-  ui->doubleSpinBox_predicted_model_size->setValue(m_paras->camera.getDouble("Optimal Plane Width"));
-  ui->doubleSpinBox_optimal_plane_width->setValue(m_paras->camera.getDouble("Predicted Model Size"));
+  ui->doubleSpinBox_predicted_model_size->setValue(m_paras->camera.getDouble("Predicted Model Size"));
+  ui->doubleSpinBox_optimal_plane_width->setValue(m_paras->camera.getDouble("Optimal Plane Width"));
 
   Qt::CheckState state = m_paras->nbv.getBool("Test Other Inside Segment") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
   ui->use_other_inside_segment->setCheckState(state);
@@ -394,7 +394,7 @@ void CameraParaDlg::getPredictedModelSize(double _val)
 
 void CameraParaDlg::getOptimalPlaneWidth(double _val)
 {
-  global_paraMgr.camera.setValue("Predicted Model Size", DoubleValue(_val));
+  global_paraMgr.camera.setValue("Optimal Plane Width", DoubleValue(_val));
 }
 
 

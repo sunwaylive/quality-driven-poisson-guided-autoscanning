@@ -1507,6 +1507,7 @@ GLArea::saveNBV(QString fileName)
 
     CVertex t = v;
     t.P() = (t.P() + original_center_point) * max_normalize_length;
+    t.N().Normalize();
     t.m_index = index++;
     nbv.vert.push_back(t);
     nbv.bbox.Add(t.P());
