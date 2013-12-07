@@ -1326,9 +1326,9 @@ void Poisson::runComputeNewIsoConfidence()
   if (para->getBool("Use Confidence 1"))
   {
     time.start("confidence 1");
-    GlobalFun::computeBallNeighbors(iso_points, original, 
-                                    radius, 
-                                    original->bbox);
+    GlobalFun::computeBallNeighbors(iso_points, samples, 
+      radius, 
+      samples->bbox);
     b_already_compute_neighborhood = true;
 
     //float sum_confidence = 0;
@@ -1346,7 +1346,7 @@ void Poisson::runComputeNewIsoConfidence()
       vector<int>* neighbors = &v.original_neighbors;
       for (int j = 0; j < v.original_neighbors.size(); j++)
       {
-        CVertex& t = original->vert[(*neighbors)[j]];
+        CVertex& t = samples->vert[(*neighbors)[j]];
         float dist2  = (v.P() - t.P()).SquaredNorm();
         float den = exp(dist2*iradius16);
 
@@ -1358,6 +1358,41 @@ void Poisson::runComputeNewIsoConfidence()
     curr++;
     time.end();
   }
+  //if (para->getBool("Use Confidence 1"))
+  //{
+  //  time.start("confidence 1");
+  //  GlobalFun::computeBallNeighbors(iso_points, original, 
+  //                                  radius, 
+  //                                  original->bbox);
+  //  b_already_compute_neighborhood = true;
+
+  //  //float sum_confidence = 0;
+  //  float min_confidence = GlobalFun::getDoubleMAXIMUM();
+  //  float max_confidence = 0;
+  //  for (int i = 0; i < iso_points->vert.size(); i++)
+  //  {
+  //    confidences[i][curr] = 1.;
+  //    CVertex& v = iso_points->vert[i];
+
+  //    if (v.original_neighbors.empty())
+  //    {
+  //      continue;
+  //    }
+  //    vector<int>* neighbors = &v.original_neighbors;
+  //    for (int j = 0; j < v.original_neighbors.size(); j++)
+  //    {
+  //      CVertex& t = original->vert[(*neighbors)[j]];
+  //      float dist2  = (v.P() - t.P()).SquaredNorm();
+  //      float den = exp(dist2*iradius16);
+
+  //      confidences[i][curr] += den;
+  //    }
+  //  }
+
+  //  float space = max_confidence - min_confidence;
+  //  curr++;
+  //  time.end();
+  //}
 
   if (para->getBool("Use Confidence 2"))
   {
@@ -1480,8 +1515,6 @@ void Poisson::runComputeIsoConfidence()
   //ofstream file1("confidence_1_wlop.txt");
   //ofstream file2("confidence_2_gradient.txt");
   //ofstream file3("confidence_3_combine.txt");
-
-
   if (para->getBool("Use Confidence 4"))
   {
     runLabelISO();
