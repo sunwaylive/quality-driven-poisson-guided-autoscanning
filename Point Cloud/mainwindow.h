@@ -35,6 +35,7 @@ private slots:
 
 	void openFile();
 	void saveFile();
+  void removeOutliers();
 	void downSample();
 	void subSample();
 	void normalizeData();

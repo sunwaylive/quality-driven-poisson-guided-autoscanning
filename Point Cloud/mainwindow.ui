@@ -51,6 +51,7 @@
     <addaction name="actionImport_Ply"/>
     <addaction name="actionSave_Ply"/>
     <addaction name="actionSave_Skel"/>
+    <addaction name="actionRemove_Outlier"/>
     <addaction name="actionNormalize"/>
     <addaction name="actionDownSample"/>
     <addaction name="actionSubSample"/>
@@ -847,6 +848,11 @@
   <action name="actionSave_NBV">
    <property name="text">
     <string>Save NBV</string>
+   </property>
+  </action>
+  <action name="actionRemove_Outlier">
+   <property name="text">
+    <string>Remove Outlier</string>
    </property>
   </action>
  </widget>

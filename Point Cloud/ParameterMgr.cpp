@@ -183,6 +183,7 @@ void ParameterMgr::initWLopParameter()
 	wLop.addParam(new RichDouble("Repulsion Mu2", 0.0));
 	wLop.addParam(new RichBool("Run Anisotropic LOP", false));
 	wLop.addParam(new RichDouble("Current Movement Error", 0.0));
+  wLop.addParam(new RichDouble("Outlier Percentage", 0.01));
 }
 
 void ParameterMgr::initSkeletonParameter()

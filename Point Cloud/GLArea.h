@@ -90,6 +90,7 @@ public:
 	void readRGBNormal(QString fileName);
 
 	void removePickPoint();
+  void removeOutliers();
 
 signals:
 	void needUpdateStatus();

@@ -861,6 +861,55 @@ bool GlobalFun::computeMeshLineIntersectPoint(CMesh *target, Point3f& p, Point3f
   return has_intersect_point;
 }
 
+bool
+GlobalFun::cmp(DesityAndIndex a, DesityAndIndex b)
+{
+  return a.density < b.density;
+}
+
+void
+GlobalFun::removeOutliers(CMesh *mesh, double radius, double remove_percent)
+{
+  if (NULL == mesh) 
+  { 
+    cout<<"Empty Mesh, When RemoveOutliers!"<<endl;
+    return;
+  }
+
+  double radius2 = radius * radius; 
+  double iradius16 = .0f - 4.0f / radius2;
+  computeBallNeighbors(mesh, NULL, radius, mesh->bbox);
+
+  vector<DesityAndIndex> mesh_density;
+  for (int i = 0; i < mesh->vert.size(); ++i)
+  {
+    CVertex &v = mesh->vert[i];
+    DesityAndIndex dai;
+    dai.index = i;
+    dai.density = 1.0f;
+
+    vector<int>* neighbors = & v.neighbors;
+    for (int j = 0; j < neighbors->size(); ++j)
+    {
+      CVertex &nei = mesh->vert[(*neighbors)[j]];
+      double dist2 = (v.P() - nei.P()).SquaredNorm();
+      double den = exp(dist2 * iradius16);
+
+      dai.density += den;
+    }
+    mesh_density.push_back(dai);
+  }
+
+  //sort the density and remove low ones
+  sort(mesh_density.begin(), mesh_density.end(), cmp);
+  int remove_num = mesh_density.size() * remove_percent;
+  //set those who are removed, ignored = false
+  for (int i = 0; i < remove_num; ++i)
+  {
+    mesh->vert[mesh_density[i].index].is_ignore = true;
+  }
+}
+
 //void Slice::build_slice(Point3f a, Point3f b, Point3f c, float c_length)
 //{
 //  cell_length = c_length;

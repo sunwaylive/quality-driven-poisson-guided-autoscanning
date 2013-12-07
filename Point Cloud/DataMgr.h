@@ -79,6 +79,8 @@ public:
 	void      recomputeBox();
 	double    getInitRadiuse();
 
+  void      removeOutliers();
+
 	void      downSamplesByNum(bool use_random_downsample = true);
 	void      subSamples();
 
