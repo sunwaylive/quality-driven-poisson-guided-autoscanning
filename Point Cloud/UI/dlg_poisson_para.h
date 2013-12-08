@@ -30,13 +30,16 @@ private slots:
   void getPoissonIsoInterval(double _val);
   void getPoissonSampleNumber(double _val);
 
-	void runPoissonAndExtractLeafs();
-  void runPoissonAndExtractNodes();
-  void runPoissonAndExtractMC();
+	void runPoissonFieldOriginal();
+  void runPoissonFieldSamples();
+  
+  void runPoissonAndExtractMC_Original();
+  void runPoissonAndExtractMC_Samples();
+
   void runSlice();
   void runClearSlice();
 
-  void removeNonIsoPoints();
+ 
   void labelIsoPoints();
   void labelSmooth();
   void labelBoundaryPoints();

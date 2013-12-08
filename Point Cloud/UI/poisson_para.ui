@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -244,28 +244,28 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <widget class="QPushButton" name="pushButton_poisson_leafs">
+       <widget class="QPushButton" name="pushButton_poisson_field_original">
         <property name="text">
-         <string>Run Poisson on original</string>
+         <string>Run Poisson Field on original</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_poisson_nodes">
+       <widget class="QPushButton" name="pushButton_poisson_field_samples">
         <property name="text">
-         <string>Run Poisson on samples</string>
+         <string>Run Poisson Field on samples</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_poisson_MC">
+       <widget class="QPushButton" name="pushButton_poisson_MC_original">
         <property name="text">
          <string>Extract MC iso points on original</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_remove_non_iso_points">
+       <widget class="QPushButton" name="pushButton_poisson_MC_samples">
         <property name="text">
          <string>Extract MC iso points on sample</string>
         </property>

@@ -33,6 +33,7 @@ private:
   void runOneKeyPoissonConfidence();
 
   void runPoisson();
+  void runPoissonFieldAndIso();
   void runLabelISO();
   void runIsoSmooth();
   void runLabelBoundaryPoints();

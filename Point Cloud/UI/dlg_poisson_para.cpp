@@ -33,10 +33,10 @@ void PoissonParaDlg::initConnects()
   connect(ui->poisson_ISO_interval,SIGNAL(valueChanged(double)),this,SLOT(getPoissonIsoInterval(double)));
   connect(ui->poisson_sample_number,SIGNAL(valueChanged(double)),this,SLOT(getPoissonSampleNumber(double)));
 
-	connect(ui->pushButton_poisson_leafs,SIGNAL(clicked()),this,SLOT(runPoissonAndExtractLeafs()));
-  connect(ui->pushButton_poisson_nodes,SIGNAL(clicked()),this,SLOT(runPoissonAndExtractNodes()));  
-  connect(ui->pushButton_poisson_MC,SIGNAL(clicked()),this,SLOT(runPoissonAndExtractMC()));
-  connect(ui->pushButton_remove_non_iso_points,SIGNAL(clicked()),this,SLOT(removeNonIsoPoints()));
+	connect(ui->pushButton_poisson_field_original,SIGNAL(clicked()),this,SLOT(runPoissonFieldOriginal()));
+  connect(ui->pushButton_poisson_field_samples,SIGNAL(clicked()),this,SLOT(runPoissonFieldSamples()));  
+  connect(ui->pushButton_poisson_MC_original,SIGNAL(clicked()),this,SLOT(runPoissonAndExtractMC_Original()));
+  connect(ui->pushButton_poisson_MC_samples,SIGNAL(clicked()),this,SLOT(runPoissonAndExtractMC_Samples()));
   connect(ui->pushButton_label_iso_points,SIGNAL(clicked()),this,SLOT(labelIsoPoints()));
   connect(ui->pushButton_label_smooth,SIGNAL(clicked()),this,SLOT(labelSmooth()));
   connect(ui->pushButton_label_boundary_points,SIGNAL(clicked()), this, SLOT(labelBoundaryPoints()));
@@ -122,42 +122,50 @@ void PoissonParaDlg::getPoissonSampleNumber(double _val)
   global_paraMgr.poisson.setValue("Poisson Disk Sample Number", DoubleValue(_val));
 }
 
-void PoissonParaDlg::runPoissonAndExtractLeafs()
+void PoissonParaDlg::runPoissonFieldOriginal()
 {
+  global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(true));
   global_paraMgr.poisson.setValue("Run Generate Poisson Field", BoolValue(true));
 	area->runPoisson();
   global_paraMgr.poisson.setValue("Run Generate Poisson Field", BoolValue(false));
+  global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(false));
+
 
 	area->updateGL();
 }
 
-//void PoissonParaDlg::runPoissonAndExtractNodes()
-//{
-//  global_paraMgr.poisson.setValue("Run Extract All Octree Nodes", BoolValue(true));
-//  area->runPoisson();
-//  global_paraMgr.poisson.setValue("Run Extract All Octree Nodes", BoolValue(false));
-//}
 
-void PoissonParaDlg::runPoissonAndExtractNodes()
+void PoissonParaDlg::runPoissonFieldSamples()
 {
   global_paraMgr.poisson.setValue("Run Generate Poisson Field", BoolValue(true));
-  global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(false));
-    global_paraMgr.poisson.setValue("Run Poisson On Samples", BoolValue(true));
+  global_paraMgr.poisson.setValue("Run Poisson On Samples", BoolValue(true));
   area->runPoisson();
-  global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(true));
   global_paraMgr.poisson.setValue("Run Generate Poisson Field", BoolValue(true));
-    global_paraMgr.poisson.setValue("Run Poisson On Samples", BoolValue(false));
+  global_paraMgr.poisson.setValue("Run Poisson On Samples", BoolValue(false));
 }
 
-void PoissonParaDlg::runPoissonAndExtractMC()
+void PoissonParaDlg::runPoissonAndExtractMC_Original()
 {
-
+  global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(true));
   global_paraMgr.poisson.setValue("Run Extract MC Points", BoolValue(true));
+  global_paraMgr.poisson.setValue("Run One Key PoissonConfidence", BoolValue(true));
   area->runPoisson();
   global_paraMgr.poisson.setValue("Run Extract MC Points", BoolValue(false));
-
-
+  global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(false));
+  global_paraMgr.poisson.setValue("Run One Key PoissonConfidence", BoolValue(false));
 }
+
+void PoissonParaDlg::runPoissonAndExtractMC_Samples()
+{
+  global_paraMgr.poisson.setValue("Run Poisson On Samples", BoolValue(true));
+  global_paraMgr.poisson.setValue("Run Extract MC Points", BoolValue(true));
+  global_paraMgr.poisson.setValue("Run One Key PoissonConfidence", BoolValue(true));
+  area->runPoisson();
+  global_paraMgr.poisson.setValue("Run Extract MC Points", BoolValue(false));
+  global_paraMgr.poisson.setValue("Run Poisson On Samples", BoolValue(false));
+  global_paraMgr.poisson.setValue("Run One Key PoissonConfidence", BoolValue(false));
+}
+
 
 void PoissonParaDlg::runSlice()
 {
@@ -174,39 +182,7 @@ void PoissonParaDlg::runClearSlice()
 }
 
 
-void PoissonParaDlg::removeNonIsoPoints()
-{
-  global_paraMgr.poisson.setValue("Run Poisson On Samples", BoolValue(true));
-  global_paraMgr.poisson.setValue("Run Extract MC Points", BoolValue(true));
-  area->runPoisson();
-  global_paraMgr.poisson.setValue("Run Extract MC Points", BoolValue(false));
-  global_paraMgr.poisson.setValue("Run Poisson On Samples", BoolValue(false));
-  //if (area->dataMgr.isIsoPointsEmpty())
-  //{
-  //  return;
-  //}
 
-  //double iso_threshold = global_paraMgr.glarea.getDouble("ISO Interval Size");
-  //CMesh* iso_points = area->dataMgr.getCurrentIsoPoints();
-
-  //vector<CVertex> temp;
-  //for (int i = 0; i < iso_points->vert.size(); i++)
-  //{
-  //  temp.push_back(iso_points->vert[i]);
-  //}
-
-  //iso_points->vert.clear();
-  //for (int i = 0; i < temp.size(); i++)
-  //{
-  //  CVertex& v = temp[i];
-  //  if (abs(v.eigen_confidence) < iso_threshold)
-  //  {
-  //    iso_points->vert.push_back(v);
-  //    iso_points->bbox.Add(v.P());
-  //  }
-  //}
-  //iso_points->vn = iso_points->vert.size();
-}
 
 void PoissonParaDlg::clearLabel()
 {
