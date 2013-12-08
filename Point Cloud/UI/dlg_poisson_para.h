@@ -38,6 +38,7 @@ private slots:
 
   void runSlice();
   void runClearSlice();
+  void runAddWLOPtoISO();
 
  
   void labelIsoPoints();

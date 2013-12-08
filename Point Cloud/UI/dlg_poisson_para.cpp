@@ -44,6 +44,7 @@ void PoissonParaDlg::initConnects()
   connect(ui->pushButton_clear_label,SIGNAL(clicked()),this,SLOT(clearLabel()));
   connect(ui->pushButton_slice,SIGNAL(clicked()),this,SLOT(runSlice()));
   connect(ui->pushButton_view_candidates_clustering,SIGNAL(clicked()),this,SLOT(viewCandidatesClustering()));
+  connect(ui->pushButton_add_samples_to_iso_points,SIGNAL(clicked()),this,SLOT(runAddWLOPtoISO()));
 
   connect(ui->checkBox_show_slices,SIGNAL(clicked(bool)),this,SLOT(showSlices(bool)));
   connect(ui->checkBox_show_slices_transparent,SIGNAL(clicked(bool)),this,SLOT(showSlicesTransparent(bool)));
@@ -181,6 +182,13 @@ void PoissonParaDlg::runClearSlice()
   global_paraMgr.poisson.setValue("Run Clear Slice", BoolValue(false));
 }
 
+void PoissonParaDlg::runAddWLOPtoISO()
+{
+  cout << "runAddWLOPtoISO: 000" << endl;
+  global_paraMgr.poisson.setValue("Run Add WLOP to ISO", BoolValue(true));
+  area->runPoisson();
+  global_paraMgr.poisson.setValue("Run Add WLOP to ISO", BoolValue(false));
+}
 
 
 

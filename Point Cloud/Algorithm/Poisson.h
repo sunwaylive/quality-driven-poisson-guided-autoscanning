@@ -44,6 +44,8 @@ private:
   void runComputeSampleConfidence();
   void runComputeIsoConfidence();
   void runComputeNewIsoConfidence();
+  void runAddWLOPtoISO();
+
   
   
 private:

@@ -197,6 +197,12 @@ void Poisson::run()
     return;
   }
 
+  if (para->getBool("Run Add WLOP to ISO"))
+  {
+    runAddWLOPtoISO();
+    return;
+  }
+
   runPoisson();
 }
 
@@ -1933,4 +1939,41 @@ void Poisson::normalizeConfidence(vector<CVertex>& vertexes, float delta)
 
 }
 
+void Poisson::runAddWLOPtoISO()
+{
+  cout << "runAddWLOPtoISO: " << endl;
+  double radius = para->getDouble("CGrid Radius");
+  double radius_threshold = radius / 2.0;
+  double radius_threshold2 = radius_threshold * radius_threshold;
+
+  GlobalFun::computeAnnNeigbhors(iso_points->vert, samples->vert, 1, false, "runAddWLOPtoISO");
+
+  vector<CVertex> add_samples;
+  for (int i = 0; i < samples->vert.size(); i++)
+  {
+    CVertex& v = samples->vert[i];
+    int nearest_idx = v.neighbors[0];
+    CVertex& t = iso_points->vert[nearest_idx];
+
+    double dist2 = GlobalFun::computeEulerDistSquare(v.P(), t.P());
+
+    if (dist2 > radius_threshold2)
+    {
+      //cout << dist2 << "  " << radius_threshold2 << endl;
+      add_samples.push_back(v);
+    }
+  }
+
+  iso_points->vn = iso_points->vert.size();
+  for (int i = 0; i < add_samples.size(); i++)
+  {
+    CVertex& v = add_samples[i];
+    v.is_iso = true;
+    v.m_index = iso_points->vn + i;
+    iso_points->vert.push_back(v);
+  }
+  iso_points->vn = iso_points->vert.size();
+
+  cout << "add points: " << add_samples.size() << endl;
+}
 

@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -513,6 +513,19 @@
      </property>
      <property name="text">
       <string>Compute New Confidence on ISO</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_add_samples_to_iso_points">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>400</y>
+       <width>201</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Add samples to iso-points</string>
      </property>
     </widget>
    </widget>
