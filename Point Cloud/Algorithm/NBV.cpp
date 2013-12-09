@@ -87,7 +87,7 @@ NBV::runOneKeyNBV()
     }
   }
   
-  //viewClustering();
+  //viewClustering(); //wsh
 
   //clear default scan_candidate
   scan_candidates->clear();

@@ -209,15 +209,28 @@ void Poisson::run()
 void Poisson::runOneKeyPoissonConfidence()
 {
   runPoissonFieldAndIso();
-  para->setValue("Use Confidence 1",BoolValue(true));
-  para->setValue("Use Confidence 2",BoolValue(true));
 
-  runComputeSampleConfidence();
+  para->setValue("Use Confidence 1",BoolValue(false));
+  para->setValue("Use Confidence 2",BoolValue(false));
+  para->setValue("Use Confidence 3",BoolValue(true));
+  para->setValue("Use Confidence 4",BoolValue(false));
+  runComputeNewIsoConfidence();
 
-  runLabelISO();
-
+  para->setValue("Use Confidence 1",BoolValue(false));
+  para->setValue("Use Confidence 2",BoolValue(false));
+  para->setValue("Use Confidence 3",BoolValue(false));
   para->setValue("Use Confidence 4", BoolValue(true));
   runComputeIsoConfidence();
+
+
+  //para->setValue("Use Confidence 1",BoolValue(true));
+  //para->setValue("Use Confidence 2",BoolValue(true));
+
+  //runComputeSampleConfidence();
+  //runLabelISO();
+
+  //para->setValue("Use Confidence 4", BoolValue(true));
+  //runComputeIsoConfidence();
 
 
 
@@ -609,7 +622,7 @@ void Poisson::runPoisson()
   global_paraMgr.glarea.setValue("Slice Color Scale", DoubleValue(estimate_scale*2/3));
   global_paraMgr.glarea.setValue("ISO Interval Size", DoubleValue(estimate_scale/3));
 
-  time.end();
+
   if (para->getBool("Run Generate Poisson Field") || para->getBool("Run One Key PoissonConfidence"))
   {
     time.start("Generate Poisson Field");
@@ -1867,7 +1880,7 @@ void Poisson::runComputeIsoConfidence()
   //ofstream file3("confidence_3_combine.txt");
   if (para->getBool("Use Confidence 4"))
   {
-    runLabelISO();
+    //runLabelISO();
     normalizeConfidence(iso_points->vert, 0);
   }
   vector<float> confidences_temp;
