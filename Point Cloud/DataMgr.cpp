@@ -306,6 +306,11 @@ void DataMgr::loadCameraModel(QString fileName)
   cout<<"camera model loaded \n";
 }
 
+void DataMgr::setCurrentTemperalSample(CMesh *mesh)
+{
+  this->temperal_sample = mesh;
+}
+
 CMesh* DataMgr::getCurrentIsoPoints()
 {
   if(&iso_points == NULL)
@@ -353,6 +358,11 @@ CMesh* DataMgr::getCurrentSamples()
 	}
 
 	return & samples;
+}
+
+CMesh* DataMgr::getCurrentTemperalSamples()
+{
+  return temperal_sample;
 }
 
 CMesh* DataMgr::getCurrentModel()

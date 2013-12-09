@@ -52,14 +52,14 @@ void CameraParaDlg::initConnects()
   connect(ui->doubleSpinBox_bottom_delta, SIGNAL(valueChanged(double)), this, SLOT(getIsoBottomDelta(double)));
   connect(ui->pushButton_set_iso_bottom_confidence, SIGNAL(clicked()), this, SLOT(runSetIsoBottomConfidence()));
   connect(ui->update_view_directions, SIGNAL(clicked()), this, SLOT(runUpdateViewDirections()));
+  
 
   connect(ui->pushButton_setup_initial_scans, SIGNAL(clicked()), this, SLOT(runSetupInitialScanns()));
   connect(ui->step1_run_WLOP, SIGNAL(clicked()), this, SLOT(runStep1WLOP()));
   connect(ui->step2_run_Poisson_Confidence, SIGNAL(clicked()), this, SLOT(runStep2PoissonConfidence()));
   connect(ui->step3_run_NBV, SIGNAL(clicked()), this, SLOT(runStep3NBVcandidates()));
-  connect(ui->pushButton_show_scan_window, SIGNAL(clicked()), this, SLOT(runShowScanWindow()));
   connect(ui->step4_run_New_Scan, SIGNAL(clicked()), this, SLOT(runStep4NewScans()));
-
+  connect(ui->pushButton_wlop_on_scanned_mesh, SIGNAL(clicked()), this, SLOT(runWlopOnScannedMesh()));
 }
 
 bool CameraParaDlg::initWidgets()
@@ -490,6 +490,7 @@ void CameraParaDlg::runStep1WLOP()
   CMesh* samples = area->dataMgr.getCurrentSamples();
   vcg::NormalExtrapolation<vector<CVertex> >::ExtrapolateNormals(samples->vert.begin(), samples->vert.end(), knn, -1);
   area->dataMgr.recomputeQuad();
+  GlobalFun::removeOutliers(samples, global_paraMgr.data.getDouble("CGrid Radius"), 0.01);
 }
 
 void CameraParaDlg::runStep2PoissonConfidence()
@@ -517,8 +518,15 @@ void CameraParaDlg::runStep4NewScans()
   updateTabelViewScanResults();
 }
 
-void CameraParaDlg::runShowScanWindow()
+void CameraParaDlg::runWlopOnScannedMesh()
 {
-
+  vector< CMesh* > scanned_results = area->dataMgr.scanned_results;
+  vector< CMesh* >::iterator it = scanned_results.begin();
+  for (; it != scanned_results.end(); ++it)
+  {
+    area->dataMgr.temperal_sample = *it;
+    global_paraMgr.wLop.setValue("Run Wlop On Scanned Mesh", BoolValue(true));
+    area->runWlop();
+    global_paraMgr.wLop.setValue("Run Wlop On Scanned Mesh", BoolValue(false));
+  }
 }
-
