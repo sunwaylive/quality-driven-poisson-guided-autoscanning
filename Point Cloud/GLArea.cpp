@@ -336,6 +336,14 @@ void GLArea::paintGL()
 				//  glDrawer.draw(GLDrawer::DOT, nbv_grids);
 				//}
 			}
+      else 
+      {
+        CMesh* field_points = dataMgr.getCurrentFieldPoints();
+        if (!dataMgr.isFieldPointsEmpty())
+        {
+          glDrawer.draw(GLDrawer::DOT, field_points);
+        }
+      }
 		}
 
 		if (para->getBool("Show NBV Candidates"))

@@ -100,11 +100,12 @@ void Poisson::setInput(DataMgr* pData)
 
     if (!pData->isNBVGridsEmpty() && global_paraMgr.nbv.getBool("Use Confidence Separation"))
     {
+      cout << "using NBV grids" << endl;
       field_points = pData->getViewGridPoints();
-
     }
     else
     {
+      cout << "using real field point" << endl;
       field_points = pData->getCurrentFieldPoints();
     }
     
@@ -1857,6 +1858,7 @@ void Poisson::runComputeNewIsoConfidence()
   }
 
   time.start("multiply");
+
   for (int i = 0; i < iso_points->vn; i++)
   {
     CVertex& v = iso_points->vert[i];
@@ -1867,6 +1869,8 @@ void Poisson::runComputeNewIsoConfidence()
     }
     v.eigen_confidence = multiply_confidence;
   }
+
+
   time.end();
 
   normalizeConfidence(iso_points->vert, 0);
@@ -1896,6 +1900,10 @@ void Poisson::runComputeIsoConfidence()
     cout << "need field points" << endl;
     return;
   }
+  else
+  {
+    cout << "field points: " << field_points->vert.size() << endl;
+  }
 
   double radius = para->getDouble("CGrid Radius");
   double radius2 = radius * radius;
@@ -1922,6 +1930,8 @@ void Poisson::runComputeIsoConfidence()
       int index = v.original_neighbors[j];
       CVertex& t = field_points->vert[index];
 
+      //cout << t.eigen_confidence << endl;
+
       Point3f diff = t.P() - v.P();
       Point3f vn = v.N();
       float proj = diff * v.N();
@@ -1929,18 +1939,17 @@ void Poisson::runComputeIsoConfidence()
       float dist2  = diff.SquaredNorm();
       float w1 = exp(dist2 * iradius16);
       float w2 = 1.0;
-      if (1)
+
+      if (proj > 0)
       {
-        if (proj > 0)
-        {
-          w2 = exp(-pow(1-vn*diff.Normalize(), 2)/sigma_threshold); 
-        }
-        else
-        {
-          vn *= -1;
-          w2 = exp(-pow(1-vn*diff.Normalize(), 2)/sigma_threshold); 
-        } 
+        w2 = exp(-pow(1-vn*diff.Normalize(), 2)/sigma_threshold); 
       }
+      else
+      {
+        vn *= -1;
+        w2 = exp(-pow(1-vn*diff.Normalize(), 2)/sigma_threshold); 
+      } 
+      
       float w = w1 * w2;
 
       if (proj > 0)
@@ -1959,6 +1968,10 @@ void Poisson::runComputeIsoConfidence()
     {
       v.eigen_confidence = abs(positive_sum / positive_w_sum - negative_sum / negative_w_sum);
       //cout << v.eigen_confidence << endl;
+    }
+    else
+    {
+      v.eigen_confidence = 1e-6;
     }
   }
   normalizeConfidence(iso_points->vert, 0);
@@ -2022,7 +2035,13 @@ void Poisson::normalizeConfidence(vector<CVertex>& vertexes, float delta)
     v.eigen_confidence = (v.eigen_confidence - min_confidence) / space;
 
     v.eigen_confidence += delta;
+
+    if (!(v.eigen_confidence > 0 || v.eigen_confidence <= 1.0))
+    {
+      v.eigen_confidence = 0.0;
+    }
   }
+
 
 }
 
