@@ -45,7 +45,7 @@ const Real ROUND_EPS=Real(1e-5);
 
 #include <stdarg.h>
 char* outputFile=NULL;
-int echoStdout=0;
+int echoStdout=1;
 void DumpOutput( const char* format , ... )
 {
   if( outputFile )
@@ -788,7 +788,7 @@ Real POctree< Degree, OutputDensity >::GetSampleWeight( const TreeOctNode* node 
 template< int Degree , bool OutputDensity >
 int POctree< Degree , OutputDensity >::UpdateWeightContribution( TreeOctNode* node , const Point3D<Real>& position , typename TreeOctNode::NeighborKey3& neighborKey , Real weight )
 {
-  cout << "************ 2.3.0 ************" << endl;
+  //cout << "************ 2.3.0 ************" << endl;
 
 	typename TreeOctNode::Neighbors3& neighbors = neighborKey.setNeighbors( node );
 	double x , dxdy , dx[DIMENSION][3] , width;
@@ -1055,13 +1055,10 @@ int POctree< Degree , OutputDensity >::setTree( char* fileName , int maxDepth , 
 }
 
 template< int Degree , bool OutputDensity >
-int POctree< Degree , OutputDensity >::
-  setTree2( std::vector<Point3D<Real> > &Pts, std::vector<Point3D<Real> > &Nor, int maxDepth , int minDepth , int kernelDepth , Real samplesPerNode ,
-  Real scaleFactor , int useConfidence , Real constraintWeight , int adaptiveExponent , XForm4x4< Real > xForm )
+int POctree< Degree , OutputDensity >::setTree2( std::vector<Point3D<Real> > &Pts, std::vector<Point3D<Real> > &Nor, int maxDepth , int minDepth , 
+  int splatDepth , Real samplesPerNode , Real scaleFactor ,
+  int useConfidence , Real constraintWeight , int adaptiveExponent , XForm4x4< Real > xForm )
 {
-  Timer my_time;
-
-  cout << "************ 1 ************" << endl;
   if( splatDepth<0 ) splatDepth = 0;
   this->samplesPerNode = samplesPerNode;
   this->splatDepth = splatDepth;
@@ -1083,92 +1080,81 @@ int POctree< Degree , OutputDensity >::
   typename TreeOctNode::NeighborKey3 neighborKey;
   neighborKey.set( maxDepth );
 
+  //PointStream< Real >* pointStream;
+  //char* ext = GetFileExtension( fileName );
+  //if     ( !strcasecmp( ext , "bnpts" ) ) pointStream = new BinaryPointStream< Real >( fileName );
+  //else if( !strcasecmp( ext , "ply"   ) ) pointStream = new    PLYPointStream< Real >( fileName );
+  //else                                    pointStream = new  ASCIIPointStream< Real >( fileName );
+  //delete[] ext;
+
   tree.setFullDepth( _minDepth );
-
-  //// Read through once to get the center and scale
-
-   cout << "************ 2 ************" << endl;
-  
-
-  Point3D< Real > p , n;
-  //while( pointStream->nextPoint( p , n ) )
-  for (int pi = 0; pi < Pts.size(); pi++)
+  // Read through once to get the center and scale
   {
-    //double t = Time(NULL);
-    p = xForm * Pts[pi];
-    for( i=0 ; i<DIMENSION ; i++ )
+    //double t = Time();
+    Point3D< Real > p , n;
+    for (int pi = 0; pi < Pts.size(); pi++)
     {
-      if( !cnt || p[i]<min[i] ) min[i] = p[i];
-      if( !cnt || p[i]>max[i] ) max[i] = p[i];
+      p = xForm * Pts[pi];
+      for( i=0 ; i<DIMENSION ; i++ )
+      {
+        if( !cnt || p[i]<min[i] ) min[i] = p[i];
+        if( !cnt || p[i]>max[i] ) max[i] = p[i];
+      }
+      cnt++;
     }
-    cnt++;
+
+    if( _boundaryType==0 ) _scale = std::max< Real >( max[0]-min[0] , std::max< Real >( max[1]-min[1] , max[2]-min[2] ) ) * 2;
+    else         _scale = std::max< Real >( max[0]-min[0] , std::max< Real >( max[1]-min[1] , max[2]-min[2] ) );
+    _center = ( max+min ) /2;
   }
-
-  cout << "************ 2.1 ************" << endl;
-
-  if( _boundaryType==0 ) _scale = std::max< Real >( max[0]-min[0] , std::max< Real >( max[1]-min[1] , max[2]-min[2] ) ) * 2;
-  else         _scale = std::max< Real >( max[0]-min[0] , std::max< Real >( max[1]-min[1] , max[2]-min[2] ) );
-  _center = ( max+min ) /2;
-
-
-  cout << "************ 2.2 ************" << endl;
-  cout << "splatDepth: " << splatDepth << endl;
 
   _scale *= scaleFactor;
   for( i=0 ; i<DIMENSION ; i++ ) _center[i] -= _scale/2;
-  //if( splatDepth>0 )
-  //{
-  //  //double t = Time(NULL);
-  //  cnt = 0;
+  if( splatDepth>0 )
+  {
+    //double t = Time();
+    cnt = 0;
+    //pointStream->reset();
+    Point3D< Real > p , n;
+    for (int pi = 0; pi < Pts.size(); pi++)
+    {
+      p = xForm * Pts[pi] , n = xFormN * Nor[pi];
+      p = ( p - _center ) / _scale;
+      if( !_inBounds(p) ) continue;
+      myCenter = Point3D< Real >( Real(0.5) , Real(0.5) , Real(0.5) );
+      myWidth = Real(1.0);
+      Real weight=Real( 1. );
+      if( useConfidence ) weight = Real( Length(n) );
+      temp = &tree;
+      int d=0;
+      while( d<splatDepth )
+      {
+        UpdateWeightContribution( temp , p , neighborKey , weight );
+        if( !temp->children ) temp->initChildren();
+        int cIndex=TreeOctNode::CornerIndex( myCenter , p );
+        temp = temp->children + cIndex;
+        myWidth/=2;
+        if( cIndex&1 ) myCenter[0] += myWidth/2;
+        else           myCenter[0] -= myWidth/2;
+        if( cIndex&2 ) myCenter[1] += myWidth/2;
+        else           myCenter[1] -= myWidth/2;
+        if( cIndex&4 ) myCenter[2] += myWidth/2;
+        else           myCenter[2] -= myWidth/2;
+        d++;
+      }
+      UpdateWeightContribution( temp , p , neighborKey , weight );
+      cnt++;
+    }
+  }
 
-  //  Point3D< Real > p , n;
-
-  //  for (int pi = 0; pi < Pts.size(); pi++)
-  //  {
-  //    p = xForm * Pts[pi] , n = xFormN * Nor[pi];
-  //    p = ( p - _center ) / _scale;
-  //    if( !_inBounds(p) ) continue;
-  //    myCenter = Point3D< Real >( Real(0.5) , Real(0.5) , Real(0.5) );
-  //    myWidth = Real(1.0);
-  //    Real weight=Real( 1. );
-  //    if( useConfidence ) weight = Real( Length(n) );
-  //    temp = &tree;
-  //    int d=0;
-  //    while( d<splatDepth )
-  //    {
-  //      UpdateWeightContribution( temp , p , neighborKey , weight );
-  //      if( !temp->children ) temp->initChildren();
-  //      int cIndex=TreeOctNode::CornerIndex( myCenter , p );
-  //      temp = temp->children + cIndex;
-  //      myWidth/=2;
-  //      if( cIndex&1 ) myCenter[0] += myWidth/2;
-  //      else           myCenter[0] -= myWidth/2;
-  //      if( cIndex&2 ) myCenter[1] += myWidth/2;
-  //      else           myCenter[1] -= myWidth/2;
-  //      if( cIndex&4 ) myCenter[2] += myWidth/2;
-  //      else           myCenter[2] -= myWidth/2;
-  //      d++;
-  //    }
-
-  //    //cout << "************ 2.3 ************" << endl;
-
-  //    UpdateWeightContribution( temp , p , neighborKey , weight );
-  //    cnt++;
-  //  }
-  //}
-
-
-   cout << "************ 3 ************" << endl;
   normals = new std::vector< Point3D<Real> >();
   cnt = 0;
-
-  // Point3D< Real > p , n;
-
+  //pointStream->reset();
+  Point3D< Real > p , n;
   for (int pi = 0; pi < Pts.size(); pi++)
   {
     p = Pts[pi];
     n = Nor[pi];
-
     n *= Real(-1.);
     p = xForm * p , n = xFormN * n;
     p = ( p - _center ) / _scale;
@@ -1261,13 +1247,12 @@ int POctree< Degree , OutputDensity >::
     cnt++;
   }
 
-  return 1;
-
   if( _boundaryType==0 ) pointWeightSum *= Real(4.);
   constraintWeight *= Real( pointWeightSum );
   constraintWeight /= cnt;
 
-   cout << "************ 4 ************" << endl;
+  MemoryUsage( );
+  //delete pointStream;
   if( _constrainValues )
     for( TreeOctNode* node=tree.nextNode() ; node ; node=tree.nextNode(node) )
       if( node->nodeData.pointIndex!=-1 )
@@ -1291,10 +1276,253 @@ int POctree< Degree , OutputDensity >::
           for( int d=0 ; d<3 ; d++ ) if( off[d]==0 || off[d]==res-1 ) normal[d] = 0;
         }
 #endif // FORCE_NEUMANN_FIELD
-        //MemoryUsage();
+        MemoryUsage();
         return cnt;
-        //return -1;
 }
+
+
+//template< int Degree , bool OutputDensity >
+//int POctree< Degree , OutputDensity >::
+//  setTree2( std::vector<Point3D<Real> > &Pts, std::vector<Point3D<Real> > &Nor, int maxDepth , int minDepth , int splatDepth , Real samplesPerNode ,
+//  Real scaleFactor , int useConfidence , Real constraintWeight , int adaptiveExponent , XForm4x4< Real > xForm )
+//{
+//  cout << "splatDepth0: " << splatDepth << endl;
+//  Timer my_time;
+//
+//  cout << "************ 1 ************" << endl;
+//  if( splatDepth<0 ) splatDepth = 0;
+//  this->samplesPerNode = samplesPerNode;
+//  this->splatDepth = splatDepth;
+//
+//  XForm3x3< Real > xFormN;
+//  for( int i=0 ; i<3 ; i++ ) for( int j=0 ; j<3 ; j++ ) xFormN(i,j) = xForm(i,j);
+//  xFormN = xFormN.transpose().inverse();
+//  if( _boundaryType==0 ) maxDepth++ , minDepth = std::max< int >( 1 , minDepth )+1;
+//  else minDepth = std::max< int >( 0 , minDepth );
+//  if( _boundaryType==0 && splatDepth>0 ) splatDepth++;
+//  _minDepth = std::min< int >( minDepth , maxDepth );
+//  _constrainValues = (constraintWeight>0);
+//  double pointWeightSum = 0;
+//  Point3D< Real > min , max , myCenter;
+//  Real myWidth;
+//  int i , cnt=0;
+//  TreeOctNode* temp;
+//
+//  typename TreeOctNode::NeighborKey3 neighborKey;
+//  neighborKey.set( maxDepth );
+//
+//  tree.setFullDepth( _minDepth );
+//
+//  //// Read through once to get the center and scale
+//
+//   cout << "************ 2 ************" << endl;
+//  
+//
+//  Point3D< Real > p , n;
+//  //while( pointStream->nextPoint( p , n ) )
+//  for (int pi = 0; pi < Pts.size(); pi++)
+//  {
+//    //double t = Time(NULL);
+//    p = xForm * Pts[pi];
+//    for( i=0 ; i<DIMENSION ; i++ )
+//    {
+//      if( !cnt || p[i]<min[i] ) min[i] = p[i];
+//      if( !cnt || p[i]>max[i] ) max[i] = p[i];
+//    }
+//    cnt++;
+//  }
+//
+//  cout << "************ 2.1 ************" << endl;
+//
+//  if( _boundaryType==0 ) _scale = std::max< Real >( max[0]-min[0] , std::max< Real >( max[1]-min[1] , max[2]-min[2] ) ) * 2;
+//  else         _scale = std::max< Real >( max[0]-min[0] , std::max< Real >( max[1]-min[1] , max[2]-min[2] ) );
+//  _center = ( max+min ) /2;
+//
+//
+//  cout << "************ 2.2 ************" << endl;
+//  cout << "splatDepth: " << splatDepth << endl;
+//
+//  _scale *= scaleFactor;
+//  for( i=0 ; i<DIMENSION ; i++ ) _center[i] -= _scale/2;
+//  if( splatDepth>0 )
+//  {
+//    //double t = Time(NULL);
+//    cnt = 0;
+//
+//    Point3D< Real > p , n;
+//
+//    for (int pi = 0; pi < Pts.size(); pi++)
+//    {
+//      p = xForm * Pts[pi] , n = xFormN * Nor[pi];
+//      p = ( p - _center ) / _scale;
+//      if( !_inBounds(p) ) continue;
+//      myCenter = Point3D< Real >( Real(0.5) , Real(0.5) , Real(0.5) );
+//      myWidth = Real(1.0);
+//      Real weight=Real( 1. );
+//      if( useConfidence ) weight = Real( Length(n) );
+//      temp = &tree;
+//      int d=0;
+//      while( d<splatDepth )
+//      {
+//        UpdateWeightContribution( temp , p , neighborKey , weight );
+//        if( !temp->children ) temp->initChildren();
+//        int cIndex=TreeOctNode::CornerIndex( myCenter , p );
+//        temp = temp->children + cIndex;
+//        myWidth/=2;
+//        if( cIndex&1 ) myCenter[0] += myWidth/2;
+//        else           myCenter[0] -= myWidth/2;
+//        if( cIndex&2 ) myCenter[1] += myWidth/2;
+//        else           myCenter[1] -= myWidth/2;
+//        if( cIndex&4 ) myCenter[2] += myWidth/2;
+//        else           myCenter[2] -= myWidth/2;
+//        d++;
+//      }
+//
+//      //cout << "************ 2.3 ************" << endl;
+//
+//      UpdateWeightContribution( temp , p , neighborKey , weight );
+//      cnt++;
+//    }
+//  }
+//
+//
+//   cout << "************ 3 ************" << endl;
+//  normals = new std::vector< Point3D<Real> >();
+//  cnt = 0;
+//
+//  // Point3D< Real > p , n;
+//
+//  for (int pi = 0; pi < Pts.size(); pi++)
+//  {
+//    p = Pts[pi];
+//    n = Nor[pi];
+//
+//    n *= Real(-1.);
+//    p = xForm * p , n = xFormN * n;
+//    p = ( p - _center ) / _scale;
+//    if( !_inBounds(p) ) continue;
+//    myCenter = Point3D< Real >( Real(0.5) , Real(0.5) , Real(0.5) );
+//    myWidth = Real(1.0);
+//    Real l = Real( Length( n ) );
+//    if( l!=l || l<=EPSILON ) continue;
+//    if( !useConfidence ) n /= l;
+//
+//    l = Real(1.);
+//    Real pointWeight = Real(1.f);
+//    if( samplesPerNode>0 && splatDepth )
+//    {
+//      pointWeight = SplatOrientedPoint( p , n , neighborKey , splatDepth , samplesPerNode , _minDepth , maxDepth );
+//    }
+//    else
+//    {
+//      temp = &tree;
+//      int d=0;
+//      if( splatDepth )
+//      {
+//        while( d<splatDepth )
+//        {
+//          int cIndex=TreeOctNode::CornerIndex(myCenter,p);
+//          temp = &temp->children[cIndex];
+//          myWidth /= 2;
+//          if(cIndex&1) myCenter[0] += myWidth/2;
+//          else		 myCenter[0] -= myWidth/2;
+//          if(cIndex&2) myCenter[1] += myWidth/2;
+//          else		 myCenter[1] -= myWidth/2;
+//          if(cIndex&4) myCenter[2] += myWidth/2;
+//          else		 myCenter[2] -= myWidth/2;
+//          d++;
+//        }
+//        pointWeight = GetSampleWeight( temp , p , neighborKey );
+//      }
+//      for( i=0 ; i<DIMENSION ; i++ ) n[i] *= pointWeight;
+//      while( d<maxDepth )
+//      {
+//        if( !temp->children ) temp->initChildren();
+//        int cIndex=TreeOctNode::CornerIndex(myCenter,p);
+//        temp=&temp->children[cIndex];
+//        myWidth/=2;
+//        if(cIndex&1) myCenter[0] += myWidth/2;
+//        else		 myCenter[0] -= myWidth/2;
+//        if(cIndex&2) myCenter[1] += myWidth/2;
+//        else		 myCenter[1] -= myWidth/2;
+//        if(cIndex&4) myCenter[2] += myWidth/2;
+//        else		 myCenter[2] -= myWidth/2;
+//        d++;
+//      }
+//      SplatOrientedPoint( temp , p , n , neighborKey );
+//    }
+//    pointWeightSum += pointWeight;
+//    if( _constrainValues )
+//    {
+//      int d = 0;
+//      TreeOctNode* temp = &tree;
+//      myCenter = Point3D< Real >( Real(0.5) , Real(0.5) , Real(0.5) );
+//      myWidth = Real(1.0);
+//      while( 1 )
+//      {
+//        int idx = temp->nodeData.pointIndex;
+//        if( idx==-1 )
+//        {
+//          idx = int( _points.size() );
+//          _points.push_back( PointData( p , Real(1.) ) );
+//          temp->nodeData.pointIndex = idx;
+//        }
+//        else
+//        {
+//          _points[idx].weight += Real(1.);
+//          _points[idx].position += p;
+//        }
+//
+//        int cIndex = TreeOctNode::CornerIndex( myCenter , p );
+//        if( !temp->children ) break;
+//        temp = &temp->children[cIndex];
+//        myWidth /= 2;
+//        if( cIndex&1 ) myCenter[0] += myWidth/2;
+//        else		   myCenter[0] -= myWidth/2;
+//        if( cIndex&2 ) myCenter[1] += myWidth/2;
+//        else		   myCenter[1] -= myWidth/2;
+//        if( cIndex&4 ) myCenter[2] += myWidth/2;
+//        else		   myCenter[2] -= myWidth/2;
+//        d++;
+//      }
+//    }
+//    cnt++;
+//  }
+//
+//  return 1;
+//
+//  if( _boundaryType==0 ) pointWeightSum *= Real(4.);
+//  constraintWeight *= Real( pointWeightSum );
+//  constraintWeight /= cnt;
+//
+//   cout << "************ 4 ************" << endl;
+//  if( _constrainValues )
+//    for( TreeOctNode* node=tree.nextNode() ; node ; node=tree.nextNode(node) )
+//      if( node->nodeData.pointIndex!=-1 )
+//      {
+//        int idx = node->nodeData.pointIndex;
+//        _points[idx].position /= _points[idx].weight;
+//        int e = ( _boundaryType==0 ? node->depth()-1 : node->depth() ) * adaptiveExponent - ( _boundaryType==0 ? maxDepth-1 : maxDepth ) * (adaptiveExponent-1);
+//        if( e<0 ) _points[idx].weight /= Real( 1<<(-e) );
+//        else      _points[idx].weight *= Real( 1<<  e  );
+//        _points[idx].weight *= Real( constraintWeight );
+//      }
+//#if FORCE_NEUMANN_FIELD
+//      if( _boundaryType==1 )
+//        for( TreeOctNode* node=tree.nextNode() ; node ; node=tree.nextNode( node ) )
+//        {
+//          int d , off[3] , res;
+//          node->depthAndOffset( d , off );
+//          res = 1<<d;
+//          if( node->nodeData.normalIndex<0 ) continue;
+//          Point3D< Real >& normal = (*normals)[node->nodeData.normalIndex];
+//          for( int d=0 ; d<3 ; d++ ) if( off[d]==0 || off[d]==res-1 ) normal[d] = 0;
+//        }
+//#endif // FORCE_NEUMANN_FIELD
+//        //MemoryUsage();
+//        return cnt;
+//        //return -1;
+//}
 
 template< int Degree , bool OutputDensity >
 void POctree< Degree , OutputDensity >::setBSplineData( int maxDepth , int boundaryType )
