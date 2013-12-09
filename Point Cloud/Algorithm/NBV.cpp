@@ -361,7 +361,8 @@ NBV::propagate()
 
       //double half_D = optimal_D / 2.0f;
       double optimal_D = (n_dist + f_dist) / 2.0f;
-      double half_D = optimal_D / 2.0f; //wsh，这里还有问题，应该是half_D = n_dist比较好。    
+      //double half_D = optimal_D / 2.0f; //wsh，这里还有问题，应该是half_D = n_dist比较好。    
+      double half_D = n_dist;
       double half_D2 = half_D * half_D; //
       double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
       double sigma_threshold = pow(max(1e-8, 1-cos(sigma / 180.0 * 3.1415926)), 2);

@@ -1603,8 +1603,8 @@ void Poisson::runComputeNewIsoConfidence()
   {
     time.start("confidence 1");
     GlobalFun::computeBallNeighbors(iso_points, samples, 
-      radius, 
-      samples->bbox);
+                                    radius, 
+                                    samples->bbox);
     b_already_compute_neighborhood = true;
 
     //float sum_confidence = 0;
@@ -1612,7 +1612,7 @@ void Poisson::runComputeNewIsoConfidence()
     float max_confidence = 0;
     for (int i = 0; i < iso_points->vert.size(); i++)
     {
-      confidences[i][curr] = 1.;
+      confidences[i][curr] = 0.01;
       CVertex& v = iso_points->vert[i];
 
       if (v.original_neighbors.empty())
@@ -1670,16 +1670,57 @@ void Poisson::runComputeNewIsoConfidence()
   //  time.end();
   //}
 
+  //if (para->getBool("Use Confidence 2"))
+  //{
+  //  time.start("confidence 2");
+  //   GlobalFun::computeBallNeighbors(iso_points, NULL, 
+  //                                   radius, 
+  //                                   original->bbox);
+
+
+  //  double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
+  //  double sigma_threshold = pow(max(1e-8,1-cos(sigma/180.0*3.1415926)), 2);
+
+  //  float min_confidence = GlobalFun::getDoubleMAXIMUM();
+  //  float max_confidence = 0;
+  //  for (int i = 0; i < iso_points->vert.size(); i++)
+  //  {
+  //    confidences[i][curr] = 0.;
+
+  //    CVertex& v = iso_points->vert[i];
+  //    if (v.neighbors.empty())
+  //    {
+  //      continue;
+  //    }
+
+  //    vector<int>* neighbors = &v.neighbors;
+  //    double sum_w = 0;
+  //    for (int j = 0; j < v.neighbors.size(); j++)
+  //    {
+  //      CVertex& t = iso_points->vert[(*neighbors)[j]];
+  //      float dist2  = (v.P() - t.P()).SquaredNorm();
+  //      float w = exp(dist2 * iradius16);
+  //      double normal_diff = exp(-pow(1-v.N()*t.N(), 2)/sigma_threshold);
+
+  //      confidences[i][curr] += w * normal_diff;
+  //      sum_w += w;
+  //    }
+  //    confidences[i][curr] /= sum_w;
+  //  }
+  //  curr++;
+  //  time.end();
+  //}
+
   if (para->getBool("Use Confidence 2"))
   {
     time.start("confidence 2");
-     GlobalFun::computeBallNeighbors(iso_points, NULL, 
-                                      radius, 
-                                      original->bbox);
+    GlobalFun::computeBallNeighbors(iso_points, samples, 
+                                    radius, 
+                                    original->bbox);
 
 
     double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
-    double sigma_threshold = pow(max(1e-8,1-cos(sigma/180.0*3.1415926)), 2);
+    double sigma_threshold = pow(max(1e-8, 1-cos(sigma/180.0*3.1415926)), 2);
 
     float min_confidence = GlobalFun::getDoubleMAXIMUM();
     float max_confidence = 0;
@@ -1688,24 +1729,20 @@ void Poisson::runComputeNewIsoConfidence()
       confidences[i][curr] = 0.;
 
       CVertex& v = iso_points->vert[i];
-      if (v.neighbors.empty())
+      if (v.original_neighbors.empty())
       {
         continue;
       }
 
-      vector<int>* neighbors = &v.neighbors;
+      vector<int>* neighbors = &v.original_neighbors;
       double sum_w = 0;
-      for (int j = 0; j < v.neighbors.size(); j++)
+      for (int j = 0; j < v.original_neighbors.size(); j++)
       {
-        CVertex& t = iso_points->vert[(*neighbors)[j]];
-        float dist2  = (v.P() - t.P()).SquaredNorm();
-        float w = exp(dist2 * iradius16);
+        CVertex& t = samples->vert[(*neighbors)[j]];
         double normal_diff = exp(-pow(1-v.N()*t.N(), 2)/sigma_threshold);
-
-        confidences[i][curr] += w * normal_diff;
-        sum_w += w;
+        confidences[i][curr] += normal_diff;
       }
-      confidences[i][curr] /= sum_w;
+
     }
     curr++;
     time.end();
@@ -1714,49 +1751,86 @@ void Poisson::runComputeNewIsoConfidence()
   if (para->getBool("Use Confidence 3"))
   {
     time.start("confidence 3");
-    if (!b_already_compute_neighborhood)
-    {
-      GlobalFun::computeBallNeighbors(iso_points, original, 
-        radius, 
-        original->bbox);
-    }
-    else
-    {
-      b_already_compute_neighborhood = true;
-    }
+    GlobalFun::computeBallNeighbors(iso_points, samples, 
+      radius, 
+      original->bbox);
 
+
+    double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
+    double sigma_threshold = pow(max(1e-8, 1-cos(sigma/180.0*3.1415926)), 2);
+
+    float min_confidence = GlobalFun::getDoubleMAXIMUM();
+    float max_confidence = 0;
     for (int i = 0; i < iso_points->vert.size(); i++)
     {
-      confidences[i][curr] = 0;
+      confidences[i][curr] = 0.;
 
       CVertex& v = iso_points->vert[i];
       if (v.original_neighbors.empty())
       {
-        cout << "empty original" << endl;
-        return;
+        continue;
       }
 
       vector<int>* neighbors = &v.original_neighbors;
-      double sum_w = 0;
       for (int j = 0; j < v.original_neighbors.size(); j++)
       {
-        CVertex& t = original->vert[(*neighbors)[j]];
-        Point3f diff = v.P() - t.P();
-        float dist2  = diff.SquaredNorm();
+        CVertex& t = samples->vert[(*neighbors)[j]];
+        float dist2  = (v.P() - t.P()).SquaredNorm();
         float w = exp(dist2 * iradius16);
-        //float w = 1.0;
-        
-        double hn = diff * v.N();
-        double proj = exp(hn * hn * iradius16);
+        double normal_diff = exp(-pow(1-v.N()*t.N(), 2)/sigma_threshold);
 
-        confidences[i][curr] += w * proj;
-        sum_w += w;
+        confidences[i][curr] += w * normal_diff;
       }
-      confidences[i][curr] /= sum_w;
     }
     curr++;
     time.end();
   }
+  //if (para->getBool("Use Confidence 3"))
+  //{
+  //  time.start("confidence 3");
+  //  if (!b_already_compute_neighborhood)
+  //  {
+  //    GlobalFun::computeBallNeighbors(iso_points, original, 
+  //      radius, 
+  //      original->bbox);
+  //  }
+  //  else
+  //  {
+  //    b_already_compute_neighborhood = true;
+  //  }
+
+  //  for (int i = 0; i < iso_points->vert.size(); i++)
+  //  {
+  //    confidences[i][curr] = 0;
+
+  //    CVertex& v = iso_points->vert[i];
+  //    if (v.original_neighbors.empty())
+  //    {
+  //      cout << "empty original" << endl;
+  //      return;
+  //    }
+
+  //    vector<int>* neighbors = &v.original_neighbors;
+  //    double sum_w = 0;
+  //    for (int j = 0; j < v.original_neighbors.size(); j++)
+  //    {
+  //      CVertex& t = original->vert[(*neighbors)[j]];
+  //      Point3f diff = v.P() - t.P();
+  //      float dist2  = diff.SquaredNorm();
+  //      float w = exp(dist2 * iradius16);
+  //      //float w = 1.0;
+  //      
+  //      double hn = diff * v.N();
+  //      double proj = exp(hn * hn * iradius16);
+
+  //      confidences[i][curr] += w * proj;
+  //      sum_w += w;
+  //    }
+  //    confidences[i][curr] /= sum_w;
+  //  }
+  //  curr++;
+  //  time.end();
+  //}
 
   if (para->getBool("Use Confidence 4"))
   {
