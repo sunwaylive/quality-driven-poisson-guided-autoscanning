@@ -624,10 +624,14 @@ void GLArea::openByDrop(QString fileName)
 
 void GLArea::loadDefaultModel()
 {
-	dataMgr.loadPlyToModel("child_model.ply");
-  //dataMgr.loadSkeletonFromSkel("child.skel");
-	dataMgr.loadPlyToOriginal("child_original.ply");
-	dataMgr.loadPlyToSample("child_sample.ply");
+  dataMgr.loadSkeletonFromSkel("cart.skel");
+  
+
+
+	//dataMgr.loadPlyToModel("child_model.ply");
+ // //dataMgr.loadSkeletonFromSkel("child.skel");
+	//dataMgr.loadPlyToOriginal("child_original.ply");
+	//dataMgr.loadPlyToSample("child_sample.ply");
   //dataMgr.loadPlyToISO("child_iso.ply");
 	//dataMgr.loadPlyToSample("default.ply");
 	//dataMgr.loadPlyToOriginal("default_original.ply");

@@ -204,7 +204,8 @@ void Poisson::run()
     return;
   }
 
-  runPoisson();
+  //runPoisson();
+   runPoissonFieldAndIso();
 }
 
 void Poisson::runOneKeyPoissonConfidence()
@@ -513,7 +514,7 @@ void Poisson::runViewCandidatesClustering()
 
 void Poisson::runPoisson() 
 {
-  cout << "run Poisson" << endl;
+  cout << "run Poisson Field And Iso" << endl;
   CMesh* target = NULL;
   if (para->getBool("Run Poisson On Original"))
   {
@@ -533,7 +534,8 @@ void Poisson::runPoisson()
   vector<Point3D<float> > Pts(target->vn);
   vector<Point3D<float> > Nor(target->vn); 
 
-  for (int i = 0; i < target->vn; i++)
+  cout << "target size : " << target->vn << endl;;
+  for (int i = 0; i < target->vert.size(); i++)
   {
     CVertex v = target->vert[i];
     for (int ii = 0; ii < 3; ++ii)
@@ -554,7 +556,7 @@ void Poisson::runPoisson()
   PoissonParam Par;
   Par.Depth = para->getDouble("Max Depth");
   Par.SamplesPerNode = 1;
-  Par.SolverDivide = 6;
+  Par.SolverDivide = 7;
   Par.Offset = 1;
   Par.Confidence = false;
 
@@ -581,9 +583,10 @@ void Poisson::runPoisson()
 
   //TreeOctNode::SetPAllocator(MEMORY_PALLOCATOR_BLOCK_SIZE);
   OctNode< TreeNodeData< OutputDensity > , Real >::SetAllocator( MEMORY_ALLOCATOR_BLOCK_SIZE );
-  
+
   int kernelDepth = Par.Depth-2;
   if(Par.KernelDepth>=0){kernelDepth=Par.KernelDepth;}
+  cout << "kernel depth:  " << kernelDepth << endl;
 
   tree.setBSplineData(Par.Depth , Par.BoundaryType);
 
@@ -592,16 +595,16 @@ void Poisson::runPoisson()
 
   time.start("set tree");
   int pointCount = tree.setTree2(Pts, 
-                                 Nor,
-                                 Par.Depth , 
-                                 Par.MinDepth, 
-                                 kernelDepth , 
-                                 Real(Par.SamplesPerNode) , 
-                                 Par.Scale , 
-                                 Par.Confidence , 
-                                 Par.constraintWeight , 
-                                 Par.adaptiveExponent , 
-                                 xForm );
+    Nor,
+    Par.Depth , 
+    Par.MinDepth, 
+    kernelDepth , 
+    Real(Par.SamplesPerNode) , 
+    Par.Scale , 
+    Par.Confidence , 
+    Par.constraintWeight , 
+    Par.adaptiveExponent , 
+    xForm );
   time.end();
   time.start("Solve Laplician");
 
@@ -610,11 +613,11 @@ void Poisson::runPoisson()
   tree.SetLaplacianConstraints();
 
   tree.LaplacianMatrixIteration( Par.SolverDivide, 
-                                 Par.ShowResidual , 
-                                 Par.MinIters , 
-                                 Par.SolverAccuracy , 
-                                 Par.MaxSolveDepth , 
-                                 Par.FixedIters );
+    Par.ShowResidual , 
+    Par.MinIters , 
+    Par.SolverAccuracy , 
+    Par.MaxSolveDepth , 
+    Par.FixedIters );
 
   isoValue = tree.GetIsoValue();
   time.end();
@@ -669,7 +672,9 @@ void Poisson::runPoisson()
 
     time.end();
   }
-  else if (para->getBool("Run Extract MC Points") || para->getBool("Run One Key PoissonConfidence"))
+
+  //iso_points->vert.clear();
+  if (para->getBool("Run Extract MC Points") || para->getBool("Run One Key PoissonConfidence"))
   {
     time.start("marching cube");
     //if(Par.IsoDivide){tree.GetMCIsoTriangles(isoValue,Par.IsoDivide,&mesh);}
@@ -677,13 +682,11 @@ void Poisson::runPoisson()
     tree.GetMCIsoTriangles( isoValue , Par.IsoDivide, &mesh , 0 , 1 , !Par.NonManifold , Par.PolygonMesh);
     time.end();
 
-
     ////out put
     mesh.resetIterator();
     int vm = mesh.outOfCorePointCount()+mesh.inCorePoints.size();
     int fm = mesh.polygonCount();
 
-    cout << "######  1 #########" << endl;
     tentative_mesh.vert.clear();
     tentative_mesh.face.clear();
 
@@ -705,7 +708,6 @@ void Poisson::runPoisson()
       tentative_mesh.bbox.Add(new_v.P());
     }
 
-    cout << "######  2 #########" << endl;
 
     for (int ii=0; ii < mesh.outOfCorePointCount(); ii++)
     {
@@ -750,7 +752,7 @@ void Poisson::runPoisson()
           int index = polygon[j].idx + int( mesh.inCorePoints.size() );
           new_face.V(j) = &tentative_mesh.vert[index];
         }
-        
+
         //cout << tIndex[j].idx << ", ";
       }
       tentative_mesh.face.push_back(new_face);
@@ -761,8 +763,6 @@ void Poisson::runPoisson()
     tentative_mesh.fn = tentative_mesh.face.size();
     vcg::tri::UpdateNormals<CMesh>::PerVertex(tentative_mesh);
 
-     cout << "######  3 #########" << endl;
-
     float radius = 0;
     int sampleNum = para->getDouble("Poisson Disk Sample Number");
     if (sampleNum <= 100)
@@ -770,7 +770,6 @@ void Poisson::runPoisson()
       sampleNum = 100;
     }
     radius = tri::SurfaceSampling<CMesh,BaseSampler>::ComputePoissonDiskRadius(tentative_mesh, sampleNum);
-    cout << "######  3.1 #########" << endl;
     // first of all generate montecarlo samples for fast lookup
     CMesh *presampledMesh=&(tentative_mesh);
     CMesh MontecarloMesh; // this mesh is used only if we need real poisson sampling (and therefore we need to choose points different from the starting mesh vertices)
@@ -779,20 +778,15 @@ void Poisson::runPoisson()
     {
       BaseSampler sampler(&MontecarloMesh);
       sampler.qualitySampling =true;
-      cout << "######  3.2 #########" << endl;
       tri::SurfaceSampling<CMesh,BaseSampler>::Montecarlo(tentative_mesh, sampler, sampleNum*20);
       MontecarloMesh.bbox = tentative_mesh.bbox; // we want the same bounding box
       presampledMesh=&MontecarloMesh;
     }
 
-     cout << "######  4 #########" << endl;
-
     iso_points->vert.clear();
     BaseSampler mps(iso_points);
     tri::SurfaceSampling<CMesh,BaseSampler>::PoissonDiskParam pp;
     tri::SurfaceSampling<CMesh,BaseSampler>::PoissonDisk(tentative_mesh, mps, *presampledMesh, radius,pp);
-
-     cout << "######  5 #########" << endl;
 
     for (int i = 0; i < iso_points->vert.size(); i++)
     {
@@ -861,7 +855,7 @@ void Poisson::runPoissonFieldAndIso()
   PoissonParam Par;
   Par.Depth = para->getDouble("Max Depth");
   Par.SamplesPerNode = 1;
-  Par.SolverDivide = 6;
+  Par.SolverDivide = 7;
   Par.Offset = 1;
   Par.Confidence = false;
 
@@ -882,6 +876,7 @@ void Poisson::runPoissonFieldAndIso()
   POctree<Degree, OutputDensity> tree;
   tree.threads = Par.Threads;
   cout << "Threads Number:  " << tree.threads << endl;
+
   //PPolynomial<Degree> ReconstructionFunction=PPolynomial<Degree>::GaussianApproximation();
 
   center.coords[0]=center.coords[1]=center.coords[2]=0;
@@ -891,6 +886,7 @@ void Poisson::runPoissonFieldAndIso()
 
   int kernelDepth = Par.Depth-2;
   if(Par.KernelDepth>=0){kernelDepth=Par.KernelDepth;}
+  cout << "kernel depth:  " << kernelDepth << endl;
 
   tree.setBSplineData(Par.Depth , Par.BoundaryType);
 
@@ -902,7 +898,7 @@ void Poisson::runPoissonFieldAndIso()
                                  Nor,
                                  Par.Depth , 
                                  Par.MinDepth, 
-                                 kernelDepth , 
+                                 0, //kernelDepth,//0, //kernelDepth , 
                                  Real(Par.SamplesPerNode) , 
                                  Par.Scale , 
                                  Par.Confidence , 
@@ -917,11 +913,11 @@ void Poisson::runPoissonFieldAndIso()
   tree.SetLaplacianConstraints();
 
   tree.LaplacianMatrixIteration( Par.SolverDivide, 
-    Par.ShowResidual , 
-    Par.MinIters , 
-    Par.SolverAccuracy , 
-    Par.MaxSolveDepth , 
-    Par.FixedIters );
+                                 Par.ShowResidual , 
+                                 Par.MinIters , 
+                                 Par.SolverAccuracy , 
+                                 Par.MaxSolveDepth , 
+                                 Par.FixedIters );
 
   isoValue = tree.GetIsoValue();
   time.end();
@@ -930,7 +926,7 @@ void Poisson::runPoissonFieldAndIso()
   global_paraMgr.glarea.setValue("Slice Color Scale", DoubleValue(estimate_scale*2/3));
   global_paraMgr.glarea.setValue("ISO Interval Size", DoubleValue(estimate_scale/3));
 
-  time.end();
+
   if (para->getBool("Run Generate Poisson Field") || para->getBool("Run One Key PoissonConfidence"))
   {
     time.start("Generate Poisson Field");
@@ -1029,6 +1025,11 @@ void Poisson::runPoissonFieldAndIso()
       tentative_mesh.bbox.Add(new_v.P());
     }
 
+    if (tentative_mesh.vert.empty())
+    {
+      cout << "tentative mesh empty" << endl;
+      return;
+    }
     //TriangleIndex tIndex;
     std::vector< CoredVertexIndex > polygon;
     int inCoreFlag;

@@ -10,7 +10,7 @@ public:
 		IsoDivide=8;
 		Refine=3;
 		SamplesPerNode=1.0f;		
-		Scale=1.25f;
+		Scale=1.1f;
 		KernelDepth = -1;
 		Offset = 1.0;
 		BoundaryType = 1;
