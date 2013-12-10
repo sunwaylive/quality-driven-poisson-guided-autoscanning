@@ -333,7 +333,7 @@ void ParameterMgr::initPoissonParameter()
 	poisson.addParam(new RichBool("Run Extract All Octree Nodes", false));
 	poisson.addParam(new RichBool("Run Extract MC Points", false));
 
-	poisson.addParam(new RichBool("Run Poisson On Original", true));
+	poisson.addParam(new RichBool("Run Poisson On Original", false));
 	poisson.addParam(new RichBool("Run Generate Poisson Field", false));
 
 

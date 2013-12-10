@@ -544,6 +544,7 @@ void SparseSymmetricMatrix<T>::Multiply( const Vector<T2>& In , Vector<T2>& Out 
 #ifdef WIN32
 #ifndef _AtomicIncrement_
 #define _AtomicIncrement_
+//#include <windef.h>
 //#include <WinBase.h>
 #include <Windows.h>
 

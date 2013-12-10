@@ -531,8 +531,8 @@ void Poisson::runPoisson()
   }
 
   target->vn = target->vert.size();
-  vector<Point3D<float> > Pts(target->vn);
-  vector<Point3D<float> > Nor(target->vn); 
+  vector<Point3D<Real> > Pts(target->vn);
+  vector<Point3D<Real> > Nor(target->vn); 
 
   cout << "target size : " << target->vn << endl;;
   for (int i = 0; i < target->vert.size(); i++)
@@ -547,8 +547,8 @@ void Poisson::runPoisson()
   CoredVectorMeshData<PlyVertex<float>> mesh;
   //CoredVectorMeshData<Point3D<float>> mesh;
 
-  XForm4x4< float > xForm , iXForm;
-  xForm = XForm4x4< float >::Identity();
+  XForm4x4< Real > xForm , iXForm;
+  xForm = XForm4x4< Real >::Identity();
   iXForm = xForm.inverse();
 
   Timer time;
@@ -560,7 +560,7 @@ void Poisson::runPoisson()
   Par.Offset = 1;
   Par.Confidence = false;
 
-  Point3D<float> center;
+  Point3D<Real> center;
   float scale = 1.0;
   float isoValue=0;
 
@@ -595,18 +595,19 @@ void Poisson::runPoisson()
 
   time.start("set tree");
   int pointCount = tree.setTree2(Pts, 
-    Nor,
-    Par.Depth , 
-    Par.MinDepth, 
-    kernelDepth , 
-    Real(Par.SamplesPerNode) , 
-    Par.Scale , 
-    Par.Confidence , 
-    Par.constraintWeight , 
-    Par.adaptiveExponent , 
-    xForm );
+                                 Nor,
+                                 Par.Depth , 
+                                 Par.MinDepth, 
+                                 kernelDepth , 
+                                 Real(Par.SamplesPerNode) , 
+                                 Par.Scale , 
+                                 Par.Confidence , 
+                                 Par.constraintWeight , 
+                                 Par.adaptiveExponent , 
+                                 xForm );
+  cout << "Point Count: " << pointCount << endl;
   time.end();
-  time.start("Solve Laplician");
+  time.start("Solve Laplacian");
 
   tree.ClipTree();
   tree.finalize( Par.IsoDivide );
@@ -830,10 +831,11 @@ void Poisson::runPoissonFieldAndIso()
   }
 
   target->vn = target->vert.size();
-  vector<Point3D<float> > Pts(target->vn);
-  vector<Point3D<float> > Nor(target->vn); 
+  vector<Point3D<Real> > Pts(target->vn);
+  vector<Point3D<Real> > Nor(target->vn); 
 
-  cout << "target size : " << target->vn << endl;;
+  cout << "target size : " << target->vn << endl;
+  Box3f test_box;
   for (int i = 0; i < target->vert.size(); i++)
   {
     CVertex v = target->vert[i];
@@ -841,13 +843,18 @@ void Poisson::runPoissonFieldAndIso()
     {
       Pts[i].coords[ii] = v.P()[ii];
       Nor[i].coords[ii] = v.N()[ii];
+
+      test_box.Add(v.P());
     }
   }
-  CoredVectorMeshData<PlyVertex<float>> mesh;
+  Point3f mid_p = (test_box.min + test_box.max) / 2.0;
+  //cout << mid_p << endl;
+
+  CoredVectorMeshData<PlyVertex<Real>> mesh;
   //CoredVectorMeshData<Point3D<float>> mesh;
 
-  XForm4x4< float > xForm , iXForm;
-  xForm = XForm4x4< float >::Identity();
+  XForm4x4< Real > xForm , iXForm;
+  xForm = XForm4x4< Real >::Identity();
   iXForm = xForm.inverse();
 
   Timer time;
@@ -888,29 +895,69 @@ void Poisson::runPoissonFieldAndIso()
   if(Par.KernelDepth>=0){kernelDepth=Par.KernelDepth;}
   cout << "kernel depth:  " << kernelDepth << endl;
 
+  Par.MaxSolveDepth = Par.Depth;
+  if (Par.SolverDivide < Par.MinDepth)
+  {
+    Par.SolverDivide = Par.MinDepth;
+  }
+  if (Par.IsoDivide < Par.MinDepth)
+  {
+    Par.IsoDivide = Par.MinDepth;
+  }
+
   tree.setBSplineData(Par.Depth , Par.BoundaryType);
 
+  if (kernelDepth > Par.Depth)
+  {
+    cout << "can not be ..." << endl;
+    return;
+  }
   double maxMemoryUsage;
   tree.maxMemoryUsage=0;
 
   time.start("set tree");
-  int pointCount = tree.setTree2(Pts, 
-                                 Nor,
+  cout << "normals" << endl;
+  for (int i = 0; i < 5; i++)
+  {
+    cout << Nor[i][0] << ", " << Nor[i][1] << ", " << Nor[i][2] << endl;
+  }
+    int pointCount = tree.setTree("cart.ply",
                                  Par.Depth , 
                                  Par.MinDepth, 
-                                 0, //kernelDepth,//0, //kernelDepth , 
+                                 0,//kernelDepth, //0, //kernelDepth,//0, //kernelDepth , 
                                  Real(Par.SamplesPerNode) , 
                                  Par.Scale , 
                                  Par.Confidence , 
                                  Par.constraintWeight , 
                                  Par.adaptiveExponent , 
                                  xForm );
+
+  //int pointCount = tree.setTree2(Pts, 
+  //                               Nor,
+  //                               Par.Depth , 
+  //                               Par.MinDepth, 
+  //                               kernelDepth, //0, //kernelDepth,//0, //kernelDepth , 
+  //                               Real(Par.SamplesPerNode) , 
+  //                               Par.Scale , 
+  //                               Par.Confidence , 
+  //                               Par.constraintWeight , 
+  //                               Par.adaptiveExponent , 
+  //                               xForm );
   time.end();
   time.start("Solve Laplician");
 
+  DumpOutput( "Input Points: %d\n" , pointCount );
+  DumpOutput( "Leaves/Nodes: %d/%d\n" , tree.tree.leaves() , tree.tree.nodes() );  
+  DumpOutput( "Memory Usage: %.3f MB\n" , float( MemoryInfo::Usage() )/(1<<20) );
+
+
   tree.ClipTree();
   tree.finalize( Par.IsoDivide );
+
+  //DumpOutput2( comments[commentNum++] , "#             Tree set in: %9.1f (s), %9.1f (MB)\n" , 0 , tree.maxMemoryUsage );
+
   tree.SetLaplacianConstraints();
+
 
   tree.LaplacianMatrixIteration( Par.SolverDivide, 
                                  Par.ShowResidual , 
@@ -991,8 +1038,8 @@ void Poisson::runPoissonFieldAndIso()
     tentative_mesh.vert.clear();
     tentative_mesh.face.clear();
 
-    Point3D<float> p;
-    PlyVertex<float> pv; 
+    Point3D<Real> p;
+    PlyVertex<Real> pv; 
     int i=0;
     int index = 0;
     for (; i < int(mesh.inCorePoints.size()); i++)

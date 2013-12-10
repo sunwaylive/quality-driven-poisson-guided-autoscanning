@@ -857,16 +857,13 @@ int POctree< Degree , OutputDensity >::setTree( char* fileName , int maxDepth , 
 	typename TreeOctNode::NeighborKey3 neighborKey;
 	neighborKey.set( maxDepth );
 	PointStream< Real >* pointStream;
-	char* ext = GetFileExtension( fileName );
-	if     ( !strcasecmp( ext , "bnpts" ) ) pointStream = new BinaryPointStream< Real >( fileName );
-	else if( !strcasecmp( ext , "ply"   ) ) pointStream = new    PLYPointStream< Real >( fileName );
-	else                                    pointStream = new  ASCIIPointStream< Real >( fileName );
-	delete[] ext;
+	
+	pointStream = new    PLYPointStream< Real >( fileName );
 
 	tree.setFullDepth( _minDepth );
 	// Read through once to get the center and scale
 	{
-		double t = Time();
+		//double t = Time();
 		Point3D< Real > p , n;
 		while( pointStream->nextPoint( p , n ) )
 		{
@@ -888,7 +885,7 @@ int POctree< Degree , OutputDensity >::setTree( char* fileName , int maxDepth , 
 	for( i=0 ; i<DIMENSION ; i++ ) _center[i] -= _scale/2;
 	if( splatDepth>0 )
 	{
-		double t = Time();
+		//double t = Time();
 		cnt = 0;
 		pointStream->reset();
 		Point3D< Real > p , n;
@@ -1072,7 +1069,7 @@ int POctree< Degree , OutputDensity >::setTree2( std::vector<Point3D<Real> > &Pt
   _minDepth = std::min< int >( minDepth , maxDepth );
   _constrainValues = (constraintWeight>0);
   double pointWeightSum = 0;
-  Point3D< Real > min , max , myCenter;
+  Point3D< Real > min_p , max_p , myCenter;
   Real myWidth;
   int i , cnt=0;
   TreeOctNode* temp;
@@ -1092,21 +1089,28 @@ int POctree< Degree , OutputDensity >::setTree2( std::vector<Point3D<Real> > &Pt
   {
     //double t = Time();
     Point3D< Real > p , n;
+
     for (int pi = 0; pi < Pts.size(); pi++)
     {
       p = xForm * Pts[pi];
       for( i=0 ; i<DIMENSION ; i++ )
       {
-        if( !cnt || p[i]<min[i] ) min[i] = p[i];
-        if( !cnt || p[i]>max[i] ) max[i] = p[i];
+        if( cnt==0 || p[i]<min_p[i] ) min_p[i] = p[i];
+        if( cnt==0 || p[i]>max_p[i] ) max_p[i] = p[i];
       }
       cnt++;
     }
 
-    if( _boundaryType==0 ) _scale = std::max< Real >( max[0]-min[0] , std::max< Real >( max[1]-min[1] , max[2]-min[2] ) ) * 2;
-    else         _scale = std::max< Real >( max[0]-min[0] , std::max< Real >( max[1]-min[1] , max[2]-min[2] ) );
-    _center = ( max+min ) /2;
+    if( _boundaryType==0 ) _scale = (std::max< Real >)( max_p[0]-min_p[0] , (std::max< Real >)( max_p[1]-min_p[1] , max_p[2]-min_p[2] ) ) * 2;
+    else         _scale = (std::max< Real >)( max_p[0]-min_p[0] , (std::max< Real >)( max_p[1]-min_p[1] , max_p[2]-min_p[2] ) );
+    _center = ( max_p+min_p ) /2;
+
+    DumpOutput( "_scale/_center: %.6f/%.6f, %.6f, %.6f\n" , _scale , _center[0], _center[1], _center[2] );
   }
+
+  //_scale = 0.972816;
+  //Point3D< Real > ccc(-0.001263, 0.000310, 0.00434); 
+  //_center = ccc;
 
   _scale *= scaleFactor;
   for( i=0 ; i<DIMENSION ; i++ ) _center[i] -= _scale/2;

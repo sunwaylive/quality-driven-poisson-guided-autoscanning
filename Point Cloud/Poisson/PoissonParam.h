@@ -1,11 +1,12 @@
 #include "omp.h"
 
+typedef float Real;
 class PoissonParam
 {
 public:
 	PoissonParam()
 	{
-		Depth=6;
+		Depth=8;
 		SolverDivide=8;
 		IsoDivide=8;
 		Refine=3;
@@ -13,7 +14,7 @@ public:
 		Scale=1.1f;
 		KernelDepth = -1;
 		Offset = 1.0;
-		BoundaryType = 1;
+		BoundaryType = 0;
     MinDepth = 5;
     constraintWeight = 0.0;
     adaptiveExponent = 1;
@@ -27,14 +28,14 @@ public:
     NoResetSamples = false;
 		NoClipTree = false;
 		Confidence = true;
-    ShowResidual = false;
+    ShowResidual = true;
     NonManifold = true;
     PolygonMesh = false;
 		
 	}
 	bool Verbose,NoResetSamples,NoClipTree,Confidence, ShowResidual, NonManifold, PolygonMesh;
 
-	float Offset; // an hacked offset value. if == 1 no offset. 0.5.. 2 are good values.
+	Real Offset; // an hacked offset value. if == 1 no offset. 0.5.. 2 are good values.
 
 	
 	int Depth;
@@ -52,10 +53,10 @@ public:
   int Threads;
 
   
-  float constraintWeight;
-	float SamplesPerNode;
-	float Scale;
-  float SolverAccuracy;
+  Real constraintWeight;
+	Real SamplesPerNode;
+	Real Scale;
+  Real SolverAccuracy;
 //	char* paramNames[]=
 //	{
 //		"in","depth","out","refine","noResetSamples","noClipTree",
