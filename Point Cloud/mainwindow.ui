@@ -41,7 +41,7 @@
      <x>0</x>
      <y>0</y>
      <width>1275</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -61,6 +61,8 @@
     <addaction name="actionSave_View"/>
     <addaction name="actionSave_Field_Points"/>
     <addaction name="actionSave_NBV"/>
+    <addaction name="actionSwitch_Sample_Original"/>
+    <addaction name="actionSwitch_Sample_with_ISO"/>
    </widget>
    <widget class="QMenu" name="menuAlgorithom">
     <property name="title">
@@ -853,6 +855,16 @@
   <action name="actionRemove_Outlier">
    <property name="text">
     <string>Remove Outlier</string>
+   </property>
+  </action>
+  <action name="actionSwitch_Sample_Original">
+   <property name="text">
+    <string>Switch Sample Original</string>
+   </property>
+  </action>
+  <action name="actionSwitch_Sample_with_ISO">
+   <property name="text">
+    <string>Switch Sample  ISO</string>
    </property>
   </action>
  </widget>

@@ -1414,3 +1414,46 @@ void DataMgr::saveFieldPoints(QString fileName)
   }
 }
 
+void DataMgr::switchSampleToOriginal()
+{
+  CMesh temp_mesh;
+  replaceMesh(original, temp_mesh, false);
+  replaceMesh(samples, original, true);
+  replaceMesh(temp_mesh, samples, false);
+}
+
+void DataMgr::switchSampleToISO()
+{
+  CMesh temp_mesh;
+  replaceMesh2(iso_points, temp_mesh, false);
+  replaceMesh2(samples, iso_points, true);
+  replaceMesh2(temp_mesh, samples, false);
+}
+
+void DataMgr::replaceMesh(CMesh& src_mesh, CMesh& target_mesh, bool isOriginal)
+{
+  clearCMesh(target_mesh);
+  for(int i = 0; i < src_mesh.vert.size(); i++)
+  {
+    CVertex v = src_mesh.vert[i];
+    v.is_original = isOriginal;
+    v.m_index = i;
+    target_mesh.vert.push_back(v);
+  }
+  target_mesh.vn = src_mesh.vn;
+  target_mesh.bbox = src_mesh.bbox;
+}
+
+void DataMgr::replaceMesh2(CMesh& src_mesh, CMesh& target_mesh, bool isIso)
+{
+  clearCMesh(target_mesh);
+  for(int i = 0; i < src_mesh.vert.size(); i++)
+  {
+    CVertex v = src_mesh.vert[i];
+    v.is_iso = isIso;
+    v.m_index = i;
+    target_mesh.vert.push_back(v);
+  }
+  target_mesh.vn = src_mesh.vn;
+  target_mesh.bbox = src_mesh.bbox;
+}

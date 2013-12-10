@@ -95,8 +95,14 @@ public:
 
 	void     loadSkeletonFromSkel(QString fileName);
 	void     saveSkeletonAsSkel(QString fileName);
-
   void     saveFieldPoints(QString fileName);
+
+
+  void switchSampleToOriginal();
+  void switchSampleToISO();
+  void replaceMesh(CMesh& src_mesh, CMesh& target_mesh, bool isOriginal);
+  void replaceMesh2(CMesh& src_mesh, CMesh& target_mesh, bool isIso);
+
 
 
 private:

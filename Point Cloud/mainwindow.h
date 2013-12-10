@@ -64,6 +64,9 @@ private slots:
 	//void poissonTest();
  // void poissonTestAll();
 
+  void switchSampleOriginal();
+  void switchSampleISO();
+
 
 private slots:
 	void runWLop();

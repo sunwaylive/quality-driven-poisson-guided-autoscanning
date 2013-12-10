@@ -634,7 +634,7 @@ void GLArea::loadDefaultModel()
 	//dataMgr.loadSkeletonFromSkel("Yoga1 MC Labeled.skel");
 	//dataMgr.loadSkeletonFromSkel("default.skel");
 
-	//dataMgr.loadSkeletonFromSkel("yoga0.skel");
+	dataMgr.loadSkeletonFromSkel("6 figure test.skel");
 	//dataMgr.loadSkeletonFromSkel("wlop2 + iso.skel");
   //dataMgr.loadSkeletonFromSkel("default.skel");
 
