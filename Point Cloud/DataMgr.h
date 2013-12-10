@@ -140,5 +140,7 @@ public:
 	RichParameterSet*   para;
 	double              init_radius;
 	QString             curr_file_name;
+
+  Box3f whole_space_box;
 };
 

@@ -64,4 +64,5 @@ private:
   vector<float>         confidence_weight_sum;
   static int            view_bins_each_axis;
   vector<double>        nbv_scores;
+  Box3f* whole_space_box;
 };
