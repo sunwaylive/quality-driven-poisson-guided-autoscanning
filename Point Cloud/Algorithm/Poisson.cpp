@@ -1004,7 +1004,7 @@ void Poisson::runPoissonFieldAndIso()
     field_points->vn = field_points->vert.size();
     cout << "field point size:  " << field_points->vn << endl;
     cout << "resolution:  " << res << endl;
-
+    para->setValue("Field Points Resolution", IntValue(res));
     //normalizeConfidence(field_points->vert, 0);
 
     time.end();

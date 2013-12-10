@@ -637,10 +637,8 @@ void GLArea::loadDefaultModel()
 	dataMgr.loadSkeletonFromSkel("6 figure test.skel");
 	//dataMgr.loadSkeletonFromSkel("wlop2 + iso.skel");
   //dataMgr.loadSkeletonFromSkel("default.skel");
-
   //dataMgr.loadSkeletonFromSkel("cube3.skel");
 
-  
 
 	//dataMgr.loadPlyToModel("model.ply"); 
 	//dataMgr.loadPlyToOriginal("model.ply");

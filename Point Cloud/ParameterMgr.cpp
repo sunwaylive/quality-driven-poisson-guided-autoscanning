@@ -59,6 +59,8 @@ void ParameterMgr::initDataMgrParameter()
 	data.addParam(new RichDouble("Down Sample Num", 4000));
 	data.addParam(new RichDouble("CGrid Radius", grid_r));
   data.addParam(new RichDouble("Max Normalize Length", 1.0f));
+
+
 }
 
 
@@ -374,6 +376,8 @@ void ParameterMgr::initPoissonParameter()
 	poisson.addParam(new RichBool("Compute ISO Confidence", false));
 	poisson.addParam(new RichBool("Use Sort Confidence Combination", true));
   poisson.addParam(new RichBool("Compute New ISO Confidence", false));
+
+  poisson.addParam(new RichInt("Field Points Resolution", -1));
 
 }
 

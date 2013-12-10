@@ -603,7 +603,7 @@ void MainWindow::saveFieldPoints()
   global_paraMgr.poisson.setValue("Run Normalize Field Confidence", BoolValue(false));  
 
 
-  QString file = QFileDialog::getSaveFileName(this, "Save filed as", "", "*.field");
+  QString file = QFileDialog::getSaveFileName(this, "Save filed as", "", "*.raw");
   if(!file.size()) return;
 
   area->dataMgr.saveFieldPoints(file);

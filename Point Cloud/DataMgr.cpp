@@ -1383,35 +1383,49 @@ void DataMgr::saveFieldPoints(QString fileName)
 
   //strStream << "ON " << original.vert.size() << endl;
 
-
-
   //FILE *fp = fopen(fileName.toStdString().c_str(),"rb");
   //if(!fp)
   //  cerr<<"open "<< fileName.toStdString().c_str() <<" failed"<<endl;
 
 
   ofstream fout;
-  fout.open("intensity test.dat", std::ios::out | std::ios::binary);
+  fout.open(fileName.toAscii(), std::ios::out | std::ios::binary);
   if( fout == NULL)
     cout<<" error ----- "<<endl;
 
 
   //for (int i = 0; i < field_points.vert.size(); i++)
-  cout << view_grid_points.vert.size() << " grides" << endl;
-  for (int i = 0; i < view_grid_points.vert.size(); i++)  
+  cout << field_points.vert.size() << " grides" << endl;
+  for (int i = 0; i < field_points.vert.size(); i++)  
   {
     CVertex& v = field_points.vert[i];
     float eigen_value = v.eigen_confidence * 255;
 
     unsigned char pTest = static_cast<unsigned char>(eigen_value);
 
-    if (i<100)
-    {
-      cout << v.eigen_confidence << " " << eigen_value << "  " << pTest << endl;
-    }
-
     fout << pTest;
   }
+  fout.close();
+
+  ofstream fout_dat;
+  QString fileName_dat = fileName;
+  QString temp = fileName;
+  QStringList str_list = temp.split(QRegExp("[/]"));
+  QString last_name = str_list.at(str_list.size()-1);
+  cout << "file name: " << last_name.toStdString() << endl;
+
+  int resolution = global_paraMgr.poisson.getInt("Field Points Resolution");
+  fileName_dat.replace(".raw", ".dat");
+  fout_dat.open(fileName_dat.toAscii());
+  fout_dat << "ObjectFileName:  " << last_name.toStdString() << endl;
+  fout_dat << "Resolution:  " << resolution << " " << resolution << " " << resolution << endl;
+  fout_dat << "SliceThickness:	0.0127651 0.0127389 0.0128079" << endl;
+  fout_dat << "Format:		    UCHAR" << endl;
+  fout_dat << "ObjectModel:	I" << endl;
+  fout_dat << "Modality:	    CT" << endl;
+  fout_dat << "Checksum:	    7b197a4391516321308b81101d6f09e8" << endl;
+  fout_dat.close();
+
 }
 
 void DataMgr::switchSampleToOriginal()
