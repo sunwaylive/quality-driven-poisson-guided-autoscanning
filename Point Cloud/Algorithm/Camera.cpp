@@ -17,7 +17,7 @@ void vcc::Camera::setInput(DataMgr* pData)
      scan_candidates = pData->getAllScanCandidates();
      current_scanned_mesh = pData->getCurrentScannedMesh();
      scanned_results = pData->getScannedResults();
-	 nbv_candidates = pData->getNbvCandidates();
+	   nbv_candidates = pData->getNbvCandidates();
      //get current pos and direction
      /*direction = pData->getCameraDirection();
      pos = pData->getCameraPos();*/
@@ -162,7 +162,7 @@ void vcc::Camera::runInitialScan()
 void vcc::Camera::runNBVScan()
 {
   //release scanned_result
-  vector<CMesh* >::iterator it_scanned_result = scanned_results->begin();
+  vector< CMesh* >::iterator it_scanned_result = scanned_results->begin();
   for (; it_scanned_result != scanned_results->end(); ++it_scanned_result)
   {
     if ( (*it_scanned_result) != NULL)
@@ -186,8 +186,7 @@ void vcc::Camera::runNBVScan()
   }
 }
 
-void
-vcc::Camera::runOneKeyNewScan()
+void vcc::Camera::runOneKeyNewScan()
 {
 	runNBVScan();
 

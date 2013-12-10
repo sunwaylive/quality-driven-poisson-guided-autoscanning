@@ -56,7 +56,7 @@ void ParameterMgr::setGlobalParameter(QString paraName,Value& val)
 void ParameterMgr::initDataMgrParameter()
 {
 	data.addParam(new RichDouble("Init Radius Para", 2.0));
-	data.addParam(new RichDouble("Down Sample Num", 2500));
+	data.addParam(new RichDouble("Down Sample Num", 4000));
 	data.addParam(new RichDouble("CGrid Radius", grid_r));
   data.addParam(new RichDouble("Max Normalize Length", 1.0f));
 }
@@ -184,6 +184,7 @@ void ParameterMgr::initWLopParameter()
 	wLop.addParam(new RichBool("Run Anisotropic LOP", false));
 	wLop.addParam(new RichDouble("Current Movement Error", 0.0));
   wLop.addParam(new RichDouble("Outlier Percentage", 0.01));
+  wLop.addParam(new RichBool("Run Wlop On Scanned Mesh", true));
 }
 
 void ParameterMgr::initSkeletonParameter()

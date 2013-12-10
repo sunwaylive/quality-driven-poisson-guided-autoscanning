@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -330,6 +330,19 @@
        <width>231</width>
        <height>81</height>
       </rect>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_wlop_on_scanned_mesh">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>530</y>
+       <width>191</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Wlop On Scanned Mesh</string>
      </property>
     </widget>
    </widget>
@@ -796,26 +809,13 @@
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>270</y>
+       <y>230</y>
        <width>181</width>
        <height>31</height>
       </rect>
      </property>
      <property name="text">
       <string>Step4: Run New Scan</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_show_scan_window">
-     <property name="geometry">
-      <rect>
-       <x>100</x>
-       <y>230</y>
-       <width>111</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Show Scan Window</string>
      </property>
     </widget>
     <widget class="Line" name="line_3">

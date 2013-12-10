@@ -49,15 +49,17 @@ public:
   bool      isNBVGridsEmpty();
   bool      isNBVCandidatesEmpty();
 
-  CMesh*                  getCurrentModel();
+  void                    setCurrentTemperalSample(CMesh *mesh);
+
   CMesh*                  getCurrentSamples();
+  CMesh*                  getCurrentTemperalSamples();
+  CMesh*                  getCurrentModel();
   CMesh*                  getCurrentOriginal();
   CMesh*                  getCurrentIsoPoints();
   CMesh*                  getCurrentFieldPoints();
   Slices*                 getCurrentSlices();
   Skeleton*               getCurrentSkeleton();
   
-
   CMesh*                  getCameraModel();
   Point3f&                getCameraPos();
   Point3f&                getCameraDirection();
@@ -106,6 +108,7 @@ public:
   CMesh                  original;
   Point3f                original_center_point;
   CMesh                  samples;
+  CMesh*                 temperal_sample;
   CMesh                  iso_points;
   CMesh                  field_points;
   CMesh                  camera_model;

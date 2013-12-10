@@ -31,7 +31,15 @@ void WLOP::setInput(DataMgr* pData)
 {
 	if(!pData->isSamplesEmpty() && !pData->isOriginalEmpty())
 	{
-		CMesh* _samples = pData->getCurrentSamples();
+    CMesh *_samples = NULL;
+    if (global_paraMgr.wLop.getBool("Run Wlop On Scanned Mesh"))
+    {
+      _samples = pData->getCurrentTemperalSamples();
+    }else
+    {
+      _samples = pData->getCurrentSamples();
+    }
+
 		CMesh* _original = pData->getCurrentOriginal();
 
 		if(_samples == NULL || _original == NULL)
