@@ -921,28 +921,28 @@ void Poisson::runPoissonFieldAndIso()
   {
     cout << Nor[i][0] << ", " << Nor[i][1] << ", " << Nor[i][2] << endl;
   }
-    int pointCount = tree.setTree("cart.ply",
+    //int pointCount = tree.setTree("cart.ply",
+    //                               Par.Depth , 
+    //                               Par.MinDepth, 
+    //                               0,//kernelDepth, //0, //kernelDepth,//0, //kernelDepth , 
+    //                               Real(Par.SamplesPerNode) , 
+    //                               Par.Scale , 
+    //                               Par.Confidence , 
+    //                               Par.constraintWeight , 
+    //                               Par.adaptiveExponent , 
+    //                               xForm );
+
+  int pointCount = tree.setTree2(Pts, 
+                                 Nor,
                                  Par.Depth , 
                                  Par.MinDepth, 
-                                 0,//kernelDepth, //0, //kernelDepth,//0, //kernelDepth , 
+                                 kernelDepth, //0, //kernelDepth,//0, //kernelDepth , 
                                  Real(Par.SamplesPerNode) , 
                                  Par.Scale , 
                                  Par.Confidence , 
                                  Par.constraintWeight , 
                                  Par.adaptiveExponent , 
                                  xForm );
-
-  //int pointCount = tree.setTree2(Pts, 
-  //                               Nor,
-  //                               Par.Depth , 
-  //                               Par.MinDepth, 
-  //                               kernelDepth, //0, //kernelDepth,//0, //kernelDepth , 
-  //                               Real(Par.SamplesPerNode) , 
-  //                               Par.Scale , 
-  //                               Par.Confidence , 
-  //                               Par.constraintWeight , 
-  //                               Par.adaptiveExponent , 
-  //                               xForm );
   time.end();
   time.start("Solve Laplician");
 
