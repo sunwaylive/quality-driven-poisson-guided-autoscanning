@@ -1399,7 +1399,7 @@ void DataMgr::saveFieldPoints(QString fileName)
 
 
   //for (int i = 0; i < field_points.vert.size(); i++)
-  cout << field_points.vert.size() << " grides" << endl;
+  cout << field_points.vert.size() << " grids" << endl;
   for (int i = 0; i < field_points.vert.size(); i++)  
   {
     CVertex& v = field_points.vert[i];
