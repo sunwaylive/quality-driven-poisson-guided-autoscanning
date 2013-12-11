@@ -1810,9 +1810,9 @@ void GLArea::wheelEvent(QWheelEvent *e)
 				break;
 			}
 
-			global_paraMgr.poisson.setValue("Run Slice", BoolValue(true));
-			runPoisson();
-			global_paraMgr.poisson.setValue("Run Slice", BoolValue(false));
+			//global_paraMgr.poisson.setValue("Run Slice", BoolValue(true));
+			//runPoisson();
+			//global_paraMgr.poisson.setValue("Run Slice", BoolValue(false));
 
 			return;
 		}

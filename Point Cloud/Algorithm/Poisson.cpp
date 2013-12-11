@@ -624,8 +624,8 @@ void Poisson::runPoisson()
   time.end();
 
   double estimate_scale = abs(isoValue);
-  global_paraMgr.glarea.setValue("Slice Color Scale", DoubleValue(estimate_scale*2/3));
-  global_paraMgr.glarea.setValue("ISO Interval Size", DoubleValue(estimate_scale/3));
+  //global_paraMgr.glarea.setValue("Slice Color Scale", DoubleValue(estimate_scale*2/3));
+  //global_paraMgr.glarea.setValue("ISO Interval Size", DoubleValue(estimate_scale/3));
 
 
   if (para->getBool("Run Generate Poisson Field") || para->getBool("Run One Key PoissonConfidence"))
@@ -960,8 +960,8 @@ void Poisson::runPoissonFieldAndIso()
   time.end();
 
   double estimate_scale = abs(isoValue);
-  global_paraMgr.glarea.setValue("Slice Color Scale", DoubleValue(estimate_scale*2/3));
-  global_paraMgr.glarea.setValue("ISO Interval Size", DoubleValue(estimate_scale/3));
+  //global_paraMgr.glarea.setValue("Slice Color Scale", DoubleValue(estimate_scale*2/3));
+  //global_paraMgr.glarea.setValue("ISO Interval Size", DoubleValue(estimate_scale/3));
 
 
   if (para->getBool("Run Generate Poisson Field") || para->getBool("Run One Key PoissonConfidence"))
@@ -1920,6 +1920,16 @@ void Poisson::runComputeIsoConfidence()
   //ofstream file1("confidence_1_wlop.txt");
   //ofstream file2("confidence_2_gradient.txt");
   //ofstream file3("confidence_3_combine.txt");
+
+  if (para->getBool("Use Confidence 1"))
+  {
+    for (int i = 0; i < iso_points->vn; i++)
+    {
+      iso_points->vert[i].eigen_confidence = 0.5;
+    }
+    return;
+  }
+
   if (para->getBool("Use Confidence 4"))
   {
     //runLabelISO();
@@ -2014,44 +2024,56 @@ void Poisson::runComputeIsoConfidence()
   }
   normalizeConfidence(iso_points->vert, 0);
 
-  
   if (para->getBool("Use Confidence 4"))
   {
-    if (para->getBool("Use Confidence 3"))
-    {
-
-      for (int i = 0; i < iso_points->vn; i++)
-      {
-        CVertex& v = iso_points->vert[i];
-        //file2 << v.eigen_confidence << endl;
-        float temp_confidence = confidences_temp[i];
-        float combine_confidence = std::sqrt(temp_confidence * temp_confidence 
-                                   + v.eigen_confidence * v.eigen_confidence);
-        v.eigen_confidence = combine_confidence;
-      }
-
-      normalizeConfidence(iso_points->vert, 0);
-
-    }
-    else
-    {
-      for (int i = 0; i < iso_points->vn; i++)
-      {
-        CVertex& v = iso_points->vert[i];
-        //file2 << v.eigen_confidence << endl;
-        float temp_confidence = confidences_temp[i];
-        v.eigen_confidence *= temp_confidence;
-      }
-
-      normalizeConfidence(iso_points->vert, 0);
-    }
-
     for (int i = 0; i < iso_points->vn; i++)
     {
       CVertex& v = iso_points->vert[i];
-      //file3 << v.eigen_confidence << endl;
+      //file2 << v.eigen_confidence << endl;
+      float temp_confidence = confidences_temp[i];
+      v.eigen_confidence *= temp_confidence;
     }
+
+    normalizeConfidence(iso_points->vert, 0);
+
   }
+  //if (para->getBool("Use Confidence 4"))
+  //{
+  //  if (para->getBool("Use Confidence 3"))
+  //  {
+
+  //    for (int i = 0; i < iso_points->vn; i++)
+  //    {
+  //      CVertex& v = iso_points->vert[i];
+  //      //file2 << v.eigen_confidence << endl;
+  //      float temp_confidence = confidences_temp[i];
+  //      float combine_confidence = std::sqrt(temp_confidence * temp_confidence 
+  //                                 + v.eigen_confidence * v.eigen_confidence);
+  //      v.eigen_confidence = combine_confidence;
+  //    }
+
+  //    normalizeConfidence(iso_points->vert, 0);
+
+  //  }
+  //  else
+  //  {
+  //    for (int i = 0; i < iso_points->vn; i++)
+  //    {
+  //      CVertex& v = iso_points->vert[i];
+  //      //file2 << v.eigen_confidence << endl;
+  //      float temp_confidence = confidences_temp[i];
+  //      v.eigen_confidence *= temp_confidence;
+  //    }
+
+  //    normalizeConfidence(iso_points->vert, 0);
+  //  }
+
+  //  for (int i = 0; i < iso_points->vn; i++)
+  //  {
+  //    CVertex& v = iso_points->vert[i];
+  //    //file3 << v.eigen_confidence << endl;
+  //  }
+  //}
 
 }
 

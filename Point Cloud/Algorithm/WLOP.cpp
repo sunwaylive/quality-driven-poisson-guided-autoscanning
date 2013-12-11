@@ -112,7 +112,7 @@ void WLOP::run()
 {
   if (para->getBool("Run One Key WLOP"))
   {
-    for(int i = 0; i < 30; i++)
+    for(int i = 0; i < 35; i++)
     { 
       iterate();
       nTimeIterated++;

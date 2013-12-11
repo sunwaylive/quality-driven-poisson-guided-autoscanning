@@ -317,7 +317,7 @@ NBV::propagate()
   {
     confidence_weight_sum.assign(view_grid_points->vert.size(), 0.0);
   }
-  normalizeConfidence(iso_points->vert, 0);
+  //normalizeConfidence(iso_points->vert, 0);
 
   //double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
   double camera_max_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /

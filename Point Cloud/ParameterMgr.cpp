@@ -119,7 +119,7 @@ void ParameterMgr::initGlareaParameter()
 	glarea.addParam(new RichDouble("Snapshot Resolution", 2));
 	glarea.addParam(new RichDouble("Snapshot Index", 1));
 	glarea.addParam(new RichDouble("Radius Ball Transparency", 0.3));
-	glarea.addParam(new RichDouble("Slice Color Scale", 1));
+	glarea.addParam(new RichDouble("Slice Color Scale", 1.));
 	glarea.addParam(new RichDouble("ISO Interval Size", 50));
 	glarea.addParam(new RichDouble("Confidence Color Scale", 0.5));
 	glarea.addParam(new RichDouble("ISO Value Shift", 0.00));
