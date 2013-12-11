@@ -420,7 +420,7 @@ void GLArea::paintGL()
 
 		if (para->getBool("Show Bounding Box"))
 		{
-			Box3f box = dataMgr.getCurrentOriginal()->bbox;
+			Box3f box = dataMgr.getCurrentSamples()->bbox;
 			glBoxWire(box);
 
 			//Box3f standard_box;
