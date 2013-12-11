@@ -4,6 +4,10 @@
 #include <vector>
 #include "CMesh.h"
 #include "grid.h"
+
+#include "TriMesh.h"
+#include "TriMesh_algo.h"
+#include "ICP.h"
 //#include "LAP_Others/eigen.h"
 #include <fstream>
 #include <float.h>
@@ -75,6 +79,7 @@ namespace GlobalFun
   bool computeMeshLineIntersectPoint(CMesh *m0, Point3f& p, Point3f& line_dir, Point3f& result);
 
   void removeOutliers(CMesh *m, double radius, double remove_percent);
+  void computeICP(CMesh *dst, CMesh *src);
 }
 
 class Timer

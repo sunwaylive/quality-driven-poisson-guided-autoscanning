@@ -335,14 +335,40 @@
     <widget class="QPushButton" name="pushButton_wlop_on_scanned_mesh">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>530</y>
+       <x>40</x>
+       <y>580</y>
        <width>191</width>
        <height>31</height>
       </rect>
      </property>
      <property name="text">
       <string>Wlop On Scanned Mesh</string>
+     </property>
+    </widget>
+    <widget class="Line" name="line_4">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>540</y>
+       <width>231</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_ICP">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>640</y>
+       <width>191</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>ICP On Original、Samples</string>
      </property>
     </widget>
    </widget>
