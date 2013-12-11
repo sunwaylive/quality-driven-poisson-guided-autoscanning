@@ -140,6 +140,8 @@ void MainWindow::initConnect()
 	connect(ui.actionErase_Pick,SIGNAL(triggered()),this,SLOT(removePickPoints()));
   connect(ui.actionSave_Field_Points,SIGNAL(triggered()),this,SLOT(saveFieldPoints()));
 	
+  connect(ui.actionSwitch_Sample_Original,SIGNAL(triggered()),this,SLOT(switchSampleOriginal()));
+  connect(ui.actionSwitch_Sample_with_ISO,SIGNAL(triggered()),this,SLOT(switchSampleISO()));
   
 
   //connect(ui.actionPoisson_test,SIGNAL(triggered()),this,SLOT(poissonTest()));
@@ -601,7 +603,7 @@ void MainWindow::saveFieldPoints()
   global_paraMgr.poisson.setValue("Run Normalize Field Confidence", BoolValue(false));  
 
 
-  QString file = QFileDialog::getSaveFileName(this, "Save filed as", "", "*.field");
+  QString file = QFileDialog::getSaveFileName(this, "Save filed as", "", "*.raw");
   if(!file.size()) return;
 
   area->dataMgr.saveFieldPoints(file);
@@ -962,3 +964,17 @@ void MainWindow::removePickPoints()
 //  area->updateUI();
 //  area->updateGL();
 //}
+
+void MainWindow::switchSampleOriginal()
+{
+  area->cleanPickPoints();
+  area->dataMgr.switchSampleToOriginal();
+  area->updateUI();
+}
+
+void MainWindow::switchSampleISO()
+{
+  area->cleanPickPoints();
+  area->dataMgr.switchSampleToISO();
+  area->updateUI();
+}

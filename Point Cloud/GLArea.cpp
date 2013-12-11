@@ -336,6 +336,14 @@ void GLArea::paintGL()
 				//  glDrawer.draw(GLDrawer::DOT, nbv_grids);
 				//}
 			}
+      else 
+      {
+        CMesh* field_points = dataMgr.getCurrentFieldPoints();
+        if (!dataMgr.isFieldPointsEmpty())
+        {
+          glDrawer.draw(GLDrawer::DOT, field_points);
+        }
+      }
 		}
 
 		if (para->getBool("Show NBV Candidates"))
@@ -359,8 +367,11 @@ void GLArea::paintGL()
 			vcc::Camera current_camera;
 			double h_dist = global_paraMgr.camera.getDouble("Camera Horizon Dist");
 			double v_dist = global_paraMgr.camera.getDouble("Camera Vertical Dist");
-			double max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
-			double dist_to_model = global_paraMgr.camera.getDouble("Camera Dist To Model");
+			//double max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
+      double max_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
+                        global_paraMgr.camera.getDouble("Predicted Model Size");
+
+      double dist_to_model = global_paraMgr.camera.getDouble("Camera Dist To Model");
 			current_camera.far_horizon_dist = h_dist;
 			current_camera.far_vertical_dist = v_dist;
 			current_camera.far_distance = max_dist;
@@ -412,12 +423,13 @@ void GLArea::paintGL()
 			Box3f box = dataMgr.getCurrentOriginal()->bbox;
 			glBoxWire(box);
 
-			Box3f standard_box;
-			standard_box.min = Point3f(-1, -1, -1);
-			standard_box.max = Point3f(1, 1, 1);
-			glBoxWire(standard_box);
+			//Box3f standard_box;
+			//standard_box.min = Point3f(-1, -1, -1);
+			//standard_box.max = Point3f(1, 1, 1);
+			//glBoxWire(standard_box);
+      glBoxWire(dataMgr.whole_space_box);
 
-			CoordinateFrame(standard_box.Diag()/2.0).Render(this, NULL);
+			CoordinateFrame(dataMgr.whole_space_box.Diag()/2.0).Render(this, NULL);
 		}
 
 
@@ -626,13 +638,11 @@ void GLArea::loadDefaultModel()
 	//dataMgr.loadSkeletonFromSkel("Yoga1 MC Labeled.skel");
 	//dataMgr.loadSkeletonFromSkel("default.skel");
 
-	//dataMgr.loadSkeletonFromSkel("yoga0.skel");
+	dataMgr.loadSkeletonFromSkel("6 figure test.skel");
 	//dataMgr.loadSkeletonFromSkel("wlop2 + iso.skel");
   //dataMgr.loadSkeletonFromSkel("default.skel");
-
   //dataMgr.loadSkeletonFromSkel("cube3.skel");
 
-  
 
 	//dataMgr.loadPlyToModel("model.ply"); 
 	//dataMgr.loadPlyToOriginal("model.ply");

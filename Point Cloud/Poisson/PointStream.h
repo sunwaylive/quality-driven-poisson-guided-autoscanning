@@ -28,6 +28,10 @@ DAMAGE.
 
 #ifndef POINT_STREAM_INCLUDED
 #define POINT_STREAM_INCLUDED
+//#include "./PlyFile.h"
+//#include "./Ply.h"
+
+//#include "PlyFile.h"
 
 template< class Real >
 class PointStream

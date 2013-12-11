@@ -59,6 +59,8 @@ void ParameterMgr::initDataMgrParameter()
 	data.addParam(new RichDouble("Down Sample Num", 4000));
 	data.addParam(new RichDouble("CGrid Radius", grid_r));
   data.addParam(new RichDouble("Max Normalize Length", 1.0f));
+
+
 }
 
 
@@ -334,7 +336,7 @@ void ParameterMgr::initPoissonParameter()
 	poisson.addParam(new RichBool("Run Extract All Octree Nodes", false));
 	poisson.addParam(new RichBool("Run Extract MC Points", false));
 
-	poisson.addParam(new RichBool("Run Poisson On Original", true));
+	poisson.addParam(new RichBool("Run Poisson On Original", false));
 	poisson.addParam(new RichBool("Run Generate Poisson Field", false));
 
 
@@ -375,6 +377,10 @@ void ParameterMgr::initPoissonParameter()
 	poisson.addParam(new RichBool("Use Sort Confidence Combination", true));
   poisson.addParam(new RichBool("Compute New ISO Confidence", false));
 
+  poisson.addParam(new RichInt("Field Points Resolution", -1));
+
+
+
 }
 
 void ParameterMgr::initCameraParameter()
@@ -396,6 +402,8 @@ void ParameterMgr::initCameraParameter()
   camera.addParam(new RichDouble("Camera Near Distance", 17.0f)); //cm
   camera.addParam(new RichDouble("Optimal Plane Width", 10.0f)); //cm
   camera.addParam(new RichDouble("Predicted Model Size", 20.0f)); //cm
+
+  camera.addParam(new RichInt("View Grid Points Resolution", -1));
 }
 
 void

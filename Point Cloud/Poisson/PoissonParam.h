@@ -1,5 +1,3 @@
-#include "omp.h"
-
 class PoissonParam
 {
 public:
@@ -22,7 +20,7 @@ public:
     MaxSolveDepth = 9;
     FixedIters = -1;
     VoxelDepth = -1;
-    Threads = omp_get_num_procs();
+    Threads = 8;
 
     NoResetSamples = false;
 		NoClipTree = false;

@@ -25,7 +25,7 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING 
 ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGE.
 */
-
+#pragma once
 #ifndef MULTI_GRID_OCTREE_DATA_INCLUDED
 #define MULTI_GRID_OCTREE_DATA_INCLUDED
 
@@ -110,7 +110,6 @@ class VertexData
 {
 	typedef OctNode< TreeNodeData< OutputDensity > , Real > TreeOctNode;
 public:
-	static const int VERTEX_COORDINATE_SHIFT = ( sizeof( long long ) * 8 ) / 3;
 	static long long EdgeIndex( const TreeOctNode* node , int eIndex , int maxDepth , int index[DIMENSION] );
 	static long long EdgeIndex( const TreeOctNode* node , int eIndex , int maxDepth );
 	static long long FaceIndex( const TreeOctNode* node , int fIndex , int maxDepth,int index[DIMENSION] );
@@ -212,11 +211,11 @@ public:
 
 	Real radius;
 	int width;
-	double GetLaplacian  ( const typename BSplineData< Degree , Real >::Integrator& integrator , int d , const int off1[3] , const int off2[3] , bool childParent ) const;
-	double GetDivergence1( const typename BSplineData< Degree , Real >::Integrator& integrator , int d , const int off1[3] , const int off2[3] , bool childParent , const Point3D< Real >& normal1 ) const;
-	double GetDivergence2( const typename BSplineData< Degree , Real >::Integrator& integrator , int d , const int off1[3] , const int off2[3] , bool childParent , const Point3D< Real >& normal2 ) const;
-	Point3D< double > GetDivergence1( const typename BSplineData< Degree , Real >::Integrator& integrator , int d , const int off1[3] , const int off2[3] , bool childParent ) const;
-	Point3D< double > GetDivergence2( const typename BSplineData< Degree , Real >::Integrator& integrator , int d , const int off1[3] , const int off2[3] , bool childParent ) const;
+	Real GetLaplacian( const int index[DIMENSION] ) const;
+	// Note that this is a slight misnomer. We're only taking the diveregence/Laplacian in the weak sense, so there is a change of sign.
+	Real GetLaplacian( const TreeOctNode* node1 , const TreeOctNode* node2 ) const;
+	Real GetDivergence( const TreeOctNode* node1 , const TreeOctNode* node2 , const Point3D<Real>& normal1 ) const;
+	Real GetDivergenceMinusLaplacian( const TreeOctNode* node1 , const TreeOctNode* node2 , Real value1 , const Point3D<Real>& normal1 ) const;
 
 	class AdjacencyCountFunction
 	{
@@ -244,58 +243,33 @@ public:
 		void Function( const TreeOctNode* node1 , const TreeOctNode* node2 );
 	};
 
-	template< class C , int N > struct Stencil{ C values[N][N][N]; };
-	struct CenterValueStencil
-	{
-		Stencil< double , 3 > stencil;
-		Stencil< double , 3 > stencils[8];
-	};
-	struct CornerValueStencil
-	{
-		Stencil< double , 3 > stencil[8];
-		Stencil< double , 3 > stencils[8][8];
-	};
-	struct CornerNormalStencil
-	{
-		Stencil< Point3D< double > , 5 > stencil[8];
-		Stencil< Point3D< double > , 5 > stencils[8][8];
-	};
-
-	int _SolveFixedDepthMatrix( int depth , const typename BSplineData< Degree , Real >::Integrator& integrator , const SortedTreeNodes< OutputDensity >& sNodes , Real* subConstraints ,                     bool showResidual , int minIters , double accuracy , bool noSolve = false , int fixedIters=-1 );
-	int _SolveFixedDepthMatrix( int depth , const typename BSplineData< Degree , Real >::Integrator& integrator , const SortedTreeNodes< OutputDensity >& sNodes , Real* subConstraints , int startingDepth , bool showResidual , int minIters , double accuracy , bool noSolve = false , int fixedIters=-1 );
+	int _SolveFixedDepthMatrix( int depth , const SortedTreeNodes< OutputDensity >& sNodes , Real* subConstraints ,                     bool showResidual , int minIters , double accuracy , bool noSolve = false , int fixedIters=-1 );
+	int _SolveFixedDepthMatrix( int depth , const SortedTreeNodes< OutputDensity >& sNodes , Real* subConstraints , int startingDepth , bool showResidual , int minIters , double accuracy , bool noSolve = false , int fixedIters=-1 );
 
 	void SetMatrixRowBounds( const TreeOctNode* node , int rDepth , const int rOff[3] , int& xStart , int& xEnd , int& yStart , int& yEnd , int& zStart , int& zEnd ) const;
-	int GetMatrixRowSize( const typename TreeOctNode::Neighbors5& neighbors5 , bool symmetric ) const;
-	int GetMatrixRowSize( const typename TreeOctNode::Neighbors5& neighbors5 , int xStart , int xEnd , int yStart , int yEnd , int zStart , int zEnd , bool symmetric ) const;
-	int SetMatrixRow( const typename TreeOctNode::Neighbors5& neighbors5 , Pointer( MatrixEntry< MatrixReal > ) row , int offset , const typename BSplineData< Degree , Real >::Integrator& integrator , const Stencil< double , 5 >& stencil , bool symmetric ) const;
-	int SetMatrixRow( const typename TreeOctNode::Neighbors5& neighbors5 , Pointer( MatrixEntry< MatrixReal > ) row , int offset , const typename BSplineData< Degree , Real >::Integrator& integrator , const Stencil< double , 5 >& stencil , int xStart , int xEnd , int yStart , int yEnd , int zStart , int zEnd , bool symmetric ) const;
-
-	void SetLaplacianStencil ( int depth , const typename BSplineData< Degree , Real >::Integrator& integrator , Stencil< double , 5 >& stencil ) const;
-	void SetLaplacianStencils( int depth , const typename BSplineData< Degree , Real >::Integrator& integrator , Stencil< double , 5 > stencil[2][2][2] ) const;
-	void SetDivergenceStencil ( int depth , const typename BSplineData< Degree , Real >::Integrator& integrator , Stencil< Point3D< double > , 5 >& stencil , bool scatter ) const;
-	void SetDivergenceStencils( int depth , const typename BSplineData< Degree , Real >::Integrator& integrator , Stencil< Point3D< double > , 5 > stencil[2][2][2] , bool scatter ) const;
-	void SetCenterEvaluationStencil ( const typename BSplineData< Degree , Real >::template CenterEvaluator< 1 >& evaluator , int depth , Stencil< double , 3 >& stencil ) const;
-	void SetCenterEvaluationStencils( const typename BSplineData< Degree , Real >::template CenterEvaluator< 1 >& evaluator , int depth , Stencil< double , 3 > stencil[8] ) const;
-	void SetCornerEvaluationStencil ( const typename BSplineData< Degree , Real >::template CornerEvaluator< 2 >& evaluator , int depth , Stencil< double , 3 > stencil [8]    ) const;
-	void SetCornerEvaluationStencils( const typename BSplineData< Degree , Real >::template CornerEvaluator< 2 >& evaluator , int depth , Stencil< double , 3 > stencils[8][8] ) const;
-	void SetCornerNormalEvaluationStencil ( const typename BSplineData< Degree , Real >::template CornerEvaluator< 2 >& evaluator , int depth , Stencil< Point3D< double > , 5 > stencil [8]    ) const;
-	void SetCornerNormalEvaluationStencils( const typename BSplineData< Degree , Real >::template CornerEvaluator< 2 >& evaluator , int depth , Stencil< Point3D< double > , 5 > stencils[8][8] ) const;
+	int GetMatrixRowSize( const typename TreeOctNode::Neighbors5& neighbors5 ) const;
+	int GetMatrixRowSize( const typename TreeOctNode::Neighbors5& neighbors5 , int xStart , int xEnd , int yStart , int yEnd , int zStart , int zEnd ) const;
+	int SetMatrixRow( const typename TreeOctNode::Neighbors5& neighbors5 , Pointer( MatrixEntry< MatrixReal > ) row , int offset , const double stencil[5][5][5] ) const;
+	int SetMatrixRow( const typename TreeOctNode::Neighbors5& neighbors5 , Pointer( MatrixEntry< MatrixReal > ) row , int offset , const double stencil[5][5][5] , int xStart , int xEnd , int yStart , int yEnd , int zStart , int zEnd ) const;
+	void SetDivergenceStencil( int depth , Point3D< double > stencil[5][5][5] , bool scatter ) const;
+	void SetLaplacianStencil( int depth , double stencil[5][5][5] ) const;
+	template< class C , int N > struct Stencil{ C values[N][N][N]; };
+	void SetLaplacianStencils( int depth , Stencil< double , 5 > stencil[2][2][2] ) const;
+	void SetDivergenceStencils( int depth , Stencil< Point3D< double > , 5 > stencil[2][2][2] , bool scatter ) const;
+	void SetEvaluationStencils( int depth , Stencil< Real , 3 > stencil1[8] , Stencil< Real , 3 > stencil2[8][8] ) const;
 
 	static void UpdateCoarserSupportBounds( const TreeOctNode* node , int& startX , int& endX , int& startY , int& endY , int& startZ , int& endZ );
-	void UpdateConstraintsFromCoarser( const typename TreeOctNode::Neighbors5& neighbors5 , const typename TreeOctNode::Neighbors5& pNeighbors5 , TreeOctNode* node , const Real* metSolution , const typename BSplineData< Degree , Real >::Integrator& integrator , const Stencil< double , 5 >& stencil ) const;
-	int UpdateConstraintsToCoarser( const typename BSplineData< Degree , Real >::Integrator& integrator , int depth , const SortedTreeNodes< OutputDensity >& sNodes , const Real* fineSolution , Real* coarseConstraints ) const;
-	void _UpdateConstraintsToCoarser( const typename TreeOctNode::Neighbors5& neighbors5 , TreeOctNode* node , const Real* fineSolution , Real* coarseConstraints , const typename BSplineData< Degree , Real >::Integrator& integrator , const Stencil< double , 5 >& stencil ) const;
+	void UpdateConstraintsFromCoarser( const typename TreeOctNode::NeighborKey5& neighborKey5 , TreeOctNode* node , Real* metSolution , const Stencil< double , 5 >& stencil ) const;
 	void SetCoarserPointValues( int depth , const SortedTreeNodes< OutputDensity >& sNodes , Real* metSolution );
 	Real WeightedCoarserFunctionValue( const typename TreeOctNode::NeighborKey3& neighborKey3 , const TreeOctNode* node , Real* metSolution ) const;
 	void UpSampleCoarserSolution( int depth , const SortedTreeNodes< OutputDensity >& sNodes , Vector< Real >& solution ) const;
 	void DownSampleFinerConstraints( int depth , SortedTreeNodes< OutputDensity >& sNodes ) const;
 	template< class C > void DownSample( int depth , const SortedTreeNodes< OutputDensity >& sNodes , C* constraints ) const;
 	template< class C > void   UpSample( int depth , const SortedTreeNodes< OutputDensity >& sNodes , C* coefficients ) const;
-	template< class C > void   UpSample( int depth , const SortedTreeNodes< OutputDensity >& sNodes , const C* coarseCoefficients , C* fineCoefficients ) const;
-	int GetFixedDepthLaplacian( SparseSymmetricMatrix< Real >& matrix , int depth , const typename BSplineData< Degree , Real >::Integrator& integrator , const SortedTreeNodes< OutputDensity >& sNodes , const Real* metSolution );
-	int GetRestrictedFixedDepthLaplacian( SparseSymmetricMatrix< Real >& matrix , int depth , const typename BSplineData< Degree , Real >::Integrator& integrator , const int* entries , int entryCount , const TreeOctNode* rNode, Real radius , const SortedTreeNodes< OutputDensity >& sNodes , const Real* metSolution );
+	int GetFixedDepthLaplacian( SparseSymmetricMatrix< Real >& matrix , int depth , const SortedTreeNodes< OutputDensity >& sNodes , Real* subConstraints );
+	int GetRestrictedFixedDepthLaplacian( SparseSymmetricMatrix< Real >& matrix , int depth , const int* entries , int entryCount , const TreeOctNode* rNode, Real radius , const SortedTreeNodes< OutputDensity >& sNodes , Real* subConstraints );
 
-	void SetIsoCorners( Real isoValue , TreeOctNode* leaf , typename SortedTreeNodes< OutputDensity >::CornerTableData& cData , Pointer( char ) valuesSet , Pointer( Real ) values , typename TreeOctNode::ConstNeighborKey3& nKey , const Real* metSolution , const typename BSplineData< Degree , Real >::template CornerEvaluator< 2 >& evaluator , const Stencil< double , 3 > stencil[8] , const Stencil< double , 3 > stencils[8][8] );
+	void SetIsoCorners( Real isoValue , TreeOctNode* leaf , typename SortedTreeNodes< OutputDensity >::CornerTableData& cData , Pointer( char ) valuesSet , Pointer( Real ) values , typename TreeOctNode::ConstNeighborKey3& nKey , const Real* metSolution , const Stencil< Real , 3 > stencil1[8] , const Stencil< Real , 3 > stencil2[8][8] );
 	static int IsBoundaryFace( const TreeOctNode* node , int faceIndex , int subdivideDepth );
 	static int IsBoundaryEdge( const TreeOctNode* node , int edgeIndex , int subdivideDepth );
 	static int IsBoundaryEdge( const TreeOctNode* node , int dir , int x , int y , int subidivideDepth );
@@ -320,8 +294,8 @@ public:
 	template< class Vertex >
 	int SetBoundaryMCRootPositions( int sDepth , Real isoValue , RootData& rootData , CoredMeshData< Vertex >* mesh , int nonLinearFit );
 	template< class Vertex >
-	int SetMCRootPositions( TreeOctNode* node , int sDepth , Real isoValue , typename TreeOctNode::ConstNeighborKey3& neighborKey3 , RootData& rootData ,
-		std::vector< Vertex >* interiorVertices , CoredMeshData< Vertex >* mesh , const Real* metSolution , const typename BSplineData< Degree , Real >::template CornerEvaluator< 2 >& evaluator , const Stencil< Point3D< double > , 5 > stencil[8] , const Stencil< Point3D< double > , 5 > stencils[8][8] , int nonLinearFit );
+	int SetMCRootPositions( TreeOctNode* node , int sDepth , Real isoValue , typename TreeOctNode::ConstNeighborKey5& neighborKey5 , RootData& rootData ,
+		std::vector< Vertex >* interiorVertices , CoredMeshData< Vertex >* mesh , const Real* metSolution , int nonLinearFit );
 	template< class Vertex >
 	int GetMCIsoTriangles( TreeOctNode* node , CoredMeshData< Vertex >* mesh , RootData& rootData ,
 		std::vector< Vertex >* interiorVertices , int offSet , int sDepth , bool polygonMesh , std::vector< Vertex >* barycenters );
@@ -334,7 +308,7 @@ public:
 	static int EdgeRootCount( const TreeOctNode* node , int edgeIndex , int maxDepth );
 	static void GetRootSpan( const RootInfo< OutputDensity >& ri , Point3D< Real >& start , Point3D< Real >& end );
 	template< class Vertex >
-	int GetRoot( const RootInfo< OutputDensity >& ri , Real isoValue , typename TreeOctNode::ConstNeighborKey3& neighborKey3 , Vertex& vertex , RootData& rootData , int sDepth , const Real* metSolution , const typename BSplineData< Degree , Real >::template CornerEvaluator< 2 >& evaluator , const Stencil< Point3D< double > , 5 > nStencil[8] , const Stencil< Point3D< double > , 5 > nStencils[8][8] , int nonLinearFit );
+	int GetRoot( const RootInfo< OutputDensity >& ri , Real isoValue , typename TreeOctNode::ConstNeighborKey5& neighborKey5 , Vertex& vertex , RootData& rootData , int sDepth , const Real* metSolution , int nonLinearFit );
 	static int GetRootIndex( const TreeOctNode* node , int edgeIndex , int maxDepth , RootInfo< OutputDensity >& ri );
 	static int GetRootIndex( const TreeOctNode* node , int edgeIndex , int maxDepth , int sDepth , RootInfo< OutputDensity >& ri );
 	static int GetRootIndex( const RootInfo< OutputDensity >& ri , RootData& rootData , CoredPointIndex& index );
@@ -342,16 +316,23 @@ public:
 
 	int UpdateWeightContribution( TreeOctNode* node , const Point3D<Real>& position , typename TreeOctNode::NeighborKey3& neighborKey , Real weight=Real(1.0) );
 	Real GetSampleWeight( const TreeOctNode* node , const Point3D<Real>& position , typename TreeOctNode::ConstNeighborKey3& neighborKey );
+	Real GetSampleWeight( const TreeOctNode* node , const Point3D<Real>& position , typename TreeOctNode::ConstNeighborKey5& neighborKey );
 	void GetSampleDepthAndWeight( const TreeOctNode* node , const Point3D<Real>& position , typename TreeOctNode::ConstNeighborKey3& neighborKey , Real samplesPerNode , Real& depth , Real& weight );
+	void GetSampleDepthAndWeight( const TreeOctNode* node , const Point3D<Real>& position , typename TreeOctNode::ConstNeighborKey5& neighborKey , Real samplesPerNode , Real& depth , Real& weight );
 	Real GetSampleWeight( TreeOctNode* node , const Point3D<Real>& position , typename TreeOctNode::NeighborKey3& neighborKey );
+	Real GetSampleWeight( TreeOctNode* node , const Point3D<Real>& position , typename TreeOctNode::NeighborKey5& neighborKey );
 	void GetSampleDepthAndWeight( TreeOctNode* node , const Point3D<Real>& position , typename TreeOctNode::NeighborKey3& neighborKey , Real samplesPerNode , Real& depth , Real& weight );
+	void GetSampleDepthAndWeight( TreeOctNode* node , const Point3D<Real>& position , typename TreeOctNode::NeighborKey5& neighborKey , Real samplesPerNode , Real& depth , Real& weight );
 	int SplatOrientedPoint( TreeOctNode* node , const Point3D<Real>& point , const Point3D<Real>& normal , typename TreeOctNode::NeighborKey3& neighborKey );
+	int SplatOrientedPoint( TreeOctNode* node , const Point3D<Real>& point , const Point3D<Real>& normal , typename TreeOctNode::NeighborKey5& neighborKey );
 	Real SplatOrientedPoint( const Point3D<Real>& point , const Point3D<Real>& normal , typename TreeOctNode::NeighborKey3& neighborKey , int kernelDepth , Real samplesPerNode , int minDepth , int maxDepth );
+	Real SplatOrientedPoint( const Point3D<Real>& point , const Point3D<Real>& normal , typename TreeOctNode::NeighborKey3& neighborKey3 , typename TreeOctNode::NeighborKey5& neighborKey5 , int kernelDepth , Real samplesPerNode , int minDepth , int maxDepth );
 
 	int HasNormals(TreeOctNode* node,Real epsilon);
-	Real getCenterValue( const typename TreeOctNode::ConstNeighborKey3& neighborKey3 , const TreeOctNode* node , const Real* metSolution , const typename BSplineData< Degree , Real >::template CenterEvaluator< 1 >& evaluator , const Stencil< double , 3 >& stencil , const Stencil< double , 3 >& pStencil , bool isInterior ) const;
-	Real getCornerValue( const typename TreeOctNode::ConstNeighborKey3& neighborKey3 , const TreeOctNode* node , int corner , const Real* metSolution , const typename BSplineData< Degree , Real >::template CornerEvaluator< 2 >& evaluator , const Stencil< double , 3 >& stencil , const Stencil< double , 3 > stencils[8] , bool isInterior ) const;
-	Point3D< Real > getCornerNormal( const typename TreeOctNode::ConstNeighbors5& neighbors5 , const typename TreeOctNode::ConstNeighbors5& pNeighbors5 , const TreeOctNode* node , int corner , const Real* metSolution , const typename BSplineData< Degree , Real >::template CornerEvaluator< 2 >& evaluator , const Stencil< Point3D< double > , 5 >& nStencil , const Stencil< Point3D< double > , 5 > nStencils[8] , bool isInterior ) const;
+	Real getCornerValue( const typename TreeOctNode::ConstNeighborKey3& neighborKey3 , const TreeOctNode* node , int corner , const Real* metSolution );
+	Point3D< Real > getCornerNormal( const typename TreeOctNode::ConstNeighborKey5& neighborKey5 , const TreeOctNode* node , int corner , const Real* metSolution );
+	Real getCornerValue( const typename TreeOctNode::ConstNeighborKey3& neighborKey3 , const TreeOctNode* node , int corner , const Real* metSolution , const Real stencil1[3][3][3] , const Real stencil2[3][3][3] );
+	Real getCenterValue( const typename TreeOctNode::ConstNeighborKey3& neighborKey3 , const TreeOctNode* node );
 	static bool _IsInset( const TreeOctNode* node );
 	static bool _IsInsetSupported( const TreeOctNode* node );
 public:
@@ -384,4 +365,5 @@ public:
 };
 
 #include "MultiGridOctreeData.inl"
+
 #endif // MULTI_GRID_OCTREE_DATA_INCLUDED

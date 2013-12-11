@@ -9,6 +9,10 @@ DataMgr::DataMgr(RichParameterSet* _para)
 
   initDefaultScanCamera();
 
+  whole_space_box.Add(Point3f(2.0, 2.0, 2.0));
+  whole_space_box.Add(Point3f(-2.0, -2.0, -2.0));
+
+
   slices.assign(3, Slice());
 }
 
@@ -1383,34 +1387,91 @@ void DataMgr::saveFieldPoints(QString fileName)
 
   //strStream << "ON " << original.vert.size() << endl;
 
-
-
   //FILE *fp = fopen(fileName.toStdString().c_str(),"rb");
   //if(!fp)
   //  cerr<<"open "<< fileName.toStdString().c_str() <<" failed"<<endl;
 
 
   ofstream fout;
-  fout.open("intensity test.dat", std::ios::out | std::ios::binary);
+  fout.open(fileName.toAscii(), std::ios::out | std::ios::binary);
   if( fout == NULL)
     cout<<" error ----- "<<endl;
 
 
   //for (int i = 0; i < field_points.vert.size(); i++)
-  cout << view_grid_points.vert.size() << " grides" << endl;
-  for (int i = 0; i < view_grid_points.vert.size(); i++)  
+  cout << field_points.vert.size() << " grides" << endl;
+  for (int i = 0; i < field_points.vert.size(); i++)  
   {
     CVertex& v = field_points.vert[i];
     float eigen_value = v.eigen_confidence * 255;
 
     unsigned char pTest = static_cast<unsigned char>(eigen_value);
 
-    if (i<100)
-    {
-      cout << v.eigen_confidence << " " << eigen_value << "  " << pTest << endl;
-    }
-
     fout << pTest;
   }
+  fout.close();
+
+  ofstream fout_dat;
+  QString fileName_dat = fileName;
+  QString temp = fileName;
+  QStringList str_list = temp.split(QRegExp("[/]"));
+  QString last_name = str_list.at(str_list.size()-1);
+  cout << "file name: " << last_name.toStdString() << endl;
+
+  int resolution = global_paraMgr.poisson.getInt("Field Points Resolution");
+  fileName_dat.replace(".raw", ".dat");
+  fout_dat.open(fileName_dat.toAscii());
+  fout_dat << "ObjectFileName:  " << last_name.toStdString() << endl;
+  fout_dat << "Resolution:  " << resolution << " " << resolution << " " << resolution << endl;
+  fout_dat << "SliceThickness:	0.0127651 0.0127389 0.0128079" << endl;
+  fout_dat << "Format:		    UCHAR" << endl;
+  fout_dat << "ObjectModel:	I" << endl;
+  fout_dat << "Modality:	    CT" << endl;
+  fout_dat << "Checksum:	    7b197a4391516321308b81101d6f09e8" << endl;
+  fout_dat.close();
+
 }
 
+void DataMgr::switchSampleToOriginal()
+{
+  CMesh temp_mesh;
+  replaceMesh(original, temp_mesh, false);
+  replaceMesh(samples, original, true);
+  replaceMesh(temp_mesh, samples, false);
+}
+
+void DataMgr::switchSampleToISO()
+{
+  CMesh temp_mesh;
+  replaceMesh2(iso_points, temp_mesh, false);
+  replaceMesh2(samples, iso_points, true);
+  replaceMesh2(temp_mesh, samples, false);
+}
+
+void DataMgr::replaceMesh(CMesh& src_mesh, CMesh& target_mesh, bool isOriginal)
+{
+  clearCMesh(target_mesh);
+  for(int i = 0; i < src_mesh.vert.size(); i++)
+  {
+    CVertex v = src_mesh.vert[i];
+    v.is_original = isOriginal;
+    v.m_index = i;
+    target_mesh.vert.push_back(v);
+  }
+  target_mesh.vn = src_mesh.vn;
+  target_mesh.bbox = src_mesh.bbox;
+}
+
+void DataMgr::replaceMesh2(CMesh& src_mesh, CMesh& target_mesh, bool isIso)
+{
+  clearCMesh(target_mesh);
+  for(int i = 0; i < src_mesh.vert.size(); i++)
+  {
+    CVertex v = src_mesh.vert[i];
+    v.is_iso = isIso;
+    v.m_index = i;
+    target_mesh.vert.push_back(v);
+  }
+  target_mesh.vn = src_mesh.vn;
+  target_mesh.bbox = src_mesh.bbox;
+}

@@ -95,8 +95,14 @@ public:
 
 	void     loadSkeletonFromSkel(QString fileName);
 	void     saveSkeletonAsSkel(QString fileName);
-
   void     saveFieldPoints(QString fileName);
+
+
+  void switchSampleToOriginal();
+  void switchSampleToISO();
+  void replaceMesh(CMesh& src_mesh, CMesh& target_mesh, bool isOriginal);
+  void replaceMesh2(CMesh& src_mesh, CMesh& target_mesh, bool isIso);
+
 
 
 private:
@@ -134,5 +140,7 @@ public:
 	RichParameterSet*   para;
 	double              init_radius;
 	QString             curr_file_name;
+
+  Box3f whole_space_box;
 };
 

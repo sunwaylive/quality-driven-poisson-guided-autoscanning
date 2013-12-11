@@ -22,8 +22,12 @@ NBV::~NBV()
 void
 NBV::run()
 {
-  double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
-  grid_resolution = camera_max_dist * 2. / para->getDouble("Grid resolution");
+  //double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
+  double camera_max_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
+                           global_paraMgr.camera.getDouble("Predicted Model Size");
+  
+  grid_resolution = (camera_max_dist*2.0 + 1.0) / para->getDouble("Grid resolution");
+  global_paraMgr.camera.setValue("View Grid Points Resolution", IntValue(grid_resolution));
 
   if (para->getBool("Run Build Grid"))
   {
@@ -136,6 +140,7 @@ NBV::setInput(DataMgr *pData)
   iso_points = pData->getCurrentIsoPoints();
   nbv_candidates = pData->getNbvCandidates();
   scan_candidates = pData->getAllScanCandidates();
+  whole_space_box = &pData->whole_space_box;
 }
 
 void
@@ -158,11 +163,19 @@ NBV::buildGrid()
    Point3f bbox_max = iso_points->bbox.max;
    Point3f bbox_min = iso_points->bbox.min;
    //get the whole 3D space that a camera may exist
-   double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
+   //double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
+   double camera_max_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
+                            global_paraMgr.camera.getDouble("Predicted Model Size"); 
 
    float scan_box_size = camera_max_dist + 0.5;
-   whole_space_box_min = bbox_min - Point3f(camera_max_dist, camera_max_dist, camera_max_dist);
-   whole_space_box_max = bbox_max + Point3f(camera_max_dist, camera_max_dist, camera_max_dist);
+   //whole_space_box_min = bbox_min - Point3f(camera_max_dist, camera_max_dist, camera_max_dist);
+   //whole_space_box_max = bbox_max + Point3f(camera_max_dist, camera_max_dist, camera_max_dist);
+   whole_space_box_min = Point3f(-scan_box_size, -scan_box_size, -scan_box_size);
+   whole_space_box_max = Point3f(scan_box_size, scan_box_size, scan_box_size);
+   whole_space_box->SetNull();
+   whole_space_box->Add(whole_space_box_min);
+   whole_space_box->Add(whole_space_box_max);
+
    //compute the size of the 3D space
    Point3f dif = whole_space_box_max - whole_space_box_min;
    //change the whole space box into a cube
@@ -306,7 +319,10 @@ NBV::propagate()
   }
   normalizeConfidence(iso_points->vert, 0);
 
-  double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
+  //double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
+  double camera_max_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
+                           global_paraMgr.camera.getDouble("Predicted Model Size");
+
   int max_steps = static_cast<int>(camera_max_dist / grid_resolution);
   max_steps *= para->getDouble("Max Ray Steps Para"); //wsh
 
@@ -326,6 +342,14 @@ NBV::propagate()
 
   //parallel
   int iso_points_size = iso_points->vert.size();
+  //double half_D = optimal_D / 2.0f;
+  double optimal_D = (n_dist + f_dist) / 2.0f;
+  //double half_D = optimal_D / 2.0f; //wsh，这里还有问题，应该是half_D = n_dist比较好。    
+  double half_D = n_dist;
+  double half_D2 = half_D * half_D; //
+  double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
+  double sigma_threshold = pow(max(1e-8, 1-cos(sigma / 180.0 * 3.1415926)), 2);
+
 #ifdef LINKED_WITH_TBB
   tbb::parallel_for(tbb::blocked_range<size_t>(0, iso_points_size), 
     [&](const tbb::blocked_range<size_t>& r)
@@ -345,7 +369,7 @@ NBV::propagate()
       //next point index along the ray, pay attention , index should be stored in double ,used in integer
       double n_indexX, n_indexY, n_indexZ;
       //get the sphere traversal resolution
-      double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
+      //double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
       //compute the delta of a,b so as to traverse the whole sphere
       double angle_delta = grid_resolution / camera_max_dist;
       //angle_delta *=2;// wsh
@@ -358,14 +382,6 @@ NBV::propagate()
 
       double length = 0.0f;
       double deltaX, deltaY, deltaZ;
-
-      //double half_D = optimal_D / 2.0f;
-      double optimal_D = (n_dist + f_dist) / 2.0f;
-      //double half_D = optimal_D / 2.0f; //wsh，这里还有问题，应该是half_D = n_dist比较好。    
-      double half_D = n_dist;
-      double half_D2 = half_D * half_D; //
-      double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
-      double sigma_threshold = pow(max(1e-8, 1-cos(sigma / 180.0 * 3.1415926)), 2);
 
       //1. for each point, propagate to all discrete directions
       for (a = 0.0f; a < PI; a += angle_delta)
@@ -490,7 +506,7 @@ NBV::propagate()
     //next point index along the ray, pay attention , index should be stored in double ,used in integer
     double n_indexX, n_indexY, n_indexZ;
     //get the sphere traversal resolution
-    double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
+    //double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
     //compute the delta of a,b so as to traverse the whole sphere
     double angle_delta = grid_resolution / camera_max_dist;
     //angle_delta *=2;// wsh
@@ -1210,10 +1226,13 @@ bool NBV::updateViewDirections()
   //radius *= 2.0;
   //double radius = 0.3;
 
-  double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
-
+  //double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
+  double camera_max_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
+                           global_paraMgr.camera.getDouble("Predicted Model Size");
+  double camera_near_dist = global_paraMgr.camera.getDouble("Camera Near Distance") /
+                            global_paraMgr.camera.getDouble("Predicted Model Size");
   double optimal_D = camera_max_dist / 2.0f;
-  double half_D = optimal_D / 2.0f; //wsh    
+  double half_D = camera_near_dist; //wsh    
   double half_D2 = half_D * half_D;
   double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
   double sigma_threshold = pow(max(1e-8, 1-cos(sigma/180.0*3.1415926)), 2);
