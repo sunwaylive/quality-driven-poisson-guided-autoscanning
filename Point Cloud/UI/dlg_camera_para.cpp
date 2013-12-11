@@ -60,6 +60,7 @@ void CameraParaDlg::initConnects()
   connect(ui->step3_run_NBV, SIGNAL(clicked()), this, SLOT(runStep3NBVcandidates()));
   connect(ui->step4_run_New_Scan, SIGNAL(clicked()), this, SLOT(runStep4NewScans()));
   connect(ui->pushButton_wlop_on_scanned_mesh, SIGNAL(clicked()), this, SLOT(runWlopOnScannedMesh()));
+  connect(ui->pushButton_ICP, SIGNAL(clicked()), this, SLOT(runICP()));
 }
 
 bool CameraParaDlg::initWidgets()
@@ -317,7 +318,7 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
       //combine the selected mesh with original
       if (row == row_of_mesh) 
       {
-        //make the meged mesh invisible
+        //make the merged mesh invisible
         (*it)->vert[0].is_scanned_visible = false;
 
         int index = original->vert.size();
@@ -527,6 +528,13 @@ void CameraParaDlg::runWlopOnScannedMesh()
     area->dataMgr.temperal_sample = *it;
     global_paraMgr.wLop.setValue("Run Wlop On Scanned Mesh", BoolValue(true));
     area->runWlop();
-    global_paraMgr.wLop.setValue("Run Wlop On Scanned Mesh", BoolValue(false));
+    //we should deal with wlop result, save it or discard it
+    global_paraMgr.wLop.setValue("Run Wlop On Scanned Mesh", BoolValue(false));    
   }
+}
+
+void CameraParaDlg::runICP()
+{
+  //GlobalFun::computeICP(area->dataMgr.getCurrentSamples(), area->dataMgr.temperal_sample);
+  GlobalFun::computeICP(area->dataMgr.getCurrentSamples(), area->dataMgr.getCurrentOriginal());
 }
