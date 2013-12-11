@@ -1346,10 +1346,10 @@ void GLArea::runUpsampling()
 
 void GLArea::runPoisson()
 {
-	if (dataMgr.isOriginalEmpty())
-	{
-		return;
-	}
+	//if (dataMgr.isOriginalEmpty())
+	//{
+	//	return;
+	//}
 
 	runPointCloudAlgorithm(poisson);
 

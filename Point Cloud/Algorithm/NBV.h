@@ -54,7 +54,7 @@ private:
   CMesh                 *nbv_candidates;
   vector<ScanCandidate> *scan_candidates;
   CMesh                 *field_points;
-  double                grid_resolution;
+  double                grid_step_size;
   Point3f               whole_space_box_max;
   Point3f               whole_space_box_min;
   int                   x_max; //max index num of x-axis 

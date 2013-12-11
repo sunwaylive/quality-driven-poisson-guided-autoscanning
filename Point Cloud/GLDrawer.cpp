@@ -206,7 +206,6 @@ GLColor GLDrawer::isoValue2color(double iso_value,
 
 GLColor GLDrawer::getColorByType(const CVertex& v)
 {
-  return isoValue2color(v.eigen_confidence, cofidence_color_scale, iso_value_shift, true);
 	if (v.is_model)
 	{
 		return cBlack;
@@ -291,12 +290,15 @@ GLColor GLDrawer::getColorByType(const CVertex& v)
 
 	if (v.is_grid_center)
 	{
-		if (v.is_ray_hit) 
-		{
-			return isoValue2color(v.eigen_confidence, slice_color_scale, iso_value_shift, true);
-		}
+
+		//if (v.is_ray_hit) 
+		//{
+		//	return isoValue2color(v.eigen_confidence, slice_color_scale, iso_value_shift, true);
+		//}
 
 		if (v.is_ray_stop) return cOrange;
+    else return isoValue2color(v.eigen_confidence, slice_color_scale, iso_value_shift, true);
+     
 
 		return cBlack;
 	}

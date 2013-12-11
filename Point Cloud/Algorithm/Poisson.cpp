@@ -1176,7 +1176,7 @@ void Poisson::runSlice()
   show_percentage = (std::max)(0., show_percentage);
   show_percentage = (std::min)(1., show_percentage);
   int begin = int(res * (1-show_percentage));
-  int end = int(res * show_percentage);
+  int end = int(res * show_percentage) + 1;//wsh
   end = (std::max)(end, begin+1);
 
   if (para->getBool("Show X Slices"))
