@@ -135,9 +135,9 @@ bool GLDrawer::isCanSee(const Point3f& pos, const Point3f& normal)
 }
 
 GLColor GLDrawer::isoValue2color(double iso_value, 
-	double scale_threshold,
-	double shift,
-	bool need_negative)
+	                               double scale_threshold,
+	                               double shift,
+	                               bool need_negative)
 {
 	iso_value += shift;
 	//if (!bShowSlice)
@@ -197,15 +197,16 @@ GLColor GLDrawer::isoValue2color(double iso_value,
 	}
 
 	mixed_color = base_colors[base_id] * (base_id * step_size + step_size - iso_value)
-		+ base_colors[base_id + 1] * (iso_value - base_id * step_size);
+		            + base_colors[base_id + 1] * (iso_value - base_id * step_size);
 
 	return GLColor(mixed_color.X() / float(step_size), 
-		mixed_color.Y() / float(step_size), 
-		mixed_color.Z() / float(step_size));
+		             mixed_color.Y() / float(step_size), 
+		             mixed_color.Z() / float(step_size));
 }
 
 GLColor GLDrawer::getColorByType(const CVertex& v)
 {
+  return isoValue2color(v.eigen_confidence, cofidence_color_scale, iso_value_shift, true);
 	if (v.is_model)
 	{
 		return cBlack;
@@ -255,10 +256,11 @@ GLColor GLDrawer::getColorByType(const CVertex& v)
 	//  return cBlue;
 	//}
 
-	if (bUseConfidenceColor && !v.is_iso && v.eigen_confidence >= -0.5)
-	{
-		return isoValue2color(v.eigen_confidence, cofidence_color_scale, iso_value_shift, true);
-	}
+	//if (bUseConfidenceColor && !v.is_iso && v.eigen_confidence >= -0.5)
+	//{
+ //   cout << "11" << endl;
+	//	return isoValue2color(v.eigen_confidence, cofidence_color_scale, iso_value_shift, true);
+	//}
 
 	if (bUseConfidenceColor && v.is_iso)
 	{
@@ -266,6 +268,7 @@ GLColor GLDrawer::getColorByType(const CVertex& v)
 	}
 	if (bUseIndividualColor && v.is_iso)
 	{
+
 		if (v.is_iso && v.is_hole)
 		{
 			return feature_color;
@@ -279,7 +282,6 @@ GLColor GLDrawer::getColorByType(const CVertex& v)
 		if (v.is_boundary)        return cRed;
 		if (v.is_view_candidates) return cOrange;
 		if (v.is_hole)            return cBlue;
-
 		return cGreen;
 	}
 	else if (v.is_fixed_sample)

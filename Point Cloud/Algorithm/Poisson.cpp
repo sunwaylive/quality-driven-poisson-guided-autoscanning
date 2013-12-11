@@ -514,301 +514,301 @@ void Poisson::runViewCandidatesClustering()
 
 void Poisson::runPoisson() 
 {
-  cout << "run Poisson Field And Iso" << endl;
-  CMesh* target = NULL;
-  if (para->getBool("Run Poisson On Original"))
-  {
-    target = original;
-  }
-  else if (para->getBool("Run Poisson On Samples"))
-  {
-    target = samples;
-  }
-  else
-  {
-    cout << "Run on original or sample?" << endl;
-    return;
-  }
+  //cout << "run Poisson Field And Iso" << endl;
+  //CMesh* target = NULL;
+  //if (para->getBool("Run Poisson On Original"))
+  //{
+  //  target = original;
+  //}
+  //else if (para->getBool("Run Poisson On Samples"))
+  //{
+  //  target = samples;
+  //}
+  //else
+  //{
+  //  cout << "Run on original or sample?" << endl;
+  //  return;
+  //}
 
-  target->vn = target->vert.size();
-  vector<Point3D<Real> > Pts(target->vn);
-  vector<Point3D<Real> > Nor(target->vn); 
+  //target->vn = target->vert.size();
+  //vector<Point3D<Real> > Pts(target->vn);
+  //vector<Point3D<Real> > Nor(target->vn); 
 
-  cout << "target size : " << target->vn << endl;;
-  for (int i = 0; i < target->vert.size(); i++)
-  {
-    CVertex v = target->vert[i];
-    for (int ii = 0; ii < 3; ++ii)
-    {
-      Pts[i].coords[ii] = v.P()[ii];
-      Nor[i].coords[ii] = v.N()[ii];
-    }
-  }
-  CoredVectorMeshData<PlyVertex<float>> mesh;
-  //CoredVectorMeshData<Point3D<float>> mesh;
+  //cout << "target size : " << target->vn << endl;;
+  //for (int i = 0; i < target->vert.size(); i++)
+  //{
+  //  CVertex v = target->vert[i];
+  //  for (int ii = 0; ii < 3; ++ii)
+  //  {
+  //    Pts[i].coords[ii] = v.P()[ii];
+  //    Nor[i].coords[ii] = v.N()[ii];
+  //  }
+  //}
+  //CoredVectorMeshData<PlyVertex<float>> mesh;
+  ////CoredVectorMeshData<Point3D<float>> mesh;
 
-  XForm4x4< Real > xForm , iXForm;
-  xForm = XForm4x4< Real >::Identity();
-  iXForm = xForm.inverse();
+  //XForm4x4< Real > xForm , iXForm;
+  //xForm = XForm4x4< Real >::Identity();
+  //iXForm = xForm.inverse();
 
-  Timer time;
-  time.start("build tree");
-  PoissonParam Par;
-  Par.Depth = para->getDouble("Max Depth");
-  Par.SamplesPerNode = 1;
-  Par.SolverDivide = 7;
-  Par.Offset = 1;
-  Par.Confidence = false;
+  //Timer time;
+  //time.start("build tree");
+  //PoissonParam Par;
+  //Par.Depth = para->getDouble("Max Depth");
+  //Par.SamplesPerNode = 1;
+  //Par.SolverDivide = 7;
+  //Par.Offset = 1;
+  //Par.Confidence = false;
 
-  Point3D<Real> center;
-  float scale = 1.0;
-  float isoValue=0;
+  //Point3D<Real> center;
+  //float scale = 1.0;
+  //float isoValue=0;
 
-  ////////////////////////////////////
-  //// Fix courtesy of David Gallup //
-  //TreeNodeData::UseIndex = 1;     //
-  ////////////////////////////////////
+  //////////////////////////////////////
+  ////// Fix courtesy of David Gallup //
+  ////TreeNodeData::UseIndex = 1;     //
+  //////////////////////////////////////
 
-  //// Execute
-  ////int ret= Execute2(pp, Pts, Nor, mesh, center, scale, &cb);
-  const int Degree = 2;
-  const bool OutputDensity = false;
+  ////// Execute
+  //////int ret= Execute2(pp, Pts, Nor, mesh, center, scale, &cb);
+  //const int Degree = 2;
+  //const bool OutputDensity = false;
 
-  POctree<Degree, OutputDensity> tree;
-  tree.threads = Par.Threads;
-  cout << "Threads Number:  " << tree.threads << endl;
-  //PPolynomial<Degree> ReconstructionFunction=PPolynomial<Degree>::GaussianApproximation();
+  //POctree<Degree, OutputDensity> tree;
+  //tree.threads = Par.Threads;
+  //cout << "Threads Number:  " << tree.threads << endl;
+  ////PPolynomial<Degree> ReconstructionFunction=PPolynomial<Degree>::GaussianApproximation();
 
-  center.coords[0]=center.coords[1]=center.coords[2]=0;
+  //center.coords[0]=center.coords[1]=center.coords[2]=0;
 
-  //TreeOctNode::SetPAllocator(MEMORY_PALLOCATOR_BLOCK_SIZE);
-  OctNode< TreeNodeData< OutputDensity > , Real >::SetAllocator( MEMORY_ALLOCATOR_BLOCK_SIZE );
+  ////TreeOctNode::SetPAllocator(MEMORY_PALLOCATOR_BLOCK_SIZE);
+  //OctNode< TreeNodeData< OutputDensity > , Real >::SetAllocator( MEMORY_ALLOCATOR_BLOCK_SIZE );
 
-  int kernelDepth = Par.Depth-2;
-  if(Par.KernelDepth>=0){kernelDepth=Par.KernelDepth;}
-  cout << "kernel depth:  " << kernelDepth << endl;
+  //int kernelDepth = Par.Depth-2;
+  //if(Par.KernelDepth>=0){kernelDepth=Par.KernelDepth;}
+  //cout << "kernel depth:  " << kernelDepth << endl;
 
-  tree.setBSplineData(Par.Depth , Par.BoundaryType);
+  //tree.setBSplineData(Par.Depth , Par.BoundaryType);
 
-  double maxMemoryUsage;
-  tree.maxMemoryUsage=0;
+  //double maxMemoryUsage;
+  //tree.maxMemoryUsage=0;
 
-  time.start("set tree");
-  int pointCount = tree.setTree2(Pts, 
-                                 Nor,
-                                 Par.Depth , 
-                                 Par.MinDepth, 
-                                 kernelDepth , 
-                                 Real(Par.SamplesPerNode) , 
-                                 Par.Scale , 
-                                 Par.Confidence , 
-                                 Par.constraintWeight , 
-                                 Par.adaptiveExponent , 
-                                 xForm );
-  cout << "Point Count: " << pointCount << endl;
-  time.end();
-  time.start("Solve Laplacian");
+  //time.start("set tree");
+  //int pointCount = tree.setTree2(Pts, 
+  //                               Nor,
+  //                               Par.Depth , 
+  //                               Par.MinDepth, 
+  //                               kernelDepth , 
+  //                               Real(Par.SamplesPerNode) , 
+  //                               Par.Scale , 
+  //                               Par.Confidence , 
+  //                               Par.constraintWeight , 
+  //                               Par.adaptiveExponent , 
+  //                               xForm );
+  //cout << "Point Count: " << pointCount << endl;
+  //time.end();
+  //time.start("Solve Laplacian");
 
-  tree.ClipTree();
-  tree.finalize( Par.IsoDivide );
-  tree.SetLaplacianConstraints();
+  //tree.ClipTree();
+  //tree.finalize( Par.IsoDivide );
+  //tree.SetLaplacianConstraints();
 
-  tree.LaplacianMatrixIteration( Par.SolverDivide, 
-    Par.ShowResidual , 
-    Par.MinIters , 
-    Par.SolverAccuracy , 
-    Par.MaxSolveDepth , 
-    Par.FixedIters );
+  //tree.LaplacianMatrixIteration( Par.SolverDivide, 
+  //  Par.ShowResidual , 
+  //  Par.MinIters , 
+  //  Par.SolverAccuracy , 
+  //  Par.MaxSolveDepth , 
+  //  Par.FixedIters );
 
-  isoValue = tree.GetIsoValue();
-  time.end();
+  //isoValue = tree.GetIsoValue();
+  //time.end();
 
-  double estimate_scale = abs(isoValue);
-  //global_paraMgr.glarea.setValue("Slice Color Scale", DoubleValue(estimate_scale*2/3));
-  //global_paraMgr.glarea.setValue("ISO Interval Size", DoubleValue(estimate_scale/3));
-
-
-  if (para->getBool("Run Generate Poisson Field") || para->getBool("Run One Key PoissonConfidence"))
-  {
-    time.start("Generate Poisson Field");
-    cout << "Run Generate Poisson Field" << endl;
-
-    int res;
-    Pointer( Real ) grid_values = tree.GetSolutionGrid( res , isoValue , Par.VoxelDepth );
-
-    float tree_scale = tree._scale;
-    Point3D<float> tree_center = tree._center;
-
-    float space = tree_scale * (1.0 / (1<<Par.Depth));
-
-    Point3f center_p(tree_center.coords[0], tree_center.coords[1], tree_center.coords[2]);
-
-    int index = 0;
-    field_points->vert.clear();
-    int res2 = res * res;
-    for (int i = 0; i < res; i++)
-    {
-      for (int j = 0; j < res; j++)
-      {
-        for (int k = 0; k < res; k++)
-        {
-          Point3f p(i * space, j * space, k * space);
-          CVertex new_v;
-          new_v.is_iso = true;
-          new_v.P() = p + center_p;
-          new_v.m_index = index;
-          new_v.eigen_confidence = float( grid_values[i + j * res + k * res2] );          
-          index++;
-          field_points->vert.push_back(new_v);
-          field_points->bbox.Add(new_v.P());
-        }
-      }
-    }
-
-    field_points->vn = field_points->vert.size();
-    cout << "field point size:  " << field_points->vn << endl;
-    cout << "resolution:  " << res << endl;
-
-    //normalizeConfidence(field_points->vert, 0);
-
-    time.end();
-  }
-
-  //iso_points->vert.clear();
-  if (para->getBool("Run Extract MC Points") || para->getBool("Run One Key PoissonConfidence"))
-  {
-    time.start("marching cube");
-    //if(Par.IsoDivide){tree.GetMCIsoTriangles(isoValue,Par.IsoDivide,&mesh);}
-    //else{tree.GetMCIsoTriangles(isoValue,&mesh);}
-    tree.GetMCIsoTriangles( isoValue , Par.IsoDivide, &mesh , 0 , 1 , !Par.NonManifold , Par.PolygonMesh);
-    time.end();
-
-    ////out put
-    mesh.resetIterator();
-    int vm = mesh.outOfCorePointCount()+mesh.inCorePoints.size();
-    int fm = mesh.polygonCount();
-
-    tentative_mesh.vert.clear();
-    tentative_mesh.face.clear();
-
-    Point3D<float> p;
-    PlyVertex<float> pv; 
-    int i=0;
-    int index = 0;
-    for (; i < int(mesh.inCorePoints.size()); i++)
-    {
-      p = mesh.inCorePoints[i].point;
-      CVertex new_v;
-      new_v.P()[0] = p.coords[0]*scale+center.coords[0];
-      new_v.P()[1] = p.coords[1]*scale+center.coords[1];
-      new_v.P()[2] = p.coords[2]*scale+center.coords[2];
-      new_v.is_iso = true;
-      new_v.eigen_confidence = 0;
-      new_v.m_index = index++;
-      tentative_mesh.vert.push_back(new_v);
-      tentative_mesh.bbox.Add(new_v.P());
-    }
+  //double estimate_scale = abs(isoValue);
+  ////global_paraMgr.glarea.setValue("Slice Color Scale", DoubleValue(estimate_scale*2/3));
+  ////global_paraMgr.glarea.setValue("ISO Interval Size", DoubleValue(estimate_scale/3));
 
 
-    for (int ii=0; ii < mesh.outOfCorePointCount(); ii++)
-    {
-      mesh.nextOutOfCorePoint(pv);
-      p = pv.point;
-      CVertex new_v;
-      new_v.P()[0] = p.coords[0]*scale+center.coords[0];
-      new_v.P()[1] = p.coords[1]*scale+center.coords[1];
-      new_v.P()[2] = p.coords[2]*scale+center.coords[2];
-      new_v.eigen_confidence = 0;
-      new_v.is_iso = true;
-      new_v.m_index = index++;
-      tentative_mesh.vert.push_back(new_v);
-      tentative_mesh.bbox.Add(new_v.P());
-    }
+  //if (para->getBool("Run Generate Poisson Field") || para->getBool("Run One Key PoissonConfidence"))
+  //{
+  //  time.start("Generate Poisson Field");
+  //  cout << "Run Generate Poisson Field" << endl;
 
-    //TriangleIndex tIndex;
-    std::vector< CoredVertexIndex > polygon;
-    int inCoreFlag;
-    int nr_faces=mesh.polygonCount();	
+  //  int res;
+  //  Pointer( Real ) grid_values = tree.GetSolutionGrid( res , isoValue , Par.VoxelDepth );
 
-    for (i=0; i < nr_faces; i++)
-    {
-      //
-      // create and fill a struct that the ply code can handle
-      //
-      //if (!mesh.nextPolygon(polygon))
-      //{
-      //  continue;
-      //}
-      mesh.nextPolygon(polygon);
-      CFace new_face;      
-      for(int j=0; j < 3; j++)
-      {
-        //tentative_mesh.face[i].V(j) = &tentative_mesh.vert[tIndex.idx[j]];
-        if (polygon[j].inCore)
-        {
-          new_face.V(j) = &tentative_mesh.vert[polygon[j].idx];         
-        }
-        else
-        {
-          int index = polygon[j].idx + int( mesh.inCorePoints.size() );
-          new_face.V(j) = &tentative_mesh.vert[index];
-        }
+  //  float tree_scale = tree._scale;
+  //  Point3D<float> tree_center = tree._center;
 
-        //cout << tIndex[j].idx << ", ";
-      }
-      tentative_mesh.face.push_back(new_face);
-      //cout << endl;
-    } 
+  //  float space = tree_scale * (1.0 / (1<<Par.Depth));
 
-    tentative_mesh.vn = tentative_mesh.vert.size();
-    tentative_mesh.fn = tentative_mesh.face.size();
-    vcg::tri::UpdateNormals<CMesh>::PerVertex(tentative_mesh);
+  //  Point3f center_p(tree_center.coords[0], tree_center.coords[1], tree_center.coords[2]);
 
-    float radius = 0;
-    int sampleNum = para->getDouble("Poisson Disk Sample Number");
-    if (sampleNum <= 100)
-    {
-      sampleNum = 100;
-    }
-    radius = tri::SurfaceSampling<CMesh,BaseSampler>::ComputePoissonDiskRadius(tentative_mesh, sampleNum);
-    // first of all generate montecarlo samples for fast lookup
-    CMesh *presampledMesh=&(tentative_mesh);
-    CMesh MontecarloMesh; // this mesh is used only if we need real poisson sampling (and therefore we need to choose points different from the starting mesh vertices)
+  //  int index = 0;
+  //  field_points->vert.clear();
+  //  int res2 = res * res;
+  //  for (int i = 0; i < res; i++)
+  //  {
+  //    for (int j = 0; j < res; j++)
+  //    {
+  //      for (int k = 0; k < res; k++)
+  //      {
+  //        Point3f p(i * space, j * space, k * space);
+  //        CVertex new_v;
+  //        new_v.is_iso = true;
+  //        new_v.P() = p + center_p;
+  //        new_v.m_index = index;
+  //        new_v.eigen_confidence = float( grid_values[i + j * res + k * res2] );          
+  //        index++;
+  //        field_points->vert.push_back(new_v);
+  //        field_points->bbox.Add(new_v.P());
+  //      }
+  //    }
+  //  }
 
-    if (1)
-    {
-      BaseSampler sampler(&MontecarloMesh);
-      sampler.qualitySampling =true;
-      tri::SurfaceSampling<CMesh,BaseSampler>::Montecarlo(tentative_mesh, sampler, sampleNum*20);
-      MontecarloMesh.bbox = tentative_mesh.bbox; // we want the same bounding box
-      presampledMesh=&MontecarloMesh;
-    }
+  //  field_points->vn = field_points->vert.size();
+  //  cout << "field point size:  " << field_points->vn << endl;
+  //  cout << "resolution:  " << res << endl;
 
-    iso_points->vert.clear();
-    BaseSampler mps(iso_points);
-    tri::SurfaceSampling<CMesh,BaseSampler>::PoissonDiskParam pp;
-    tri::SurfaceSampling<CMesh,BaseSampler>::PoissonDisk(tentative_mesh, mps, *presampledMesh, radius,pp);
+  //  //normalizeConfidence(field_points->vert, 0);
 
-    for (int i = 0; i < iso_points->vert.size(); i++)
-    {
-      CVertex& v = iso_points->vert[i];
-      v.is_iso = true;
-      v.m_index = i;
-      v.eigen_confidence = 0;
-      v.N().Normalize();
-      v.recompute_m_render();
-    }
-    iso_points->vn = iso_points->vert.size();
+  //  time.end();
+  //}
+
+  ////iso_points->vert.clear();
+  //if (para->getBool("Run Extract MC Points") || para->getBool("Run One Key PoissonConfidence"))
+  //{
+  //  time.start("marching cube");
+  //  //if(Par.IsoDivide){tree.GetMCIsoTriangles(isoValue,Par.IsoDivide,&mesh);}
+  //  //else{tree.GetMCIsoTriangles(isoValue,&mesh);}
+  //  tree.GetMCIsoTriangles( isoValue , Par.IsoDivide, &mesh , 0 , 1 , !Par.NonManifold , Par.PolygonMesh);
+  //  time.end();
+
+  //  ////out put
+  //  mesh.resetIterator();
+  //  int vm = mesh.outOfCorePointCount()+mesh.inCorePoints.size();
+  //  int fm = mesh.polygonCount();
+
+  //  tentative_mesh.vert.clear();
+  //  tentative_mesh.face.clear();
+
+  //  Point3D<float> p;
+  //  PlyVertex<float> pv; 
+  //  int i=0;
+  //  int index = 0;
+  //  for (; i < int(mesh.inCorePoints.size()); i++)
+  //  {
+  //    p = mesh.inCorePoints[i].point;
+  //    CVertex new_v;
+  //    new_v.P()[0] = p.coords[0]*scale+center.coords[0];
+  //    new_v.P()[1] = p.coords[1]*scale+center.coords[1];
+  //    new_v.P()[2] = p.coords[2]*scale+center.coords[2];
+  //    new_v.is_iso = true;
+  //    new_v.eigen_confidence = 0;
+  //    new_v.m_index = index++;
+  //    tentative_mesh.vert.push_back(new_v);
+  //    tentative_mesh.bbox.Add(new_v.P());
+  //  }
 
 
-    iso_points->face.clear();
-    for (int i = 0; i < tentative_mesh.face.size(); i++)
-    {
-      iso_points->face.push_back(tentative_mesh.face[i]);
-    }
-    iso_points->fn = iso_points->face.size();
+  //  for (int ii=0; ii < mesh.outOfCorePointCount(); ii++)
+  //  {
+  //    mesh.nextOutOfCorePoint(pv);
+  //    p = pv.point;
+  //    CVertex new_v;
+  //    new_v.P()[0] = p.coords[0]*scale+center.coords[0];
+  //    new_v.P()[1] = p.coords[1]*scale+center.coords[1];
+  //    new_v.P()[2] = p.coords[2]*scale+center.coords[2];
+  //    new_v.eigen_confidence = 0;
+  //    new_v.is_iso = true;
+  //    new_v.m_index = index++;
+  //    tentative_mesh.vert.push_back(new_v);
+  //    tentative_mesh.bbox.Add(new_v.P());
+  //  }
 
-  }
+  //  //TriangleIndex tIndex;
+  //  std::vector< CoredVertexIndex > polygon;
+  //  int inCoreFlag;
+  //  int nr_faces=mesh.polygonCount();	
+
+  //  for (i=0; i < nr_faces; i++)
+  //  {
+  //    //
+  //    // create and fill a struct that the ply code can handle
+  //    //
+  //    //if (!mesh.nextPolygon(polygon))
+  //    //{
+  //    //  continue;
+  //    //}
+  //    mesh.nextPolygon(polygon);
+  //    CFace new_face;      
+  //    for(int j=0; j < 3; j++)
+  //    {
+  //      //tentative_mesh.face[i].V(j) = &tentative_mesh.vert[tIndex.idx[j]];
+  //      if (polygon[j].inCore)
+  //      {
+  //        new_face.V(j) = &tentative_mesh.vert[polygon[j].idx];         
+  //      }
+  //      else
+  //      {
+  //        int index = polygon[j].idx + int( mesh.inCorePoints.size() );
+  //        new_face.V(j) = &tentative_mesh.vert[index];
+  //      }
+
+  //      //cout << tIndex[j].idx << ", ";
+  //    }
+  //    tentative_mesh.face.push_back(new_face);
+  //    //cout << endl;
+  //  } 
+
+  //  tentative_mesh.vn = tentative_mesh.vert.size();
+  //  tentative_mesh.fn = tentative_mesh.face.size();
+  //  vcg::tri::UpdateNormals<CMesh>::PerVertex(tentative_mesh);
+
+  //  float radius = 0;
+  //  int sampleNum = para->getDouble("Poisson Disk Sample Number");
+  //  if (sampleNum <= 100)
+  //  {
+  //    sampleNum = 100;
+  //  }
+  //  radius = tri::SurfaceSampling<CMesh,BaseSampler>::ComputePoissonDiskRadius(tentative_mesh, sampleNum);
+  //  // first of all generate montecarlo samples for fast lookup
+  //  CMesh *presampledMesh=&(tentative_mesh);
+  //  CMesh MontecarloMesh; // this mesh is used only if we need real poisson sampling (and therefore we need to choose points different from the starting mesh vertices)
+
+  //  if (1)
+  //  {
+  //    BaseSampler sampler(&MontecarloMesh);
+  //    sampler.qualitySampling =true;
+  //    tri::SurfaceSampling<CMesh,BaseSampler>::Montecarlo(tentative_mesh, sampler, sampleNum*20);
+  //    MontecarloMesh.bbox = tentative_mesh.bbox; // we want the same bounding box
+  //    presampledMesh=&MontecarloMesh;
+  //  }
+
+  //  iso_points->vert.clear();
+  //  BaseSampler mps(iso_points);
+  //  tri::SurfaceSampling<CMesh,BaseSampler>::PoissonDiskParam pp;
+  //  tri::SurfaceSampling<CMesh,BaseSampler>::PoissonDisk(tentative_mesh, mps, *presampledMesh, radius,pp);
+
+  //  for (int i = 0; i < iso_points->vert.size(); i++)
+  //  {
+  //    CVertex& v = iso_points->vert[i];
+  //    v.is_iso = true;
+  //    v.m_index = i;
+  //    v.eigen_confidence = 0;
+  //    v.N().Normalize();
+  //    v.recompute_m_render();
+  //  }
+  //  iso_points->vn = iso_points->vert.size();
+
+
+  //  iso_points->face.clear();
+  //  for (int i = 0; i < tentative_mesh.face.size(); i++)
+  //  {
+  //    iso_points->face.push_back(tentative_mesh.face[i]);
+  //  }
+  //  iso_points->fn = iso_points->face.size();
+
+  //}
 
 }
 
@@ -1005,7 +1005,7 @@ void Poisson::runPoissonFieldAndIso()
     cout << "field point size:  " << field_points->vn << endl;
     cout << "resolution:  " << res << endl;
     para->setValue("Field Points Resolution", IntValue(res));
-    //normalizeConfidence(field_points->vert, 0);
+    normalizeConfidence(field_points->vert, 0);
 
     time.end();
     if (para->getBool("Run Generate Poisson Field")) return;
