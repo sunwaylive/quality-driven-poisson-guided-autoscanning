@@ -1377,6 +1377,7 @@ void DataMgr::saveFieldPoints(QString fileName)
 {
   if (field_points.vert.empty())
   {
+    cout<<"save Field Points Error: Empty field_points" <<endl;
     return;
   }
 
@@ -1391,11 +1392,13 @@ void DataMgr::saveFieldPoints(QString fileName)
   //if(!fp)
   //  cerr<<"open "<< fileName.toStdString().c_str() <<" failed"<<endl;
 
-
   ofstream fout;
   fout.open(fileName.toAscii(), std::ios::out | std::ios::binary);
   if( fout == NULL)
+  {
     cout<<" error ----- "<<endl;
+    return;
+  }
 
 
   //for (int i = 0; i < field_points.vert.size(); i++)
@@ -1430,6 +1433,47 @@ void DataMgr::saveFieldPoints(QString fileName)
   fout_dat << "Checksum:	    7b197a4391516321308b81101d6f09e8" << endl;
   fout_dat.close();
 
+}
+
+void
+DataMgr::saveViewGrids(QString fileName)
+{
+  if (view_grid_points.vert.empty()) return;
+
+  ofstream out;
+  out.open(fileName.toAscii(), std::ios::out | std::ios::binary);
+  if (NULL == out) 
+  {
+      cout<<"open file Error!" <<endl;
+      return;
+  }
+
+  for (int i = 0; i < view_grid_points.vert.size(); ++i)
+  {
+    CVertex &v = view_grid_points.vert[i];
+    float eigen_value = v.eigen_confidence * 255;
+    unsigned char p = static_cast<unsigned char>(eigen_value);
+    out << p;
+  }
+  out.close();
+
+  QString tmp = fileName;
+  QStringList str_lst = tmp.split(QRegExp("[/]"));
+  QString last_name = str_lst.at(str_lst.size() - 1);
+
+  double resolution = global_paraMgr.camera.getDouble("View Grid Points Resolution");
+  ofstream out_dat;
+  QString fileName_dat = fileName;
+  fileName_dat.replace(".raw", ".dat");
+  out_dat.open(fileName_dat.toAscii());
+  out_dat << "ObjectFileName:  " << last_name.toStdString() << endl;
+  out_dat << "Resolution:  " << resolution << " " << resolution << " " << resolution << endl;
+  out_dat << "SliceThickness:	0.0127651 0.0127389 0.0128079" << endl;
+  out_dat << "Format:		    UCHAR" << endl;
+  out_dat << "ObjectModel:	I" << endl;
+  out_dat << "Modality:	    CT" << endl;
+  out_dat << "Checksum:	    7b197a4391516321308b81101d6f09e8" << endl;
+  out_dat.close();
 }
 
 void DataMgr::switchSampleToOriginal()

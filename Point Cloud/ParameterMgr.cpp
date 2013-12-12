@@ -378,9 +378,6 @@ void ParameterMgr::initPoissonParameter()
   poisson.addParam(new RichBool("Compute New ISO Confidence", false));
 
   poisson.addParam(new RichInt("Field Points Resolution", -1));
-
-
-
 }
 
 void ParameterMgr::initCameraParameter()
@@ -403,7 +400,7 @@ void ParameterMgr::initCameraParameter()
   camera.addParam(new RichDouble("Optimal Plane Width", 10.0f)); //cm
   camera.addParam(new RichDouble("Predicted Model Size", 20.0f)); //cm
 
-  camera.addParam(new RichInt("View Grid Points Resolution", -1));
+  camera.addParam(new RichDouble("View Grid Points Resolution", -1));
 }
 
 void

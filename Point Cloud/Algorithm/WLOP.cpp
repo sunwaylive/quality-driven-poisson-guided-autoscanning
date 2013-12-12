@@ -146,47 +146,100 @@ void WLOP::computeAverageTerm(CMesh* samples, CMesh* original)
 	double iradius16 = -para->getDouble("H Gaussian Para")/radius2;
 
 	cout << "Original Size:" << samples->vert[0].original_neighbors.size() << endl;
-	for(int i = 0; i < samples->vert.size(); i++)
-	{
-		CVertex& v = samples->vert[i];
 
-		for (int j = 0; j < v.original_neighbors.size(); j++)
-		{
-			CVertex& t = original->vert[v.original_neighbors[j]];
-			
-			Point3f diff = v.P() - t.P();
-			double dist2  = diff.SquaredNorm();
+  int sample_size = samples->vert.size();
 
-			double w = 1;
-			if (para->getBool("Run Anisotropic LOP"))
-			{
-				double len = sqrt(dist2);
-				if(len <= 0.001 * radius) len = radius*0.001;
-				double hn = diff * v.N();
-				double phi = exp(hn * hn * iradius16);
-				w = phi / pow(len, 2 - average_power);
-			}
-			else if (average_power < 2)
-			{
-				double len = sqrt(dist2);
-				if(len <= 0.001 * radius) len = radius*0.001;
-				w = exp(dist2 * iradius16) / pow(len, 2 - average_power);
-			}
-			else
-			{
-				w = exp(dist2 * iradius16);
-			}
+#ifdef LINKED_WITH_TBB
+  /*int n = tbb::task_scheduler_init::default_num_threads();
+  cout<<"default tbb thread num is :" <<n <<endl;*/
 
-			if (need_density)
-			{
-				w *= original_density[t.m_index];
-			}
+  tbb::task_scheduler_init init(8);
+  tbb::parallel_for(tbb::blocked_range<size_t>(0, sample_size),
+    [&](const tbb::blocked_range<size_t>& r)
+  {
+    for (size_t i = r.begin(); i < r.end(); ++i)
+    {
+      CVertex& v = samples->vert[i];
 
-			average[i] += t.P() * w;  
-			average_weight_sum[i] += w;  
+      for (int j = 0; j < v.original_neighbors.size(); j++)
+      {
+        CVertex& t = original->vert[v.original_neighbors[j]];
 
-		}
-	}
+        Point3f diff = v.P() - t.P();
+        double dist2  = diff.SquaredNorm();
+
+        double w = 1;
+        if (para->getBool("Run Anisotropic LOP"))
+        {
+          double len = sqrt(dist2);
+          if(len <= 0.001 * radius) len = radius*0.001;
+          double hn = diff * v.N();
+          double phi = exp(hn * hn * iradius16);
+          w = phi / pow(len, 2 - average_power);
+        }
+        else if (average_power < 2)
+        {
+          double len = sqrt(dist2);
+          if(len <= 0.001 * radius) len = radius*0.001;
+          w = exp(dist2 * iradius16) / pow(len, 2 - average_power);
+        }
+        else
+        {
+          w = exp(dist2 * iradius16);
+        }
+
+        if (need_density)
+        {
+          w *= original_density[t.m_index];
+        }
+
+        average[i] += t.P() * w;  
+        average_weight_sum[i] += w;  
+      }
+    }
+  });
+#else
+  for(int i = 0; i < samples->vert.size(); i++)
+  {
+    CVertex& v = samples->vert[i];
+
+    for (int j = 0; j < v.original_neighbors.size(); j++)
+    {
+      CVertex& t = original->vert[v.original_neighbors[j]];
+
+      Point3f diff = v.P() - t.P();
+      double dist2  = diff.SquaredNorm();
+
+      double w = 1;
+      if (para->getBool("Run Anisotropic LOP"))
+      {
+        double len = sqrt(dist2);
+        if(len <= 0.001 * radius) len = radius*0.001;
+        double hn = diff * v.N();
+        double phi = exp(hn * hn * iradius16);
+        w = phi / pow(len, 2 - average_power);
+      }
+      else if (average_power < 2)
+      {
+        double len = sqrt(dist2);
+        if(len <= 0.001 * radius) len = radius*0.001;
+        w = exp(dist2 * iradius16) / pow(len, 2 - average_power);
+      }
+      else
+      {
+        w = exp(dist2 * iradius16);
+      }
+
+      if (need_density)
+      {
+        w *= original_density[t.m_index];
+      }
+
+      average[i] += t.P() * w;  
+      average_weight_sum[i] += w;  
+    }
+  }
+#endif
 }
 
 

@@ -27,7 +27,7 @@ NBV::run()
                            global_paraMgr.camera.getDouble("Predicted Model Size");
   
   grid_resolution = (camera_max_dist*2.0 + 1.0) / para->getDouble("Grid resolution");
-  global_paraMgr.camera.setValue("View Grid Points Resolution", IntValue(grid_resolution));
+  global_paraMgr.camera.setValue("View Grid Points Resolution", DoubleValue(grid_resolution));
 
   if (para->getBool("Run Build Grid"))
   {

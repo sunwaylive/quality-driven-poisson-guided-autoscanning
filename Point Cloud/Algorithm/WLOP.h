@@ -1,27 +1,22 @@
 #pragma once
 
-//#include <CGAL/wlop_simplify_and_regularize_point_set_test_AABB_tree.h>
 #include <vector>
 #include <time.h>
 #include <iostream>
+#include <tbb/parallel_for.h>
+#include <tbb/task_scheduler_init.h>
 
 #include "GlobalFunction.h"
 #include "PointCloudAlgorithm.h"
 #include "normal_extrapolation.h"
 
-//#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-//#include <CGAL/wlop_simplify_and_regularize_point_set.h>
-//#include <CGAL/Timer.h>
-//#include <CGAL/tags.h>
-//#include <CGAL/Simple_cartesian.h>
-
-
-// types
-//typedef CGAL::Simple_cartesian<double> Kernel;
-//typedef Kernel::Point_3 Point;
-
 using namespace std;
 using namespace vcg;
+
+//#define  LINKED_WITH_TBB
+#ifdef LINKED_WITH_TBB
+  #undef LINKED_WITH_TBB
+#endif
 
 // better code is going to be in CGAL 
 class WLOP : public PointCloudAlgorithm
