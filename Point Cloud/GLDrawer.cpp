@@ -15,7 +15,6 @@ GLDrawer::~GLDrawer(void)
 void GLDrawer::updateDrawer(vector<int>& pickList)
 {
 	bCullFace = para->getBool("Need Cull Points");
-	bUseIndividualColor = para->getBool("Show Individual Color");
 	useNormalColor = para->getBool("Use Color From Normal");
 	useDifferBranchColor = para->getBool("Use Differ Branch Color");
 	bShowSlice = global_paraMgr.poisson.getBool("Show Slices Mode");
@@ -40,18 +39,29 @@ void GLDrawer::updateDrawer(vector<int>& pickList)
 	skel_bone_width = para->getDouble("Skeleton Bone Width") / 10000.;
 	skel_node_size = para->getDouble("Skeleton Node Size") / 10000.;
 
-	slice_color_scale = global_paraMgr.glarea.getDouble("Slice Color Scale");
+	
 	iso_step_size = global_paraMgr.glarea.getDouble("ISO Interval Size");
 	bUseIsoInteral = global_paraMgr.glarea.getBool("Use ISO Interval");
 	bUseConfidenceColor = global_paraMgr.drawer.getBool("Show Confidence Color");
 	cofidence_color_scale = global_paraMgr.glarea.getDouble("Confidence Color Scale");
-	iso_value_shift = global_paraMgr.glarea.getDouble("ISO Value Shift");
+
 	bShowGridCenters = global_paraMgr.glarea.getBool("Show NBV Grids");
 	bShowNBVCandidates = global_paraMgr.glarea.getBool("Show NBV Candidates");
 
 	bUseConfidenceSeparation = global_paraMgr.nbv.getBool("Use Confidence Separation");
 	confidence_Separation_value = global_paraMgr.nbv.getDouble("Confidence Separation Value");
 
+  if (global_paraMgr.poisson.getBool("Show Slices Mode"))
+  {
+    iso_color_scale = global_paraMgr.glarea.getDouble("Slice ISO Color Scale");
+    iso_value_shift = global_paraMgr.glarea.getDouble("Slice ISO Value Shift");
+  }
+  else
+  {
+    iso_color_scale = global_paraMgr.glarea.getDouble("Point ISO Color Scale");
+    iso_value_shift = global_paraMgr.glarea.getDouble("Point ISO Value Shift");
+  }
+  
 
 	if (!pickList.empty())
 	{
@@ -135,9 +145,9 @@ bool GLDrawer::isCanSee(const Point3f& pos, const Point3f& normal)
 }
 
 GLColor GLDrawer::isoValue2color(double iso_value, 
-	double scale_threshold,
-	double shift,
-	bool need_negative)
+	                               double scale_threshold,
+	                               double shift,
+	                               bool need_negative)
 {
 	iso_value += shift;
 	//if (!bShowSlice)
@@ -197,11 +207,11 @@ GLColor GLDrawer::isoValue2color(double iso_value,
 	}
 
 	mixed_color = base_colors[base_id] * (base_id * step_size + step_size - iso_value)
-		+ base_colors[base_id + 1] * (iso_value - base_id * step_size);
+		            + base_colors[base_id + 1] * (iso_value - base_id * step_size);
 
 	return GLColor(mixed_color.X() / float(step_size), 
-		mixed_color.Y() / float(step_size), 
-		mixed_color.Z() / float(step_size));
+		             mixed_color.Y() / float(step_size), 
+		             mixed_color.Z() / float(step_size));
 }
 
 GLColor GLDrawer::getColorByType(const CVertex& v)
@@ -255,31 +265,19 @@ GLColor GLDrawer::getColorByType(const CVertex& v)
 	//  return cBlue;
 	//}
 
-	if (bUseConfidenceColor && !v.is_iso && v.eigen_confidence >= -0.5)
-	{
-		return isoValue2color(v.eigen_confidence, cofidence_color_scale, iso_value_shift, true);
-	}
+	//if (bUseConfidenceColor && !v.is_iso && v.eigen_confidence >= -0.5)
+	//{
+ //   cout << "11" << endl;
+	//	return isoValue2color(v.eigen_confidence, cofidence_color_scale, iso_value_shift, true);
+	//}
 
 	if (bUseConfidenceColor && v.is_iso)
 	{
 		return isoValue2color(v.eigen_confidence, cofidence_color_scale, iso_value_shift, true);
 	}
-	if (bUseIndividualColor && v.is_iso)
-	{
-		if (v.is_iso && v.is_hole)
-		{
-			return feature_color;
-		}
-		//Color4b c = v.C();
-		//  return GLColor((255 - slice_color_scale * c.X())/255., c.Y()/255., c.Z()/255., 1.);
-		return isoValue2color(v.eigen_confidence, slice_color_scale, iso_value_shift, true);
-	}
 	else if (v.is_iso)
 	{
-		if (v.is_boundary)        return cRed;
-		if (v.is_view_candidates) return cOrange;
 		if (v.is_hole)            return cBlue;
-
 		return cGreen;
 	}
 	else if (v.is_fixed_sample)
@@ -289,12 +287,15 @@ GLColor GLDrawer::getColorByType(const CVertex& v)
 
 	if (v.is_grid_center)
 	{
-		if (v.is_ray_hit) 
-		{
-			return isoValue2color(v.eigen_confidence, slice_color_scale, iso_value_shift, true);
-		}
+
+		//if (v.is_ray_hit) 
+		//{
+		//	return isoValue2color(v.eigen_confidence, iso_color_scale, iso_value_shift, true);
+		//}
 
 		if (v.is_ray_stop) return cOrange;
+    else return isoValue2color(v.eigen_confidence, iso_color_scale, iso_value_shift, true);
+     
 
 		return cBlack;
 	}
@@ -861,10 +862,10 @@ void GLDrawer::drawSlice(Slice& slice, double trans_val)
 			//GLColor c2 = getColorByType(v2);
 			//GLColor c3 = getColorByType(v3);
 
-			GLColor c0 = isoValue2color(v0.eigen_confidence, slice_color_scale, iso_value_shift, true);
-			GLColor c1 = isoValue2color(v1.eigen_confidence, slice_color_scale, iso_value_shift, true);
-			GLColor c2 = isoValue2color(v2.eigen_confidence, slice_color_scale, iso_value_shift, true);
-			GLColor c3 = isoValue2color(v3.eigen_confidence, slice_color_scale, iso_value_shift, true);
+			GLColor c0 = isoValue2color(v0.eigen_confidence, iso_color_scale, iso_value_shift, true);
+			GLColor c1 = isoValue2color(v1.eigen_confidence, iso_color_scale, iso_value_shift, true);
+			GLColor c2 = isoValue2color(v2.eigen_confidence, iso_color_scale, iso_value_shift, true);
+			GLColor c3 = isoValue2color(v3.eigen_confidence, iso_color_scale, iso_value_shift, true);
 			glBegin(GL_QUADS);
 			glColor4f(c0.r, c0.g, c0.b, trans_val); glVertex3f(v0.P().X(), v0.P().Y(), v0.P().Z());
 			glColor4f(c1.r, c1.g, c1.b, trans_val); glVertex3f(v1.P().X(), v1.P().Y(), v1.P().Z());

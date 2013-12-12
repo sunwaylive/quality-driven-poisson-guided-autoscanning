@@ -661,11 +661,21 @@ void
 MainWindow::showNBVGrids(bool _val)
 {
   paras->glarea.setValue("Show NBV Grids", BoolValue(_val));
+
+  if (!area->dataMgr.isFieldPointsEmpty())
+  {
+    CMesh* field_points = area->dataMgr.getCurrentFieldPoints();
+    for (int i = 0; i < 200; i++)
+    {
+      cout << "eigen confidence:  "<< field_points->vert[i].eigen_confidence << endl;
+    }
+  }
+
   area->updateGL();
 }
 
 void
-  MainWindow::showNBVCandidates(bool _val)
+MainWindow::showNBVCandidates(bool _val)
 {
   paras->glarea.setValue("Show NBV Candidates", BoolValue(_val));
   area->updateGL();

@@ -1346,10 +1346,10 @@ void GLArea::runUpsampling()
 
 void GLArea::runPoisson()
 {
-	if (dataMgr.isOriginalEmpty())
-	{
-		return;
-	}
+	//if (dataMgr.isOriginalEmpty())
+	//{
+	//	return;
+	//}
 
 	runPointCloudAlgorithm(poisson);
 
@@ -1487,10 +1487,10 @@ void GLArea::saveView(QString fileName)
 
 	outfile << global_paraMgr.drawer.getDouble("ISO Dot Size") << endl;
 
-	outfile << global_paraMgr.glarea.getDouble("Slice Color Scale") << endl;
+	outfile << global_paraMgr.glarea.getDouble("Slice ISO Color Scale") << endl;
 	outfile << global_paraMgr.glarea.getDouble("ISO Interval Size") << endl;
 	outfile << global_paraMgr.glarea.getDouble("Confidence Color Scale") << endl;
-	outfile << global_paraMgr.glarea.getDouble("ISO Value Shift") << endl;
+	outfile << global_paraMgr.glarea.getDouble("Point ISO Value Shift") << endl;
   outfile << global_paraMgr.data.getDouble("Max Normalize Length") <<endl;
   outfile << dataMgr.original_center_point.X() << " "
           << dataMgr.original_center_point.Y() << " "
@@ -1646,7 +1646,7 @@ void GLArea::loadView(QString fileName)
 	global_paraMgr.drawer.setValue("ISO Dot Size", DoubleValue(temp));
 
 	infile >> temp;
-	global_paraMgr.glarea.setValue("Slice Color Scale", DoubleValue(temp));
+	global_paraMgr.glarea.setValue("Slice ISO Color Scale", DoubleValue(temp));
 
 	infile >> temp;
 	global_paraMgr.glarea.setValue("ISO Interval Size", DoubleValue(temp));
@@ -1655,7 +1655,7 @@ void GLArea::loadView(QString fileName)
 	global_paraMgr.glarea.setValue("Confidence Color Scale", DoubleValue(temp));
 
 	infile >> temp;
-	global_paraMgr.glarea.setValue("ISO Value Shift", DoubleValue(temp));
+	global_paraMgr.glarea.setValue("Point ISO Value Shift", DoubleValue(temp));
 
   infile >> temp;
   global_paraMgr.data.setValue("Max Normalize Length", DoubleValue(temp));
@@ -1719,12 +1719,12 @@ void GLArea::wheelEvent(QWheelEvent *e)
 		}
 		else if( (e->modifiers() & Qt::ShiftModifier) && (e->modifiers() & Qt::ControlModifier) )
 		{
-			size_temp = global_paraMgr.glarea.getDouble("Slice Color Scale");
+			size_temp = global_paraMgr.glarea.getDouble("Slice ISO Color Scale");
 			size_temp *= change2;
 			size_temp = (std::max)(size_temp, 1e-10);
 
-			global_paraMgr.glarea.setValue("Slice Color Scale", DoubleValue(size_temp));
-			cout << "Slice Color Scale" << size_temp << endl;
+			global_paraMgr.glarea.setValue("Slice ISO Color Scale", DoubleValue(size_temp));
+			cout << "Slice ISO Color Scale" << size_temp << endl;
 		}
 		else if ((e->modifiers() & Qt::ShiftModifier) && (e->modifiers() & Qt::AltModifier))
 		{
@@ -1740,7 +1740,7 @@ void GLArea::wheelEvent(QWheelEvent *e)
 		{
 			if ((para->getBool("Show ISO Points") || para->getBool("Show Samples")) && !para->getBool("Show Normal"))
 			{
-				size_temp = global_paraMgr.glarea.getDouble("ISO Value Shift");
+				size_temp = global_paraMgr.glarea.getDouble("Slice ISO Value Shift");
 				if(e->delta() < 0)
 				{
 					size_temp += 0.02;
@@ -1749,8 +1749,8 @@ void GLArea::wheelEvent(QWheelEvent *e)
 				{
 					size_temp -= 0.02;
 				}
-				global_paraMgr.glarea.setValue("ISO Value Shift", DoubleValue(size_temp));
-				cout << "ISO Value Shift" << size_temp << endl;
+				global_paraMgr.glarea.setValue("Slice ISO Value Shift", DoubleValue(size_temp));
+				cout << "Slice ISO Value Shift" << size_temp << endl;
 			}
 			else
 			{
@@ -1810,9 +1810,9 @@ void GLArea::wheelEvent(QWheelEvent *e)
 				break;
 			}
 
-			global_paraMgr.poisson.setValue("Run Slice", BoolValue(true));
-			runPoisson();
-			global_paraMgr.poisson.setValue("Run Slice", BoolValue(false));
+			//global_paraMgr.poisson.setValue("Run Slice", BoolValue(true));
+			//runPoisson();
+			//global_paraMgr.poisson.setValue("Run Slice", BoolValue(false));
 
 			return;
 		}
@@ -1823,7 +1823,7 @@ void GLArea::wheelEvent(QWheelEvent *e)
 	{
 		if ((para->getBool("Show ISO Points") || para->getBool("Show Samples")) && !para->getBool("Show Normal"))
 		{
-			size_temp = global_paraMgr.glarea.getDouble("ISO Value Shift");
+			size_temp = global_paraMgr.glarea.getDouble("Point ISO Value Shift");
 			if(e->delta() < 0)
 			{
 				size_temp += 0.02;
@@ -1832,8 +1832,8 @@ void GLArea::wheelEvent(QWheelEvent *e)
 			{
 				size_temp -= 0.02;
 			}
-			global_paraMgr.glarea.setValue("ISO Value Shift", DoubleValue(size_temp));
-			cout << "ISO Value Shift" << size_temp << endl;
+			global_paraMgr.glarea.setValue("Point ISO Value Shift", DoubleValue(size_temp));
+			cout << "Point ISO Value Shift" << size_temp << endl;
 		}
 		else
 		{

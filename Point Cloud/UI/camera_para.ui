@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -441,7 +441,7 @@
       </property>
      </widget>
     </widget>
-    <widget class="QDoubleSpinBox" name="grid_resolution">
+    <widget class="QDoubleSpinBox" name="grid_step_size">
      <property name="geometry">
       <rect>
        <x>160</x>

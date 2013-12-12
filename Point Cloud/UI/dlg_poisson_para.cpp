@@ -38,12 +38,12 @@ void PoissonParaDlg::initConnects()
   connect(ui->pushButton_poisson_MC_original,SIGNAL(clicked()),this,SLOT(runPoissonAndExtractMC_Original()));
   connect(ui->pushButton_poisson_MC_samples,SIGNAL(clicked()),this,SLOT(runPoissonAndExtractMC_Samples()));
   connect(ui->pushButton_label_iso_points,SIGNAL(clicked()),this,SLOT(labelIsoPoints()));
-  connect(ui->pushButton_label_smooth,SIGNAL(clicked()),this,SLOT(labelSmooth()));
-  connect(ui->pushButton_label_boundary_points,SIGNAL(clicked()), this, SLOT(labelBoundaryPoints()));
-  connect(ui->pushButton_compute_view_candidates, SIGNAL(clicked()), this, SLOT(computeViewCandidates()));
-  connect(ui->pushButton_clear_label,SIGNAL(clicked()),this,SLOT(clearLabel()));
+  //connect(ui->pushButton_label_smooth,SIGNAL(clicked()),this,SLOT(labelSmooth()));
+  //connect(ui->pushButton_label_boundary_points,SIGNAL(clicked()), this, SLOT(labelBoundaryPoints()));
+  //connect(ui->pushButton_compute_view_candidates, SIGNAL(clicked()), this, SLOT(computeViewCandidates()));
+  //connect(ui->pushButton_clear_label,SIGNAL(clicked()),this,SLOT(clearLabel()));
   connect(ui->pushButton_slice,SIGNAL(clicked()),this,SLOT(runSlice()));
-  connect(ui->pushButton_view_candidates_clustering,SIGNAL(clicked()),this,SLOT(viewCandidatesClustering()));
+  //connect(ui->pushButton_view_candidates_clustering,SIGNAL(clicked()),this,SLOT(viewCandidatesClustering()));
   connect(ui->pushButton_add_samples_to_iso_points,SIGNAL(clicked()),this,SLOT(runAddWLOPtoISO()));
 
   connect(ui->checkBox_show_slices,SIGNAL(clicked(bool)),this,SLOT(showSlices(bool)));

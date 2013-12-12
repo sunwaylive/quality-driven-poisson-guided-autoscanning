@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1275</width>
+    <width>1295</width>
     <height>573</height>
    </rect>
   </property>
@@ -40,7 +40,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1275</width>
+     <width>1295</width>
      <height>23</height>
     </rect>
    </property>
@@ -243,9 +243,10 @@
    <addaction name="actionPoisson"/>
    <addaction name="actionCamera"/>
    <addaction name="separator"/>
-   <addaction name="actionShow_Individual_Color"/>
-   <addaction name="actionUse_ISO_Interval"/>
    <addaction name="actionShow_Confidence_Color"/>
+   <addaction name="actionShow_Neighborhood_Ball"/>
+   <addaction name="actionShow_Normals"/>
+   <addaction name="actionShow_Box"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QToolBar" name="toolBar">
@@ -274,11 +275,8 @@
    <addaction name="actionShow_Scan_Candidates"/>
    <addaction name="actionShow_Current_Scanned_Mesh"/>
    <addaction name="separator"/>
-   <addaction name="actionShow_Neighborhood_Ball"/>
-   <addaction name="actionShow_Normals"/>
-   <addaction name="actionCull_Points"/>
    <addaction name="separator"/>
-   <addaction name="actionShow_Box"/>
+   <addaction name="actionCull_Points"/>
   </widget>
   <action name="actionImport_Ply">
    <property name="icon">
@@ -832,7 +830,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Show NBV Grids</string>
+    <string>Show Field/View Grids</string>
    </property>
   </action>
   <action name="actionShow_NBV_Candidates">
@@ -845,7 +843,7 @@
   </action>
   <action name="actionSave_Field_Points">
    <property name="text">
-    <string>Save Field Points</string>
+    <string>Save Field Grid Points</string>
    </property>
   </action>
   <action name="actionSave_NBV">

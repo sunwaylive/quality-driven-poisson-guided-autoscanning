@@ -26,8 +26,14 @@ NBV::run()
   double camera_max_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
                            global_paraMgr.camera.getDouble("Predicted Model Size");
   
-  grid_resolution = (camera_max_dist*2.0 + 1.0) / para->getDouble("Grid resolution");
-  global_paraMgr.camera.setValue("View Grid Points Resolution", DoubleValue(grid_resolution));
+  int grid_resolution = para->getDouble("Grid resolution");
+  if (grid_resolution <= 2)
+  {
+    return;
+  }
+
+  grid_step_size = (camera_max_dist*2.0 + 1.0) / (grid_resolution - 1);
+  global_paraMgr.camera.setValue("View Grid Points Resolution", IntValue(grid_step_size));
 
   if (para->getBool("Run Build Grid"))
   {
@@ -183,12 +189,12 @@ NBV::buildGrid()
    whole_space_box_max = whole_space_box_min + Point3f(max_length, max_length, max_length);
    dif = whole_space_box_max - whole_space_box_min;
    //divide the box into grid
-   x_max = static_cast<int> (dif.X() / grid_resolution);
-   y_max = static_cast<int> (dif.Y() / grid_resolution);
-   z_max = static_cast<int> (dif.Z() / grid_resolution);
+   x_max = static_cast<int> (dif.X() / grid_step_size);
+   y_max = static_cast<int> (dif.Y() / grid_step_size);
+   z_max = static_cast<int> (dif.Z() / grid_step_size);
 
    int all_max = std::max(std::max(x_max, y_max), z_max);
-   x_max = y_max =z_max = all_max;
+   x_max = y_max =z_max = all_max+1; // wsh 12-11
 
    //preallocate the memory
    int max_index = x_max * y_max * z_max;
@@ -207,9 +213,9 @@ NBV::buildGrid()
          (*view_grids)[index] = grid;
          //add the center point of the grid
          CVertex t;
-         t.P()[0] = whole_space_box_min.X() + i * grid_resolution;
-         t.P()[1] = whole_space_box_min.Y() + j * grid_resolution;
-         t.P()[2] = whole_space_box_min.Z() + k * grid_resolution;
+         t.P()[0] = whole_space_box_min.X() + i * grid_step_size;
+         t.P()[1] = whole_space_box_min.Y() + j * grid_step_size;
+         t.P()[2] = whole_space_box_min.Z() + k * grid_step_size;
          t.m_index = index;
          t.is_grid_center = true;
          view_grid_points->vert[index] = t;
@@ -260,8 +266,8 @@ NBV::buildGrid()
          double dist = GlobalFun::computeEulerDist(t, v);
          Point3f n = nearest.N();
          Point3f l = view_grid_points->vert[i].P() - nearest.P();
-         if ((n * l < 0.0f && dist < grid_resolution * 2)
-           /*|| (test_other_segment && dist < grid_resolution / 2)*/) //wsh change
+         if ((n * l < 0.0f && dist < grid_step_size * 2)
+           /*|| (test_other_segment && dist < grid_step_size / 2)*/) //wsh change
          {
            view_grid_points->vert[i].is_ray_stop = true; 
          }  
@@ -317,13 +323,13 @@ NBV::propagate()
   {
     confidence_weight_sum.assign(view_grid_points->vert.size(), 0.0);
   }
-  normalizeConfidence(iso_points->vert, 0);
+  //normalizeConfidence(iso_points->vert, 0);
 
   //double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
   double camera_max_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
                            global_paraMgr.camera.getDouble("Predicted Model Size");
 
-  int max_steps = static_cast<int>(camera_max_dist / grid_resolution);
+  int max_steps = static_cast<int>(camera_max_dist / grid_step_size);
   max_steps *= para->getDouble("Max Ray Steps Para"); //wsh
 
   //traverse all points on the iso surface
@@ -363,15 +369,15 @@ NBV::propagate()
       //ray_hit_nbv_grids->vert.push_back(v);
 
       //get the x,y,z index of each iso_points
-      int t_indexX = static_cast<int>( ceil((v.P()[0] - whole_space_box_min.X()) / grid_resolution ));
-      int t_indexY = static_cast<int>( ceil((v.P()[1] - whole_space_box_min.Y()) / grid_resolution ));
-      int t_indexZ = static_cast<int>( ceil((v.P()[2] - whole_space_box_min.Z()) / grid_resolution ));
+      int t_indexX = static_cast<int>( ceil((v.P()[0] - whole_space_box_min.X()) / grid_step_size ));
+      int t_indexY = static_cast<int>( ceil((v.P()[1] - whole_space_box_min.Y()) / grid_step_size ));
+      int t_indexZ = static_cast<int>( ceil((v.P()[2] - whole_space_box_min.Z()) / grid_step_size ));
       //next point index along the ray, pay attention , index should be stored in double ,used in integer
       double n_indexX, n_indexY, n_indexZ;
       //get the sphere traversal resolution
       //double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
       //compute the delta of a,b so as to traverse the whole sphere
-      double angle_delta = grid_resolution / camera_max_dist;
+      double angle_delta = grid_step_size / camera_max_dist;
       //angle_delta *=2;// wsh
       //loop for a, b
       double a = 0.0f, b = 0.0f;
@@ -500,15 +506,15 @@ NBV::propagate()
     //ray_hit_nbv_grids->vert.push_back(v);
 
     //get the x,y,z index of each iso_points
-    int t_indexX = static_cast<int>( ceil((v.P()[0] - whole_space_box_min.X()) / grid_resolution ));
-    int t_indexY = static_cast<int>( ceil((v.P()[1] - whole_space_box_min.Y()) / grid_resolution ));
-    int t_indexZ = static_cast<int>( ceil((v.P()[2] - whole_space_box_min.Z()) / grid_resolution ));
+    int t_indexX = static_cast<int>( ceil((v.P()[0] - whole_space_box_min.X()) / grid_step_size ));
+    int t_indexY = static_cast<int>( ceil((v.P()[1] - whole_space_box_min.Y()) / grid_step_size ));
+    int t_indexZ = static_cast<int>( ceil((v.P()[2] - whole_space_box_min.Z()) / grid_step_size ));
     //next point index along the ray, pay attention , index should be stored in double ,used in integer
     double n_indexX, n_indexY, n_indexZ;
     //get the sphere traversal resolution
     //double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
     //compute the delta of a,b so as to traverse the whole sphere
-    double angle_delta = grid_resolution / camera_max_dist;
+    double angle_delta = grid_step_size / camera_max_dist;
     //angle_delta *=2;// wsh
 
     //loop for a, b

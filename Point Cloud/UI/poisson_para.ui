@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -33,7 +33,7 @@
      <property name="geometry">
       <rect>
        <x>150</x>
-       <y>630</y>
+       <y>420</y>
        <width>91</width>
        <height>16</height>
       </rect>
@@ -71,7 +71,7 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>600</y>
+       <y>390</y>
        <width>91</width>
        <height>16</height>
       </rect>
@@ -92,56 +92,6 @@
      <property name="text">
       <string>Grid Radius</string>
      </property>
-    </widget>
-    <widget class="QGroupBox" name="groupBox_2">
-     <property name="geometry">
-      <rect>
-       <x>-10</x>
-       <y>340</y>
-       <width>241</width>
-       <height>221</height>
-      </rect>
-     </property>
-     <property name="title">
-      <string>GroupBox</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
-      <item>
-       <widget class="QPushButton" name="pushButton_label_smooth">
-        <property name="text">
-         <string>Label Smooth</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="pushButton_clear_label">
-        <property name="text">
-         <string>Clear Label</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="pushButton_label_boundary_points">
-        <property name="text">
-         <string>Label Boundary Points</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="pushButton_compute_view_candidates">
-        <property name="text">
-         <string>Compute View Candidates</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="pushButton_view_candidates_clustering">
-        <property name="text">
-         <string>View Candidates Clustering</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
     </widget>
     <widget class="QLabel" name="label_2">
      <property name="geometry">
@@ -185,7 +135,7 @@
      <property name="geometry">
       <rect>
        <x>70</x>
-       <y>630</y>
+       <y>420</y>
        <width>91</width>
        <height>16</height>
       </rect>
@@ -198,7 +148,7 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>630</y>
+       <y>420</y>
        <width>91</width>
        <height>16</height>
       </rect>
@@ -224,7 +174,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>570</y>
+       <y>360</y>
        <width>211</width>
        <height>21</height>
       </rect>
@@ -302,7 +252,7 @@
      <property name="geometry">
       <rect>
        <x>100</x>
-       <y>600</y>
+       <y>390</y>
        <width>131</width>
        <height>16</height>
       </rect>
@@ -353,7 +303,7 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>660</y>
+       <y>450</y>
        <width>151</width>
        <height>16</height>
       </rect>
@@ -366,7 +316,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>680</y>
+       <y>470</y>
        <width>211</width>
        <height>21</height>
       </rect>
@@ -379,7 +329,6 @@
     <zorder>poisson_depth</zorder>
     <zorder>checkBox_show_slices</zorder>
     <zorder>label</zorder>
-    <zorder>groupBox_2</zorder>
     <zorder>label_2</zorder>
     <zorder>radius</zorder>
     <zorder>checkBox_show_slices_Y</zorder>
