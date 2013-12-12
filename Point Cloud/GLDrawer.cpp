@@ -15,7 +15,6 @@ GLDrawer::~GLDrawer(void)
 void GLDrawer::updateDrawer(vector<int>& pickList)
 {
 	bCullFace = para->getBool("Need Cull Points");
-	bUseIndividualColor = para->getBool("Show Individual Color");
 	useNormalColor = para->getBool("Use Color From Normal");
 	useDifferBranchColor = para->getBool("Use Differ Branch Color");
 	bShowSlice = global_paraMgr.poisson.getBool("Show Slices Mode");
@@ -275,17 +274,6 @@ GLColor GLDrawer::getColorByType(const CVertex& v)
 	if (bUseConfidenceColor && v.is_iso)
 	{
 		return isoValue2color(v.eigen_confidence, cofidence_color_scale, iso_value_shift, true);
-	}
-	if (bUseIndividualColor && v.is_iso)
-	{
-
-		if (v.is_iso && v.is_hole)
-		{
-			return feature_color;
-		}
-		//Color4b c = v.C();
-		//  return GLColor((255 - iso_color_scale * c.X())/255., c.Y()/255., c.Z()/255., 1.);
-		return isoValue2color(v.eigen_confidence, iso_color_scale, iso_value_shift, true);
 	}
 	else if (v.is_iso)
 	{

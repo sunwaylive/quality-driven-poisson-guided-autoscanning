@@ -100,7 +100,6 @@ public:
 private:
 
 	bool bCullFace;
-	bool bUseIndividualColor;
 	bool useNormalColor;
   bool useDifferBranchColor;
   bool bUseIsoInteral;
