@@ -445,5 +445,7 @@ void
 
   nbv.addParam(new RichDouble("Confidence Filter Threshold", 0.2));
 
+  nbv.addParam(new RichDouble("Propagate One Point Index", 0));
+
 
 }

@@ -855,10 +855,10 @@ void GLDrawer::drawSlice(Slice& slice, double trans_val)
 
       if (show_view_grid_slice)
       {
-        GLColor c0 = isoValue2color(v0.eigen_confidence, grid_color_scale, grid_value_shift, true);
-        GLColor c1 = isoValue2color(v1.eigen_confidence, grid_color_scale, grid_value_shift, true);
-        GLColor c2 = isoValue2color(v2.eigen_confidence, grid_color_scale, grid_value_shift, true);
-        GLColor c3 = isoValue2color(v3.eigen_confidence, grid_color_scale, grid_value_shift, true);
+        GLColor c0 = isoValue2color(1-v0.eigen_confidence, grid_color_scale, grid_value_shift, true);
+        GLColor c1 = isoValue2color(1-v1.eigen_confidence, grid_color_scale, grid_value_shift, true);
+        GLColor c2 = isoValue2color(1-v2.eigen_confidence, grid_color_scale, grid_value_shift, true);
+        GLColor c3 = isoValue2color(1-v3.eigen_confidence, grid_color_scale, grid_value_shift, true);
         glBegin(GL_QUADS);
         glColor4f(c0.r, c0.g, c0.b, trans_val); glVertex3f(v0.P().X(), v0.P().Y(), v0.P().Z());
         glColor4f(c1.r, c1.g, c1.b, trans_val); glVertex3f(v1.P().X(), v1.P().Y(), v1.P().Z());

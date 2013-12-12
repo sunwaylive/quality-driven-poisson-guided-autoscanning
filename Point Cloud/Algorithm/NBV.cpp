@@ -334,16 +334,22 @@ NBV::propagate()
 
   //traverse all points on the iso surface
   //for (int i = 0; i < 1; ++i)//fix: < iso_points->vert.size()
-  int target_index = 425;
+  //int target_index = 425;
   //int target_index = 1009;  
   //for (int i = target_index; i < target_index+1; ++i)//fix: < iso_points->vert.size()  
 
-  int i = 0;
+  int target_index = 0;
   if (use_propagate_one_point)
   {
-    srand(time(NULL)); 
-    i = rand() % iso_points->vert.size();
-    cout << "propagate one point index: " << i << endl;
+    target_index = para->getDouble("Propagate One Point Index");
+
+    if (target_index < 0 || target_index >= iso_points->vert.size())
+    {
+      srand(time(NULL)); 
+      target_index = rand() % iso_points->vert.size();
+    }
+
+    cout << "propagate one point index: " << target_index << endl;
   }
 
   //parallel
@@ -364,6 +370,11 @@ NBV::propagate()
     {
       vector<int> hit_grid_indexes;
       CVertex &v = iso_points->vert[i];
+
+      if (use_propagate_one_point && v.m_index != target_index)
+      {
+        continue;
+      }
       //t is the ray_start_point
       v.is_ray_hit = true;
       //ray_hit_nbv_grids->vert.push_back(v);
@@ -377,7 +388,7 @@ NBV::propagate()
       //get the sphere traversal resolution
       //double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
       //compute the delta of a,b so as to traverse the whole sphere
-      double angle_delta = grid_step_size / camera_max_dist;
+      double angle_delta = (grid_step_size*0.5) / camera_max_dist;
       //angle_delta *=2;// wsh
       //loop for a, b
       double a = 0.0f, b = 0.0f;
