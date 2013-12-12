@@ -45,7 +45,8 @@ public:
 	vector<int> original_neighbors;
   bool is_ray_hit;
   bool is_ray_stop;
-  bool is_grid_center;
+  bool is_grid_center;// should change name to is_view_grid
+  bool is_field_grid;
   bool is_model;
   bool is_scanned;
   bool is_scanned_visible;
@@ -108,6 +109,7 @@ public:
 		is_ignore(false),
 		is_skel_virtual(false),
     is_fixed_original(false),
+    is_field_grid(false),
 		eigen_vector0(Point3f(1, 0, 0)),
 		eigen_vector1(Point3f(0, 1, 0)),
     skel_radius(-1.0)

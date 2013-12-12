@@ -57,6 +57,7 @@ void PoissonParaDlg::initConnects()
   connect(ui->checkBox_use_confidence3,SIGNAL(clicked(bool)),this,SLOT(useConfidence3(bool)));
   connect(ui->checkBox_use_confidence4,SIGNAL(clicked(bool)),this,SLOT(useConfidence4(bool)));
   connect(ui->checkBox_parallel_slice_mode,SIGNAL(clicked(bool)),this,SLOT(showParallerSlice(bool)));
+  connect(ui->checkBox_show_view_grid_slice,SIGNAL(clicked(bool)),this,SLOT(showViewGridSlice(bool)));
 
   connect(ui->pushButton_compute_confidence_original,SIGNAL(clicked()),this,SLOT(computeOriginalConfidence()));
   connect(ui->pushButton_compute_confidence_samples,SIGNAL(clicked()),this,SLOT(computeSamplesConfidence()));
@@ -97,6 +98,8 @@ bool PoissonParaDlg::initWidgets()
   ui->checkBox_use_confidence4->setCheckState(state);
   state = m_paras->poisson.getBool("Parallel Slices Mode") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
   ui->checkBox_parallel_slice_mode->setCheckState(state);
+  state = m_paras->glarea.getBool("Show View Grid Slice") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
+  ui->checkBox_show_view_grid_slice->setCheckState(state);
 
   update();
   repaint();
@@ -246,6 +249,12 @@ void PoissonParaDlg::viewCandidatesClustering()
 void PoissonParaDlg::showParallerSlice(bool _val)
 {
   global_paraMgr.poisson.setValue("Parallel Slices Mode", BoolValue(_val));
+  area->updateGL();
+}
+
+void PoissonParaDlg::showViewGridSlice(bool _val)
+{
+  global_paraMgr.glarea.setValue("Show View Grid Slice", BoolValue(_val));
   area->updateGL();
 }
 

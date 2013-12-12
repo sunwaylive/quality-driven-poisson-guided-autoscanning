@@ -121,13 +121,15 @@ void ParameterMgr::initGlareaParameter()
 	glarea.addParam(new RichDouble("Radius Ball Transparency", 0.3));
 	
 	glarea.addParam(new RichDouble("ISO Interval Size", 50));
-	glarea.addParam(new RichDouble("Confidence Color Scale", 0.5));
+	glarea.addParam(new RichDouble("Sample Confidence Color Scale", 1.0));
 
-  glarea.addParam(new RichDouble("Slice ISO Color Scale", 1.));
-  glarea.addParam(new RichDouble("Slice ISO Value Shift", 0.00));//new
+  glarea.addParam(new RichDouble("Grid ISO Color Scale", 1.));
+  glarea.addParam(new RichDouble("Grid ISO Value Shift", 0.00));//new
 
   glarea.addParam(new RichDouble("Point ISO Color Scale", 1.)); //new
 	glarea.addParam(new RichDouble("Point ISO Value Shift", 0.00)); 
+
+  glarea.addParam(new RichBool("Show View Grid Slice", false));
 
 	glarea.addParam(new RichBool("SnapShot Each Iteration", false));
 	glarea.addParam(new RichBool("No Snap Radius", false));

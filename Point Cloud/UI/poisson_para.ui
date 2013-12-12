@@ -316,7 +316,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>470</y>
+       <y>510</y>
        <width>211</width>
        <height>21</height>
       </rect>
@@ -325,23 +325,19 @@
       <string>Clear Slice</string>
      </property>
     </widget>
-    <zorder>checkBox_show_slices_Z</zorder>
-    <zorder>poisson_depth</zorder>
-    <zorder>checkBox_show_slices</zorder>
-    <zorder>label</zorder>
-    <zorder>label_2</zorder>
-    <zorder>radius</zorder>
-    <zorder>checkBox_show_slices_Y</zorder>
-    <zorder>checkBox_show_slices_X</zorder>
-    <zorder>label_3</zorder>
-    <zorder>pushButton_slice</zorder>
-    <zorder>layoutWidget</zorder>
-    <zorder>poisson_ISO_interval</zorder>
-    <zorder>checkBox_show_slices_transparent</zorder>
-    <zorder>label_4</zorder>
-    <zorder>poisson_sample_number</zorder>
-    <zorder>checkBox_parallel_slice_mode</zorder>
-    <zorder>pushButton_clear_slice</zorder>
+    <widget class="QCheckBox" name="checkBox_show_view_grid_slice">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>480</y>
+       <width>151</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Show View Grid Slice</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="tab_2">
     <attribute name="title">
