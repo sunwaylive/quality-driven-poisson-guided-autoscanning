@@ -388,7 +388,7 @@ NBV::propagate()
       //get the sphere traversal resolution
       //double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
       //compute the delta of a,b so as to traverse the whole sphere
-      double angle_delta = (grid_step_size*0.5) / camera_max_dist;
+      double angle_delta = (grid_step_size*0.511) / camera_max_dist;
       //angle_delta *=2;// wsh
       //loop for a, b
       double a = 0.0f, b = 0.0f;
