@@ -624,7 +624,7 @@ void Poisson::runPoisson()
   //time.end();
 
   //double estimate_scale = abs(isoValue);
-  ////global_paraMgr.glarea.setValue("Slice Color Scale", DoubleValue(estimate_scale*2/3));
+  ////global_paraMgr.glarea.setValue("Slice ISO Color Scale", DoubleValue(estimate_scale*2/3));
   ////global_paraMgr.glarea.setValue("ISO Interval Size", DoubleValue(estimate_scale/3));
 
 
@@ -960,7 +960,7 @@ void Poisson::runPoissonFieldAndIso()
   time.end();
 
   double estimate_scale = abs(isoValue);
-  //global_paraMgr.glarea.setValue("Slice Color Scale", DoubleValue(estimate_scale*2/3));
+  //global_paraMgr.glarea.setValue("Slice ISO Color Scale", DoubleValue(estimate_scale*2/3));
   //global_paraMgr.glarea.setValue("ISO Interval Size", DoubleValue(estimate_scale/3));
 
 

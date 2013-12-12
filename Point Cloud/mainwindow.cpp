@@ -659,16 +659,14 @@ MainWindow::showNBVGrids(bool _val)
     for (int i = 0; i < 200; i++)
     {
       cout << "eigen confidence:  "<< field_points->vert[i].eigen_confidence << endl;
-
     }
-
   }
 
   area->updateGL();
 }
 
 void
-  MainWindow::showNBVCandidates(bool _val)
+MainWindow::showNBVCandidates(bool _val)
 {
   paras->glarea.setValue("Show NBV Candidates", BoolValue(_val));
   area->updateGL();

@@ -117,7 +117,7 @@ private:
 	double sample_dot_size;
   double iso_dot_size;
 	double original_dot_size;
-  double slice_color_scale;
+  double iso_color_scale;
   double iso_step_size;
   double cofidence_color_scale;
   double iso_value_shift;
