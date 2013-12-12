@@ -39,7 +39,7 @@ GLArea::GLArea(QWidget *parent): QGLWidget(/*QGLFormat(QGL::DoubleBuffer | QGL::
 	cout << "GLArea constructed" << endl;
 
 	CVertex v;
-	cout << sizeof(v) << endl;
+	cout << "Memory Size of each CVertex:  " << sizeof(v) << endl;
 }
 
 GLArea::~GLArea(void)
@@ -1487,14 +1487,17 @@ void GLArea::saveView(QString fileName)
 
 	outfile << global_paraMgr.drawer.getDouble("ISO Dot Size") << endl;
 
-	outfile << global_paraMgr.glarea.getDouble("Slice ISO Color Scale") << endl;
+	outfile << global_paraMgr.glarea.getDouble("Grid ISO Color Scale") << endl;
 	outfile << global_paraMgr.glarea.getDouble("ISO Interval Size") << endl;
-	outfile << global_paraMgr.glarea.getDouble("Confidence Color Scale") << endl;
+	outfile << global_paraMgr.glarea.getDouble("Sample Confidence Color Scale") << endl;
 	outfile << global_paraMgr.glarea.getDouble("Point ISO Value Shift") << endl;
   outfile << global_paraMgr.data.getDouble("Max Normalize Length") <<endl;
   outfile << dataMgr.original_center_point.X() << " "
           << dataMgr.original_center_point.Y() << " "
           << dataMgr.original_center_point.Z() << " "<<endl;
+
+  outfile << global_paraMgr.glarea.getDouble("Grid ISO Value Shift") << endl;
+  outfile << global_paraMgr.glarea.getDouble("Point ISO Color Scale") << endl;
 
 	outfile.close();
 }
@@ -1646,13 +1649,13 @@ void GLArea::loadView(QString fileName)
 	global_paraMgr.drawer.setValue("ISO Dot Size", DoubleValue(temp));
 
 	infile >> temp;
-	global_paraMgr.glarea.setValue("Slice ISO Color Scale", DoubleValue(temp));
+	global_paraMgr.glarea.setValue("Grid ISO Color Scale", DoubleValue(temp));
 
 	infile >> temp;
 	global_paraMgr.glarea.setValue("ISO Interval Size", DoubleValue(temp));
 
 	infile >> temp;
-	global_paraMgr.glarea.setValue("Confidence Color Scale", DoubleValue(temp));
+	global_paraMgr.glarea.setValue("Sample Confidence Color Scale", DoubleValue(temp));
 
 	infile >> temp;
 	global_paraMgr.glarea.setValue("Point ISO Value Shift", DoubleValue(temp));
@@ -1663,6 +1666,11 @@ void GLArea::loadView(QString fileName)
   infile >> dataMgr.original_center_point[0]
          >> dataMgr.original_center_point[1]
          >> dataMgr.original_center_point[2];
+
+ infile >> temp;
+      global_paraMgr.glarea.setValue("Grid ISO Value Shift", DoubleValue(temp));
+ infile >> temp;
+       global_paraMgr.glarea.setValue("Point ISO Color Scale", DoubleValue(temp));
 
 	infile.close();
 	emit needUpdateStatus();
@@ -1719,12 +1727,12 @@ void GLArea::wheelEvent(QWheelEvent *e)
 		}
 		else if( (e->modifiers() & Qt::ShiftModifier) && (e->modifiers() & Qt::ControlModifier) )
 		{
-			size_temp = global_paraMgr.glarea.getDouble("Slice ISO Color Scale");
+			size_temp = global_paraMgr.glarea.getDouble("Grid ISO Color Scale");
 			size_temp *= change2;
 			size_temp = (std::max)(size_temp, 1e-10);
 
-			global_paraMgr.glarea.setValue("Slice ISO Color Scale", DoubleValue(size_temp));
-			cout << "Slice ISO Color Scale" << size_temp << endl;
+			global_paraMgr.glarea.setValue("Grid ISO Color Scale", DoubleValue(size_temp));
+			cout << "Grid ISO Color Scale" << size_temp << endl;
 		}
 		else if ((e->modifiers() & Qt::ShiftModifier) && (e->modifiers() & Qt::AltModifier))
 		{
@@ -1740,7 +1748,7 @@ void GLArea::wheelEvent(QWheelEvent *e)
 		{
 			if ((para->getBool("Show ISO Points") || para->getBool("Show Samples")) && !para->getBool("Show Normal"))
 			{
-				size_temp = global_paraMgr.glarea.getDouble("Slice ISO Value Shift");
+				size_temp = global_paraMgr.glarea.getDouble("Grid ISO Value Shift");
 				if(e->delta() < 0)
 				{
 					size_temp += 0.02;
@@ -1749,8 +1757,8 @@ void GLArea::wheelEvent(QWheelEvent *e)
 				{
 					size_temp -= 0.02;
 				}
-				global_paraMgr.glarea.setValue("Slice ISO Value Shift", DoubleValue(size_temp));
-				cout << "Slice ISO Value Shift" << size_temp << endl;
+				global_paraMgr.glarea.setValue("Grid ISO Value Shift", DoubleValue(size_temp));
+				cout << "Grid ISO Value Shift" << size_temp << endl;
 			}
 			else
 			{
@@ -1850,9 +1858,19 @@ void GLArea::wheelEvent(QWheelEvent *e)
 		}
 		if (global_paraMgr.drawer.getBool("Show Confidence Color"))
 		{
-			size_temp = global_paraMgr.glarea.getDouble("Confidence Color Scale");
-			global_paraMgr.glarea.setValue("Confidence Color Scale", DoubleValue(size_temp * change));
-			cout << "Confidence color scale threshold = " << size_temp * change << endl;
+      if (para->getBool("Show Samples"))
+      {
+        size_temp = global_paraMgr.glarea.getDouble("Sample Confidence Color Scale");
+        global_paraMgr.glarea.setValue("Sample Confidence Color Scale", DoubleValue(size_temp * change));
+        cout << "Sample Confidence Color Scale = " << size_temp * change << endl;
+      }
+
+      if (para->getBool("Show ISO Points"))
+      {
+        size_temp = global_paraMgr.glarea.getDouble("Point ISO Color Scale");
+        global_paraMgr.glarea.setValue("Point ISO Color Scale", DoubleValue(size_temp * change));
+        cout << "Point ISO Color Scale = " << size_temp * change << endl;
+      }
 		}
 
 	}

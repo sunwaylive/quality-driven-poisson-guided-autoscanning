@@ -54,6 +54,8 @@ private slots:
   void showSlicesY(bool _val);
   void showSlicesZ(bool _val);
   void showParallerSlice(bool _val);
+  void showViewGridSlice(bool _val);
+
 
   void useConfidence1(bool _val);
   void useConfidence2(bool _val);

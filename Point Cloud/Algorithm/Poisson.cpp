@@ -98,7 +98,7 @@ void Poisson::setInput(DataMgr* pData)
     
     model = pData->getCurrentModel();
 
-    if (!pData->isNBVGridsEmpty() && global_paraMgr.nbv.getBool("Use Confidence Separation"))
+    if (global_paraMgr.glarea.getBool("Show View Grid Slice") && !pData->isNBVGridsEmpty())
     {
       cout << "using NBV grids" << endl;
       field_points = pData->getViewGridPoints();
@@ -624,7 +624,7 @@ void Poisson::runPoisson()
   //time.end();
 
   //double estimate_scale = abs(isoValue);
-  ////global_paraMgr.glarea.setValue("Slice ISO Color Scale", DoubleValue(estimate_scale*2/3));
+  ////global_paraMgr.glarea.setValue("Grid ISO Color Scale", DoubleValue(estimate_scale*2/3));
   ////global_paraMgr.glarea.setValue("ISO Interval Size", DoubleValue(estimate_scale/3));
 
 
@@ -960,7 +960,7 @@ void Poisson::runPoissonFieldAndIso()
   time.end();
 
   double estimate_scale = abs(isoValue);
-  //global_paraMgr.glarea.setValue("Slice ISO Color Scale", DoubleValue(estimate_scale*2/3));
+  //global_paraMgr.glarea.setValue("Grid ISO Color Scale", DoubleValue(estimate_scale*2/3));
   //global_paraMgr.glarea.setValue("ISO Interval Size", DoubleValue(estimate_scale/3));
 
 
@@ -990,7 +990,7 @@ void Poisson::runPoissonFieldAndIso()
         {
           Point3f p(i * space, j * space, k * space);
           CVertex new_v;
-          new_v.is_iso = true;
+          new_v.is_field_grid = true;
           new_v.P() = p + center_p;
           new_v.m_index = index;
           new_v.eigen_confidence = float( grid_values[i + j * res + k * res2] );          

@@ -115,12 +115,15 @@ private:
 	double normal_length;
 	double sample_dot_size;
   double iso_dot_size;
-	double original_dot_size;
-  double iso_color_scale;
+	double original_dot_size;  
   double iso_step_size;
-  double cofidence_color_scale;
-  double iso_value_shift;
   double confidence_Separation_value;
+
+  double sample_cofidence_color_scale;
+  double iso_color_scale;
+  double iso_value_shift;
+  double grid_color_scale;
+  double grid_value_shift;
 
 	QColor original_color;
 	QColor sample_color;

@@ -43,7 +43,6 @@ void GLDrawer::updateDrawer(vector<int>& pickList)
 	iso_step_size = global_paraMgr.glarea.getDouble("ISO Interval Size");
 	bUseIsoInteral = global_paraMgr.glarea.getBool("Use ISO Interval");
 	bUseConfidenceColor = global_paraMgr.drawer.getBool("Show Confidence Color");
-	cofidence_color_scale = global_paraMgr.glarea.getDouble("Confidence Color Scale");
 
 	bShowGridCenters = global_paraMgr.glarea.getBool("Show NBV Grids");
 	bShowNBVCandidates = global_paraMgr.glarea.getBool("Show NBV Candidates");
@@ -51,16 +50,13 @@ void GLDrawer::updateDrawer(vector<int>& pickList)
 	bUseConfidenceSeparation = global_paraMgr.nbv.getBool("Use Confidence Separation");
 	confidence_Separation_value = global_paraMgr.nbv.getDouble("Confidence Separation Value");
 
-  if (global_paraMgr.poisson.getBool("Show Slices Mode"))
-  {
-    iso_color_scale = global_paraMgr.glarea.getDouble("Slice ISO Color Scale");
-    iso_value_shift = global_paraMgr.glarea.getDouble("Slice ISO Value Shift");
-  }
-  else
-  {
-    iso_color_scale = global_paraMgr.glarea.getDouble("Point ISO Color Scale");
-    iso_value_shift = global_paraMgr.glarea.getDouble("Point ISO Value Shift");
-  }
+  sample_cofidence_color_scale = global_paraMgr.glarea.getDouble("Sample Confidence Color Scale");
+  grid_color_scale = global_paraMgr.glarea.getDouble("Grid ISO Color Scale");
+  grid_value_shift = global_paraMgr.glarea.getDouble("Grid ISO Value Shift");
+  iso_color_scale = global_paraMgr.glarea.getDouble("Point ISO Color Scale");
+  iso_value_shift = global_paraMgr.glarea.getDouble("Point ISO Value Shift");
+
+ 
   
 
 	if (!pickList.empty())
@@ -228,10 +224,6 @@ GLColor GLDrawer::getColorByType(const CVertex& v)
 
 	if (v.is_original)
 	{
-		if (bUseConfidenceColor && v.eigen_confidence >= -0.5)
-		{
-			return isoValue2color(v.eigen_confidence, cofidence_color_scale, iso_value_shift, true);
-		}
 		return original_color;
 	}
 
@@ -257,50 +249,47 @@ GLColor GLDrawer::getColorByType(const CVertex& v)
 			}
 			return GLColor( color[0], color[1], color[2]);
 		}
-
 	}
 
-	//if (bShowNBVCandidates && v.is_iso)
-	//{
-	//  return cBlue;
-	//}
+  if (v.is_grid_center)
+  {
+    //if (v.is_ray_hit) 
+    //{
+    //	return isoValue2color(v.eigen_confidence, iso_color_scale, iso_value_shift, true);
+    //}
+    if (v.is_ray_stop) return cOrange;
+    else return isoValue2color(v.eigen_confidence, grid_color_scale, grid_value_shift, true);
+  }
 
-	//if (bUseConfidenceColor && !v.is_iso && v.eigen_confidence >= -0.5)
-	//{
- //   cout << "11" << endl;
-	//	return isoValue2color(v.eigen_confidence, cofidence_color_scale, iso_value_shift, true);
-	//}
-
-	if (bUseConfidenceColor && v.is_iso)
+	if (v.is_iso)
 	{
-		return isoValue2color(v.eigen_confidence, cofidence_color_scale, iso_value_shift, true);
+    if (bUseConfidenceColor)
+    {
+      return isoValue2color(v.eigen_confidence, iso_color_scale, iso_value_shift, true);
+    }
+    else
+      return cGreen;
+		
 	}
-	else if (v.is_iso)
-	{
-		if (v.is_hole)            return cBlue;
-		return cGreen;
-	}
-	else if (v.is_fixed_sample)
+
+  if (v.is_fixed_sample)
 	{
 		return feature_color;
 	}
 
-	if (v.is_grid_center)
-	{
+  if (v.is_field_grid)
+  {
+    return isoValue2color(v.eigen_confidence, iso_color_scale, iso_value_shift, true);
+  }
 
-		//if (v.is_ray_hit) 
-		//{
-		//	return isoValue2color(v.eigen_confidence, iso_color_scale, iso_value_shift, true);
-		//}
 
-		if (v.is_ray_stop) return cOrange;
-    else return isoValue2color(v.eigen_confidence, iso_color_scale, iso_value_shift, true);
-     
 
-		return cBlack;
-	}
-
-	return sample_color;
+  if (bUseConfidenceColor)
+  {
+    return isoValue2color(v.eigen_confidence, sample_cofidence_color_scale, iso_value_shift, true);
+  }
+  else
+	  return sample_color;
 }
 
 void GLDrawer::drawDot(const CVertex& v)
@@ -848,6 +837,8 @@ void GLDrawer::drawSlice(Slice& slice, double trans_val)
 	//glPolygonMode(GL_SMOOTH);
 	glShadeModel(GL_SMOOTH);   
 
+  bool show_view_grid_slice = global_paraMgr.glarea.getBool("Show View Grid Slice");
+
 	for (int i = 0; i < slice.res -1; i++)
 	{
 		for (int j = 0; j < slice.res -1; j++)
@@ -862,16 +853,33 @@ void GLDrawer::drawSlice(Slice& slice, double trans_val)
 			//GLColor c2 = getColorByType(v2);
 			//GLColor c3 = getColorByType(v3);
 
-			GLColor c0 = isoValue2color(v0.eigen_confidence, iso_color_scale, iso_value_shift, true);
-			GLColor c1 = isoValue2color(v1.eigen_confidence, iso_color_scale, iso_value_shift, true);
-			GLColor c2 = isoValue2color(v2.eigen_confidence, iso_color_scale, iso_value_shift, true);
-			GLColor c3 = isoValue2color(v3.eigen_confidence, iso_color_scale, iso_value_shift, true);
-			glBegin(GL_QUADS);
-			glColor4f(c0.r, c0.g, c0.b, trans_val); glVertex3f(v0.P().X(), v0.P().Y(), v0.P().Z());
-			glColor4f(c1.r, c1.g, c1.b, trans_val); glVertex3f(v1.P().X(), v1.P().Y(), v1.P().Z());
-			glColor4f(c2.r, c2.g, c2.b, trans_val); glVertex3f(v2.P().X(), v2.P().Y(), v2.P().Z());
-			glColor4f(c3.r, c3.g, c3.b, trans_val); glVertex3f(v3.P().X(), v3.P().Y(), v3.P().Z());
-			glEnd();
+      if (show_view_grid_slice)
+      {
+        GLColor c0 = isoValue2color(v0.eigen_confidence, grid_color_scale, grid_value_shift, true);
+        GLColor c1 = isoValue2color(v1.eigen_confidence, grid_color_scale, grid_value_shift, true);
+        GLColor c2 = isoValue2color(v2.eigen_confidence, grid_color_scale, grid_value_shift, true);
+        GLColor c3 = isoValue2color(v3.eigen_confidence, grid_color_scale, grid_value_shift, true);
+        glBegin(GL_QUADS);
+        glColor4f(c0.r, c0.g, c0.b, trans_val); glVertex3f(v0.P().X(), v0.P().Y(), v0.P().Z());
+        glColor4f(c1.r, c1.g, c1.b, trans_val); glVertex3f(v1.P().X(), v1.P().Y(), v1.P().Z());
+        glColor4f(c2.r, c2.g, c2.b, trans_val); glVertex3f(v2.P().X(), v2.P().Y(), v2.P().Z());
+        glColor4f(c3.r, c3.g, c3.b, trans_val); glVertex3f(v3.P().X(), v3.P().Y(), v3.P().Z());
+        glEnd();
+      }
+      else
+      {
+        GLColor c0 = isoValue2color(v0.eigen_confidence, iso_color_scale, iso_value_shift, true);
+        GLColor c1 = isoValue2color(v1.eigen_confidence, iso_color_scale, iso_value_shift, true);
+        GLColor c2 = isoValue2color(v2.eigen_confidence, iso_color_scale, iso_value_shift, true);
+        GLColor c3 = isoValue2color(v3.eigen_confidence, iso_color_scale, iso_value_shift, true);
+        glBegin(GL_QUADS);
+        glColor4f(c0.r, c0.g, c0.b, trans_val); glVertex3f(v0.P().X(), v0.P().Y(), v0.P().Z());
+        glColor4f(c1.r, c1.g, c1.b, trans_val); glVertex3f(v1.P().X(), v1.P().Y(), v1.P().Z());
+        glColor4f(c2.r, c2.g, c2.b, trans_val); glVertex3f(v2.P().X(), v2.P().Y(), v2.P().Z());
+        glColor4f(c3.r, c3.g, c3.b, trans_val); glVertex3f(v3.P().X(), v3.P().Y(), v3.P().Z());
+        glEnd();
+      }
+
 		}
 	}
 }
