@@ -26,14 +26,14 @@ NBV::run()
   double camera_max_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
                            global_paraMgr.camera.getDouble("Predicted Model Size");
   
-  int grid_resolution = para->getDouble("Grid resolution");
+  int grid_resolution = global_paraMgr.nbv.getDouble("View Grid Resolution");
   if (grid_resolution <= 2)
   {
     return;
   }
 
   grid_step_size = (camera_max_dist*2.0 + 1.0) / (grid_resolution - 1);
-  global_paraMgr.camera.setValue("View Grid Points Resolution", IntValue(grid_step_size));
+  global_paraMgr.camera.setValue("Grid Step Size", DoubleValue(grid_step_size));
 
   if (para->getBool("Run Build Grid"))
   {

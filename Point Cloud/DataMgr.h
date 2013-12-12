@@ -96,6 +96,7 @@ public:
 	void     loadSkeletonFromSkel(QString fileName);
 	void     saveSkeletonAsSkel(QString fileName);
   void     saveFieldPoints(QString fileName);
+  void     saveViewGrids(QString fileName);
 
 
   void switchSampleToOriginal();

@@ -985,7 +985,7 @@ GlobalFun::computeICP(CMesh *dst, CMesh *src)
   princeton::TriMesh *mesh1 = new princeton::TriMesh;
   princeton::TriMesh *mesh2 = new princeton::TriMesh;
 
-  //set two trimeshes
+  //set two tri-meshes
   for (int i = 0; i < dst->vert.size(); ++i)
   {
     CVertex &v = dst->vert[i];

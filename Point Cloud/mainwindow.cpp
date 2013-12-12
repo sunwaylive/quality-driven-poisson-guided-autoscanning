@@ -78,6 +78,7 @@ void MainWindow::initConnect()
 	connect(ui.actionImport_Image, SIGNAL(triggered()), this, SLOT(openImage()));
 	connect(ui.actionSave_View, SIGNAL(triggered()), this, SLOT(saveView()));
   connect(ui.actionSave_NBV, SIGNAL(triggered()), this, SLOT(saveNBV()));
+  connect(ui.actionSave_NBV_Grids, SIGNAL(triggered()), this, SLOT(saveViewGridsForVoreen()));
 	connect(ui.actionSave_Skel, SIGNAL(triggered()), this, SLOT(saveSkel()));
   connect(ui.actionQianSample, SIGNAL(triggered()), this, SLOT(getQianSample()));
 	
@@ -608,6 +609,14 @@ void MainWindow::saveFieldPoints()
 
   area->dataMgr.saveFieldPoints(file);
   //area->dataMgr.saveSkeletonAsSkel(file);
+}
+
+void MainWindow::saveViewGridsForVoreen()
+{
+  QString file = QFileDialog::getSaveFileName(this, "Save View Grids as", "", "*.raw");
+  if (!file.size()) return;
+
+  area->dataMgr.saveViewGrids(file);
 }
 
 void MainWindow::setSnapshotEachIteration(bool _val)

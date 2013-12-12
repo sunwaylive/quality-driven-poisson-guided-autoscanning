@@ -44,6 +44,7 @@ private slots:
 	void openImage();
 	void saveView();
   void saveNBV();
+  void saveViewGridsForVoreen(); //save view grids for the software voreen
 	void saveSkel();
   void getQianSample();
   void saveFieldPoints();
