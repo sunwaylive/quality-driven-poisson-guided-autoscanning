@@ -52,8 +52,6 @@ public:
 	bool is_original;
   bool is_iso;
   bool is_hole;
-  bool is_boundary;
-  bool is_view_candidates;
 
 	int m_index;
 
@@ -104,8 +102,6 @@ public:
 		is_original(false),
     is_iso(false),
     is_hole(false),
-    is_boundary(false),
-    is_view_candidates(false),
 		is_fixed_sample(false),
 		eigen_confidence(-1),
 		is_skel_branch(false),

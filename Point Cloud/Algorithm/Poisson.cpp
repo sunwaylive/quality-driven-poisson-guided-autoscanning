@@ -387,47 +387,47 @@ void Poisson::runIsoSmooth()
 
 void Poisson::runLabelBoundaryPoints()
 {
-  if (!samples || samples->vert.empty())
-  {
-    return;
-  }
+  //if (!samples || samples->vert.empty())
+  //{
+  //  return;
+  //}
 
-  //each time reset the points
-  for (int i = 0; i < iso_points->vert.size(); i++)
-  {
-    CVertex& v = iso_points->vert[i];
-    v.is_boundary = false;
-  }
+  ////each time reset the points
+  //for (int i = 0; i < iso_points->vert.size(); i++)
+  //{
+  //  CVertex& v = iso_points->vert[i];
+  //  v.is_boundary = false;
+  //}
 
-  double radius_threshold = para->getDouble("CGrid Radius") / 2;
-  GlobalFun::computeBallNeighbors(iso_points, NULL, 
-    radius_threshold, samples->bbox);
+  //double radius_threshold = para->getDouble("CGrid Radius") / 2;
+  //GlobalFun::computeBallNeighbors(iso_points, NULL, 
+  //  radius_threshold, samples->bbox);
 
-  for (size_t i = 0; i < iso_points->vert.size(); ++i)
-  {
-    CVertex& v = iso_points->vert[i];
+  //for (size_t i = 0; i < iso_points->vert.size(); ++i)
+  //{
+  //  CVertex& v = iso_points->vert[i];
 
-    if (v.neighbors.size() < 0)
-      continue;
+  //  if (v.neighbors.size() < 0)
+  //    continue;
 
-    int nb_hole_points = 0;
-    int nb_neighbors = v.neighbors.size();
-    for (size_t j = 0; j < v.neighbors.size(); ++j)
-    {
-      CVertex& t = iso_points->vert[v.neighbors[j]];
-      if (t.is_hole) ++nb_hole_points;
-    }
+  //  int nb_hole_points = 0;
+  //  int nb_neighbors = v.neighbors.size();
+  //  for (size_t j = 0; j < v.neighbors.size(); ++j)
+  //  {
+  //    CVertex& t = iso_points->vert[v.neighbors[j]];
+  //    if (t.is_hole) ++nb_hole_points;
+  //  }
 
-    double ratio = nb_hole_points * 1.0f / nb_neighbors;
+  //  double ratio = nb_hole_points * 1.0f / nb_neighbors;
 
-    if (ratio > 0.3 && ratio < 0.6)
-      v.is_boundary = true;
-  }
+  //  if (ratio > 0.3 && ratio < 0.6)
+  //    v.is_boundary = true;
+  //}
 }
 
 void Poisson::runComputeViewCandidates()
 {
-  double view_candidates_dist = para->getDouble("View Candidates Distance");
+ /* double view_candidates_dist = para->getDouble("View Candidates Distance");
   int index = 0;
   view_candidates->bbox.SetNull();
   for (size_t i = 0; i < iso_points->vert.size(); ++i)
@@ -444,7 +444,7 @@ void Poisson::runComputeViewCandidates()
       view_candidates->bbox.Add(t.P());
     }
   }
-  view_candidates->vn = view_candidates->vert.size();
+  view_candidates->vn = view_candidates->vert.size();*/
 }
 
 void Poisson::runViewCandidatesClustering()

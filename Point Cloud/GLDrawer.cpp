@@ -277,8 +277,6 @@ GLColor GLDrawer::getColorByType(const CVertex& v)
 	}
 	else if (v.is_iso)
 	{
-		if (v.is_boundary)        return cRed;
-		if (v.is_view_candidates) return cOrange;
 		if (v.is_hole)            return cBlue;
 		return cGreen;
 	}
