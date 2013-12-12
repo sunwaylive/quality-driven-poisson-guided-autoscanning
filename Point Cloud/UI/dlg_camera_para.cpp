@@ -42,7 +42,7 @@ void CameraParaDlg::initConnects()
   connect(ui->cluster_view_candidates, SIGNAL(clicked()), this, SLOT(runViewClustering()));
 
   connect(ui->max_ray_steps, SIGNAL(valueChanged(double)), this, SLOT(getMaxRaySteps(double)));
-  connect(ui->grid_step_size, SIGNAL(valueChanged(double)), this, SLOT(getGridResolution(double)));
+  connect(ui->view_grid_resolution, SIGNAL(valueChanged(double)), this, SLOT(getGridResolution(double)));
     
   connect(ui->use_other_inside_segment,SIGNAL(clicked(bool)),this,SLOT(useOtherInsideSegment(bool)));
   connect(ui->use_confidence_Separation,SIGNAL(clicked(bool)),this,SLOT(useConfidenceSeparation(bool)));
@@ -68,7 +68,7 @@ bool CameraParaDlg::initWidgets()
   ui->horizon_dist->setValue(m_paras->camera.getDouble("Camera Horizon Dist"));
   ui->vertical_dist->setValue(m_paras->camera.getDouble("Camera Vertical Dist"));
   ui->max_dist->setValue(m_paras->camera.getDouble("Camera Max Dist"));
-  ui->grid_step_size->setValue(m_paras->nbv.getDouble("Grid resolution"));
+  ui->view_grid_resolution->setValue(m_paras->nbv.getDouble("View Grid Resolution"));
   ui->max_ray_steps->setValue(m_paras->nbv.getDouble("Max Ray Steps Para"));
   
   ui->doubleSpinBox_far_distance->setValue(m_paras->camera.getDouble("Camera Far Distance"));
@@ -365,7 +365,7 @@ void CameraParaDlg::getCameraDistToModel(double _val)
 
 void CameraParaDlg::getGridResolution(double _val)
 {
-  global_paraMgr.nbv.setValue("Grid resolution", DoubleValue(_val));
+  global_paraMgr.nbv.setValue("View Grid Resolution", DoubleValue(_val));
 }
 
 void CameraParaDlg::getMaxRaySteps(double _val)

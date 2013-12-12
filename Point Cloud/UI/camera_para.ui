@@ -441,10 +441,10 @@
       </property>
      </widget>
     </widget>
-    <widget class="QDoubleSpinBox" name="grid_step_size">
+    <widget class="QDoubleSpinBox" name="view_grid_resolution">
      <property name="geometry">
       <rect>
-       <x>160</x>
+       <x>180</x>
        <y>340</y>
        <width>62</width>
        <height>22</height>
@@ -466,14 +466,14 @@
     <widget class="QLabel" name="label_7">
      <property name="geometry">
       <rect>
-       <x>31</x>
+       <x>20</x>
        <y>340</y>
-       <width>111</width>
+       <width>141</width>
        <height>16</height>
       </rect>
      </property>
      <property name="text">
-      <string>Grid resolution :</string>
+      <string>View Grid resolution :</string>
      </property>
     </widget>
     <widget class="QCheckBox" name="use_other_inside_segment">
@@ -505,7 +505,7 @@
     <widget class="QDoubleSpinBox" name="max_ray_steps">
      <property name="geometry">
       <rect>
-       <x>161</x>
+       <x>180</x>
        <y>370</y>
        <width>62</width>
        <height>22</height>

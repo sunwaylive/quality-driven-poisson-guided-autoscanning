@@ -1461,7 +1461,7 @@ DataMgr::saveViewGrids(QString fileName)
   QStringList str_lst = tmp.split(QRegExp("[/]"));
   QString last_name = str_lst.at(str_lst.size() - 1);
 
-  double resolution = global_paraMgr.camera.getDouble("View Grid Points Resolution");
+  double resolution = global_paraMgr.nbv.getDouble("View Grid Resolution");
   ofstream out_dat;
   QString fileName_dat = fileName;
   fileName_dat.replace(".raw", ".dat");

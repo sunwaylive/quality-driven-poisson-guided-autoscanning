@@ -407,7 +407,7 @@ void ParameterMgr::initCameraParameter()
   camera.addParam(new RichDouble("Optimal Plane Width", 10.0f)); //cm
   camera.addParam(new RichDouble("Predicted Model Size", 20.0f)); //cm
 
-  camera.addParam(new RichDouble("View Grid Points Resolution", -1));
+  camera.addParam(new RichDouble("Grid Step Size", -1));
 }
 
 void
@@ -428,7 +428,7 @@ void
   nbv.addParam(new RichBool("Run Set Iso Bottom Confidence", false));
   nbv.addParam(new RichBool("Run Update View Directions", false));
   
-  nbv.addParam(new RichDouble("Grid resolution", 40.f));
+  nbv.addParam(new RichDouble("View Grid Resolution", 40.f));
   nbv.addParam(new RichBool("Test Other Inside Segment", false));
 
   nbv.addParam(new RichBool("Use Confidence Separation", false));
