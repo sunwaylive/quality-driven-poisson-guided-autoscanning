@@ -217,14 +217,14 @@ GLColor GLDrawer::getColorByType(const CVertex& v)
 		return cBlack;
 	}
 
+  if (v.is_original)
+  {
+    return original_color;
+  }
+
 	if (v.is_scanned && v.is_scanned_visible)
 	{
 		return cRed;
-	}
-
-	if (v.is_original)
-	{
-		return original_color;
 	}
 
 	if (useNormalColor)

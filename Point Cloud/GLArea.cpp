@@ -225,8 +225,8 @@ void GLArea::paintGL()
 			if (!dataMgr.isModelEmpty())
 			{
 				glw.m = dataMgr.getCurrentModel();
-				//glw.Draw(GLW::DMWire, GLW::CMPerMesh, GLW::TMNone);
-				glw.Draw(GLW::DMSmooth, GLW::CMPerMesh, GLW::TMNone);
+				glw.Draw(GLW::DMWire, GLW::CMPerMesh, GLW::TMNone);
+				//glw.Draw(GLW::DMSmooth, GLW::CMPerMesh, GLW::TMNone);
 			}
 		}
 
@@ -368,13 +368,13 @@ void GLArea::paintGL()
 			double h_dist = global_paraMgr.camera.getDouble("Camera Horizon Dist");
 			double v_dist = global_paraMgr.camera.getDouble("Camera Vertical Dist");
 			//double max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
-      double max_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
+      double far_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
                         global_paraMgr.camera.getDouble("Predicted Model Size");
 
       double dist_to_model = global_paraMgr.camera.getDouble("Camera Dist To Model");
 			current_camera.far_horizon_dist = h_dist;
 			current_camera.far_vertical_dist = v_dist;
-			current_camera.far_distance = max_dist;
+			current_camera.far_distance = far_dist;
 
 			//draw selected scan candidates
 			vector<ScanCandidate> *selected_candidates = dataMgr.getSelectedScanCandidates();
@@ -628,7 +628,7 @@ void GLArea::openByDrop(QString fileName)
 
 void GLArea::loadDefaultModel()
 {
-	//dataMgr.loadPlyToModel("child_model.ply");
+	dataMgr.loadPlyToModel("child_model.ply");
   //dataMgr.loadSkeletonFromSkel("child.skel");
 	//dataMgr.loadPlyToOriginal("child_original.ply");
 	//dataMgr.loadPlyToSample("child_sample.ply");
@@ -638,7 +638,7 @@ void GLArea::loadDefaultModel()
 	//dataMgr.loadSkeletonFromSkel("Yoga1 MC Labeled.skel");
 	//dataMgr.loadSkeletonFromSkel("default.skel");
 
-	dataMgr.loadSkeletonFromSkel("6 figure test.skel");
+	//dataMgr.loadSkeletonFromSkel("6 figure test.skel");
 	//dataMgr.loadSkeletonFromSkel("wlop2 + iso.skel");
   //dataMgr.loadSkeletonFromSkel("default.skel");
   //dataMgr.loadSkeletonFromSkel("cube3.skel");
@@ -1245,10 +1245,7 @@ void GLArea::runWlop()
 	//{
 	//	saveSnapshot();
 	//}
-
 	global_paraMgr.wLop.setValue("Run Anisotropic LOP", BoolValue(false));
-
-
 }
 
 void GLArea::runSkeletonization_linear()

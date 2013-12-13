@@ -1051,6 +1051,38 @@ GlobalFun::computeICP(CMesh *dst, CMesh *src)
   dst->vn = dst->vert.size();
 }
 
+void
+GlobalFun::downSample(CMesh *dst, CMesh *src, double sample_ratio, bool use_random_downsample)
+{
+  if (NULL == src || src->vert.size() <= 0)
+  {
+    cout<<"Down sample Error: Empty src points!" <<endl;
+    return;
+  }
+
+  int want_sample_num = static_cast<int>(src->vert.size() * sample_ratio);
+  dst->vn = want_sample_num;
+
+  vector<int> nCard = GlobalFun::GetRandomCards(src->vert.size());
+  for ( int i = 0; i < dst->vn; ++i)
+  {
+    int index = nCard[i];
+    if (!use_random_downsample)
+    {
+      index = i;
+    }
+
+    CVertex &v = src->vert[index];
+    dst->vert.push_back(v);
+    dst->bbox.Add(v.P());
+  }
+
+  CMesh::VertexIterator vi;
+  for(vi = dst->vert.begin(); vi != dst->vert.end(); ++vi)
+    vi->is_original = false;
+
+}
+
 //void Slice::build_slice(Point3f a, Point3f b, Point3f c, float c_length)
 //{
 //  cell_length = c_length;

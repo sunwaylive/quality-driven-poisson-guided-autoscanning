@@ -26,7 +26,7 @@ void CameraParaDlg::initConnects()
   connect(ui->dist_to_model, SIGNAL(valueChanged(double)), this, SLOT(getCameraDistToModel(double)));
   connect(ui->tableView_scan_candidates, SIGNAL(clicked(QModelIndex)), this, SLOT(showSelectedScannCandidates(QModelIndex)));
   connect(ui->tableView_scan_results, SIGNAL(clicked(QModelIndex)), this, SLOT(showSelectedScannedMesh(QModelIndex)));
-  connect(ui->pushButton_merge, SIGNAL(clicked()), this, SLOT(mergeScannedMeshWithOriginal()));
+  connect(ui->pushButton_merge_with_original, SIGNAL(clicked()), this, SLOT(mergeScannedMeshWithOriginal()));
   connect(ui->doubleSpinBox_far_distance, SIGNAL(valueChanged(double)), this, SLOT(getCameraFarDistance(double)));
   connect(ui->doubleSpinBox_near_distance, SIGNAL(valueChanged(double)), this, SLOT(getCameraNearDistance(double)));
   connect(ui->doubleSpinBox_predicted_model_size, SIGNAL(valueChanged(double)), this, SLOT(getPredictedModelSize(double)));
@@ -335,7 +335,7 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
           original->bbox.Add(t.P());
         }
         original->vn = original->vert.size();
-        //set combined row unchosable
+        //set combined row unable to be chosen
         ui->tableView_scan_candidates->setRowHidden(row, true);
         ui->tableView_scan_results->setRowHidden(row, true);
       }
@@ -525,11 +525,19 @@ void CameraParaDlg::runWlopOnScannedMesh()
   vector< CMesh* >::iterator it = scanned_results.begin();
   for (; it != scanned_results.end(); ++it)
   {
-    area->dataMgr.temperal_sample = *it;
+    CMesh *temperal_sample = new CMesh;
+    CMesh *temperal_original = *it;
+    GlobalFun::downSample(temperal_sample, temperal_original, 0.2);
+
+    area->dataMgr.temperal_original = *it;
+    area->dataMgr.temperal_sample = temperal_sample;
     global_paraMgr.wLop.setValue("Run Wlop On Scanned Mesh", BoolValue(true));
     area->runWlop();
-    //we should deal with wlop result, save it or discard it
-    global_paraMgr.wLop.setValue("Run Wlop On Scanned Mesh", BoolValue(false));    
+    global_paraMgr.wLop.setValue("Run Wlop On Scanned Mesh", BoolValue(false));
+    //we should deal with wlop result, ICP with 
+    GlobalFun::computeICP(area->dataMgr.getCurrentSamples(), area->dataMgr.getCurrentTemperalSamples());
+   
+    delete temperal_sample;
   }
 }
 

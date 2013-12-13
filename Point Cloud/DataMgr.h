@@ -55,6 +55,7 @@ public:
   CMesh*                  getCurrentTemperalSamples();
   CMesh*                  getCurrentModel();
   CMesh*                  getCurrentOriginal();
+  CMesh*                  getCurrentTemperalOriginal();
   CMesh*                  getCurrentIsoPoints();
   CMesh*                  getCurrentFieldPoints();
   Slices*                 getCurrentSlices();
@@ -80,9 +81,7 @@ public:
 
 	void      recomputeBox();
 	double    getInitRadiuse();
-
-  void      removeOutliers();
-
+  
 	void      downSamplesByNum(bool use_random_downsample = true);
 	void      subSamples();
 
@@ -113,9 +112,10 @@ private:
 public:
   CMesh                  model;
   CMesh                  original;
+  CMesh                 *temperal_original;
   Point3f                original_center_point;
   CMesh                  samples;
-  CMesh*                 temperal_sample;
+  CMesh                 *temperal_sample;
   CMesh                  iso_points;
   CMesh                  field_points;
   CMesh                  camera_model;
