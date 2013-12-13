@@ -43,6 +43,7 @@ void CameraParaDlg::initConnects()
 
   connect(ui->max_ray_steps, SIGNAL(valueChanged(double)), this, SLOT(getMaxRaySteps(double)));
   connect(ui->view_grid_resolution, SIGNAL(valueChanged(double)), this, SLOT(getGridResolution(double)));
+  connect(ui->propagate_one_point_index, SIGNAL(valueChanged(double)), this, SLOT(getPropagateIndex(double)));
     
   connect(ui->use_other_inside_segment,SIGNAL(clicked(bool)),this,SLOT(useOtherInsideSegment(bool)));
   connect(ui->use_confidence_Separation,SIGNAL(clicked(bool)),this,SLOT(useConfidenceSeparation(bool)));
@@ -75,6 +76,7 @@ bool CameraParaDlg::initWidgets()
   ui->doubleSpinBox_near_distance->setValue(m_paras->camera.getDouble("Camera Near Distance"));
   ui->doubleSpinBox_predicted_model_size->setValue(m_paras->camera.getDouble("Predicted Model Size"));
   ui->doubleSpinBox_optimal_plane_width->setValue(m_paras->camera.getDouble("Optimal Plane Width"));
+  ui->propagate_one_point_index->setValue(m_paras->nbv.getDouble("Propagate One Point Index"));
 
   Qt::CheckState state = m_paras->nbv.getBool("Test Other Inside Segment") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
   ui->use_other_inside_segment->setCheckState(state);
@@ -398,6 +400,11 @@ void CameraParaDlg::getOptimalPlaneWidth(double _val)
   global_paraMgr.camera.setValue("Optimal Plane Width", DoubleValue(_val));
 }
 
+void CameraParaDlg::getPropagateIndex(double _val)
+{
+  global_paraMgr.nbv.setValue("Propagate One Point Index", DoubleValue(_val));
+
+}
 
 void
 CameraParaDlg::buildGrid()

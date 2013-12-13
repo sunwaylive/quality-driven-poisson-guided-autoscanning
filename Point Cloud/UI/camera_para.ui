@@ -417,9 +417,9 @@
      <widget class="QPushButton" name="pushButton_propagate_one">
       <property name="geometry">
        <rect>
-        <x>28</x>
+        <x>30</x>
         <y>130</y>
-        <width>181</width>
+        <width>111</width>
         <height>31</height>
        </rect>
       </property>
@@ -438,6 +438,28 @@
       </property>
       <property name="text">
        <string>Grid Segment</string>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="propagate_one_point_index">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>140</y>
+        <width>71</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="decimals">
+       <number>2</number>
+      </property>
+      <property name="maximum">
+       <double>10000000.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>1.000000000000000</double>
+      </property>
+      <property name="value">
+       <double>0.000000000000000</double>
       </property>
      </widget>
     </widget>

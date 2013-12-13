@@ -52,6 +52,8 @@ private slots:
   void getCameraNearDistance(double _val);
   void getPredictedModelSize(double _val);
   void getOptimalPlaneWidth(double _val);
+  void getPropagateIndex(double _val);
+
 
   void buildGrid();
   void propagate();

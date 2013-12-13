@@ -212,6 +212,12 @@ void Poisson::runOneKeyPoissonConfidence()
 {
   runPoissonFieldAndIso();
 
+  para->setValue("Use Confidence 1",BoolValue(true));
+  para->setValue("Use Confidence 2",BoolValue(true));
+  para->setValue("Use Confidence 3",BoolValue(false));
+  para->setValue("Use Confidence 4",BoolValue(false));
+  runComputeSampleConfidence();
+
   para->setValue("Use Confidence 1",BoolValue(false));
   para->setValue("Use Confidence 2",BoolValue(false));
   para->setValue("Use Confidence 3",BoolValue(true));

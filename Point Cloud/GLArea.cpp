@@ -790,27 +790,6 @@ void GLArea::drawNeighborhoodRadius()
 		glPopMatrix();
 	}
 
-
-	//if (global_paraMgr.poisson.getBool("Show Slices Mode") &&
-	//    global_paraMgr.poisson.getBool("Show Transparent Slices"))
-	//{
-	//  glDisable(GL_LIGHTING);
-	//  glDisable(GL_CULL_FACE);
-	//  if (global_paraMgr.poisson.getBool("Show X Slices"))
-	//  {
-	//    glDrawer.drawSlice((*dataMgr.getCurrentSlices())[0], trans_value);
-	//  }
-	//  if (global_paraMgr.poisson.getBool("Show Y Slices"))
-	//  {
-	//    glDrawer.drawSlice((*dataMgr.getCurrentSlices())[1], trans_value);
-	//  }
-	//  if (global_paraMgr.poisson.getBool("Show Z Slices"))
-	//  {
-	//    glDrawer.drawSlice((*dataMgr.getCurrentSlices())[2], trans_value);
-	//  }
-	//  glEnable(GL_CULL_FACE);
-	//}
-
 	if (para->getBool("Show Samples Dot"))
 	{
 		glDepthMask(GL_TRUE);
