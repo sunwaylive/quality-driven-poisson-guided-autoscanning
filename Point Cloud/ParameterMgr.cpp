@@ -441,6 +441,8 @@ void
 
   nbv.addParam(new RichDouble("Max Ray Steps Para", 1.5));
 
+  nbv.addParam(new RichDouble("View Preserve Angle Threshold", 35));
+
   nbv.addParam(new RichDouble("Confidence Filter Threshold", 0.2));
 
   nbv.addParam(new RichDouble("Propagate One Point Index", 0));

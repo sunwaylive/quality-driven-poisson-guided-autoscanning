@@ -87,8 +87,7 @@ NBV::runOneKeyNBV()
   buildGrid();
   propagate();
   viewExtractionIntoBins();
-  viewClustering();
-
+  
   for (int i = 0; i < 4; i++)
   {
     bool have_direction_move = updateViewDirections();
@@ -97,6 +96,8 @@ NBV::runOneKeyNBV()
       break;
     }
   }
+
+  viewClustering();
   
   //viewClustering(); //wsh
 
@@ -946,10 +947,11 @@ NBV::extractViewIntoBinsUsingDist()
 
 void NBV::viewClustering()
 {
-  if (nbv_scores.empty())
-  {
-    updateViewDirections();
-  }
+  //if (nbv_scores.empty())
+  //{
+  //  updateViewDirections();
+  //}
+  updateViewDirections();
 
   double confidence_threshold = para->getDouble("Confidence Filter Threshold");
   for (int i = 0; i < nbv_candidates->vert.size(); i++)
@@ -970,7 +972,9 @@ void NBV::viewClustering()
   double cluster_radius_threshold2 = cluster_radius_threshold * cluster_radius_threshold;
   cout << "cluster_radius:  " << cluster_radius_threshold << endl;
 
-  
+  double view_preserve_angle = para->getDouble("View Preserve Angle Threshold");
+  double cos_view_preserve_angle = cos(view_preserve_angle / 180.0 * 3.1415926);
+  cout << "cos(view_preserve_angle); " << view_preserve_angle << ", " <<cos_view_preserve_angle << endl;
 
   while(1)
   {
@@ -1021,8 +1025,19 @@ void NBV::viewClustering()
         double iso_dist2 = GlobalFun::computeEulerDistSquare(iso_v.P(), iso_t.P());
         if (iso_dist2 < cluster_radius_threshold2)
         {
-          find_new_cluster = true;
-          nbv_cluster.push_back(j);
+          Point3f diff_v_iso = iso_v.P() - v.P();
+          Point3f diff_t_iso = iso_v.P() - t.P();
+          
+          //here may have problem
+          double cos_angle = diff_v_iso.Normalize() * diff_t_iso.Normalize();
+          if (cos_angle > cos_view_preserve_angle)
+          {
+            cout << "cos_angle; " << cos_angle << endl;
+
+            find_new_cluster = true;
+            nbv_cluster.push_back(j);
+          }
+
         }
       }
 
@@ -1236,6 +1251,7 @@ bool NBV::updateViewDirections()
   double optimal_plane_width = global_paraMgr.camera.getDouble("Optimal Plane Width");
   optimal_plane_width /= predicted_model_length;
 
+  
   double radius = optimal_plane_width / 3.0;
   cout << "plane radius" << endl;
   //double radius = global_paraMgr.wLop.getDouble("CGrid Radius"); 
