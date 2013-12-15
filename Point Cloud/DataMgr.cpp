@@ -391,6 +391,11 @@ CMesh* DataMgr::getCurrentOriginal()
 	return & original;
 }
 
+CMesh* DataMgr::getCurrentTemperalOriginal()
+{
+  return temperal_original;
+}
+
 Skeleton* DataMgr::getCurrentSkeleton()
 {
 	return &skeleton;
@@ -538,12 +543,6 @@ double DataMgr::getInitRadiuse()
   global_paraMgr.setGlobalParameter("Initial Radius", DoubleValue(init_radius));
 
 	return init_radius;
-}
-
-void
-DataMgr::removeOutliers()
-{
-
 }
 
 void DataMgr::downSamplesByNum(bool use_random_downsample)
@@ -972,12 +971,16 @@ void DataMgr::saveSkeletonAsSkel(QString fileName)
 
 void DataMgr::loadSkeletonFromSkel(QString fileName)
 {
-  clearData();
-	//clearCMesh(samples);
-	//clearCMesh(original);
- // clearCMesh(iso_points);
- // clearCMesh(field_points);
+  clearCMesh(original);
+  clearCMesh(samples);
+  clearCMesh(iso_points);
+  clearCMesh(field_points);
+  clearCMesh(current_scanned_mesh);
+  clearCMesh(view_grid_points);
+  clearCMesh(nbv_candidates);
+  clearCMesh(current_scanned_mesh);
 
+  slices.clear();
 	skeleton.clear();
 
 	ifstream infile;

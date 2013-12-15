@@ -65,16 +65,16 @@ void vcc::Camera::runVirtualScan()
 {
   //point current_scanned_mesh to a new address
   current_scanned_mesh = new CMesh;
-  double max_displacement = resolution / 2.0f;
+  double max_displacement = resolution / 2.0f; //for making noise
   computeUpAndRight();
-  Point3f viewray = (-pos).Normalize();
+  Point3f viewray = direction.Normalize();
   
   //compute the end point of viewray
   Point3f viewray_end = pos + viewray * far_distance;
 
   //sweep and scan
-  int n_point_hr_half  = static_cast<int>(0.5f * far_horizon_dist / resolution);
-  int n_point_ver_half = static_cast<int>(0.5f * far_vertical_dist / resolution);
+  int n_point_hr_half  = static_cast<int>(0.5 * far_horizon_dist / resolution);
+  int n_point_ver_half = static_cast<int>(0.5 * far_vertical_dist / resolution);
 
   int index = 0; 
   for (int i = - n_point_hr_half; i < n_point_hr_half; ++i)
@@ -179,11 +179,13 @@ void vcc::Camera::runNBVScan()
 
   //traverse the scan_candidates and do virtual scan
   vector<ScanCandidate>::iterator it = scan_candidates->begin();
+  cout<<"scan candidates size: " <<scan_candidates->size() <<endl;
   for (; it != scan_candidates->end(); ++it)
   {
     pos = it->first;
     direction = it->second;
     /********* call runVirtualScan() *******/
+    cout<<"nbv scan begins!!" <<endl;
     runVirtualScan();
 
     scanned_results->push_back(current_scanned_mesh);
@@ -201,6 +203,7 @@ void vcc::Camera::runOneKeyNewScan()
 		CMesh *r = *it_scan_result;
 		for (int i = 0; i < r->vert.size(); ++i)
 		{
+      r->vert[i].is_original = true;
 			original->vert.push_back(r->vert[i]);
 		}
 	}

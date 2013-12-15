@@ -87,6 +87,7 @@ NBV::runOneKeyNBV()
   buildGrid();
   propagate();
   viewExtractionIntoBins();
+  viewClustering();
 
   for (int i = 0; i < 4; i++)
   {
@@ -106,7 +107,7 @@ NBV::runOneKeyNBV()
   float max_confidence = nbv_candidates->vert[0].eigen_confidence;
   for (int i = 0; i < nbv_candidates->vert.size(); ++i)
   {
-	  if (nbv_candidates->vert[i].eigen_confidence > max_confidence)
+	  if (!nbv_candidates->vert[i].is_ignore && nbv_candidates->vert[i].eigen_confidence > max_confidence)
 		  max_idx = i;
   }
 
@@ -791,8 +792,6 @@ NBV::viewExtractionIntoBins()
     }
   }
   
-  
-
   //process each iso_point
   int index = 0; 
   for (int i = 0; i < view_grid_points->vert.size(); ++i)

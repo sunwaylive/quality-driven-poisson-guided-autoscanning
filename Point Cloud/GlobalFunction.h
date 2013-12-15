@@ -81,6 +81,7 @@ namespace GlobalFun
 
   void removeOutliers(CMesh *m, double radius, double remove_percent);
   void computeICP(CMesh *dst, CMesh *src);
+  void downSample(CMesh *dst, CMesh *src, double sample_ratio, bool use_random_downsample = true);
 }
 
 class Timer

@@ -130,17 +130,17 @@
       <string>Choose scan candidates:</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_merge">
+    <widget class="QPushButton" name="pushButton_merge_with_original">
      <property name="geometry">
       <rect>
-       <x>28</x>
-       <y>479</y>
-       <width>71</width>
+       <x>10</x>
+       <y>480</y>
+       <width>131</width>
        <height>31</height>
       </rect>
      </property>
      <property name="text">
-      <string>Merge</string>
+      <string>Merge With Original</string>
      </property>
     </widget>
     <widget class="QGroupBox" name="groupBox">
