@@ -42,12 +42,11 @@ private:
   void runSlice();
   void runComputeOriginalConfidence();
   void runComputeSampleConfidence();
-  void runComputeIsoConfidence();
+  void runComputeIsoGradientConfidence();
   void runComputeNewIsoConfidence();
   void runAddWLOPtoISO();
 
-  
-  
+
 private:
 	CMesh* samples;
 	CMesh* original;

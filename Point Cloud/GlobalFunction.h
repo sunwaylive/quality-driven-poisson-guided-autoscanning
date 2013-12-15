@@ -53,6 +53,7 @@ namespace GlobalFun
 	void computeAnnNeigbhors(vector<CVertex> &datapts, vector<CVertex> &querypts, int numKnn, bool need_self_included, QString purpose);
 	//mesh0: search set, mesh1: 
   void computeBallNeighbors(CMesh* mesh0, CMesh* mesh1, double radius, vcg::Box3f& box);
+  double estimateKnnSize(CMesh* mesh0, CMesh* mesh1, double radius, vcg::Box3f& box);
 
 	void static  __cdecl self_neighbors(CGrid::iterator start, CGrid::iterator end, double radius);
 	void static  __cdecl other_neighbors(CGrid::iterator starta, CGrid::iterator enda, 

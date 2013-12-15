@@ -68,6 +68,7 @@ private slots:
   void runSetupInitialScanns();
   void runStep1WLOP();
   void runStep2PoissonConfidence();
+  void runStep2PoissonConfidenceViaOiginal();
   void runStep3NBVcandidates();
   void runWlopOnScannedMesh();
   void runICP();

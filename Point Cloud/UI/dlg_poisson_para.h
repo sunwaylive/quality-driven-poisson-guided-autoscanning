@@ -29,6 +29,7 @@ private slots:
   void getPoissonDepth(double _val);
   void getPoissonIsoInterval(double _val);
   void getPoissonSampleNumber(double _val);
+  void getOriginalKnnNumber(double _val);
 
 	void runPoissonFieldOriginal();
   void runPoissonFieldSamples();
@@ -39,8 +40,8 @@ private slots:
   void runSlice();
   void runClearSlice();
   void runAddWLOPtoISO();
+  void runEstimateOriginalSize();
 
- 
   void labelIsoPoints();
   void labelSmooth();
   void labelBoundaryPoints();

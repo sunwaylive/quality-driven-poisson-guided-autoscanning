@@ -136,6 +136,21 @@ void GlobalFun::computeBallNeighbors(CMesh* mesh0, CMesh* mesh1, double radius, 
 
 }
 
+double GlobalFun::estimateKnnSize(CMesh* samples, CMesh* original, double radius, vcg::Box3f& box)
+{
+  computeBallNeighbors(samples, original, radius, box);
+
+  double sum_neighbor = 0;
+  for(int i = 0; i < samples->vert.size(); i++)
+  {
+    CVertex& v = samples->vert[i];
+
+    sum_neighbor += v.original_neighbors.size();
+  }
+
+  cout << "estimated original KNN: " << sum_neighbor / samples->vert.size() << endl;
+  return sum_neighbor / samples->vert.size();
+}
 
 void GlobalFun::computeAnnNeigbhors(vector<CVertex> &datapts, vector<CVertex> &querypts, int knn, bool need_self_included = false, QString purpose = "?_?")
 {

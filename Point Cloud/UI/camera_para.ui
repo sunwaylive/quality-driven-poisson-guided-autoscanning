@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -601,10 +601,10 @@
     <widget class="QPushButton" name="extract_view_candidates">
      <property name="geometry">
       <rect>
-       <x>38</x>
+       <x>40</x>
        <y>550</y>
        <width>181</width>
-       <height>31</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="text">
@@ -614,10 +614,10 @@
     <widget class="QPushButton" name="cluster_view_candidates">
      <property name="geometry">
       <rect>
-       <x>38</x>
-       <y>640</y>
+       <x>40</x>
+       <y>610</y>
        <width>181</width>
-       <height>31</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="text">
@@ -627,10 +627,10 @@
     <widget class="QPushButton" name="pushButton_extract_views_into_bins">
      <property name="geometry">
       <rect>
-       <x>38</x>
-       <y>590</y>
+       <x>40</x>
+       <y>580</y>
        <width>181</width>
-       <height>31</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="text">
@@ -641,9 +641,9 @@
      <property name="geometry">
       <rect>
        <x>40</x>
-       <y>760</y>
+       <y>700</y>
        <width>181</width>
-       <height>31</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="text">
@@ -654,9 +654,9 @@
      <property name="geometry">
       <rect>
        <x>40</x>
-       <y>717</y>
+       <y>670</y>
        <width>181</width>
-       <height>31</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="text">
@@ -667,7 +667,7 @@
      <property name="geometry">
       <rect>
        <x>150</x>
-       <y>686</y>
+       <y>640</y>
        <width>62</width>
        <height>22</height>
       </rect>
@@ -683,7 +683,7 @@
      <property name="geometry">
       <rect>
        <x>44</x>
-       <y>687</y>
+       <y>641</y>
        <width>101</width>
        <height>16</height>
       </rect>
@@ -830,21 +830,21 @@
     <widget class="QPushButton" name="step2_run_Poisson_Confidence">
      <property name="geometry">
       <rect>
-       <x>30</x>
+       <x>10</x>
        <y>130</y>
-       <width>181</width>
+       <width>221</width>
        <height>31</height>
       </rect>
      </property>
      <property name="text">
-      <string>Step2: Poisson-Confidence</string>
+      <string>Step2: Poisson-Confidence(Sample)</string>
      </property>
     </widget>
     <widget class="QPushButton" name="step3_run_NBV">
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>180</y>
+       <y>220</y>
        <width>181</width>
        <height>31</height>
       </rect>
@@ -857,7 +857,7 @@
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>230</y>
+       <y>270</y>
        <width>181</width>
        <height>31</height>
       </rect>
@@ -890,6 +890,19 @@
      </property>
      <property name="text">
       <string>Setup Inital Scans</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="step2_run_Poisson_Confidence_original">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>170</y>
+       <width>221</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Step2: Poisson-Confidence(Original)</string>
      </property>
     </widget>
    </widget>

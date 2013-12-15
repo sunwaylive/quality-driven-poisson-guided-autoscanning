@@ -58,6 +58,7 @@ void CameraParaDlg::initConnects()
   connect(ui->pushButton_setup_initial_scans, SIGNAL(clicked()), this, SLOT(runSetupInitialScanns()));
   connect(ui->step1_run_WLOP, SIGNAL(clicked()), this, SLOT(runStep1WLOP()));
   connect(ui->step2_run_Poisson_Confidence, SIGNAL(clicked()), this, SLOT(runStep2PoissonConfidence()));
+  connect(ui->step2_run_Poisson_Confidence_original, SIGNAL(clicked()), this, SLOT(runStep2PoissonConfidenceViaOiginal()));
   connect(ui->step3_run_NBV, SIGNAL(clicked()), this, SLOT(runStep3NBVcandidates()));
   connect(ui->step4_run_New_Scan, SIGNAL(clicked()), this, SLOT(runStep4NewScans()));
   connect(ui->pushButton_wlop_on_scanned_mesh, SIGNAL(clicked()), this, SLOT(runWlopOnScannedMesh()));
@@ -503,11 +504,22 @@ void CameraParaDlg::runStep1WLOP()
 
 void CameraParaDlg::runStep2PoissonConfidence()
 {
-  global_paraMgr.poisson.setValue("Run Poisson On Samples", BoolValue(true));
+  global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(true));
+  global_paraMgr.poisson.setValue("Run Extract MC Points", BoolValue(true));
+  global_paraMgr.poisson.setValue("Run One Key PoissonConfidence", BoolValue(true));
+  area->runPoisson();
+  global_paraMgr.poisson.setValue("Run Extract MC Points", BoolValue(false));
+  global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(false));
+  global_paraMgr.poisson.setValue("Run One Key PoissonConfidence", BoolValue(false));
+}
+
+void CameraParaDlg::runStep2PoissonConfidenceViaOiginal()
+{
+  global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(true));
   global_paraMgr.poisson.setValue("Run One Key PoissonConfidence", BoolValue(true));
   area->runPoisson();
   global_paraMgr.poisson.setValue("Run One Key PoissonConfidence", BoolValue(false));
-  global_paraMgr.poisson.setValue("Run Poisson On Samples", BoolValue(false));
+  global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(false));
 }
 
 void CameraParaDlg::runStep3NBVcandidates()

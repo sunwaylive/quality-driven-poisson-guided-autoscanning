@@ -967,7 +967,7 @@ void NBV::viewClustering()
   double optimal_plane_width = global_paraMgr.camera.getDouble("Optimal Plane Width");
   optimal_plane_width /= predicted_model_length;
 
-  double cluster_radius_threshold = optimal_plane_width / 3.0;
+  double cluster_radius_threshold = optimal_plane_width / 5.0;
   double cluster_radius_threshold2 = cluster_radius_threshold * cluster_radius_threshold;
   cout << "cluster_radius:  " << cluster_radius_threshold << endl;
 

@@ -32,6 +32,7 @@ void PoissonParaDlg::initConnects()
   connect(ui->poisson_depth,SIGNAL(valueChanged(double)),this,SLOT(getPoissonDepth(double)));
   connect(ui->poisson_ISO_interval,SIGNAL(valueChanged(double)),this,SLOT(getPoissonIsoInterval(double)));
   connect(ui->poisson_sample_number,SIGNAL(valueChanged(double)),this,SLOT(getPoissonSampleNumber(double)));
+  connect(ui->original_knn_number,SIGNAL(valueChanged(double)),this,SLOT(getOriginalKnnNumber(double)));
 
 	connect(ui->pushButton_poisson_field_original,SIGNAL(clicked()),this,SLOT(runPoissonFieldOriginal()));
   connect(ui->pushButton_poisson_field_samples,SIGNAL(clicked()),this,SLOT(runPoissonFieldSamples()));  
@@ -45,6 +46,7 @@ void PoissonParaDlg::initConnects()
   connect(ui->pushButton_slice,SIGNAL(clicked()),this,SLOT(runSlice()));
   //connect(ui->pushButton_view_candidates_clustering,SIGNAL(clicked()),this,SLOT(viewCandidatesClustering()));
   connect(ui->pushButton_add_samples_to_iso_points,SIGNAL(clicked()),this,SLOT(runAddWLOPtoISO()));
+  connect(ui->pushButton_estimate_original_knn,SIGNAL(clicked()),this,SLOT(runEstimateOriginalSize()));
 
   connect(ui->checkBox_show_slices,SIGNAL(clicked(bool)),this,SLOT(showSlices(bool)));
   connect(ui->checkBox_show_slices_transparent,SIGNAL(clicked(bool)),this,SLOT(showSlicesTransparent(bool)));
@@ -75,6 +77,7 @@ bool PoissonParaDlg::initWidgets()
   ui->poisson_depth->setValue(m_paras->poisson.getDouble("Max Depth"));
   ui->poisson_ISO_interval->setValue(m_paras->glarea.getDouble("ISO Interval Size"));
   ui->poisson_sample_number->setValue(m_paras->poisson.getDouble("Poisson Disk Sample Number"));
+  ui->original_knn_number->setValue(m_paras->poisson.getDouble("Original KNN"));
 
 	Qt::CheckState state = m_paras->poisson.getBool("Show Slices Mode") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
 	ui->checkBox_show_slices->setCheckState(state);
@@ -126,6 +129,11 @@ void PoissonParaDlg::getPoissonSampleNumber(double _val)
   global_paraMgr.poisson.setValue("Poisson Disk Sample Number", DoubleValue(_val));
 }
 
+void PoissonParaDlg::getOriginalKnnNumber(double _val)
+{
+  global_paraMgr.poisson.setValue("Original KNN", DoubleValue(_val));
+}
+
 void PoissonParaDlg::runPoissonFieldOriginal()
 {
   global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(true));
@@ -152,22 +160,22 @@ void PoissonParaDlg::runPoissonAndExtractMC_Original()
 {
   global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(true));
   global_paraMgr.poisson.setValue("Run Extract MC Points", BoolValue(true));
-  global_paraMgr.poisson.setValue("Run One Key PoissonConfidence", BoolValue(true));
+  //global_paraMgr.poisson.setValue("Run One Key PoissonConfidence", BoolValue(true));
   area->runPoisson();
   global_paraMgr.poisson.setValue("Run Extract MC Points", BoolValue(false));
   global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(false));
-  global_paraMgr.poisson.setValue("Run One Key PoissonConfidence", BoolValue(false));
+  //global_paraMgr.poisson.setValue("Run One Key PoissonConfidence", BoolValue(false));
 }
 
 void PoissonParaDlg::runPoissonAndExtractMC_Samples()
 {
   global_paraMgr.poisson.setValue("Run Poisson On Samples", BoolValue(true));
   global_paraMgr.poisson.setValue("Run Extract MC Points", BoolValue(true));
-  global_paraMgr.poisson.setValue("Run One Key PoissonConfidence", BoolValue(true));
+  //global_paraMgr.poisson.setValue("Run One Key PoissonConfidence", BoolValue(true));
   area->runPoisson();
   global_paraMgr.poisson.setValue("Run Extract MC Points", BoolValue(false));
   global_paraMgr.poisson.setValue("Run Poisson On Samples", BoolValue(false));
-  global_paraMgr.poisson.setValue("Run One Key PoissonConfidence", BoolValue(false));
+  //global_paraMgr.poisson.setValue("Run One Key PoissonConfidence", BoolValue(false));
 }
 
 
@@ -193,6 +201,23 @@ void PoissonParaDlg::runAddWLOPtoISO()
   global_paraMgr.poisson.setValue("Run Add WLOP to ISO", BoolValue(false));
 }
 
+void PoissonParaDlg::runEstimateOriginalSize()
+{
+  if (area->dataMgr.isOriginalEmpty() || area->dataMgr.isSamplesEmpty())
+  {
+    return;
+  }
+
+  double estimate_knn = GlobalFun::estimateKnnSize(area->dataMgr.getCurrentSamples(),
+                                                   area->dataMgr.getCurrentOriginal(),
+                                                   global_paraMgr.wLop.getDouble("CGrid Radius"),
+                                                   area->dataMgr.getCurrentSamples()->bbox);
+
+  global_paraMgr.poisson.setValue("Original KNN", DoubleValue(estimate_knn));
+
+  initWidgets();
+
+}
 
 
 void PoissonParaDlg::clearLabel()
