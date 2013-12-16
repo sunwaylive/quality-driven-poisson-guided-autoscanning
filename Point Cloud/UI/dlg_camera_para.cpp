@@ -138,7 +138,7 @@ void CameraParaDlg::updateTableViewNBVCandidate()
   ui->tableView_scan_candidates->setColumnWidth(1, 100);
 
   //set table contents
-  vector<ScanCandidate> *nbv_candidates = area->dataMgr.getAllScanCandidates();
+  vector<ScanCandidate> *nbv_candidates = area->dataMgr.getScanCandidates();
   int i = 0;
   for (vector<ScanCandidate>::iterator it = nbv_candidates->begin(); 
     it != nbv_candidates->end(); ++it, ++i)
@@ -258,7 +258,7 @@ void CameraParaDlg::showSelectedScannCandidates(QModelIndex index)
   //draw camera at selected position
   QModelIndexList sil = ui->tableView_scan_candidates->selectionModel()->selectedRows();
   vector<ScanCandidate> *seletedViewCameras  = area->dataMgr.getSelectedScanCandidates();
-  vector<ScanCandidate> *allScanCandidates = area->dataMgr.getAllScanCandidates();
+  vector<ScanCandidate> *allScanCandidates = area->dataMgr.getScanCandidates();
 
   seletedViewCameras->clear();
   //add selected scan candidates into selected vector
@@ -278,7 +278,7 @@ void CameraParaDlg::showSelectedScannedMesh(QModelIndex index)
  
   int row_of_mesh = 0;
   vector<ScanCandidate> *seletedViewCameras  = area->dataMgr.getSelectedScanCandidates();
-  vector<ScanCandidate> *allScanCandidates = area->dataMgr.getAllScanCandidates();
+  vector<ScanCandidate> *allScanCandidates = area->dataMgr.getScanCandidates();
   seletedViewCameras->clear();
 
   for (vector<CMesh* >::iterator it = scanned_results->begin(); 

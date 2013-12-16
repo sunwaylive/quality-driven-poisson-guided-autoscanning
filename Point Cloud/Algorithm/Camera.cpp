@@ -14,17 +14,13 @@ void vcc::Camera::setInput(DataMgr* pData)
      //scan candidates for initialing
      init_scan_candidates = pData->getInitCameraScanCandidates();
      //candidates for nbv computing
-     scan_candidates = pData->getAllScanCandidates();
+     scan_candidates = pData->getScanCandidates();
      current_scanned_mesh = pData->getCurrentScannedMesh();
      scanned_results = pData->getScannedResults();
 	   nbv_candidates = pData->getNbvCandidates();
-     //get current pos and direction
-     /*direction = pData->getCameraDirection();
-     pos = pData->getCameraPos();*/
+
      far_horizon_dist = global_paraMgr.camera.getDouble("Camera Horizon Dist");
      far_vertical_dist = global_paraMgr.camera.getDouble("Camera Vertical Dist");
-
-     //far_distance = global_paraMgr.camera.getDouble("Camera Max Dist");
      far_distance = global_paraMgr.camera.getDouble("Camera Far Distance") /
                     global_paraMgr.camera.getDouble("Predicted Model Size");
      near_distance = global_paraMgr.camera.getDouble("Camera Near Distance");
@@ -66,17 +62,15 @@ void vcc::Camera::runVirtualScan()
 {
   //point current_scanned_mesh to a new address
   current_scanned_mesh = new CMesh;
-  double max_displacement = resolution / 2.0f; //for making noise
+  double max_displacement = resolution / 2.0f; //for adding noise
   computeUpAndRight();
   Point3f viewray = direction.Normalize();
-  
   //compute the end point of viewray
   Point3f viewray_end = pos + viewray * far_distance;
 
   //sweep and scan
   int n_point_hr_half  = static_cast<int>(0.5 * far_horizon_dist / resolution);
   int n_point_ver_half = static_cast<int>(0.5 * far_vertical_dist / resolution);
-
   int index = 0; 
   for (int i = - n_point_hr_half; i < n_point_hr_half; ++i)
   {
@@ -88,13 +82,7 @@ void vcc::Camera::runVirtualScan()
       Point3f line_dir = viewray_iter.Normalize();
       Point3f intersect_point;
       if (GlobalFun::computeMeshLineIntersectPoint(target, pos, line_dir, intersect_point))
-      {
-        //fix: if the point is out of max dist, then continue
-        //double intersect_dist = (intersect_point - pos).SquaredNorm();
-        //double max = viewray_iter.SquaredNorm();  
-        //if (intersect_dist > max - EPI)
-        //  continue;
-        
+      {        
         //add some random noise
         srand(time(NULL)); 
         double rndax = (double(2.0f * rand()) / RAND_MAX - 1.0f ) * max_displacement;
@@ -186,7 +174,6 @@ void vcc::Camera::runNBVScan()
     pos = it->first;
     direction = it->second;
     /********* call runVirtualScan() *******/
-    cout<<"nbv scan begins!!" <<endl;
     runVirtualScan();
 
     scanned_results->push_back(current_scanned_mesh);
@@ -197,7 +184,7 @@ void vcc::Camera::runOneKeyNewScan()
 {
 	runNBVScan();
 
-	//merge
+	//merge with original points
 	vector<CMesh*>::iterator it_scan_result = scanned_results->begin();
 	for (; it_scan_result != scanned_results->end(); ++it_scan_result)
 	{
@@ -214,9 +201,8 @@ void vcc::Camera::computeUpAndRight()
 {
   Point3f x_axis(1.0f, 0.0f, 0.0f);
   Point3f z_axis(0.0f, 0.0f, 1.0f);
-  //get the current view_ray, pointing from camera to origin(o)
-  //fix: view_ray should be given
-  Point3f viewray = (-pos).Normalize();
+
+  Point3f viewray = direction.Normalize();
   if (viewray.Z() > 0)
   {
     up = viewray ^ x_axis;
