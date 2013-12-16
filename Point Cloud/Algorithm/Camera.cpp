@@ -27,6 +27,7 @@ void vcc::Camera::setInput(DataMgr* pData)
      //far_distance = global_paraMgr.camera.getDouble("Camera Max Dist");
      far_distance = global_paraMgr.camera.getDouble("Camera Far Distance") /
                     global_paraMgr.camera.getDouble("Predicted Model Size");
+     near_distance = global_paraMgr.camera.getDouble("Camera Near Distance");
 
      dist_to_model = global_paraMgr.camera.getDouble("Camera Dist To Model");
      resolution = global_paraMgr.camera.getDouble("Camera Resolution");

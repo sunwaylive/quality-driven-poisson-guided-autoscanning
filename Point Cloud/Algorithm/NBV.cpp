@@ -171,13 +171,10 @@ NBV::buildGrid()
    Point3f bbox_max = iso_points->bbox.max;
    Point3f bbox_min = iso_points->bbox.min;
    //get the whole 3D space that a camera may exist
-   //double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
    double camera_max_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
                             global_paraMgr.camera.getDouble("Predicted Model Size"); 
 
    float scan_box_size = camera_max_dist + 0.5;
-   //whole_space_box_min = bbox_min - Point3f(camera_max_dist, camera_max_dist, camera_max_dist);
-   //whole_space_box_max = bbox_max + Point3f(camera_max_dist, camera_max_dist, camera_max_dist);
    whole_space_box_min = Point3f(-scan_box_size, -scan_box_size, -scan_box_size);
    whole_space_box_max = Point3f(scan_box_size, scan_box_size, scan_box_size);
    whole_space_box->SetNull();

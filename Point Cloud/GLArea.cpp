@@ -370,11 +370,16 @@ void GLArea::paintGL()
 			//double max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
       double far_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
                         global_paraMgr.camera.getDouble("Predicted Model Size");
+      double near_dist = global_paraMgr.camera.getDouble("Camera Near Distance") / 
+                        global_paraMgr.camera.getDouble("Predicted Model Size");
 
       double dist_to_model = global_paraMgr.camera.getDouble("Camera Dist To Model");
 			current_camera.far_horizon_dist = h_dist;
 			current_camera.far_vertical_dist = v_dist;
+      current_camera.near_horizon_dist = h_dist / far_dist * near_dist;
+      current_camera.near_vertical_dist = v_dist / far_dist * near_dist;
 			current_camera.far_distance = far_dist;
+      current_camera.near_distance = near_dist;
 
 			//draw selected scan candidates
 			vector<ScanCandidate> *selected_candidates = dataMgr.getSelectedScanCandidates();
@@ -628,7 +633,7 @@ void GLArea::openByDrop(QString fileName)
 
 void GLArea::loadDefaultModel()
 {
-	dataMgr.loadPlyToModel("child_model.ply");
+	dataMgr.loadPlyToModel("freedom_model.ply");
   //dataMgr.loadSkeletonFromSkel("child.skel");
 	//dataMgr.loadPlyToOriginal("child_original.ply");
 	//dataMgr.loadPlyToSample("child_sample.ply");
