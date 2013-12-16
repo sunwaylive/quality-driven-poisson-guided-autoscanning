@@ -795,13 +795,12 @@ bool GlobalFun::isPointInTriangle_3(Point3f& v0, Point3f& v1, Point3f& v2, Point
   else return false;
 }
 
-bool GlobalFun::computeMeshLineIntersectPoint(CMesh *target, Point3f& p, Point3f& line_dir, Point3f& result)
+double GlobalFun::computeMeshLineIntersectPoint( CMesh *target, Point3f& p, Point3f& line_dir, Point3f& result )
 {
   //compute the intersecting point between the ray and the mesh
   int n_face = target->face.size();
-  double dist_to_camera = BIG;
-  bool has_intersect_point = false;
-
+  double min_dist = BIG;
+  
 #ifdef LINKED_WITH_TBB
   tbb::parallel_for(tbb::blocked_range<size_t>(0, n_face), 
     [&](const tbb::blocked_range<size_t>& r)
@@ -826,13 +825,12 @@ bool GlobalFun::computeMeshLineIntersectPoint(CMesh *target, Point3f& p, Point3f
 
       if(GlobalFun::isPointInTriangle_3(v0, v1, v2, intersect_point)) 
       {
-        has_intersect_point = true;
         Point3f d = intersect_point - p;
         double dist_temp = d.SquaredNorm();
         //get the visible point
-        if (dist_temp < dist_to_camera)
+        if (dist_temp < min_dist)
         {
-          dist_to_camera = dist_temp;
+          min_dist = dist_temp;
           result = intersect_point;
         }
       }else continue;
@@ -860,20 +858,19 @@ bool GlobalFun::computeMeshLineIntersectPoint(CMesh *target, Point3f& p, Point3f
 
     if(GlobalFun::isPointInTriangle_3(v0, v1, v2, intersect_point)) 
     {
-      has_intersect_point = true;
       Point3f d = intersect_point - p;
       double dist_temp = d.SquaredNorm();
       //get the visible point
-      if (dist_temp < dist_to_camera)
+      if (dist_temp < min_dist)
       {
-        dist_to_camera = dist_temp;
+        min_dist = dist_temp;
         result = intersect_point;
       }
     }else continue;
   }
 #endif
   
-  return has_intersect_point;
+  return sqrt(min_dist);
 }
 
 bool

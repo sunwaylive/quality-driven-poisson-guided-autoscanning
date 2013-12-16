@@ -82,7 +82,7 @@ void vcc::Camera::runVirtualScan()
       //line direction vector
       Point3f line_dir = viewray_iter.Normalize();
       Point3f intersect_point;
-      if (GlobalFun::computeMeshLineIntersectPoint(target, pos, line_dir, intersect_point))
+      if (GlobalFun::computeMeshLineIntersectPoint(target, pos, line_dir, intersect_point) <= far_distance)
       {        
         //add some random noise
         srand(time(NULL)); 
