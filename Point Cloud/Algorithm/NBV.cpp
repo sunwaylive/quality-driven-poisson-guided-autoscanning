@@ -144,7 +144,6 @@ NBV::setInput(DataMgr *pData)
   }
 
   view_grid_points = pData->getViewGridPoints();
-  view_grids = pData->getAllNBVGrids();
   iso_points = pData->getCurrentIsoPoints();
   nbv_candidates = pData->getNbvCandidates();
   scan_candidates = pData->getScanCandidates();
@@ -198,7 +197,6 @@ NBV::buildGrid()
    //preallocate the memory
    int max_index = x_max * y_max * z_max;
    view_grid_points->vert.resize(max_index);
-   view_grids->resize(max_index);
    //increase from whole_space_box_min
    for (int i = 0; i < x_max; ++i)
    {
@@ -208,8 +206,6 @@ NBV::buildGrid()
        {
          //add the grid
          int index = i * y_max * z_max + j * z_max + k;
-         NBVGrid grid(i, j, k);
-         (*view_grids)[index] = grid;
          //add the center point of the grid
          CVertex t;
          t.P()[0] = whole_space_box_min.X() + i * grid_step_size;
@@ -415,7 +411,6 @@ NBV::propagate()
           deltaY = y / length;
           deltaZ = z / length;
 
-          //int hit_stop_time = 0;
           for (int k = 0; k <= max_steps; ++k)     
           {
             n_indexX = n_indexX + deltaX;
@@ -437,11 +432,8 @@ NBV::propagate()
 
             //if the grid get first hit 
             view_grid_points->vert[index].is_ray_hit = true;
-            //do what we need in the next grid
-            //NBVGrid &g = (*view_grids)[index];
             //1. set the confidence of the grid center
             CVertex& t = view_grid_points->vert[index];
-            //double dist = GlobalFun::computeEulerDist(v.P(), t.P());
             Point3f diff = t.P() - v.P();
             double dist2 = diff.SquaredNorm();
             double dist = sqrt(dist2);
@@ -586,8 +578,6 @@ NBV::propagate()
 
           //if the grid get first hit 
           view_grid_points->vert[index].is_ray_hit = true;
-          //do what we need in the next grid
-          NBVGrid &g = (*view_grids)[index];
           //1. set the confidence of the grid center
           CVertex& t = view_grid_points->vert[index];
           //double dist = GlobalFun::computeEulerDist(v.P(), t.P());
@@ -711,25 +701,6 @@ int
 NBV::round(double x)
 {
   return static_cast<int>(x + 0.5);
-}
-
-quadrant
-NBV::getQuadrantIdx(double a, double b)
-{
-  if (a >= 0 && a <= PI / 2)
-  {
-    if (b >=0 && b <= PI / 2)         return First;
-    if (b > PI / 2 && b < PI)         return Second;
-    if (b > PI && b < 3 / 2 * PI)     return Third;
-    if (b > 3 / 2 * PI && b < 2 * PI) return Fourth;
-  }
-  if (a >PI / 2 && a <= PI)
-  {
-    if (b >=0 && b <= PI / 2)         return Fifth;
-    if (b > PI / 2 && b < PI)         return Sixth;
-    if (b > PI && b < 3 / 2 * PI)     return Seventh;
-    if (b > 3 / 2 * PI && b < 2 * PI) return Eighth;
-  }
 }
 
 void

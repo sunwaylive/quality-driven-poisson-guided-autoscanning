@@ -3,7 +3,6 @@
 #include <tbb/parallel_for.h>
 #include "PointCloudAlgorithm.h"
 #include "GlobalFunction.h"
-#include "NBVGrid.h"
 
 using std::cout;
 using std::endl;
@@ -39,7 +38,6 @@ private:
   void normalizeConfidence(vector<CVertex>& vertexes, float delta);
   double   getAbsMax(double x, double y, double z);
   int      round(double x);
-  quadrant getQuadrantIdx(double a, double b); //two parameters deciding the quadrant
   void     setGridUnHit(vector<int>& hit_grids_idx);
   double computeLocalScores(CVertex& view_t, CVertex& iso_v, 
                             double& optimal_D, double& half_D2, double& sigma_threshold);
@@ -60,7 +58,6 @@ private:
   int                   x_max; //max index num of x-axis 
   int                   y_max;
   int                   z_max;
-  std::vector<NBVGrid>  *view_grids; //grids in all the space
   vector<float>         confidence_weight_sum;
   static int            view_bins_each_axis;
   vector<double>        nbv_scores;

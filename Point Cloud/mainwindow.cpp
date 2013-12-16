@@ -55,7 +55,7 @@ void MainWindow::initWidgets()
 	
   ui.actionShow_ISO->setChecked(paras->glarea.getBool("Show ISO Points"));
   ui.actionUse_ISO_Interval->setChecked(paras->glarea.getBool("Use ISO Interval"));
-  ui.actionShow_NBV_Grids->setChecked(paras->glarea.getBool("Show NBV Grids"));
+  ui.actionShow_View_Grids->setChecked(paras->glarea.getBool("Show View Grids"));
   ui.actionShow_NBV_Candidates->setChecked(paras->glarea.getBool("Show NBV Candidates"));
   ui.actionShow_Scan_Candidates->setChecked(paras->glarea.getBool("Show Scan Candidates"));
   ui.actionShow_Current_Scanned_Mesh->setChecked(paras->glarea.getBool("Show Scanned Mesh"));
@@ -121,7 +121,7 @@ void MainWindow::initConnect()
   connect(ui.actionShow_ISO,SIGNAL(toggled(bool)),this,SLOT(showIsoPoints(bool)));
   connect(ui.actionUse_ISO_Interval,SIGNAL(toggled(bool)),this,SLOT(useIsoInterval(bool)));
 
-  connect(ui.actionShow_NBV_Grids, SIGNAL(toggled(bool)), this, SLOT(showNBVGrids(bool)));
+  connect(ui.actionShow_View_Grids, SIGNAL(toggled(bool)), this, SLOT(showViewGrids(bool)));
   connect(ui.actionShow_NBV_Candidates, SIGNAL(toggled(bool)), this, SLOT(showNBVCandidates(bool)));
   connect(ui.actionShow_Scan_Candidates, SIGNAL(toggled(bool)), this, SLOT(showScanCandidates(bool)));
   connect(ui.actionShow_Current_Scanned_Mesh, SIGNAL(toggled(bool)), this, SLOT(showScannedMesh(bool)));
@@ -508,7 +508,7 @@ void MainWindow::downSample()
 {
   if (global_paraMgr.glarea.getBool("GLarea Busying"))
   {
-    global_paraMgr.glarea.setValue("Algorithom Stop", BoolValue(true));
+    global_paraMgr.glarea.setValue("Algorithm Stop", BoolValue(true));
     global_paraMgr.glarea.setValue("GLarea Busying", BoolValue(false));
     return;
   }
@@ -658,9 +658,9 @@ void MainWindow::showIsoPoints(bool _val)
 }
 
 void
-MainWindow::showNBVGrids(bool _val)
+MainWindow::showViewGrids(bool _val)
 {
-  paras->glarea.setValue("Show NBV Grids", BoolValue(_val));
+  paras->glarea.setValue("Show View Grids", BoolValue(_val));
 
   if (!area->dataMgr.isFieldPointsEmpty())
   {

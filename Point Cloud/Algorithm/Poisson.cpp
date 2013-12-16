@@ -96,7 +96,7 @@ void Poisson::setInput(DataMgr* pData)
 
   model = pData->getCurrentModel();
 
-  if (global_paraMgr.glarea.getBool("Show View Grid Slice") && !pData->isNBVGridsEmpty())
+  if (global_paraMgr.glarea.getBool("Show View Grid Slice") && !pData->isViewGridsEmpty())
   {
     cout << "using NBV grids" << endl;
     field_points = pData->getViewGridPoints();

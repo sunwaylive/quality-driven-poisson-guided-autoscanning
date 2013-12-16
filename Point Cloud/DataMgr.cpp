@@ -97,7 +97,7 @@ bool DataMgr::isScannedResultsEmpty()
   return scanned_results.empty();
 }
 
-bool DataMgr::isNBVGridsEmpty()
+bool DataMgr::isViewGridsEmpty()
 {
   return view_grid_points.vert.empty();
 }
@@ -439,12 +439,6 @@ double DataMgr::getCameraMaxDistance()
 double DataMgr::getCameraMaxAngle()
 {
   return camera_max_angle;
-}
-
-vector<NBVGrid>*
-DataMgr::getAllNBVGrids()
-{
-  return &view_grids;
 }
 
 CMesh*

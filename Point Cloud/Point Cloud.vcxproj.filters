@@ -250,9 +250,6 @@
     <ClCompile Include="Algorithm\NBV.cpp">
       <Filter>Algorithm</Filter>
     </ClCompile>
-    <ClCompile Include="NBVGrid.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Poisson\PTime.cpp">
       <Filter>Poisson</Filter>
     </ClCompile>
@@ -463,9 +460,6 @@
     </ClInclude>
     <ClInclude Include="Algorithm\NBV.h">
       <Filter>Algorithm</Filter>
-    </ClInclude>
-    <ClInclude Include="NBVGrid.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Poisson\MemoryUsage.h">
       <Filter>Poisson</Filter>

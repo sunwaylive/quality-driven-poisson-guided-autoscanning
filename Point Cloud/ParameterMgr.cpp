@@ -67,11 +67,8 @@ void ParameterMgr::initDataMgrParameter()
 void ParameterMgr::initGlareaParameter()
 {
 	glarea.addParam(new RichString("Running Algorithm Name", "") );
-
 	glarea.addParam(new RichBool("Light On or Off", false) );
-
 	glarea.addParam(new RichBool("Show Normal", false) );
-
 	glarea.addParam(new RichBool("Show Samples", true) );
 	glarea.addParam(new RichBool("Show Samples Quad", false) );
 	glarea.addParam(new RichBool("Show Samples Dot", true) );
@@ -79,7 +76,8 @@ void ParameterMgr::initGlareaParameter()
 	glarea.addParam(new RichBool("Show Samples Sphere", false) );
 	glarea.addParam(new RichBool("Show ISO Points", true) );
 	glarea.addParam(new RichBool("Use ISO Interval", false) );
-	glarea.addParam(new RichBool("Show NBV Grids", false));
+
+	glarea.addParam(new RichBool("Show View Grids", false));
 	glarea.addParam(new RichBool("Show NBV Candidates", false));
 	glarea.addParam(new RichBool("Show Scan Candidates", true));
 	glarea.addParam(new RichBool("Show Scanned Mesh", true));
@@ -103,7 +101,7 @@ void ParameterMgr::initGlareaParameter()
 
 
 	glarea.addParam(new RichBool("GLarea Busying", false) );
-	glarea.addParam(new RichBool("Algorithom Stop", false) );
+	glarea.addParam(new RichBool("Algorithm Stop", false) );
 
 
 	glarea.addParam(new RichPoint3f("Light Position", vcg::Point3f(-4.0, -4.0, -4.0)));

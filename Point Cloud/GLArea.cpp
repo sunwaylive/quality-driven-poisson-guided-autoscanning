@@ -250,9 +250,9 @@ void GLArea::paintGL()
 				{
 					glDrawer.draw(GLDrawer::NORMAL, dataMgr.getNbvCandidates());
 				}
-			}else if (para->getBool("Show NBV Grids"))
+			}else if (para->getBool("Show View Grids"))
 			{
-				if (!dataMgr.isNBVGridsEmpty())
+				if (!dataMgr.isViewGridsEmpty())
 				{
 					glDrawer.draw(GLDrawer::NORMAL, dataMgr.getViewGridPoints());
 				} 
@@ -319,7 +319,7 @@ void GLArea::paintGL()
 			drawPickRect();
 		}
 
-		if (para->getBool("Show NBV Grids"))
+		if (para->getBool("Show View Grids"))
 		{
 			CMesh *nbv_grids = dataMgr.getViewGridPoints();
 			if (NULL == nbv_grids) return;
@@ -1200,7 +1200,7 @@ void GLArea::runWlop()
 
 	for (int i = 0; i < iterate_time; i++)
 	{
-		if (global_paraMgr.glarea.getBool("Algorithom Stop") || is_break)
+		if (global_paraMgr.glarea.getBool("Algorithm Stop") || is_break)
 		{
 			is_break = true;
 			break;
@@ -1217,7 +1217,7 @@ void GLArea::runWlop()
 	if (is_break)
 	{
 		global_paraMgr.skeleton.setValue("The Skeletonlization Process Should Stop", BoolValue(false));
-		global_paraMgr.glarea.setValue("Algorithom Stop", BoolValue(false));
+		global_paraMgr.glarea.setValue("Algorithm Stop", BoolValue(false));
 		global_paraMgr.glarea.setValue("GLarea Busying", BoolValue(false));
 		return;
 	}
@@ -1269,7 +1269,7 @@ void GLArea::runSkeletonization_paralleled()
 
 	for (int i = 0; i < MAX_SKELETON_ITERATE; i++)
 	{
-		if (global_paraMgr.glarea.getBool("Algorithom Stop") || is_break)
+		if (global_paraMgr.glarea.getBool("Algorithm Stop") || is_break)
 		{
 			is_break = true;
 			break;
@@ -1291,7 +1291,7 @@ void GLArea::runSkeletonization_paralleled()
 	if (is_break)
 	{
 		global_paraMgr.skeleton.setValue("The Skeletonlization Process Should Stop", BoolValue(false));
-		global_paraMgr.glarea.setValue("Algorithom Stop", BoolValue(false));
+		global_paraMgr.glarea.setValue("Algorithm Stop", BoolValue(false));
 		global_paraMgr.glarea.setValue("GLarea Busying", BoolValue(false));
 		return;
 	}

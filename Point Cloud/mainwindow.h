@@ -96,7 +96,7 @@ private slots:
 
   void showIsoPoints(bool _val);
   void useIsoInterval(bool _val);
-  void showNBVGrids(bool _val);
+  void showViewGrids(bool _val);
   void showNBVCandidates(bool _val);
   void showScanCandidates(bool _val);
   void showScannedMesh(bool _val);

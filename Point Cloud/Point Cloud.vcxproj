@@ -450,7 +450,6 @@
     <ClCompile Include="grid.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mainwindow.cpp" />
-    <ClCompile Include="NBVGrid.cpp" />
     <ClCompile Include="Parameter.cpp" />
     <ClCompile Include="ParameterMgr.cpp" />
     <ClCompile Include="plylib.cpp" />
@@ -545,7 +544,6 @@
     <ClInclude Include="GeneratedFiles\ui_para_skeletonization.h" />
     <ClInclude Include="GeneratedFiles\ui_poisson_para.h" />
     <ClInclude Include="GeneratedFiles\ui_upsampling_para.h" />
-    <ClInclude Include="NBVGrid.h" />
     <ClInclude Include="plylib.h" />
     <ClInclude Include="plystuff.h" />
     <ClInclude Include="Poisson\Allocator.h" />

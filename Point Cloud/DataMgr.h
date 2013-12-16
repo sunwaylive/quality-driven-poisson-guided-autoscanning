@@ -4,8 +4,6 @@
 #include "Parameter.h"
 #include "GlobalFunction.h"
 #include "Algorithm/Skeleton.h"
-#include "NBVGrid.h"
-//#include "Algorithm/Poisson.h"
 
 #include <wrap/io_trimesh/import.h>
 #include <wrap/io_trimesh/export.h>
@@ -46,7 +44,7 @@ public:
   bool      isViewCandidatesEmpty();
   bool      isScannedMeshEmpty();
   bool      isScannedResultsEmpty();
-  bool      isNBVGridsEmpty();
+  bool      isViewGridsEmpty();
   bool      isNBVCandidatesEmpty();
 
   void                    setCurrentTemperalSample(CMesh *mesh);
@@ -69,7 +67,6 @@ public:
   double                  getCameraVerticalDist();
   double                  getCameraMaxDistance();
   double                  getCameraMaxAngle();
-  vector<NBVGrid>*        getAllNBVGrids();
   CMesh*                  getViewGridPoints();
   CMesh*                  getNbvCandidates();
   vector<ScanCandidate>*  getInitCameraScanCandidates();
@@ -119,7 +116,6 @@ public:
   CMesh                  iso_points;
   CMesh                  field_points;
   CMesh                  camera_model;
-  std::vector<NBVGrid>   view_grids;
   CMesh                  view_grid_points;
   CMesh                  nbv_candidates;
   Point3f                camera_pos;
