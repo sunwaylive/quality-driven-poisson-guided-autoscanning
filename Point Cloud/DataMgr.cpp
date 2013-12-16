@@ -491,10 +491,16 @@ Slices* DataMgr::getCurrentSlices()
 
 void DataMgr::recomputeBox()
 {
+  model.bbox.SetNull();
 	samples.bbox.SetNull();
 	original.bbox.SetNull();
 
 	CMesh::VertexIterator vi;
+  for (vi = model.vert.begin(); vi != model.vert.end(); ++vi)
+  {
+    model.bbox.Add(vi->P());
+  }
+
 	for(vi = samples.vert.begin(); vi != samples.vert.end(); ++vi) 
 	{
 		if (vi->is_ignore)
@@ -508,6 +514,17 @@ void DataMgr::recomputeBox()
 	{
 		original.bbox.Add(vi->P());
 	}
+
+  double camera_max_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
+    global_paraMgr.camera.getDouble("Predicted Model Size"); 
+  float scan_box_size = camera_max_dist + 0.5;
+
+  Point3f whole_space_box_min = Point3f(-scan_box_size, -scan_box_size, -scan_box_size);
+  Point3f whole_space_box_max = Point3f(scan_box_size, scan_box_size, scan_box_size);
+  whole_space_box.SetNull();
+  whole_space_box.Add(whole_space_box_min);
+  whole_space_box.Add(whole_space_box_max);
+
 }
 
 double DataMgr::getInitRadiuse()
@@ -663,55 +680,44 @@ void DataMgr::normalizeROSA_Mesh(CMesh& mesh, bool is_original)
 
 Box3f DataMgr::normalizeAllMesh()
 {
-	Box3f box;
-  if (!isModelEmpty() && isSamplesEmpty() && isOriginalEmpty())
+  Box3f box;
+  if (!isModelEmpty())
   {
     for (int i = 0; i < model.vert.size(); ++i)
-    {
       box.Add(model.vert[i].P());
-    }
-
-    model.bbox = box;
-    normalizeROSA_Mesh(model);
-    recomputeBox();
-
-    return model.bbox;
   }
-  else
+
+  if (!isSamplesEmpty())
   {
-    if (!isSamplesEmpty())
-    {
-      for (int i = 0; i < samples.vert.size(); ++i)
-      {
-        box.Add(samples.vert[i].P());
-      }
-    }
-    if (!isOriginalEmpty())
-    {
-      for (int i = 0; i < original.vert.size(); ++i)
-      {
-        box.Add(original.vert[i].P());
-      }
-      original.bbox =box;
-    }
-
-    samples.bbox = box;
-
-    float max_x = abs((box.min - box.max).X());
-    float max_y = abs((box.min - box.max).Y());
-    float max_z = abs((box.min - box.max).Z());
-    float max_length = std::max(max_x, std::max(max_y, max_z));
-    global_paraMgr.data.setValue("Max Normalize Length", DoubleValue(max_length));
-    
-    normalizeROSA_Mesh(samples);
-    normalizeROSA_Mesh(original, true);
-    normalizeROSA_Mesh(iso_points);
-
-    recomputeBox();
-    getInitRadiuse();
-
-    return samples.bbox;
+    for (int i = 0; i < samples.vert.size(); ++i)
+      box.Add(samples.vert[i].P());
   }
+
+  if (!isOriginalEmpty())
+  {
+    for (int i = 0; i < original.vert.size(); ++i)
+      box.Add(original.vert[i].P());
+  }
+
+  model.bbox = box;
+  original.bbox =box;
+  samples.bbox = box;
+
+  float max_x = abs((box.min - box.max).X());
+  float max_y = abs((box.min - box.max).Y());
+  float max_z = abs((box.min - box.max).Z());
+  float max_length = std::max(max_x, std::max(max_y, max_z));
+  global_paraMgr.data.setValue("Max Normalize Length", DoubleValue(max_length));
+
+  normalizeROSA_Mesh(model);
+  normalizeROSA_Mesh(original, true);
+  normalizeROSA_Mesh(samples);
+  normalizeROSA_Mesh(iso_points);
+
+  recomputeBox();
+  getInitRadiuse();
+
+  return samples.bbox;
 }
 
 

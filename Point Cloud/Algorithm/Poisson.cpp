@@ -969,7 +969,7 @@ void Poisson::runPoissonFieldAndIso()
                                  Par.adaptiveExponent , 
                                  xForm );
   time.end();
-  time.start("Solve Laplician");
+  time.start("Solve Laplacian");
 
   DumpOutput( "Input Points: %d\n" , pointCount );
   DumpOutput( "Leaves/Nodes: %d/%d\n" , tree.tree.leaves() , tree.tree.nodes() );  

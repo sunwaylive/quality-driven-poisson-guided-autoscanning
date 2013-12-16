@@ -65,6 +65,8 @@ namespace vcc{
     double                   near_distance;
     double                   far_horizon_dist;  //far horizontal range
     double                   far_vertical_dist;  //far vertical range
+    double                   near_horizon_dist;
+    double                   near_vertical_dist;
     CameraParameter          camera_para;
   };
 

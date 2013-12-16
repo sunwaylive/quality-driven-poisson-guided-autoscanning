@@ -396,7 +396,7 @@ void ParameterMgr::initCameraParameter()
 	camera.addParam(new RichBool("Run Initial Scan", false));
 	camera.addParam(new RichBool("Run NBV Scan", false));
 	camera.addParam(new RichBool("Run Virtual Scan", false));
-	camera.addParam(new RichDouble("Camera Resolution",1.0f / 100.0f));
+	camera.addParam(new RichDouble("Camera Resolution",1.0f / 200.0f));
 	camera.addParam(new RichDouble("Camera Max Dist", 2.1f));
 	camera.addParam(new RichDouble("Camera Horizon Dist", 1.0f));
 	camera.addParam(new RichDouble("Camera Vertical Dist", 0.6f));

@@ -482,25 +482,42 @@ void GLDrawer::drawCamera(vcc::Camera& camera)
 {
 	//get the five control points of the cone
 	Point3f far_end = camera.pos + camera.direction * camera.far_distance;
-	Point3f top_right = far_end + camera.right * camera.far_horizon_dist / 2 
+	Point3f far_top_right = far_end + camera.right * camera.far_horizon_dist / 2 
 		+ camera.up * camera.far_vertical_dist / 2;
-	Point3f top_left = far_end + camera.right * (-camera.far_horizon_dist) / 2
+	Point3f far_top_left = far_end + camera.right * (-camera.far_horizon_dist) / 2
 		+ camera.up * camera.far_vertical_dist / 2; 
-	Point3f bottom_right = far_end + camera.right * camera.far_horizon_dist / 2
+	Point3f far_bottom_right = far_end + camera.right * camera.far_horizon_dist / 2
 		+ camera.up * (-camera.far_vertical_dist / 2);
-	Point3f bottom_left = far_end + camera.right * (-camera.far_horizon_dist / 2)
+	Point3f far_bottom_left = far_end + camera.right * (-camera.far_horizon_dist / 2)
 		+ camera.up * (-camera.far_vertical_dist / 2);
+
+  Point3f near_end = camera.pos + camera.direction * camera.near_distance;
+  Point3f near_top_right = near_end + camera.right * camera.near_horizon_dist / 2 
+    + camera.up * camera.near_vertical_dist / 2;
+  Point3f near_top_left = near_end + camera.right * (-camera.near_horizon_dist) / 2
+    + camera.up * camera.near_vertical_dist / 2; 
+  Point3f near_bottom_right = near_end + camera.right * camera.near_horizon_dist / 2
+    + camera.up * (-camera.near_vertical_dist / 2);
+  Point3f near_bottom_left = near_end + camera.right * (-camera.near_horizon_dist / 2)
+    + camera.up * (-camera.near_vertical_dist / 2);
 
 	glBegin(GL_LINES);
 	glColor3f(1.0, 0.0, 0.0);
-	glVertex(camera.pos); glVertex(top_left);
-	glVertex(camera.pos); glVertex(top_right);
-	glVertex(camera.pos); glVertex(bottom_left);
-	glVertex(camera.pos); glVertex(bottom_right);
-	glVertex(top_right); glVertex(top_left);
-	glVertex(top_left); glVertex(bottom_left);
-	glVertex(bottom_left); glVertex(bottom_right);
-	glVertex(bottom_right); glVertex(top_right);
+	glVertex(camera.pos); glVertex(far_top_left);
+	glVertex(camera.pos); glVertex(far_top_right);
+	glVertex(camera.pos); glVertex(far_bottom_left);
+	glVertex(camera.pos); glVertex(far_bottom_right);
+  //draw far face
+	glVertex(far_top_right); glVertex(far_top_left);
+	glVertex(far_top_left); glVertex(far_bottom_left);
+	glVertex(far_bottom_left); glVertex(far_bottom_right);
+	glVertex(far_bottom_right); glVertex(far_top_right);
+  //draw near face
+  glVertex(near_top_right); glVertex(near_top_left);
+  glVertex(near_top_left); glVertex(near_bottom_left);
+  glVertex(near_bottom_left); glVertex(near_bottom_right);
+  glVertex(near_bottom_right); glVertex(near_top_right);
+
 	glEnd();
 }
 
