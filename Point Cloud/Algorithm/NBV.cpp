@@ -147,7 +147,7 @@ NBV::setInput(DataMgr *pData)
   view_grids = pData->getAllNBVGrids();
   iso_points = pData->getCurrentIsoPoints();
   nbv_candidates = pData->getNbvCandidates();
-  scan_candidates = pData->getAllScanCandidates();
+  scan_candidates = pData->getScanCandidates();
   whole_space_box = &pData->whole_space_box;
 }
 

@@ -73,7 +73,7 @@ public:
   CMesh*                  getViewGridPoints();
   CMesh*                  getNbvCandidates();
   vector<ScanCandidate>*  getInitCameraScanCandidates();
-  vector<ScanCandidate>*  getAllScanCandidates();
+  vector<ScanCandidate>*  getScanCandidates();
   vector<ScanCandidate>*  getSelectedScanCandidates();
   CMesh*                  getCurrentScannedMesh();
   vector<CMesh* >*        getScannedResults(); 

@@ -464,7 +464,7 @@ vector<ScanCandidate>* DataMgr::getInitCameraScanCandidates()
   return &init_scan_candidates;
 }
 
-vector<ScanCandidate>* DataMgr::getAllScanCandidates()
+vector<ScanCandidate>* DataMgr::getScanCandidates()
 {
   return &scan_candidates;
 }
