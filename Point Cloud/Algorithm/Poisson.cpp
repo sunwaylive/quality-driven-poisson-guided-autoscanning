@@ -89,32 +89,32 @@ Poisson::~Poisson(void)
 
 void Poisson::setInput(DataMgr* pData)
 {
-	if(!pData->isSamplesEmpty())
-	{
-    original = pData->getCurrentOriginal();
-    samples = pData->getCurrentSamples();
-    iso_points = pData->getCurrentIsoPoints();
-    slices = pData->getCurrentSlices();
-    
-    model = pData->getCurrentModel();
+  original = pData->getCurrentOriginal();
+  samples = pData->getCurrentSamples();
+  iso_points = pData->getCurrentIsoPoints();
+  slices = pData->getCurrentSlices();
 
-    if (global_paraMgr.glarea.getBool("Show View Grid Slice") && !pData->isNBVGridsEmpty())
-    {
-      cout << "using NBV grids" << endl;
-      field_points = pData->getViewGridPoints();
-    }
-    else
-    {
-      cout << "using real field point" << endl;
-      field_points = pData->getCurrentFieldPoints();
-    }
-    
-	}
-	else
-	{
-		cout << "ERROR: Poisson::setInput: empty!!" << endl;
-		return;
-	}
+  model = pData->getCurrentModel();
+
+  if (global_paraMgr.glarea.getBool("Show View Grid Slice") && !pData->isNBVGridsEmpty())
+  {
+    cout << "using NBV grids" << endl;
+    field_points = pData->getViewGridPoints();
+  }
+  else
+  {
+    cout << "using real field point" << endl;
+    field_points = pData->getCurrentFieldPoints();
+  }
+
+	//if(!pData->isSamplesEmpty())
+	//{   
+	//}
+	//else
+	//{
+	//	cout << "ERROR: Poisson::setInput: empty!!" << endl;
+	//	return;
+	//}
 }
 
 void Poisson::run()
@@ -212,11 +212,15 @@ void Poisson::runOneKeyPoissonConfidence()
 {
   runPoissonFieldAndIso();
 
-  para->setValue("Use Confidence 1",BoolValue(true));
-  para->setValue("Use Confidence 2",BoolValue(true));
-  para->setValue("Use Confidence 3",BoolValue(false));
-  para->setValue("Use Confidence 4",BoolValue(false));
-  runComputeSampleConfidence();
+  if (!para->getBool("Run Poisson On Original"))
+  {
+    para->setValue("Use Confidence 1",BoolValue(true));
+    para->setValue("Use Confidence 2",BoolValue(true));
+    para->setValue("Use Confidence 3",BoolValue(false));
+    para->setValue("Use Confidence 4",BoolValue(false));
+    runComputeSampleConfidence();
+  }
+
 
   para->setValue("Use Confidence 1",BoolValue(false));
   para->setValue("Use Confidence 2",BoolValue(false));
