@@ -84,7 +84,7 @@ void ParameterMgr::initGlareaParameter()
 	glarea.addParam(new RichBool("Show Scan Candidates", true));
 	glarea.addParam(new RichBool("Show Scanned Mesh", true));
 
-	glarea.addParam(new RichBool("Show Model", true));
+	glarea.addParam(new RichBool("Show Model", false));
 	glarea.addParam(new RichBool("Show Original", false) );
 	glarea.addParam(new RichBool("Show Original Quad", false) );
 	glarea.addParam(new RichBool("Show Original Dot", true) );
