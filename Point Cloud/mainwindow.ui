@@ -41,7 +41,7 @@
      <x>0</x>
      <y>0</y>
      <width>1295</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -64,6 +64,7 @@
     <addaction name="actionSave_NBV"/>
     <addaction name="actionSwitch_Sample_Original"/>
     <addaction name="actionSwitch_Sample_with_ISO"/>
+    <addaction name="actionTransform"/>
    </widget>
    <widget class="QMenu" name="menuAlgorithom">
     <property name="title">
@@ -869,6 +870,11 @@
   <action name="actionSave_NBV_Grids">
    <property name="text">
     <string>Save View Grid Points</string>
+   </property>
+  </action>
+  <action name="actionTransform">
+   <property name="text">
+    <string>Transform</string>
    </property>
   </action>
  </widget>

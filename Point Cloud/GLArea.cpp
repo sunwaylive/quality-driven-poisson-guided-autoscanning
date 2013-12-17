@@ -2104,6 +2104,9 @@ void GLArea::mouseReleaseEvent(QMouseEvent *e)
 				CVertex v = samples->vert.at(index);
 				//cout << "iso value: " << v.eigen_confidence << endl;
 				cout << "Index: " << v.m_index << endl;
+
+        cout << "Pos: " << v.P()[0] << ", " 
+                        << v.P()[1] << ", " << v.P()[2] << ", "<<endl;
 			}
 		}
 	}

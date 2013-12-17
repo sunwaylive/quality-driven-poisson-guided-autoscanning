@@ -5,6 +5,7 @@
 #include "GlobalFunction.h"
 #include "Algorithm/Skeleton.h"
 #include "NBVGrid.h"
+#include "vcg/math/camera.h"
 //#include "Algorithm/Poisson.h"
 
 #include <wrap/io_trimesh/import.h>
@@ -103,7 +104,7 @@ public:
   void replaceMesh(CMesh& src_mesh, CMesh& target_mesh, bool isOriginal);
   void replaceMesh2(CMesh& src_mesh, CMesh& target_mesh, bool isIso);
 
-
+  void coordinateTransform();
 
 private:
 	void clearCMesh(CMesh& mesh);

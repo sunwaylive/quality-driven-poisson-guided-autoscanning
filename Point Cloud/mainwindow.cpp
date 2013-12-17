@@ -143,6 +143,7 @@ void MainWindow::initConnect()
 	
   connect(ui.actionSwitch_Sample_Original,SIGNAL(triggered()),this,SLOT(switchSampleOriginal()));
   connect(ui.actionSwitch_Sample_with_ISO,SIGNAL(triggered()),this,SLOT(switchSampleISO()));
+  connect(ui.actionTransform,SIGNAL(triggered()),this,SLOT(coordinateTransform()));
   
 
   //connect(ui.actionPoisson_test,SIGNAL(triggered()),this,SLOT(poissonTest()));
@@ -995,5 +996,12 @@ void MainWindow::switchSampleISO()
 {
   area->cleanPickPoints();
   area->dataMgr.switchSampleToISO();
+  area->updateUI();
+}
+
+void MainWindow::coordinateTransform()
+{
+  area->cleanPickPoints();
+  area->dataMgr.coordinateTransform();
   area->updateUI();
 }

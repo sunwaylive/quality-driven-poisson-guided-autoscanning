@@ -1528,3 +1528,37 @@ void DataMgr::replaceMesh2(CMesh& src_mesh, CMesh& target_mesh, bool isIso)
   target_mesh.vn = src_mesh.vn;
   target_mesh.bbox = src_mesh.bbox;
 }
+
+
+void DataMgr::coordinateTransform()
+{
+  //vcg::Quaternionf quaternion(-0.032, 0.000, -0.000, 0.999);
+ 
+
+  //vcg::Quaternionf quaternion(0.032, 0.000, 0.000, 1.000);
+  
+  //Point3f translation(140., -49., -306.);///l_wrist_roll_link /r_wrist_roll_link
+
+  //Point3f translation_left_hand(0, -192, 0);
+
+   //vcg::Quaternionf quaternion(0.032, 0.000, 0.000, 1.000);
+   vcg::Quaternionf quaternion(0.730, -0.000, -0.000, 0.683);
+
+   //Point3f translation(-140., 30., 309.);
+  Point3f translation(-140., 30., 309.);
+
+  vcg::Matrix33f matrix;
+  quaternion.ToMatrix(matrix);
+
+  for (int i = 0; i < samples.vert.size(); i++)
+  {
+    CVertex& v = samples.vert[i];
+    Point3f p = v.P();
+    p += translation;
+    //p += translation_left_hand;
+    v.P() = matrix * p;
+    //v.P() =  p;
+
+  }
+
+}

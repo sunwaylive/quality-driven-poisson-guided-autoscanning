@@ -67,6 +67,8 @@ private slots:
 
   void switchSampleOriginal();
   void switchSampleISO();
+  
+  void coordinateTransform();
 
 
 private slots:
