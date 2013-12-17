@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <tbb/parallel_for.h>
+#include <tbb/mutex.h>
 #include "PointCloudAlgorithm.h"
 #include "GlobalFunction.h"
 #include "NBVGrid.h"
@@ -60,7 +61,6 @@ private:
   int                   x_max; //max index num of x-axis 
   int                   y_max;
   int                   z_max;
-  std::vector<NBVGrid>  *view_grids; //grids in all the space
   vector<float>         confidence_weight_sum;
   static int            view_bins_each_axis;
   vector<double>        nbv_scores;

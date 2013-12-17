@@ -441,11 +441,6 @@ double DataMgr::getCameraMaxAngle()
   return camera_max_angle;
 }
 
-vector<NBVGrid>*
-DataMgr::getAllNBVGrids()
-{
-  return &view_grids;
-}
 
 CMesh*
 DataMgr::getViewGridPoints()

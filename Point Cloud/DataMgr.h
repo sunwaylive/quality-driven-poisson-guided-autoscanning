@@ -70,7 +70,6 @@ public:
   double                  getCameraVerticalDist();
   double                  getCameraMaxDistance();
   double                  getCameraMaxAngle();
-  vector<NBVGrid>*        getAllNBVGrids();
   CMesh*                  getViewGridPoints();
   CMesh*                  getNbvCandidates();
   vector<ScanCandidate>*  getInitCameraScanCandidates();
@@ -120,7 +119,6 @@ public:
   CMesh                  iso_points;
   CMesh                  field_points;
   CMesh                  camera_model;
-  std::vector<NBVGrid>   view_grids;
   CMesh                  view_grid_points;
   CMesh                  nbv_candidates;
   Point3f                camera_pos;
