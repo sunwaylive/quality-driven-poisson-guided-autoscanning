@@ -307,6 +307,8 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
   if (sil.isEmpty()) return;
 
   CMesh* original = area->dataMgr.getCurrentOriginal();
+  cout<<"Before merge original size:" <<original->vert.size() <<endl;
+
   vector<CMesh* > *scanned_results = area->dataMgr.getScannedResults();
 
   int row_of_mesh = 0;
@@ -324,7 +326,7 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
         //make the merged mesh invisible
         (*it)->vert[0].is_scanned_visible = false;
 
-        int index = original->vert.size();
+        int index = original->vert.back().m_index;
         for (int k = 0; k < (*it)->vert.size(); ++k)
         {
           CVertex& v = (*it)->vert[i];
@@ -344,6 +346,8 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
       }
     }
   }
+  cout<<"After merge original size:" <<original->vert.size() <<endl;
+  area->updateGL();
 }
 
 void CameraParaDlg::getCameraHorizonDist(double _val)
@@ -528,6 +532,7 @@ void CameraParaDlg::runStep3NBVcandidates()
   area->runNBV();
   global_paraMgr.nbv.setValue("Run One Key NBV", BoolValue(false));
   updateTableViewNBVCandidate();
+  ui->tableView_scan_results->clearSpans();
 }
 
 void CameraParaDlg::runStep4NewScans()

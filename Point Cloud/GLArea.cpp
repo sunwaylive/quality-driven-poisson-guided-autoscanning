@@ -633,7 +633,7 @@ void GLArea::openByDrop(QString fileName)
 
 void GLArea::loadDefaultModel()
 {
-	dataMgr.loadPlyToModel("freedom_model.ply");
+	dataMgr.loadPlyToModel("lion_model.ply");
   //dataMgr.loadSkeletonFromSkel("child.skel");
 	//dataMgr.loadPlyToOriginal("child_original.ply");
 	//dataMgr.loadPlyToSample("child_sample.ply");

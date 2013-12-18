@@ -874,7 +874,7 @@ double GlobalFun::computeMeshLineIntersectPoint( CMesh *target, Point3f& p, Poin
 }
 
 bool
-GlobalFun::cmp(DesityAndIndex a, DesityAndIndex b)
+GlobalFun::cmp(DesityAndIndex &a, DesityAndIndex &b)
 {
   return a.density < b.density;
 }
@@ -1093,6 +1093,16 @@ GlobalFun::downSample(CMesh *dst, CMesh *src, double sample_ratio, bool use_rand
   for(vi = dst->vert.begin(); vi != dst->vert.end(); ++vi)
     vi->is_original = false;
 
+}
+
+void 
+GlobalFun::clearCMesh(CMesh &mesh)
+{
+  mesh.face.clear();
+  mesh.fn = 0;
+  mesh.vert.clear();
+  mesh.vn = 0;
+  mesh.bbox = Box3f();
 }
 
 //void Slice::build_slice(Point3f a, Point3f b, Point3f c, float c_length)

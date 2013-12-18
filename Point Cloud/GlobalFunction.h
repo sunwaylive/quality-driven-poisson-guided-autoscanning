@@ -43,7 +43,7 @@ namespace GlobalFun
     double density;
   };
 
-  bool cmp(DesityAndIndex a, DesityAndIndex b);
+  bool cmp(DesityAndIndex &a, DesityAndIndex &b);
 
 	void computeKnnNeigbhors(vector<CVertex> &datapts, vector<CVertex> &querypts, int numKnn, bool need_self_included, QString purpose);
 	void computeEigen(CMesh* _samples);
@@ -82,6 +82,7 @@ namespace GlobalFun
   void removeOutliers(CMesh *m, double radius, double remove_percent);
   void computeICP(CMesh *dst, CMesh *src);
   void downSample(CMesh *dst, CMesh *src, double sample_ratio, bool use_random_downsample = true);
+  void clearCMesh(CMesh &mesh);
 }
 
 class Timer

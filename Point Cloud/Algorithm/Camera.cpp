@@ -186,6 +186,7 @@ void vcc::Camera::runOneKeyNewScan()
 	runNBVScan();
 
 	//merge with original points
+  int index = original->vert.back().m_index;
 	vector<CMesh*>::iterator it_scan_result = scanned_results->begin();
 	for (; it_scan_result != scanned_results->end(); ++it_scan_result)
 	{
@@ -193,6 +194,7 @@ void vcc::Camera::runOneKeyNewScan()
 		for (int i = 0; i < r->vert.size(); ++i)
 		{
       r->vert[i].is_original = true;
+      r->vert[i].m_index = ++index;
 			original->vert.push_back(r->vert[i]);
 		}
 	}
