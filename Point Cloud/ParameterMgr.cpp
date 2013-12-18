@@ -121,13 +121,13 @@ void ParameterMgr::initGlareaParameter()
 	glarea.addParam(new RichDouble("Radius Ball Transparency", 0.3));
 	
 	glarea.addParam(new RichDouble("ISO Interval Size", 50));
-	glarea.addParam(new RichDouble("Sample Confidence Color Scale", 1.0));
+	glarea.addParam(new RichDouble("Sample Confidence Color Scale", 0.5));
 
-  glarea.addParam(new RichDouble("Grid ISO Color Scale", 1.));
-  glarea.addParam(new RichDouble("Grid ISO Value Shift", 0.00));//new
+  glarea.addParam(new RichDouble("Grid ISO Color Scale", 0.5));
+  glarea.addParam(new RichDouble("Grid ISO Value Shift", -0.5));//new
 
-  glarea.addParam(new RichDouble("Point ISO Color Scale", 1.)); //new
-	glarea.addParam(new RichDouble("Point ISO Value Shift", 0.00)); 
+  glarea.addParam(new RichDouble("Point ISO Color Scale", 0.5)); //new
+	glarea.addParam(new RichDouble("Point ISO Value Shift", -0.5)); 
 
   glarea.addParam(new RichBool("Show View Grid Slice", false));
 
@@ -411,8 +411,7 @@ void ParameterMgr::initCameraParameter()
   camera.addParam(new RichDouble("Grid Step Size", -1));
 }
 
-void
-	ParameterMgr::initNBVParameter()
+void ParameterMgr::initNBVParameter()
 {
   nbv.addParam(new RichString("Algorithm Name", "NBV"));
   nbv.addParam(new RichBool("Run One Key NBV", false));
@@ -440,6 +439,7 @@ void
   nbv.addParam(new RichDouble("Confidence Separation Value", 0.85));
 
   nbv.addParam(new RichDouble("Max Ray Steps Para", 1.5));
+  nbv.addParam(new RichDouble("Ray Resolution Para", 0.511111111111111));
 
   nbv.addParam(new RichDouble("View Preserve Angle Threshold", 45));
 

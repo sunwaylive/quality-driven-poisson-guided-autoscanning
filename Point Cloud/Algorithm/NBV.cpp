@@ -88,9 +88,9 @@ NBV::runOneKeyNBV()
   propagate();
   viewExtractionIntoBins();
 
-  return;
+  //return;
   
-  for (int i = 0; i < 4; i++)
+  for (int i = 0; i < 5; i++)
   {
     bool have_direction_move = updateViewDirections();
     if (!have_direction_move)
@@ -330,6 +330,8 @@ NBV::propagate()
   int max_steps = static_cast<int>(camera_max_dist / grid_step_size);
   max_steps *= para->getDouble("Max Ray Steps Para"); //wsh
 
+  double ray_density_para = para->getDouble("Max Ray Steps Para");
+
   int target_index = 0;
   if (use_propagate_one_point)
   {
@@ -351,6 +353,10 @@ NBV::propagate()
   double half_D2 = half_D * half_D; //
   double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
   double sigma_threshold = pow(max(1e-8, 1-cos(sigma / 180.0 * 3.1415926)), 2);
+
+  double ray_resolution_para = para->getDouble("Ray Resolution Para");
+  double angle_delta = (grid_step_size * ray_resolution_para) / camera_max_dist;
+  cout << "Angle Delta/resolution:  " << angle_delta << " , " << PI / angle_delta << endl;
 
 #ifdef LINKED_WITH_TBB
 
@@ -378,8 +384,7 @@ NBV::propagate()
       double n_indexX, n_indexY, n_indexZ;
       //get the sphere traversal resolution
       //compute the delta of a,b so as to traverse the whole sphere
-      double angle_delta = (grid_step_size*0.511) / camera_max_dist;
-      //angle_delta *=2;// wsh
+      
 
       //loop for a, b
       double a = 0.0f, b = 0.0f;
@@ -505,11 +510,6 @@ NBV::propagate()
     int t_indexZ = static_cast<int>( ceil((v.P()[2] - whole_space_box_min.Z()) / grid_step_size ));
     //next point index along the ray, pay attention , index should be stored in double ,used in integer
     double n_indexX, n_indexY, n_indexZ;
-    //get the sphere traversal resolution
-    //double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
-    //compute the delta of a,b so as to traverse the whole sphere
-    double angle_delta = grid_step_size / camera_max_dist;
-    //angle_delta *=2;// wsh
 
     //loop for a, b
     double a = 0.0f, b = 0.0f;

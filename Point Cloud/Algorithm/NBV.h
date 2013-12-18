@@ -10,7 +10,7 @@ using std::cout;
 using std::endl;
 using vcg::Point3f;
 
-#define  LINKED_WITH_TBB
+//#define  LINKED_WITH_TBB
 
 class NBV : public PointCloudAlgorithm
 {

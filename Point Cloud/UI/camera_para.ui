@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -502,7 +502,7 @@
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>400</y>
+       <y>430</y>
        <width>201</width>
        <height>16</height>
       </rect>
@@ -549,9 +549,9 @@
     <widget class="QLabel" name="label_8">
      <property name="geometry">
       <rect>
-       <x>22</x>
+       <x>20</x>
        <y>370</y>
-       <width>121</width>
+       <width>131</width>
        <height>20</height>
       </rect>
      </property>
@@ -563,7 +563,7 @@
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>430</y>
+       <y>460</y>
        <width>201</width>
        <height>16</height>
       </rect>
@@ -572,24 +572,11 @@
       <string>use_average_propagation</string>
      </property>
     </widget>
-    <widget class="QCheckBox" name="use_nbv_test1">
-     <property name="geometry">
-      <rect>
-       <x>28</x>
-       <y>490</y>
-       <width>201</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>use_nbv_test1</string>
-     </property>
-    </widget>
     <widget class="QCheckBox" name="use_max_propagation">
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>460</y>
+       <y>490</y>
        <width>201</width>
        <height>16</height>
       </rect>
@@ -808,6 +795,41 @@
        <string>Optimal plane width(cm) :</string>
       </property>
      </widget>
+    </widget>
+    <widget class="QDoubleSpinBox" name="ray_resolution_para">
+     <property name="geometry">
+      <rect>
+       <x>180</x>
+       <y>400</y>
+       <width>62</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="decimals">
+      <number>2</number>
+     </property>
+     <property name="maximum">
+      <double>1000.000000000000000</double>
+     </property>
+     <property name="singleStep">
+      <double>1.000000000000000</double>
+     </property>
+     <property name="value">
+      <double>0.000000000000000</double>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_10">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>400</y>
+       <width>131</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Ray resolution para :</string>
+     </property>
     </widget>
    </widget>
    <widget class="QWidget" name="tab_3">

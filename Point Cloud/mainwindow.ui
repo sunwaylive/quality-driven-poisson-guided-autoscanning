@@ -65,6 +65,7 @@
     <addaction name="actionSwitch_Sample_Original"/>
     <addaction name="actionSwitch_Sample_with_ISO"/>
     <addaction name="actionTransform"/>
+    <addaction name="actionAdd_Sample_To_Original"/>
    </widget>
    <widget class="QMenu" name="menuAlgorithom">
     <property name="title">
@@ -875,6 +876,11 @@
   <action name="actionTransform">
    <property name="text">
     <string>Transform</string>
+   </property>
+  </action>
+  <action name="actionAdd_Sample_To_Original">
+   <property name="text">
+    <string>Add Sample To Original</string>
    </property>
   </action>
  </widget>
