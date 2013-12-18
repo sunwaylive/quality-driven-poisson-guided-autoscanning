@@ -98,7 +98,7 @@ NBV::runOneKeyNBV()
   propagate();
   viewExtractionIntoBins();
 
-  for (int i = 0; i < 4; i++)
+  for (int i = 0; i < 5; i++)
   {
     bool have_direction_move = updateViewDirections();
     if (!have_direction_move)
@@ -200,35 +200,34 @@ NBV::buildGrid()
   int all_max = std::max(std::max(x_max, y_max), z_max);
   x_max = y_max =z_max = all_max+1; // wsh 12-11
 
-  //preallocate the memory
-  int max_index = x_max * y_max * z_max;
-  view_grid_points->vert.resize(max_index);
-  //increase from whole_space_box_min
-  for (int i = 0; i < x_max; ++i)
-  {
-    for (int j = 0; j < y_max; ++j)
-    {
-      for (int k = 0; k < z_max; ++k)
-      {
-        //add the grid
-        int index = i * y_max * z_max + j * z_max + k;
-        //add the center point of the grid
-        CVertex t;
-        t.P()[0] = whole_space_box_min.X() + i * grid_step_size;
-        t.P()[1] = whole_space_box_min.Y() + j * grid_step_size;
-        t.P()[2] = whole_space_box_min.Z() + k * grid_step_size;
-        t.m_index = index;
-        t.is_grid_center = true;
-        view_grid_points->vert[index] = t;
-        view_grid_points->bbox.Add(t.P());
-      }
-    }
-  }
-  view_grid_points->vn = max_index;
-  cout << "all: " << max_index << endl;
-  cout << "x_max: " << x_max << endl;
-  cout << "y_max: " << y_max << endl;
-  cout << "z_max: " << z_max << endl;
+   //preallocate the memory
+   int max_index = x_max * y_max * z_max;
+   view_grid_points->vert.resize(max_index);
+   //increase from whole_space_box_min
+   for (int i = 0; i < x_max; ++i)
+   {
+     for (int j = 0; j < y_max; ++j)
+     {
+       for (int k = 0; k < z_max; ++k)
+       {
+         //add the grid
+         int index = i * y_max * z_max + j * z_max + k;
+         NBVGrid grid(i, j, k);
+         //add the center point of the grid
+         CVertex t;
+         t.P()[0] = whole_space_box_min.X() + i * grid_step_size;
+         t.P()[1] = whole_space_box_min.Y() + j * grid_step_size;
+         t.P()[2] = whole_space_box_min.Z() + k * grid_step_size;
+         t.m_index = index;
+         t.is_grid_center = true;
+         view_grid_points->vert[index] = t;
+         view_grid_points->bbox.Add(t.P());
+       }
+     }
+   }
+   view_grid_points->vn = max_index;
+   cout << "all grid points: " << max_index << endl;
+   cout << "resolution: " << x_max << endl;
 
   bool test_field_segment = para->getBool("Test Other Inside Segment");
   if (field_points->vert.empty())
@@ -238,14 +237,46 @@ NBV::buildGrid()
   }
   //distinguish the inside or outside grid
 
-  if (test_field_segment)
-  {
-    GlobalFun::computeAnnNeigbhors(field_points->vert, view_grid_points->vert, 1, false, "runGridNearestIsoPoint");
-  }
-  else
-  {
-    GlobalFun::computeAnnNeigbhors(iso_points->vert, view_grid_points->vert, 1, false, "runGridNearestIsoPoint");
-  }
+   Timer timer;
+   timer.start("compute ANN");
+   if (test_field_segment)
+   {
+     GlobalFun::computeAnnNeigbhors(field_points->vert, view_grid_points->vert, 1, false, "runGridNearestIsoPoint");
+   }
+   else
+   {
+     GlobalFun::computeAnnNeigbhors(iso_points->vert, view_grid_points->vert, 1, false, "runGridNearestIsoPoint");
+   }
+   timer.end();
+   
+   double grid_step_size2 = grid_step_size * grid_step_size;
+   for (int i = 0; i < view_grid_points->vert.size(); ++i)
+   {
+     Point3f &t = view_grid_points->vert[i].P();
+     if (!view_grid_points->vert[i].neighbors.empty())
+     {
+       if (test_field_segment)
+       {
+         CVertex &nearest = field_points->vert[view_grid_points->vert[i].neighbors[0]];
+         if (nearest.eigen_confidence > 0)
+         {
+           view_grid_points->vert[i].is_ray_stop = true; 
+         }
+       }
+       else
+       {
+         CVertex &nearest = iso_points->vert[view_grid_points->vert[i].neighbors[0]];
+         Point3f &v = nearest.P();
+         double dist2 = GlobalFun::computeEulerDistSquare(t, v);
+         Point3f n = nearest.N();
+         Point3f l = view_grid_points->vert[i].P() - nearest.P();
+         if (n * l < 0.0f && dist2 < grid_step_size2 * 4)
+         {
+           view_grid_points->vert[i].is_ray_stop = true; 
+         }  
+       }
+     }
+   }
 
   for (int i = 0; i < view_grid_points->vert.size(); ++i)
   {
@@ -275,7 +306,6 @@ NBV::buildGrid()
       }
     }
   }
-
   if (use_grid_segment)
   {
     for (int i = 0; i < view_grid_points->vert.size(); ++i)
@@ -333,11 +363,7 @@ void
   int max_steps = static_cast<int>(camera_max_dist / grid_step_size);
   max_steps *= para->getDouble("Max Ray Steps Para"); //wsh
 
-  //traverse all points on the iso surface
-  //for (int i = 0; i < 1; ++i)//fix: < iso_points->vert.size()
-  //int target_index = 425;
-  //int target_index = 1009;  
-  //for (int i = target_index; i < target_index+1; ++i)//fix: < iso_points->vert.size()  
+  double ray_density_para = para->getDouble("Max Ray Steps Para");
 
   int target_index = 0;
   if (use_propagate_one_point)
@@ -355,15 +381,19 @@ void
 
   //parallel
   int iso_points_size = iso_points->vert.size();
-  //double half_D = optimal_D / 2.0f;
   double optimal_D = (n_dist + f_dist) / 2.0f;
-  //double half_D = optimal_D / 2.0f; //wsh，这里还有问题，应该是half_D = n_dist比较好。    
   double half_D = n_dist;
   double half_D2 = half_D * half_D; //
   double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
   double sigma_threshold = pow(max(1e-8, 1-cos(sigma / 180.0 * 3.1415926)), 2);
 
+  double ray_resolution_para = para->getDouble("Ray Resolution Para");
+  double angle_delta = (grid_step_size * ray_resolution_para) / camera_max_dist;
+  cout << "Angle Delta/resolution:  " << angle_delta << " , " << PI / angle_delta << endl;
+
 #ifdef LINKED_WITH_TBB
+
+  tbb::mutex _mutex;
   tbb::parallel_for(tbb::blocked_range<size_t>(0, iso_points_size), 
     [&](const tbb::blocked_range<size_t>& r)
   {
@@ -376,9 +406,8 @@ void
       {
         continue;
       }
-      //t is the ray_start_point
+
       v.is_ray_hit = true;
-      //ray_hit_nbv_grids->vert.push_back(v);
 
       //get the x,y,z index of each iso_points
       int t_indexX = static_cast<int>( ceil((v.P()[0] - whole_space_box_min.X()) / grid_step_size ));
@@ -387,17 +416,14 @@ void
       //next point index along the ray, pay attention , index should be stored in double ,used in integer
       double n_indexX, n_indexY, n_indexZ;
       //get the sphere traversal resolution
-      //double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
       //compute the delta of a,b so as to traverse the whole sphere
-      double angle_delta = (grid_step_size*0.511) / camera_max_dist;
-      //angle_delta *=2;// wsh
+      
+
       //loop for a, b
       double a = 0.0f, b = 0.0f;
       double l = 0.0f;
       double x = 0.0f, y = 0.f, z = 0.0f;
       //for DDA algorithm
-      //int stepX = 0, stepY = 0, stepZ = 0;
-
       double length = 0.0f;
       double deltaX, deltaY, deltaZ;
 
@@ -433,9 +459,10 @@ void
             {
               break;
             }
-
+            
             if (view_grid_points->vert[index].is_ray_hit)  continue;
 
+            _mutex.lock();
             //if the grid get first hit 
             view_grid_points->vert[index].is_ray_hit = true;
             //1. set the confidence of the grid center
@@ -448,12 +475,10 @@ void
             double coefficient1 = exp(-(dist - optimal_D) * (dist - optimal_D) / half_D2);
             double coefficient2 = exp(-pow(1-v.N() * view_direction, 2) / sigma_threshold);
 
-            float iso_confidence = 1 - v.eigen_confidence;
-            float view_weight = iso_confidence * coefficient2;          
-
+            float iso_confidence = 1 - v.eigen_confidence;     
             float confidence_weight = coefficient1 * coefficient2;
-            //float confidence_weight = coefficient1;
 
+            
             if (use_max_propagation)
             {
               //t.eigen_confidence = (std::max)(float(t.eigen_confidence), float(confidence_weight * iso_confidence));          
@@ -462,8 +487,7 @@ void
                 t.eigen_confidence = confidence_weight * iso_confidence;
                 t.N() = (v.P()-t.P()).Normalize();
                 t.remember_iso_index = v.m_index;
-                //t.N() = -v.N();
-                //t.m_index = v.m_index;
+
               }
             }
             else
@@ -471,19 +495,17 @@ void
               t.eigen_confidence += coefficient1 * iso_confidence;
               //t.eigen_confidence += confidence_weight * 1.0;              
             }
-
+            
+            _mutex.unlock();
             if (use_average_confidence)
             {
               confidence_weight_sum[index] += 1.;
             }
 
-            //confidence_weight_sum[index] += confidence_weight;
-
-            //t.N() += view_direction * view_weight;
-            //t.weight_sum += view_weight;
-
             // record hit_grid center index
             hit_grid_indexes.push_back(index);
+
+            
           }//end for k
         }// end for b
       }//end for a
@@ -501,7 +523,7 @@ void
     }//end for iso_points
   });
 #else
-  for ( ;i < iso_points->vert.size(); ++i)//fix: < iso_points->vert.size()    
+  for (int i = 0 ;i < iso_points->vert.size(); ++i)//fix: < iso_points->vert.size()    
   {
     //    cout << "index" << i << endl;
     vector<int> hit_grid_indexes;
@@ -519,11 +541,6 @@ void
     int t_indexZ = static_cast<int>( ceil((v.P()[2] - whole_space_box_min.Z()) / grid_step_size ));
     //next point index along the ray, pay attention , index should be stored in double ,used in integer
     double n_indexX, n_indexY, n_indexZ;
-    //get the sphere traversal resolution
-    //double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
-    //compute the delta of a,b so as to traverse the whole sphere
-    double angle_delta = grid_step_size / camera_max_dist;
-    //angle_delta *=2;// wsh
 
     //loop for a, b
     double a = 0.0f, b = 0.0f;
@@ -536,7 +553,7 @@ void
     double deltaX, deltaY, deltaZ;
 
     //double half_D = optimal_D / 2.0f;
-    double optimal_D = (n_dist + f_dist)) / 2.0f;
+    double optimal_D = (n_dist + f_dist) / 2.0f;
     double half_D = optimal_D / 2.0f; //wsh    
     double half_D2 = half_D * half_D;
     //for debug
@@ -596,11 +613,19 @@ void
           double coefficient2 = exp(-pow(1-v.N()*view_direction, 2)/sigma_threshold);
 
           float iso_confidence = 1 - v.eigen_confidence;
-          float view_weight = iso_confidence * coefficient2;          
+          float view_weight = iso_confidence * coefficient2;   
+          float confidence_weight = coefficient1 * coefficient2;
 
           if (use_max_propagation)
           {
-            t.eigen_confidence = (std::max)(t.eigen_confidence, confidence_weight * float(1.0));          
+            //t.eigen_confidence = (std::max)(float(t.eigen_confidence), float(confidence_weight * iso_confidence));          
+            if (confidence_weight * iso_confidence > t.eigen_confidence)
+            {
+              t.eigen_confidence = confidence_weight * iso_confidence;
+              t.N() = (v.P()-t.P()).Normalize();
+              t.remember_iso_index = v.m_index;
+
+            }
           }
           else
           {
@@ -608,27 +633,7 @@ void
             t.eigen_confidence += coefficient1 * 1.0;
           }
 
-          float confidence_weight = coefficient1 * coefficient2;
-          //float confidence_weight = coefficient1;
 
-          if (use_max_propagation)
-          {
-            t.eigen_confidence = (std::max)(t.eigen_confidence, confidence_weight * iso_confidence);          
-          }
-          else
-          {
-            t.eigen_confidence += coefficient1 * iso_confidence;
-          }
-
-          if (use_average_confidence)
-          {
-            confidence_weight_sum[index] += 1.;
-          }
-
-          //confidence_weight_sum[index] += confidence_weight;
-
-          t.N() += view_direction * view_weight;
-          t.weight_sum += view_weight;
 
           // record hit_grid center index
           hit_grid_indexes.push_back(index);
@@ -648,31 +653,6 @@ void
     }
   }//end for iso_points
 #endif
-
-  if (use_average_confidence)
-  {
-    for (int i = 0; i < view_grid_points->vert.size(); i++)
-    {
-      CVertex& t = view_grid_points->vert[i];
-      //if (t.weight_sum > 1e-10)
-      //{
-      //  t.N() /= -t.weight_sum;
-      //}
-
-      //t.recompute_m_render();
-
-      if (use_average_confidence)
-      {
-        if (confidence_weight_sum[i] > 5)
-        {
-          t.eigen_confidence /= confidence_weight_sum[i];
-        }
-      }
-
-      //t.N() *= -1;
-      //t.N().Normalize();
-    }
-  }
 
   normalizeConfidence(view_grid_points->vert, 0.);
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <tbb/parallel_for.h>
+#include <tbb/mutex.h>
 #include "PointCloudAlgorithm.h"
 #include "GlobalFunction.h"
 
@@ -8,7 +9,7 @@ using std::cout;
 using std::endl;
 using vcg::Point3f;
 
-#define  LINKED_WITH_TBB
+//#define  LINKED_WITH_TBB
 
 class NBV : public PointCloudAlgorithm
 {

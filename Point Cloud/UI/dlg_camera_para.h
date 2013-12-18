@@ -53,6 +53,8 @@ private slots:
   void getPredictedModelSize(double _val);
   void getOptimalPlaneWidth(double _val);
   void getPropagateIndex(double _val);
+  void getRayResolutionPara(double _val);
+
 
 
   void buildGrid();

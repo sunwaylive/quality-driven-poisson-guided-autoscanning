@@ -1522,3 +1522,31 @@ void DataMgr::replaceMesh2(CMesh& src_mesh, CMesh& target_mesh, bool isIso)
   target_mesh.vn = src_mesh.vn;
   target_mesh.bbox = src_mesh.bbox;
 }
+
+
+void DataMgr::coordinateTransform()
+{
+  vcg::Quaternionf quaternion;
+  Point3f translation;
+
+
+  ifstream infile("transform.txt");
+  std::string temp;
+  infile >> temp; 
+  infile >> translation[0] >> translation[1] >> translation[2];
+  infile >> temp >> quaternion.X() >> quaternion.Y() >> quaternion.Z() >> quaternion.W();
+  infile.close();
+
+
+  vcg::Matrix44f matrix;
+  quaternion.ToMatrix(matrix);
+
+  for (int i = 0; i < samples.vert.size(); i++)
+  {
+    CVertex& v = samples.vert[i];
+    Point3f p = v.P();
+    p -= translation;
+    v.P() = matrix * p;
+  }
+
+}

@@ -1708,12 +1708,34 @@ void GLArea::wheelEvent(QWheelEvent *e)
 		}
 		else if( (e->modifiers() & Qt::ShiftModifier) && (e->modifiers() & Qt::ControlModifier) )
 		{
-			size_temp = global_paraMgr.glarea.getDouble("Grid ISO Color Scale");
-			size_temp *= change2;
-			size_temp = (std::max)(size_temp, 1e-10);
+      if (para->getBool("Show View Grid Slice"))
+      {
+        size_temp = global_paraMgr.glarea.getDouble("Grid ISO Color Scale");
+        size_temp *= change2;
+        size_temp = (std::max)(size_temp, 1e-10);
 
-			global_paraMgr.glarea.setValue("Grid ISO Color Scale", DoubleValue(size_temp));
-			cout << "Grid ISO Color Scale" << size_temp << endl;
+        global_paraMgr.glarea.setValue("Grid ISO Color Scale", DoubleValue(size_temp));
+        cout << "Grid ISO Color Scale" << size_temp << endl;
+      }
+      else
+      {
+        if (global_paraMgr.drawer.getBool("Show Confidence Color"))
+        {
+          if (para->getBool("Show Samples"))
+          {
+            size_temp = global_paraMgr.glarea.getDouble("Sample Confidence Color Scale");
+            global_paraMgr.glarea.setValue("Sample Confidence Color Scale", DoubleValue(size_temp * change));
+            cout << "Sample Confidence Color Scale = " << size_temp * change << endl;
+          }
+
+          if (para->getBool("Show ISO Points"))
+          {
+            size_temp = global_paraMgr.glarea.getDouble("Point ISO Color Scale");
+            global_paraMgr.glarea.setValue("Point ISO Color Scale", DoubleValue(size_temp * change));
+            cout << "Point ISO Color Scale = " << size_temp * change << endl;
+          }
+        }
+      }
 		}
 		else if ((e->modifiers() & Qt::ShiftModifier) && (e->modifiers() & Qt::AltModifier))
 		{
@@ -2104,6 +2126,9 @@ void GLArea::mouseReleaseEvent(QMouseEvent *e)
 				CVertex v = samples->vert.at(index);
 				//cout << "iso value: " << v.eigen_confidence << endl;
 				cout << "Index: " << v.m_index << endl;
+
+        cout << "Pos: " << v.P()[0] << ", " 
+                        << v.P()[1] << ", " << v.P()[2] << ", "<<endl;
 			}
 		}
 	}

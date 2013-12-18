@@ -143,6 +143,8 @@ void MainWindow::initConnect()
 	
   connect(ui.actionSwitch_Sample_Original,SIGNAL(triggered()),this,SLOT(switchSampleOriginal()));
   connect(ui.actionSwitch_Sample_with_ISO,SIGNAL(triggered()),this,SLOT(switchSampleISO()));
+  connect(ui.actionTransform,SIGNAL(triggered()),this,SLOT(coordinateTransform()));
+  connect(ui.actionAdd_Sample_To_Original,SIGNAL(triggered()),this,SLOT(addSamplesToOriginal()));
   
 
   //connect(ui.actionPoisson_test,SIGNAL(triggered()),this,SLOT(poissonTest()));
@@ -207,6 +209,7 @@ void MainWindow::iniStatusBar()
 
 void MainWindow::updateStatusBar()
 {
+ 
 	QString title = strTitle +  " -- " + area->dataMgr.curr_file_name;
 	setWindowTitle(title);
 
@@ -996,4 +999,27 @@ void MainWindow::switchSampleISO()
   area->cleanPickPoints();
   area->dataMgr.switchSampleToISO();
   area->updateUI();
+}
+
+void MainWindow::coordinateTransform()
+{
+  area->cleanPickPoints();
+  area->dataMgr.coordinateTransform();
+  area->updateUI();
+}
+
+void MainWindow::addSamplesToOriginal()
+{
+  CMesh* samples = area->dataMgr.getCurrentSamples();
+  CMesh* original = area->dataMgr.getCurrentOriginal();
+
+  for (int i = 0; i < samples->vert.size(); i++)
+  {
+    CVertex t = samples->vert[i];
+    t.is_original = true;
+    t.m_index = original->vert.size() + i;
+
+    original->vert.push_back(t);
+  }
+
 }

@@ -100,7 +100,7 @@ public:
   void replaceMesh(CMesh& src_mesh, CMesh& target_mesh, bool isOriginal);
   void replaceMesh2(CMesh& src_mesh, CMesh& target_mesh, bool isIso);
 
-
+  void coordinateTransform();
 
 private:
 	void clearCMesh(CMesh& mesh);

@@ -31,6 +31,7 @@ void CameraParaDlg::initConnects()
   connect(ui->doubleSpinBox_near_distance, SIGNAL(valueChanged(double)), this, SLOT(getCameraNearDistance(double)));
   connect(ui->doubleSpinBox_predicted_model_size, SIGNAL(valueChanged(double)), this, SLOT(getPredictedModelSize(double)));
   connect(ui->doubleSpinBox_optimal_plane_width, SIGNAL(valueChanged(double)), this, SLOT(getOptimalPlaneWidth(double)));
+  connect(ui->ray_resolution_para, SIGNAL(valueChanged(double)), this, SLOT(getRayReselotion(double)));
   
   connect(ui->pushButton_build_grid, SIGNAL(clicked()), this, SLOT(buildGrid()));
   connect(ui->pushButton_propagate, SIGNAL(clicked()), this, SLOT(propagate()));
@@ -48,7 +49,7 @@ void CameraParaDlg::initConnects()
   connect(ui->use_other_inside_segment,SIGNAL(clicked(bool)),this,SLOT(useOtherInsideSegment(bool)));
   connect(ui->use_confidence_Separation,SIGNAL(clicked(bool)),this,SLOT(useConfidenceSeparation(bool)));
   connect(ui->use_average_confidence,SIGNAL(clicked(bool)),this,SLOT(useAverageConfidence(bool)));
-  connect(ui->use_nbv_test1, SIGNAL(clicked(bool)), this, SLOT(useNbvTest1(bool)));
+  //connect(ui->use_nbv_test1, SIGNAL(clicked(bool)), this, SLOT(useNbvTest1(bool)));
   connect(ui->use_max_propagation, SIGNAL(clicked(bool)), this, SLOT(useMaxConfidencePropagation(bool)));
   connect(ui->doubleSpinBox_bottom_delta, SIGNAL(valueChanged(double)), this, SLOT(getIsoBottomDelta(double)));
   connect(ui->pushButton_set_iso_bottom_confidence, SIGNAL(clicked()), this, SLOT(runSetIsoBottomConfidence()));
@@ -88,8 +89,8 @@ bool CameraParaDlg::initWidgets()
   state = m_paras->nbv.getBool("Use Average Confidence") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
   ui->use_average_confidence->setCheckState(state);
 
-  state = m_paras->nbv.getBool("Use NBV Test1") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
-  ui->use_nbv_test1->setCheckState(state);
+  //state = m_paras->nbv.getBool("Use NBV Test1") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
+  //ui->use_nbv_test1->setCheckState(state);
 
   state = m_paras->nbv.getBool("Use Max Propagation") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
   ui->use_max_propagation->setCheckState(state);
@@ -408,8 +409,13 @@ void CameraParaDlg::getOptimalPlaneWidth(double _val)
 void CameraParaDlg::getPropagateIndex(double _val)
 {
   global_paraMgr.nbv.setValue("Propagate One Point Index", DoubleValue(_val));
-
 }
+
+void CameraParaDlg::getRayResolutionPara(double _val)
+{
+  global_paraMgr.nbv.setValue("Ray Resolution Para", DoubleValue(_val));
+}
+
 
 void
 CameraParaDlg::buildGrid()
