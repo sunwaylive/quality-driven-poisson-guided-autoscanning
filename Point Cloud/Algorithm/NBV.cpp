@@ -212,7 +212,6 @@ NBV::buildGrid()
        {
          //add the grid
          int index = i * y_max * z_max + j * z_max + k;
-         NBVGrid grid(i, j, k);
          //add the center point of the grid
          CVertex t;
          t.P()[0] = whole_space_box_min.X() + i * grid_step_size;
@@ -392,7 +391,6 @@ void
   cout << "Angle Delta/resolution:  " << angle_delta << " , " << PI / angle_delta << endl;
 
 #ifdef LINKED_WITH_TBB
-
   tbb::mutex _mutex;
   tbb::parallel_for(tbb::blocked_range<size_t>(0, iso_points_size), 
     [&](const tbb::blocked_range<size_t>& r)
@@ -403,22 +401,16 @@ void
       CVertex &v = iso_points->vert[i];
 
       if (use_propagate_one_point && v.m_index != target_index)
-      {
         continue;
-      }
 
       v.is_ray_hit = true;
-
       //get the x,y,z index of each iso_points
       int t_indexX = static_cast<int>( ceil((v.P()[0] - whole_space_box_min.X()) / grid_step_size ));
       int t_indexY = static_cast<int>( ceil((v.P()[1] - whole_space_box_min.Y()) / grid_step_size ));
       int t_indexZ = static_cast<int>( ceil((v.P()[2] - whole_space_box_min.Z()) / grid_step_size ));
       //next point index along the ray, pay attention , index should be stored in double ,used in integer
       double n_indexX, n_indexY, n_indexZ;
-      //get the sphere traversal resolution
       //compute the delta of a,b so as to traverse the whole sphere
-      
-
       //loop for a, b
       double a = 0.0f, b = 0.0f;
       double l = 0.0f;
@@ -426,7 +418,6 @@ void
       //for DDA algorithm
       double length = 0.0f;
       double deltaX, deltaY, deltaZ;
-
       //1. for each point, propagate to all discrete directions
       for (a = 0.0f; a < PI; a += angle_delta)
       {
@@ -450,16 +441,9 @@ void
             n_indexZ = n_indexZ + deltaZ;
             int index = round(n_indexX) * y_max * z_max + round(n_indexY) * z_max + round(n_indexZ);
 
-            if (index >= view_grid_points->vert.size())
-            {
-              break;
-            }
+            if (index >= view_grid_points->vert.size())  break;
             //if the direction is into the model, or has been hit, then stop tracing
-            if (view_grid_points->vert[index].is_ray_stop)
-            {
-              break;
-            }
-            
+            if (view_grid_points->vert[index].is_ray_stop) break;            
             if (view_grid_points->vert[index].is_ray_hit)  continue;
 
             _mutex.lock();
@@ -487,7 +471,6 @@ void
                 t.eigen_confidence = confidence_weight * iso_confidence;
                 t.N() = (v.P()-t.P()).Normalize();
                 t.remember_iso_index = v.m_index;
-
               }
             }
             else
@@ -501,11 +484,8 @@ void
             {
               confidence_weight_sum[index] += 1.;
             }
-
             // record hit_grid center index
-            hit_grid_indexes.push_back(index);
-
-            
+            hit_grid_indexes.push_back(index);                        
           }//end for k
         }// end for b
       }//end for a
@@ -516,10 +496,7 @@ void
         hit_grid_indexes.clear();
       }
 
-      if (use_propagate_one_point)
-      {
-        break;
-      }
+      if (use_propagate_one_point)  break;
     }//end for iso_points
   });
 #else

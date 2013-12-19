@@ -28,6 +28,8 @@ void vcc::Camera::setInput(DataMgr* pData)
 
      dist_to_model = global_paraMgr.camera.getDouble("Camera Dist To Model");
      resolution = global_paraMgr.camera.getDouble("Camera Resolution");
+
+     vcg::tri::UpdateNormals<CMesh>::PerFace(*target);
    }else
    {
      cout<<"ERROR: Camera::setInput empty!!" << endl;
@@ -93,15 +95,13 @@ void vcc::Camera::runVirtualScan()
         CVertex t;
         t.is_scanned = true;
         t.m_index = index++;
-        t.P()[0] = intersect_point.X() + rndax;
-        t.P()[1] = intersect_point.Y() + rnday;
-        t.P()[2] = intersect_point.Z() + rndaz;
+        t.P() = intersect_point + Point3f(rndax, rnday, rndaz);
         current_scanned_mesh->vert.push_back(t);
         current_scanned_mesh->bbox.Add(t.P());
       }
     }
-  current_scanned_mesh->vn = current_scanned_mesh->vert.size();
   }
+  current_scanned_mesh->vn = current_scanned_mesh->vert.size();
 }
 
 void vcc::Camera::runInitialScan()
@@ -127,25 +127,28 @@ void vcc::Camera::runInitialScan()
 
   //run initial scan
   vector<ScanCandidate>::iterator it = init_scan_candidates->begin();
+  int i = 1;
   for (; it != init_scan_candidates->end(); ++it)
   {
     //init scan should consider dist to model
     pos = it->first * dist_to_model;
     direction = it->second;
     /********* call runVirtualScan() *******/
+    cout<<i << "th initial scan begin" <<endl;
     runVirtualScan();
+    cout<<i++ <<"th initial scan done!" <<endl;
 
     //merge scanned mesh with original
-    int index = original->vert.size();
+    int index = 0;
+    if (!original->vert.empty()) index = original->vert.back().m_index;
+
     for (int i = 0; i < current_scanned_mesh->vert.size(); ++i)
     {
       CVertex& v = current_scanned_mesh->vert[i];
       CVertex t;
       t.m_index = ++index;
       t.is_original = true;
-      t.P()[0] = v.P()[0];
-      t.P()[1] = v.P()[1];
-      t.P()[2] = v.P()[2];
+      t.P() = v.P();
       original->vert.push_back(t);
       original->bbox.Add(t.P());
     }
@@ -170,12 +173,15 @@ void vcc::Camera::runNBVScan()
   //traverse the scan_candidates and do virtual scan
   vector<ScanCandidate>::iterator it = scan_candidates->begin();
   cout<<"scan candidates size: " <<scan_candidates->size() <<endl;
+  int i = 1;
   for (; it != scan_candidates->end(); ++it)
   {
     pos = it->first;
     direction = it->second;
     /********* call runVirtualScan() *******/
+    cout<< i << "th candidate Begin!" <<endl;
     runVirtualScan();
+    cout<< i++ << "th candidate End!" <<endl;
 
     scanned_results->push_back(current_scanned_mesh);
   }

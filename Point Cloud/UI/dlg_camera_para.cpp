@@ -192,6 +192,17 @@ void CameraParaDlg::initialScan()
 
 void CameraParaDlg::NBVCandidatesScan()
 {
+  vector<ScanCandidate> *sc = area->dataMgr.getScanCandidates();
+  vector<ScanCandidate> select_scan_candidates;
+  QModelIndexList sil = ui->tableView_scan_candidates->selectionModel()->selectedRows();
+  for (int i = 0; i < sil.size(); ++i)
+  {
+    int row = sil[i].row();
+    select_scan_candidates.push_back((*sc)[row]);
+  }
+  sc->clear();
+  std::copy(select_scan_candidates.begin(), select_scan_candidates.end(), std::back_inserter(*sc));
+
   global_paraMgr.camera.setValue("Run NBV Scan", BoolValue(true));
   area->runCamera();
   global_paraMgr.camera.setValue("Run NBV Scan", BoolValue(false));
@@ -308,8 +319,6 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
   if (sil.isEmpty()) return;
 
   CMesh* original = area->dataMgr.getCurrentOriginal();
-  cout<<"Before merge original size:" <<original->vert.size() <<endl;
-
   vector<CMesh* > *scanned_results = area->dataMgr.getScannedResults();
 
   int row_of_mesh = 0;
@@ -330,13 +339,12 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
         int index = original->vert.back().m_index;
         for (int k = 0; k < (*it)->vert.size(); ++k)
         {
-          CVertex& v = (*it)->vert[i];
+          CVertex& v = (*it)->vert[k];
           CVertex t;
           t.m_index = ++index;
           t.is_original = true;
-          t.P()[0] = v.P()[0];
-          t.P()[1] = v.P()[1];
-          t.P()[2] = v.P()[2];
+          t.P() = v.P();
+          t.N() = v.N();
           original->vert.push_back(t);
           original->bbox.Add(t.P());
         }
@@ -347,8 +355,7 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
       }
     }
   }
-  cout<<"After merge original size:" <<original->vert.size() <<endl;
-  area->updateGL();
+  area->updateUI();
 }
 
 void CameraParaDlg::getCameraHorizonDist(double _val)

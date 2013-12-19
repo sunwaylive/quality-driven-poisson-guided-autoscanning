@@ -396,9 +396,7 @@ void GLArea::paintGL()
 
 					current_camera.computeUpAndRight();
 					CVertex v;
-					v.P()[0] = current_camera.pos.X();
-					v.P()[1] = current_camera.pos.Y();
-					v.P()[2] = current_camera.pos.Z();
+          v.P() = current_camera.pos;
 					glDrawer.drawSphere(v);
 					glDrawer.drawCamera(current_camera);
 				}

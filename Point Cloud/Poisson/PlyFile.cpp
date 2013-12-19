@@ -2699,7 +2699,7 @@ Read an element from a binary file.
 	  dest->is_list = src->is_list;
 	  dest->count_external = src->count_external;
 	  dest->count_internal = src->count_internal;
-	  dest->count_offset = src->count_offset;
+    dest->count_offset = src->count_offset;
   }
   
   

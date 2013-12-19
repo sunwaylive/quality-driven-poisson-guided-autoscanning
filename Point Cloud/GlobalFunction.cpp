@@ -9,6 +9,9 @@
 #include "GlobalFunction.h"
 
 #define LINKED_WITH_TBB
+//#ifdef LINKED_WITH_TBB
+//  #undef  LINKED_WITH_TBB
+//#endif
 
 using namespace vcg;
 using namespace std;
@@ -44,8 +47,6 @@ void GlobalFun::find_original_neighbors(CGrid::iterator starta, CGrid::iterator 
 		}
 	}
 }
-
-
 
 // get neighbors
 void GlobalFun::self_neighbors(CGrid::iterator start, CGrid::iterator end, double radius)
@@ -847,6 +848,16 @@ double GlobalFun::computeMeshLineIntersectPoint( CMesh *target, Point3f& p, Poin
     Point3f face_norm = (e1 ^ e2).Normalize();
     //if the face can't be seen, then continue
     if(face_norm * line_dir > 0) continue;
+
+    //just choose one point and calculate the distance,if the triangle is too far from the line, then continue
+    /*double A = line_dir.Y();
+    double B = line_dir.Z() - line_dir.X();
+    double C = -line_dir.Y();
+    double D = line_dir.Y() * p.Z() + line_dir.X() * p.Y() - line_dir.Y() * p.X() - line_dir.Z() * p.Y();
+    double proj_dist = abs(A * v0.X() + B * v0.Y() + C * v0.Z() + D) / sqrt(A * A + B * B + C * C);
+    if (proj_dist < )
+    {
+    }*/
 
     //the line cross the point: pos, and line vector is viewray_iter 
     double t = ( (v0.X() - p.X()) * face_norm.X() 
