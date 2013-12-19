@@ -1717,55 +1717,60 @@ void GLArea::wheelEvent(QWheelEvent *e)
       }
       else
       {
-        if (global_paraMgr.drawer.getBool("Show Confidence Color"))
-        {
-          if (para->getBool("Show Samples"))
-          {
-            size_temp = global_paraMgr.glarea.getDouble("Sample Confidence Color Scale");
-            global_paraMgr.glarea.setValue("Sample Confidence Color Scale", DoubleValue(size_temp * change));
-            cout << "Sample Confidence Color Scale = " << size_temp * change << endl;
-          }
-
-          if (para->getBool("Show ISO Points"))
-          {
-            size_temp = global_paraMgr.glarea.getDouble("Point ISO Color Scale");
-            global_paraMgr.glarea.setValue("Point ISO Color Scale", DoubleValue(size_temp * change));
-            cout << "Point ISO Color Scale = " << size_temp * change << endl;
-          }
-        }
+        size_temp = global_paraMgr.glarea.getDouble("Point ISO Color Scale");
+        global_paraMgr.glarea.setValue("Point ISO Color Scale", DoubleValue(size_temp * change));
+        cout << "Point ISO Color Scale = " << size_temp * change << endl;
       }
 		}
 		else if ((e->modifiers() & Qt::ShiftModifier) && (e->modifiers() & Qt::AltModifier))
 		{
-			size_temp = global_paraMgr.glarea.getDouble("Radius Ball Transparency") * change;
-			global_paraMgr.glarea.setValue("Radius Ball Transparency", DoubleValue(size_temp));
-			cout << "trans: " << size_temp << endl;
-			if(size_temp < 0)
-			{
-				size_temp = 0;
-			}
+      size_temp = global_paraMgr.glarea.getDouble("Radius Ball Transparency") * change;
+      global_paraMgr.glarea.setValue("Radius Ball Transparency", DoubleValue(size_temp));
+      cout << "trans: " << size_temp << endl;
+      if(size_temp < 0)
+      {
+        size_temp = 0;
+      }
 		}
 		else if( (e->modifiers() & Qt::AltModifier) && (e->modifiers() & Qt::ControlModifier) )
 		{
-			if ((para->getBool("Show ISO Points") || para->getBool("Show Samples")) && !para->getBool("Show Normal"))
-			{
-				size_temp = global_paraMgr.glarea.getDouble("Grid ISO Value Shift");
-				if(e->delta() < 0)
-				{
-					size_temp += 0.02;
-				}
-				else
-				{
-					size_temp -= 0.02;
-				}
-				global_paraMgr.glarea.setValue("Grid ISO Value Shift", DoubleValue(size_temp));
-				cout << "Grid ISO Value Shift" << size_temp << endl;
-			}
-			else
-			{
-				size_temp = global_paraMgr.drawer.getDouble("Normal Line Length");
-				global_paraMgr.drawer.setValue("Normal Line Length", DoubleValue(size_temp * change));
-			}
+      if (para->getBool("Show View Grid Slice"))
+      {
+        if ((para->getBool("Show ISO Points") || para->getBool("Show Samples")) && !para->getBool("Show Normal"))
+        {
+          size_temp = global_paraMgr.glarea.getDouble("Grid ISO Value Shift");
+          if(e->delta() < 0)
+          {
+            size_temp += 0.02;
+          }
+          else
+          {
+            size_temp -= 0.02;
+          }
+          global_paraMgr.glarea.setValue("Grid ISO Value Shift", DoubleValue(size_temp));
+          cout << "Grid ISO Value Shift" << size_temp << endl;
+        }
+        else
+        {
+          size_temp = global_paraMgr.drawer.getDouble("Normal Line Length");
+          global_paraMgr.drawer.setValue("Normal Line Length", DoubleValue(size_temp * change));
+        }
+      }
+      else
+      {
+        size_temp = global_paraMgr.glarea.getDouble("Point ISO Value Shift");
+        if(e->delta() < 0)
+        {
+          size_temp += 0.02;
+        }
+        else
+        {
+          size_temp -= 0.02;
+        }
+        global_paraMgr.glarea.setValue("Point ISO Value Shift", DoubleValue(size_temp));
+        cout << "Point ISO Value Shift" << size_temp << endl;
+      }
+
 		}
 		else
 		{
