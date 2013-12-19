@@ -205,12 +205,12 @@ void Poisson::run()
   }
 
   //runPoisson();
-   runPoissonFieldAndIso();
+   runPoissonFieldAndExtractIsoPoints_ByEXE();
 }
 
 void Poisson::runOneKeyPoissonConfidence()
 {
-  runPoissonFieldAndIso();
+  runPoissonFieldAndExtractIsoPoints_ByEXE();
 
   if (!para->getBool("Run Poisson On Original"))
   {
@@ -239,7 +239,7 @@ void Poisson::runOneKeyPoissonConfidence()
 //ole method
 //void Poisson::runOneKeyPoissonConfidence()
 //{
-//  runPoissonFieldAndIso();
+//  runPoissonFieldAndExtractIsoPoints();
 //
 //  para->setValue("Use Confidence 1",BoolValue(true));
 //  para->setValue("Use Confidence 2",BoolValue(true));
@@ -847,7 +847,177 @@ void Poisson::runPoisson()
 
 }
 
-void Poisson::runPoissonFieldAndIso()
+void Poisson::samplePointsFromMesh(CMesh& mesh, CMesh* points)
+{
+  mesh.bbox.SetNull();
+  for (int i = 0; i < mesh.vert.size(); i++)
+  {
+    mesh.bbox.Add(mesh.vert[i]);
+  }
+  mesh.vn = mesh.vert.size();
+  mesh.fn = mesh.face.size();
+  vcg::tri::UpdateNormals<CMesh>::PerVertex(mesh);
+
+  float radius = 0;
+  int sampleNum = para->getDouble("Poisson Disk Sample Number");
+  if (sampleNum <= 100)
+  {
+    sampleNum = 100;
+  }
+  radius = tri::SurfaceSampling<CMesh,BaseSampler>::ComputePoissonDiskRadius(mesh, sampleNum);
+  // first of all generate montecarlo samples for fast lookup
+  CMesh *presampledMesh=&(mesh);
+  CMesh MontecarloMesh; // this mesh is used only if we need real poisson sampling (and therefore we need to choose points different from the starting mesh vertices)
+
+
+  BaseSampler sampler(&MontecarloMesh);
+  sampler.qualitySampling =true;
+  tri::SurfaceSampling<CMesh,BaseSampler>::Montecarlo(mesh, sampler, sampleNum*20);
+  MontecarloMesh.bbox = mesh.bbox; // we want the same bounding box
+  presampledMesh=&MontecarloMesh;
+  
+
+  BaseSampler mps(points);
+  tri::SurfaceSampling<CMesh,BaseSampler>::PoissonDiskParam pp;
+  tri::SurfaceSampling<CMesh,BaseSampler>::PoissonDisk(mesh, mps, *presampledMesh, radius,pp);
+
+}
+
+void Poisson::runPoissonFieldAndExtractIsoPoints_ByEXE()
+{
+  PoissonParam Par;
+  Par.Depth = para->getDouble("Max Depth");
+
+  CMesh* target = NULL;
+  if (para->getBool("Run Poisson On Original"))
+  {
+    target = original;
+  }
+  else if (para->getBool("Run Poisson On Samples"))
+  {
+    target = samples;
+  }
+  else
+  {
+    cout << "Run on original or sample?" << endl;
+    return;
+  }
+
+  Timer timer;
+  timer.start("write ply file");
+  int mask= tri::io::Mask::IOM_VERTNORMAL ;
+  tri::io::ExporterPLY<CMesh>::Save(*target, "poisson_in.ply", mask, false);
+  timer.end();
+
+  timer.start("run Poisson");
+  char mycmd[100];
+  sprintf(mycmd, "PoissonRecon.exe --in poisson_in.ply --out poisson_out.ply --voxel poisson_field.raw --depth %d --pointWeight 0", Par.Depth);
+  system(mycmd); 
+  timer.end();
+
+  if (para->getBool("Run Generate Poisson Field") || para->getBool("Run One Key PoissonConfidence"))
+  {
+    timer.start("read voxel poisson field");
+    FILE *fp = fopen("poisson_field.raw", "rb");
+    if (fp == NULL) {
+      perror("Open file poisson_field.raw");
+      exit(1);
+    }
+
+    //int res = 1<<Par.Depth;
+    //int read_size = res * res * res;
+    int res;
+    fread(&res, sizeof(int), 1, fp);
+
+    float tree_scale;
+    Point3f center_p;
+    fread(&tree_scale, sizeof(float), 1, fp);
+    fread(&center_p[0], sizeof(float), 1, fp);
+    fread(&center_p[1], sizeof(float), 1, fp);
+    fread(&center_p[2], sizeof(float), 1, fp);
+
+    cout << res << " | " << tree_scale << " | " << center_p[0] << ", " << center_p[1] << ", " << center_p[2] << endl;
+
+    int read_size = res * res * res;
+    float *buf = new float[read_size];
+    fread(buf, sizeof(float), read_size, fp);
+
+
+    float space = tree_scale * (1.0 / res);
+    int index = 0;
+    field_points->vert.clear();
+    int res2 = res * res;
+    for (int i = 0; i < res; i++)
+    {
+      for (int j = 0; j < res; j++)
+      {
+        for (int k = 0; k < res; k++)
+        {
+          Point3f p(i * space, j * space, k * space);
+          CVertex new_v;
+          new_v.is_field_grid = true;
+          new_v.P() = p + center_p;
+          new_v.m_index = index;
+          new_v.eigen_confidence = buf[i + j * res + k * res2];          
+          index++;
+          field_points->vert.push_back(new_v);
+          field_points->bbox.Add(new_v.P());
+        }
+      }
+    }
+
+
+
+    field_points->vn = field_points->vert.size();
+    cout << "field point size:  " << field_points->vn << endl;
+    cout << "resolution:  " << res << endl;
+    para->setValue("Field Points Resolution", IntValue(res));
+    normalizeConfidence(field_points->vert, 0);
+
+    delete buf;
+    timer.end();
+
+    if (para->getBool("Run Generate Poisson Field")) return;
+  }
+
+  if (para->getBool("Run Extract MC Points") || para->getBool("Run One Key PoissonConfidence"))
+  {
+    timer.start("load ply file and sample ISO points");
+    mask= tri::io::Mask::IOM_VERTNORMAL ;
+    int err = tri::io::Importer<CMesh>::Open(tentative_mesh, "poisson_out.ply", mask);  
+    if(err) 
+    {
+      cout << "Failed reading mesh: " << err << "\n";
+      return;
+    }  
+
+    if (tentative_mesh.vert.empty())
+    {
+      cout << "tentative mesh empty" << endl;
+      return;
+    }
+
+
+    iso_points->vert.clear();
+    samplePointsFromMesh(tentative_mesh, iso_points);
+
+    for (int i = 0; i < iso_points->vert.size(); i++)
+    {
+      CVertex& v = iso_points->vert[i];
+      v.is_iso = true;
+      v.m_index = i;
+      v.eigen_confidence = 0;
+      v.N().Normalize();
+      v.recompute_m_render();
+    }
+    iso_points->vn = iso_points->vert.size();
+    timer.end();
+  }
+
+ 
+}
+
+void Poisson::runPoissonFieldAndExtractIsoPoints()
 {
   cout << "run Poisson Field And Iso" << endl;
   CMesh* target = NULL;
@@ -897,7 +1067,7 @@ void Poisson::runPoissonFieldAndIso()
   PoissonParam Par;
   Par.Depth = para->getDouble("Max Depth");
   Par.SamplesPerNode = 1;
-  Par.SolverDivide = 7;
+  Par.SolverDivide = 8;
   Par.Offset = 1;
   Par.Confidence = false;
 
@@ -917,6 +1087,8 @@ void Poisson::runPoissonFieldAndIso()
 
   POctree<Degree, OutputDensity> tree;
   tree.threads = Par.Threads;
+  //tree.threads = 1;
+
   cout << "Threads Number:  " << tree.threads << endl;
 
   //PPolynomial<Degree> ReconstructionFunction=PPolynomial<Degree>::GaussianApproximation();
@@ -982,8 +1154,6 @@ void Poisson::runPoissonFieldAndIso()
   //DumpOutput2( comments[commentNum++] , "#             Tree set in: %9.1f (s), %9.1f (MB)\n" , 0 , tree.maxMemoryUsage );
 
   tree.SetLaplacianConstraints();
-
-
   tree.LaplacianMatrixIteration( Par.SolverDivide, 
                                  Par.ShowResidual , 
                                  Par.MinIters , 
@@ -995,9 +1165,6 @@ void Poisson::runPoissonFieldAndIso()
   time.end();
 
   double estimate_scale = abs(isoValue);
-  //global_paraMgr.glarea.setValue("Grid ISO Color Scale", DoubleValue(estimate_scale*2/3));
-  //global_paraMgr.glarea.setValue("ISO Interval Size", DoubleValue(estimate_scale/3));
-
 
   if (para->getBool("Run Generate Poisson Field") || para->getBool("Run One Key PoissonConfidence"))
   {
@@ -1053,6 +1220,10 @@ void Poisson::runPoissonFieldAndIso()
     //if(Par.IsoDivide){tree.GetMCIsoTriangles(isoValue,Par.IsoDivide,&mesh);}
     //else{tree.GetMCIsoTriangles(isoValue,&mesh);}
     tree.GetMCIsoTriangles( isoValue , Par.IsoDivide, &mesh , 0 , 1 , !Par.NonManifold , Par.PolygonMesh);
+    time.end();
+
+    time.start("write result");
+    PlyWritePolygons("poisson_result.ply", &mesh , PLY_ASCII , NULL , 0 , iXForm );
     time.end();
 
     ////out put

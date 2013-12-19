@@ -236,6 +236,8 @@
    <addaction name="actionSave_Skel"/>
    <addaction name="actionSnapShot"/>
    <addaction name="actionClear_Data"/>
+   <addaction name="actionNormalize"/>
+   <addaction name="actionRemove_Outlier"/>
    <addaction name="separator"/>
    <addaction name="actionDownSample"/>
    <addaction name="actionSkeleton_Setting"/>
@@ -855,7 +857,7 @@
   </action>
   <action name="actionRemove_Outlier">
    <property name="text">
-    <string>Remove Outlier</string>
+    <string>Outlier</string>
    </property>
   </action>
   <action name="actionSwitch_Sample_Original">

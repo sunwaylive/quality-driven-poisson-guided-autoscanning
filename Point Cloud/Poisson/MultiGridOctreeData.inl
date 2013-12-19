@@ -44,7 +44,7 @@ const Real ROUND_EPS=Real(1e-5);
 
 #include <stdarg.h>
 char* outputFile=NULL;
-int echoStdout=0;
+int echoStdout=1;
 void DumpOutput( const char* format , ... )
 {
   if( outputFile )
@@ -1509,6 +1509,7 @@ int POctree< Degree , OutputDensity >::
       for( int d=0 ; d<3 ; d++ ) if( off[d]==0 || off[d]==res-1 ) normal[d] = 0;
     }
 #endif // FORCE_NEUMANN_FIELD
+  //_sNodes.set( tree );
   //MemoryUsage();
   return cnt;
 
