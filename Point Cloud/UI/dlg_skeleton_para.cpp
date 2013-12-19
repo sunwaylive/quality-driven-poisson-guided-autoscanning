@@ -465,7 +465,7 @@ void SkeletonParaDlg::applyDownsampling()
 {
 	if (m_paras->glarea.getBool("GLarea Busying"))
 	{
-    m_paras->glarea.setValue("Algorithom Stop", BoolValue(true));
+    m_paras->glarea.setValue("Algorithm Stop", BoolValue(true));
 		return;
 	}
 
@@ -540,7 +540,7 @@ void SkeletonParaDlg::applyAutoRunUntilGrowth()
   }
 
   m_paras->skeleton.setValue("The Skeletonlization Process Should Stop", BoolValue(false));
-  m_paras->glarea.setValue("Algorithom Stop", BoolValue(false));
+  m_paras->glarea.setValue("Algorithm Stop", BoolValue(false));
 
   m_paras->skeleton.setValue("Run Auto Wlop One Stage", BoolValue(true));
 
@@ -558,7 +558,7 @@ void SkeletonParaDlg::applyAutoRun()
   }
   else
   {
-     m_paras->glarea.setValue("Algorithom Stop", BoolValue(false));
+     m_paras->glarea.setValue("Algorithm Stop", BoolValue(false));
     global_paraMgr.glarea.setValue("Running Algorithm Name", StringValue("Skeletonization"));
     calculation_thread.setArea(area);
     calculation_thread.start();

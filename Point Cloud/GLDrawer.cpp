@@ -44,7 +44,7 @@ void GLDrawer::updateDrawer(vector<int>& pickList)
 	bUseIsoInteral = global_paraMgr.glarea.getBool("Use ISO Interval");
 	bUseConfidenceColor = global_paraMgr.drawer.getBool("Show Confidence Color");
 
-	bShowGridCenters = global_paraMgr.glarea.getBool("Show NBV Grids");
+	bShowGridCenters = global_paraMgr.glarea.getBool("Show View Grids");
 	bShowNBVCandidates = global_paraMgr.glarea.getBool("Show NBV Candidates");
 
 	bUseConfidenceSeparation = global_paraMgr.nbv.getBool("Use Confidence Separation");

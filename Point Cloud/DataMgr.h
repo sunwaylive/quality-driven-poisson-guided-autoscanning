@@ -4,9 +4,6 @@
 #include "Parameter.h"
 #include "GlobalFunction.h"
 #include "Algorithm/Skeleton.h"
-#include "NBVGrid.h"
-#include "vcg/math/camera.h"
-//#include "Algorithm/Poisson.h"
 
 #include <wrap/io_trimesh/import.h>
 #include <wrap/io_trimesh/export.h>
@@ -47,7 +44,7 @@ public:
   bool      isViewCandidatesEmpty();
   bool      isScannedMeshEmpty();
   bool      isScannedResultsEmpty();
-  bool      isNBVGridsEmpty();
+  bool      isViewGridsEmpty();
   bool      isNBVCandidatesEmpty();
 
   void                    setCurrentTemperalSample(CMesh *mesh);

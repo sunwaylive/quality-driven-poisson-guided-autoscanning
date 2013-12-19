@@ -118,9 +118,10 @@ void NormalParaDlg::applyNormalSmoothing()
 
 void NormalParaDlg::applyPCANormal()
 {
+  cout<<"***************************Run PCA Normal*******************" <<endl;
 	if (m_paras->norSmooth.getBool("Run Anistropic PCA"))
 	{
-		area->runNormalSmoothing();
+		area->runNormalSmoothing(); 
 	}
 	else
 	{
@@ -144,10 +145,8 @@ void NormalParaDlg::applyPCANormal()
 	}
 	area->dataMgr.recomputeQuad();
 	area->updateGL();
-
+  cout<<"***************************End PCA Normal*******************" <<endl;
 }
-
-
 
 NormalParaDlg::~NormalParaDlg()
 {

@@ -45,8 +45,8 @@
     <widget class="QLabel" name="label_5">
      <property name="geometry">
       <rect>
-       <x>18</x>
-       <y>349</y>
+       <x>10</x>
+       <y>450</y>
        <width>211</width>
        <height>21</height>
       </rect>
@@ -84,18 +84,18 @@
     <widget class="QTableView" name="tableView_scan_results">
      <property name="geometry">
       <rect>
-       <x>8</x>
-       <y>369</y>
+       <x>10</x>
+       <y>469</y>
        <width>231</width>
-       <height>101</height>
+       <height>191</height>
       </rect>
      </property>
     </widget>
     <widget class="QPushButton" name="pushButton_reset">
      <property name="geometry">
       <rect>
-       <x>148</x>
-       <y>479</y>
+       <x>170</x>
+       <y>676</y>
        <width>71</width>
        <height>31</height>
       </rect>
@@ -107,8 +107,8 @@
     <widget class="QPushButton" name="pushButton_scan">
      <property name="geometry">
       <rect>
-       <x>28</x>
-       <y>309</y>
+       <x>30</x>
+       <y>400</y>
        <width>201</width>
        <height>31</height>
       </rect>
@@ -133,8 +133,8 @@
     <widget class="QPushButton" name="pushButton_merge_with_original">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>480</y>
+       <x>0</x>
+       <y>676</y>
        <width>131</width>
        <height>31</height>
       </rect>
@@ -312,9 +312,9 @@
     <widget class="Line" name="line">
      <property name="geometry">
       <rect>
-       <x>-12</x>
-       <y>339</y>
-       <width>311</width>
+       <x>10</x>
+       <y>440</y>
+       <width>241</width>
        <height>20</height>
       </rect>
      </property>
@@ -325,18 +325,18 @@
     <widget class="QTableView" name="tableView_scan_candidates">
      <property name="geometry">
       <rect>
-       <x>8</x>
-       <y>225</y>
+       <x>10</x>
+       <y>220</y>
        <width>231</width>
-       <height>81</height>
+       <height>171</height>
       </rect>
      </property>
     </widget>
     <widget class="QPushButton" name="pushButton_wlop_on_scanned_mesh">
      <property name="geometry">
       <rect>
-       <x>40</x>
-       <y>580</y>
+       <x>30</x>
+       <y>716</y>
        <width>191</width>
        <height>31</height>
       </rect>
@@ -349,7 +349,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>540</y>
+       <y>704</y>
        <width>231</width>
        <height>16</height>
       </rect>
@@ -361,8 +361,8 @@
     <widget class="QPushButton" name="pushButton_ICP">
      <property name="geometry">
       <rect>
-       <x>40</x>
-       <y>640</y>
+       <x>30</x>
+       <y>756</y>
        <width>191</width>
        <height>31</height>
       </rect>

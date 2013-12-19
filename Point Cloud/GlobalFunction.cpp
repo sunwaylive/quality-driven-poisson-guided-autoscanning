@@ -9,6 +9,9 @@
 #include "GlobalFunction.h"
 
 #define LINKED_WITH_TBB
+//#ifdef LINKED_WITH_TBB
+//  #undef  LINKED_WITH_TBB
+//#endif
 
 using namespace vcg;
 using namespace std;
@@ -44,8 +47,6 @@ void GlobalFun::find_original_neighbors(CGrid::iterator starta, CGrid::iterator 
 		}
 	}
 }
-
-
 
 // get neighbors
 void GlobalFun::self_neighbors(CGrid::iterator start, CGrid::iterator end, double radius)
@@ -795,13 +796,12 @@ bool GlobalFun::isPointInTriangle_3(Point3f& v0, Point3f& v1, Point3f& v2, Point
   else return false;
 }
 
-bool GlobalFun::computeMeshLineIntersectPoint(CMesh *target, Point3f& p, Point3f& line_dir, Point3f& result)
+double GlobalFun::computeMeshLineIntersectPoint( CMesh *target, Point3f& p, Point3f& line_dir, Point3f& result )
 {
   //compute the intersecting point between the ray and the mesh
   int n_face = target->face.size();
-  double dist_to_camera = BIG;
-  bool has_intersect_point = false;
-
+  double min_dist = BIG;
+  
 #ifdef LINKED_WITH_TBB
   tbb::parallel_for(tbb::blocked_range<size_t>(0, n_face), 
     [&](const tbb::blocked_range<size_t>& r)
@@ -826,13 +826,12 @@ bool GlobalFun::computeMeshLineIntersectPoint(CMesh *target, Point3f& p, Point3f
 
       if(GlobalFun::isPointInTriangle_3(v0, v1, v2, intersect_point)) 
       {
-        has_intersect_point = true;
         Point3f d = intersect_point - p;
         double dist_temp = d.SquaredNorm();
         //get the visible point
-        if (dist_temp < dist_to_camera)
+        if (dist_temp < min_dist)
         {
-          dist_to_camera = dist_temp;
+          min_dist = dist_temp;
           result = intersect_point;
         }
       }else continue;
@@ -850,6 +849,16 @@ bool GlobalFun::computeMeshLineIntersectPoint(CMesh *target, Point3f& p, Point3f
     //if the face can't be seen, then continue
     if(face_norm * line_dir > 0) continue;
 
+    //just choose one point and calculate the distance,if the triangle is too far from the line, then continue
+    /*double A = line_dir.Y();
+    double B = line_dir.Z() - line_dir.X();
+    double C = -line_dir.Y();
+    double D = line_dir.Y() * p.Z() + line_dir.X() * p.Y() - line_dir.Y() * p.X() - line_dir.Z() * p.Y();
+    double proj_dist = abs(A * v0.X() + B * v0.Y() + C * v0.Z() + D) / sqrt(A * A + B * B + C * C);
+    if (proj_dist < )
+    {
+    }*/
+
     //the line cross the point: pos, and line vector is viewray_iter 
     double t = ( (v0.X() - p.X()) * face_norm.X() 
       + (v0.Y() - p.Y()) * face_norm.Y() 
@@ -860,24 +869,23 @@ bool GlobalFun::computeMeshLineIntersectPoint(CMesh *target, Point3f& p, Point3f
 
     if(GlobalFun::isPointInTriangle_3(v0, v1, v2, intersect_point)) 
     {
-      has_intersect_point = true;
       Point3f d = intersect_point - p;
       double dist_temp = d.SquaredNorm();
       //get the visible point
-      if (dist_temp < dist_to_camera)
+      if (dist_temp < min_dist)
       {
-        dist_to_camera = dist_temp;
+        min_dist = dist_temp;
         result = intersect_point;
       }
     }else continue;
   }
 #endif
   
-  return has_intersect_point;
+  return sqrt(min_dist);
 }
 
 bool
-GlobalFun::cmp(DesityAndIndex a, DesityAndIndex b)
+GlobalFun::cmp(DesityAndIndex &a, DesityAndIndex &b)
 {
   return a.density < b.density;
 }
@@ -1096,6 +1104,16 @@ GlobalFun::downSample(CMesh *dst, CMesh *src, double sample_ratio, bool use_rand
   for(vi = dst->vert.begin(); vi != dst->vert.end(); ++vi)
     vi->is_original = false;
 
+}
+
+void 
+GlobalFun::clearCMesh(CMesh &mesh)
+{
+  mesh.face.clear();
+  mesh.fn = 0;
+  mesh.vert.clear();
+  mesh.vn = 0;
+  mesh.bbox = Box3f();
 }
 
 //void Slice::build_slice(Point3f a, Point3f b, Point3f c, float c_length)
