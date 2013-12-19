@@ -4,7 +4,8 @@
 #include <iostream>
 #include "PointCloudAlgorithm.h"
 #include <fstream>
-
+#include <wrap/io_trimesh/import.h>
+#include <wrap/io_trimesh/export.h>
 
 using namespace vcg;
 using namespace std;
@@ -33,7 +34,8 @@ private:
   void runOneKeyPoissonConfidence();
 
   void runPoisson();
-  void runPoissonFieldAndIso();
+  void runPoissonFieldAndExtractIsoPoints();
+  void runPoissonFieldAndExtractIsoPoints_ByEXE();
   void runLabelISO();
   void runIsoSmooth();
   void runLabelBoundaryPoints();
@@ -46,6 +48,7 @@ private:
   void runComputeNewIsoConfidence();
   void runAddWLOPtoISO();
 
+  void samplePointsFromMesh(CMesh& mesh, CMesh* points);
 
 private:
 	CMesh* samples;

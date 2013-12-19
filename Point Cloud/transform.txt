@@ -1,0 +1,2 @@
+Translation: 28.09 -45.55 -276.82
+Quaternion: 0.0 0.0 0.0 0.0

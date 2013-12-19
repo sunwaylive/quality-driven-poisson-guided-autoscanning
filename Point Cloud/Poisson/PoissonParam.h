@@ -15,7 +15,7 @@ public:
     MinDepth = 5;
     constraintWeight = 0.0;
     adaptiveExponent = 1;
-    MinIters = 24;
+    MinIters = 8;
     SolverAccuracy = 1e-3;
     MaxSolveDepth = 9;
     FixedIters = -1;
