@@ -962,12 +962,29 @@ void DataMgr::saveSkeletonAsSkel(QString fileName)
   }
   strStream << endl;
 
+  strStream << "Scanned_Candidates " << scan_candidates.size() << " " << endl;
+  for (int i = 0; i < scan_candidates.size(); ++i)
+  {
+    strStream << scan_candidates[i].first.X() << " " << scan_candidates[i].first.Y() << " " << scan_candidates[i].first.Z()
+              << scan_candidates[i].second.X() << " " << scan_candidates[i].second.Y() << " "<< scan_candidates[i].second.Z() <<endl;
+  }
+  strStream << endl;
+
+  strStream << "Scanned_Meshes " <<scanned_results.size() <<endl;
+  for(int i = 0; i < scanned_results.size(); ++i)
+  {
+    strStream << "one_scanned_mesh_begins " << scanned_results[i]->vert.size() <<endl;
+    for (int j = 0; j < scanned_results[i]->vert.size(); ++j)
+    {
+      CVertex &v = scanned_results[i]->vert[j];
+      strStream<< v.P()[0] << " " << v.P()[1] << " " << v.P()[2] << " " << endl;
+    }
+  }
+  strStream << endl;
+
 	outfile.write( strStream.str().c_str(), strStream.str().size() ); 
 	outfile.close();
 }
-
-
-
 
 void DataMgr::loadSkeletonFromSkel(QString fileName)
 {
@@ -980,6 +997,11 @@ void DataMgr::loadSkeletonFromSkel(QString fileName)
   clearCMesh(nbv_candidates);
   clearCMesh(current_scanned_mesh);
 
+  for (int i = 0; i < scanned_results.size(); ++i)
+    clearCMesh(*scanned_results[i]);
+
+  scanned_results.clear();
+  scan_candidates.clear();
   slices.clear();
 	skeleton.clear();
 
@@ -1089,7 +1111,6 @@ void DataMgr::loadSkeletonFromSkel(QString fileName)
       {
         int id;
         sem >> id;
-
     }
 	}
 
@@ -1262,10 +1283,7 @@ void DataMgr::loadSkeletonFromSkel(QString fileName)
       }
     }
   }
-  
-
 	skeleton.generateBranchSampleMap();
-
 
   sem >> str;
   if (str == "IN")
@@ -1356,7 +1374,47 @@ void DataMgr::loadSkeletonFromSkel(QString fileName)
     }
   }
 
+  sem>>str;
+  if (str == "Scanned_Candidates")
+  {
+    sem >> num;
+    for (int i = 0; i < num; ++i)
+    {
+      Point3f pos, direction;
+      sem >> pos.X() >> pos.Y() >> pos.Z() >> direction.X() >> direction.Y() >> direction.Z();
+      ScanCandidate sc = std::make_pair(pos, direction);
+      scan_candidates.push_back(sc);
+    }
+  }
+
   sem >> str;
+  if (str == "Scanned_Meshes")
+  {
+    sem >> num;
+    for (int i = 0; i < num; ++i)
+    {
+      sem >> str;
+      if (str == "one_scanned_mesh_begins")
+      {
+        int sc_num = 0;
+        sem >> sc_num;
+
+        CMesh *m = new CMesh;
+        int index = 0;
+        for (int j = 0; j < sc_num; ++j)
+        {
+          CVertex v;
+          v.is_scanned = true;
+          v.m_index = index++;
+          sem >> v.P()[0] >> v.P()[1] >> v.P()[2];
+          m->vert.push_back(v);
+          m->bbox.Add(v.P());
+        }
+        m->vn = m->vert.size();
+        scanned_results.push_back(m);
+      }
+    }
+  }
   /*if (str == "VN")
   {
   sem >> num;

@@ -17,6 +17,11 @@ CameraParaDlg::CameraParaDlg(QWidget *p, ParameterMgr * _paras, GLArea * _area) 
 
 void CameraParaDlg::initConnects()
 {
+  if (!connect(area,SIGNAL(needUpdateStatus()),this,SLOT(initWidgets())))
+  {
+    cout << "can not connect signal" << endl;
+  }
+
   connect(ui->checkBox_show_init_cameras,SIGNAL(clicked(bool)),this,SLOT(showInitCameras(bool)));
   connect(ui->pushButton_scan, SIGNAL(clicked()), this, SLOT(NBVCandidatesScan()));
   connect(ui->pushButton_initial_scan, SIGNAL(clicked()), this, SLOT(initialScan()));
@@ -97,6 +102,7 @@ bool CameraParaDlg::initWidgets()
   ui->use_max_propagation->setCheckState(state);
 
   updateTableViewNBVCandidate();
+  updateTabelViewScanResults();
   update();
   repaint();
 	return true;
@@ -193,6 +199,7 @@ void CameraParaDlg::initialScan()
 
 void CameraParaDlg::NBVCandidatesScan()
 {
+  //scan only the candidates those are chosen
   vector<ScanCandidate> *sc = area->dataMgr.getScanCandidates();
   vector<ScanCandidate> select_scan_candidates;
   QModelIndexList sil = ui->tableView_scan_candidates->selectionModel()->selectedRows();
@@ -208,6 +215,8 @@ void CameraParaDlg::NBVCandidatesScan()
   area->runCamera();
   global_paraMgr.camera.setValue("Run NBV Scan", BoolValue(false));
 
+  area->updateGL();
+  updateTableViewNBVCandidate();
   updateTabelViewScanResults();
 }
 
