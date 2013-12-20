@@ -32,6 +32,7 @@ private slots:
 	void reorientateNormal();
 	void applyNormalSmoothing();
 	void applyPCANormal();
+  void applyPCANormalUsingDirection();
 	
 		
 private:
