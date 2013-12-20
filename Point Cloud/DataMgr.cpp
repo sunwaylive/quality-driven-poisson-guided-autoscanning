@@ -962,14 +962,22 @@ void DataMgr::saveSkeletonAsSkel(QString fileName)
   }
   strStream << endl;
 
-  strStream << "Scanned Meshes " <<scanned_results.size() <<endl;
+  strStream << "Scanned_Candidates " << scan_candidates.size() << " " << endl;
+  for (int i = 0; i < scan_candidates.size(); ++i)
+  {
+    strStream << scan_candidates[i].first.X() << " " << scan_candidates[i].first.Y() << " " << scan_candidates[i].first.Z()
+              << scan_candidates[i].second.X() << " " << scan_candidates[i].second.Y() << " "<< scan_candidates[i].second.Z() <<endl;
+  }
+  strStream << endl;
+
+  strStream << "Scanned_Meshes " <<scanned_results.size() <<endl;
   for(int i = 0; i < scanned_results.size(); ++i)
   {
-    strStream << "one scanned mesh begins " << scanned_results[i]->vert.size() <<endl;
+    strStream << "one_scanned_mesh_begins " << scanned_results[i]->vert.size() <<endl;
     for (int j = 0; j < scanned_results[i]->vert.size(); ++j)
     {
       CVertex &v = scanned_results[i]->vert[j];
-      strStream<< v.P()[0] << " " << v.P()[1] << "" << v.P()[2] << " " << endl;
+      strStream<< v.P()[0] << " " << v.P()[1] << " " << v.P()[2] << " " << endl;
     }
   }
   strStream << endl;
@@ -993,6 +1001,7 @@ void DataMgr::loadSkeletonFromSkel(QString fileName)
     clearCMesh(*scanned_results[i]);
 
   scanned_results.clear();
+  scan_candidates.clear();
   slices.clear();
 	skeleton.clear();
 
@@ -1365,14 +1374,27 @@ void DataMgr::loadSkeletonFromSkel(QString fileName)
     }
   }
 
+  sem>>str;
+  if (str == "Scanned_Candidates")
+  {
+    sem >> num;
+    for (int i = 0; i < num; ++i)
+    {
+      Point3f pos, direction;
+      sem >> pos.X() >> pos.Y() >> pos.Z() >> direction.X() >> direction.Y() >> direction.Z();
+      ScanCandidate sc = std::make_pair(pos, direction);
+      scan_candidates.push_back(sc);
+    }
+  }
+
   sem >> str;
-  if (str == "Scanned Meshes")
+  if (str == "Scanned_Meshes")
   {
     sem >> num;
     for (int i = 0; i < num; ++i)
     {
       sem >> str;
-      if (str == "one scanned mesh begins")
+      if (str == "one_scanned_mesh_begins")
       {
         int sc_num = 0;
         sem >> sc_num;
