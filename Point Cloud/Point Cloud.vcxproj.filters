@@ -465,7 +465,10 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="Algorithm\Skeletonization.h">
-      <Filter>Form Files</Filter>
+      <Filter>Algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="Algorithm\pointcloud_normal.h">
+      <Filter>Algorithm</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
