@@ -365,7 +365,6 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
       }
     }
   }
-  area->updateUI();
 }
 
 void CameraParaDlg::getCameraHorizonDist(double _val)

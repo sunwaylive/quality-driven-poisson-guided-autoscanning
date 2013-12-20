@@ -33,6 +33,7 @@ void NormalParaDlg::initConnects()
 	connect(ui->KNN,SIGNAL(valueChanged(int)),this,SLOT(getKNN(int)));
 	connect(ui->normal_smoothing,SIGNAL(clicked()),this,SLOT(applyNormalSmoothing()));
 	connect(ui->normal_PCA,SIGNAL(clicked()),this,SLOT(applyPCANormal()));
+  connect(ui->normal_PCA_using_direction, SIGNAL(clicked()), this, SLOT(applyPCANormalUsingDirection()));
 	connect(ui->pushButton_reorientate_normal,SIGNAL(clicked()),this,SLOT(reorientateNormal()));
 	connect(ui->use_anistropic_PCA, SIGNAL(clicked(bool)),this,SLOT(isAPCA(bool)));
 	connect(ui->smooth_normal_interate_num,SIGNAL(valueChanged(int)),this,SLOT(getIterateNum(int)));
@@ -119,6 +120,7 @@ void NormalParaDlg::applyNormalSmoothing()
 void NormalParaDlg::applyPCANormal()
 {
   cout<<"***************************Run PCA Normal*******************" <<endl;
+  
 	if (m_paras->norSmooth.getBool("Run Anistropic PCA"))
 	{
 		area->runNormalSmoothing(); 
@@ -143,8 +145,53 @@ void NormalParaDlg::applyPCANormal()
     }
 		vcg::NormalExtrapolation<vector<CVertex> >::ExtrapolateNormals(samples->vert.begin(), samples->vert.end(), knn, -1);
 	}
+  
 	area->dataMgr.recomputeQuad();
 	area->updateGL();
+  cout<<"***************************End PCA Normal*******************" <<endl;
+}
+
+void NormalParaDlg::applyPCANormalUsingDirection()
+{
+  cout<<"***************************Run PCA Normal*******************" <<endl;
+
+  if (m_paras->norSmooth.getBool("Run Anistropic PCA"))
+  {
+    area->runNormalSmoothing(); 
+  }
+  else
+  {
+    int knn = global_paraMgr.norSmooth.getInt("PCA KNN");
+    CMesh* samples;
+    if (global_paraMgr.glarea.getBool("Show ISO Points")
+      && !area->dataMgr.isIsoPointsEmpty())
+    {
+      samples = area->dataMgr.getCurrentIsoPoints();
+    }
+    else if (global_paraMgr.glarea.getBool("Show Original")
+      && !area->dataMgr.isOriginalEmpty())
+    {
+      samples = area->dataMgr.getCurrentOriginal();
+    }
+    else
+    {
+      samples = area->dataMgr.getCurrentSamples();
+    }
+    vector<Point3f> before_normal;
+    for (int i = 0; i < samples->vert.size(); ++i)
+      before_normal.push_back(samples->vert[i].N()); 
+
+    vcg::NormalExtrapolation<vector<CVertex> >::ExtrapolateNormals(samples->vert.begin(), samples->vert.end(), knn, -1);
+
+    for (int i = 0; i < samples->vert.size(); ++i)
+    {
+      if (before_normal[i] * samples->vert[i].N() < 0.0f)
+        samples->vert[i].N() *= -1;
+    }
+  }
+
+  area->dataMgr.recomputeQuad();
+  area->updateGL();
   cout<<"***************************End PCA Normal*******************" <<endl;
 }
 

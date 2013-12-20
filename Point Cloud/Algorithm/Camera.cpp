@@ -96,6 +96,7 @@ void vcc::Camera::runVirtualScan()
         t.is_scanned = true;
         t.m_index = index++;
         t.P() = intersect_point + Point3f(rndax, rnday, rndaz);
+        t.N() = -direction; //set out direction as approximate normal
         current_scanned_mesh->vert.push_back(t);
         current_scanned_mesh->bbox.Add(t.P());
       }

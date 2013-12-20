@@ -141,7 +141,7 @@
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>240</y>
+     <y>280</y>
      <width>171</width>
      <height>31</height>
     </rect>
@@ -167,13 +167,26 @@
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>290</y>
+     <y>330</y>
      <width>171</width>
      <height>31</height>
     </rect>
    </property>
    <property name="text">
     <string>Reorientate Normal</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="normal_PCA_using_direction">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>235</y>
+     <width>171</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>PCA Normal using direction</string>
    </property>
   </widget>
  </widget>
