@@ -374,9 +374,6 @@
     <ClInclude Include="GeneratedFiles\ui_para_skeletonization.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="Algorithm\Skeletonization.h">
-      <Filter>Algorithm</Filter>
-    </ClInclude>
     <ClInclude Include="Algorithm\Skeleton.h">
       <Filter>Algorithm</Filter>
     </ClInclude>
@@ -466,6 +463,9 @@
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_camera_para.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Algorithm\Skeletonization.h">
+      <Filter>Form Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
