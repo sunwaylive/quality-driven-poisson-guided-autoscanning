@@ -4,7 +4,7 @@
 Szymon Rusinkiewicz
 Princeton University
 
-Box.h
+TriBox.h
 Templated axis-aligned bounding boxes - meant to be used with Vec.h
 */
 
@@ -15,7 +15,7 @@ Templated axis-aligned bounding boxes - meant to be used with Vec.h
 
 
 template <int D, class T = float>
-class Box {
+class TriBox {
 private:
 	typedef Vec<D,T> Point;
 
@@ -24,7 +24,7 @@ public:
 	bool valid;
 
 	// Construct as empty
-	Box() : valid(false)
+	TriBox() : valid(false)
 		{}
 
 	// Mark invalid
@@ -35,8 +35,8 @@ public:
 	Point center() const { return 0.5f * (min+max); }
 	Point size() const { return max - min; }
 
-	// Grow a bounding box to encompass a point
-	Box<D,T> &operator += (const Point &p)
+	// Grow a bounding TriBox to encompass a point
+	TriBox<D,T> &operator += (const Point &p)
 	{
 		if (valid) {
 			min.min(p);
@@ -48,7 +48,7 @@ public:
 		}
 		return *this;
 	}
-	Box<D,T> &operator += (const Box<D,T> &b)
+	TriBox<D,T> &operator += (const TriBox<D,T> &b)
 	{
 		if (valid) {
 			min.min(b.min);
@@ -61,18 +61,18 @@ public:
 		return *this;
 	}
 
-	friend const Box<D,T> operator + (const Box<D,T> &b, const Point &p)
-		{ return Box<D,T>(b) += p; }
-	friend const Box<D,T> operator + (const Point &p, const Box<D,T> &b)
-		{ return Box<D,T>(b) += p; }
-	friend const Box<D,T> operator + (const Box<D,T> &b1, const Box<D,T> &b2)
-		{ return Box<D,T>(b1) += b2; }
+	friend const TriBox<D,T> operator + (const TriBox<D,T> &b, const Point &p)
+		{ return TriBox<D,T>(b) += p; }
+	friend const TriBox<D,T> operator + (const Point &p, const TriBox<D,T> &b)
+		{ return TriBox<D,T>(b) += p; }
+	friend const TriBox<D,T> operator + (const TriBox<D,T> &b1, const TriBox<D,T> &b2)
+		{ return TriBox<D,T>(b1) += b2; }
 
-	// Read a Box from a file.
+	// Read a TriBox from a file.
 	bool read(const std::string &filename)
 	{
 		std::ifstream f(filename.c_str());
-		Box<D,T> B;
+		TriBox<D,T> B;
 		f >> B;
 		f.close();
 		if (f.good()) {
@@ -82,7 +82,7 @@ public:
 		return false;
 	}
 
-	// Write a Box to a file
+	// Write a TriBox to a file
 	bool write(const std::string &filename) const
 	{
 		std::ofstream f(filename.c_str());
@@ -92,7 +92,7 @@ public:
 	}
 
 	// iostream operators
-	friend std::ostream &operator << (std::ostream &os, const Box<D,T> &b)
+	friend std::ostream &operator << (std::ostream &os, const TriBox<D,T> &b)
 	{
 		const int n = b.min.size();
 		for (int i = 0; i < n-1; i++)
@@ -103,7 +103,7 @@ public:
 		os << b.max[n-1] << std::endl;
 		return os;
 	}
-	friend std::istream &operator >> (std::istream &is, Box<D,T> &b)
+	friend std::istream &operator >> (std::istream &is, TriBox<D,T> &b)
 	{
 		const int n = b.min.size();
 		for (int i = 0; i < n; i++)
@@ -118,6 +118,6 @@ public:
 	}
 };
 
-typedef Box<3,float> box;
+typedef TriBox<3,float> box;
 
 #endif

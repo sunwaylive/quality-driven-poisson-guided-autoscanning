@@ -32,7 +32,9 @@
 #include <vcg/container/simple_temporary_data.h>
 #include <vcg/complex/algorithms/update/normal.h>
 #include <vcg/complex/algorithms/update/halfedge_topology.h>
-#include <vcg/complex/algorithms/closest.h>
+//#include <vcg/complex/algorithms/closest.h>
+#include <vcg/complex/trimesh/closest.h>
+
 #include <vcg/space/index/kdtree/kdtree.h>
 
 
@@ -1233,7 +1235,7 @@ static void VertexCoordPasoDobleFast(MeshType &m, int NormalSmoothStep, typename
 }
 
 
-static void VertexNormalPointCloud(MeshType &m, int neighborNum, int iterNum, KdTree<float> *tp=0)
+static void VertexNormalPointCloud(MeshType &m, int neighborNum, int iterNum, vcg::KdTree<float> *tp=0)
 {
   SimpleTempData<typename MeshType::VertContainer,Point3f > TD(m.vert,Point3f(0,0,0));
   VertexConstDataWrapper<MeshType> ww(m);

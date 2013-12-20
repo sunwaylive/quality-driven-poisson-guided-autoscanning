@@ -24,7 +24,7 @@
 #define __VCG_TRI_UPDATE_FLAGS
 
 #include <vcg/simplex/face/pos.h>
-
+//#include <vcg/complex/base.h>
 namespace vcg {
 namespace tri {
 /// \ingroup trimesh 
