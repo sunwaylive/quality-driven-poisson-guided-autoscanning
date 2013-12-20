@@ -218,31 +218,59 @@ void GlobalFun::computeAnnNeigbhors(vector<CVertex> &datapts, vector<CVertex> &q
 
 	knn--;
 
-	for (vi = querypts.begin(); vi != querypts.end(); ++vi) 
-	{
-		vi->neighbors.clear();
-		for (int j = 0; j < 3; j++) 
-		{
-			queryPt[j] = vi->P()[j];
-		}
+  int query_pt_size = querypts.size();
+#ifdef LINKED_WITH_TBB
+  tbb::parallel_for(tbb::blocked_range<size_t>(0,query_pt_size),
+    [&](const tbb::blocked_range<size_t> &r)
+  {
+    for (size_t i = r.begin(); i != r.end(); ++i)
+    {
+      querypts[i].neighbors.clear();
+      for (int j = 0; j < 3; ++j)
+      {
+        queryPt[j] = querypts[i].P()[j];
+      }
 
-		kdTree->annkSearch(						// search
-			queryPt,						// query point
-			k,								// number of near neighbors
-			nnIdx,							// nearest neighbors (returned)
-			dists,							// distance (returned)
-			eps);							// error bound
+      kdTree->annkSearch(	// search
+        queryPt,					// query point
+        k,								// number of near neighbors
+        nnIdx,						// nearest neighbors (returned)
+        dists,						// distance (returned)
+        eps);							// error bound
 
-		for (int k = 1; k < numKnn; k++)
-		{
-			vi->neighbors.push_back(nnIdx[k]);
-		}
-	}
+      for (int k = 1; k < numKnn; ++k)
+      {
+        querypts[i].neighbors.push_back(nnIdx[k]);
+      }
+    }
+  });
+#else
+  for (vi = querypts.begin(); vi != querypts.end(); ++vi) 
+  {
+    vi->neighbors.clear();
+    for (int j = 0; j < 3; j++) 
+    {
+      queryPt[j] = vi->P()[j];
+    }
 
-	delete [] nnIdx;							// clean things up
+    kdTree->annkSearch(	// search
+      queryPt,					// query point
+      k,								// number of near neighbors
+      nnIdx,						// nearest neighbors (returned)
+      dists,						// distance (returned)
+      eps);							// error bound
+
+    for (int k = 1; k < numKnn; k++)
+    {
+      vi->neighbors.push_back(nnIdx[k]);
+    }
+  }
+#endif
+
+	delete [] nnIdx;  // clean things up
 	delete [] dists;
 	delete kdTree;
-	annClose();									// done with ANN
+	annClose();			  // done with ANN
 }
 
 

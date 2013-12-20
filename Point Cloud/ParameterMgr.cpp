@@ -56,11 +56,9 @@ void ParameterMgr::setGlobalParameter(QString paraName,Value& val)
 void ParameterMgr::initDataMgrParameter()
 {
 	data.addParam(new RichDouble("Init Radius Para", 2.0));
-	data.addParam(new RichDouble("Down Sample Num", 4000));
+	data.addParam(new RichDouble("Down Sample Num", 20000));
 	data.addParam(new RichDouble("CGrid Radius", grid_r));
   data.addParam(new RichDouble("Max Normalize Length", 1.0f));
-
-
 }
 
 
