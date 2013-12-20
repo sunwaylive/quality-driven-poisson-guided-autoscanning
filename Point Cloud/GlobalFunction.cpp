@@ -155,33 +155,29 @@ double GlobalFun::estimateKnnSize(CMesh* samples, CMesh* original, double radius
 
 void GlobalFun::computeAnnNeigbhors(vector<CVertex> &datapts, vector<CVertex> &querypts, int knn, bool need_self_included = false, QString purpose = "?_?")
 {
-	cout << endl <<"Compute ANN for:	 " << purpose.toStdString() << endl;
+	cout << endl <<"Compute ANN for: " << purpose.toStdString() << endl;
 	int numKnn = knn + 1;
 
 	if (querypts.size() <= numKnn+2)
 	{
 		vector<CVertex>::iterator vi;
 		for(vi = datapts.begin(); vi != datapts.end(); ++vi)
-		{
 			for(int j = 0; j < 3; j++)
-			{
 				vi->neighbors.clear();
-			}
-		}
+
 		return;
 	}
 
-	int					nPts;					// actual number of data points
-	ANNpointArray		dataPts;				// data points
-	ANNpoint			queryPt;				// query point
-	ANNidxArray			nnIdx;					// near neighbor indices
-	ANNdistArray		dists;					// near neighbor distances
-	ANNkd_tree*			kdTree;					// search structure
-
-	int				k				= numKnn;			// number of nearest neighbors
-	int				dim				= 3;			// dimension
-	double			eps				= 0;			// error bound
-	int				maxPts			= numKnn + 3000000;			// maximum number of data points
+	int					    nPts;			 // actual number of data points
+	ANNpointArray		dataPts;	 // data points
+  ANNpoint			  queryPt;	 // query point
+  ANNidxArray			nnIdx;		 // near neighbor indices
+  ANNdistArray		dists;		 // near neighbor distances
+  ANNkd_tree*			kdTree;		 // search structure
+  int			k				= numKnn;			      // number of nearest neighbors
+  int			dim			= 3;			          // dimension
+  double	eps			= 0;			          // error bound
+	int			maxPts	= numKnn + 3000000;	// maximum number of data points
 
 	if (datapts.size() >= maxPts)
 	{
@@ -189,88 +185,48 @@ void GlobalFun::computeAnnNeigbhors(vector<CVertex> &datapts, vector<CVertex> &q
 		return;
 	}
 
-
 	queryPt = annAllocPt(dim);					// allocate query point
-	dataPts = annAllocPts(maxPts, dim);			// allocate data points
-	nnIdx = new ANNidx[k];						// allocate near neigh indices
-	dists = new ANNdist[k];						// allocate near neighbor dists
-
-	nPts = datapts.size();									// read data points
+	dataPts = annAllocPts(maxPts, dim);	// allocate data points
+	nnIdx   = new ANNidx[k];						// allocate near neigh indices
+	dists   = new ANNdist[k];						// allocate near neighbor dists
 
 	vector<CVertex>::iterator vi;
 	int index = 0;
 	for(vi = datapts.begin(); vi != datapts.end(); ++vi)
 	{
 		for(int j = 0; j < 3; j++)
-		{
 			dataPts[index][j] = double(vi->P()[j]); 
-		}
+
 		index++;
 	}
 
+  nPts = datapts.size();	 // read data points
+	kdTree = new ANNkd_tree( // build search structure
+		dataPts,					     // the data points
+		nPts,						       // number of points
+		dim);						       // dimension of space
 
-	knn++;
+	for (vi = querypts.begin(); vi != querypts.end(); ++vi) 
+	{
+		vi->neighbors.clear();
+		for (int j = 0; j < 3; j++) 
+			queryPt[j] = vi->P()[j];
 
-	kdTree = new ANNkd_tree(					// build search structure
-		dataPts,					// the data points
-		nPts,						// number of points
-		dim);						// dimension of space
+		kdTree->annkSearch( // search
+			queryPt,					// query point
+			k,								// number of near neighbors
+			nnIdx,						// nearest neighbors (returned)
+			dists,						// distance (returned)
+			eps);							// error bound
 
-	knn--;
+		for (int k = 1; k < numKnn; k++)
+			vi->neighbors.push_back(nnIdx[k]);
+	}
 
-  int query_pt_size = querypts.size();
-#ifdef LINKED_WITH_TBB
-  tbb::parallel_for(tbb::blocked_range<size_t>(0,query_pt_size),
-    [&](const tbb::blocked_range<size_t> &r)
-  {
-    for (size_t i = r.begin(); i != r.end(); ++i)
-    {
-      querypts[i].neighbors.clear();
-      for (int j = 0; j < 3; ++j)
-      {
-        queryPt[j] = querypts[i].P()[j];
-      }
-
-      kdTree->annkSearch(	// search
-        queryPt,					// query point
-        k,								// number of near neighbors
-        nnIdx,						// nearest neighbors (returned)
-        dists,						// distance (returned)
-        eps);							// error bound
-
-      for (int k = 1; k < numKnn; ++k)
-      {
-        querypts[i].neighbors.push_back(nnIdx[k]);
-      }
-    }
-  });
-#else
-  for (vi = querypts.begin(); vi != querypts.end(); ++vi) 
-  {
-    vi->neighbors.clear();
-    for (int j = 0; j < 3; j++) 
-    {
-      queryPt[j] = vi->P()[j];
-    }
-
-    kdTree->annkSearch(	// search
-      queryPt,					// query point
-      k,								// number of near neighbors
-      nnIdx,						// nearest neighbors (returned)
-      dists,						// distance (returned)
-      eps);							// error bound
-
-    for (int k = 1; k < numKnn; k++)
-    {
-      vi->neighbors.push_back(nnIdx[k]);
-    }
-  }
-#endif
-
-	delete [] nnIdx;  // clean things up
+	delete [] nnIdx; // clean things up
 	delete [] dists;
 	delete kdTree;
-	annClose();			  // done with ANN
+	annClose();			 // done with ANN
 }
 
 
@@ -460,7 +416,6 @@ void GlobalFun::computeEigenIgnoreBranchedPoints(CMesh* _samples)
 			neighborMap[curr_index].push_back(iter->neighbors[j]);
 		}
 	}
-
 
 	int currIndex = 0;
 	for (VertexIterator iter=begin; iter!=end; iter++, currIndex++)

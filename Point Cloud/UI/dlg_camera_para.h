@@ -17,10 +17,11 @@ using namespace std;
 class CameraParaDlg : public QFrame
 {
 	Q_OBJECT
+
 public:
 	CameraParaDlg(QWidget *p, ParameterMgr * _paras, GLArea * _area);
-
 	~CameraParaDlg();
+
 	void initConnects();
 	void setFrameConent();
 
