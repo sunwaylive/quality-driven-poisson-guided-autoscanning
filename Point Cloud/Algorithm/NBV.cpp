@@ -94,10 +94,21 @@ bool
 void 
 NBV::runOneKeyNBV()
 {
+  Timer timer;
+  
+  timer.start("build grid");
   buildGrid();
-  propagate();
-  viewExtractionIntoBins();
+  timer.end();
 
+  timer.start("propagate");
+  propagate();
+  timer.end();
+
+  timer.start("view bin selection");
+  viewExtractionIntoBins();
+  timer.end();
+
+  timer.start("optimize view direction");
   for (int i = 0; i < 5; i++)
   {
     bool have_direction_move = updateViewDirections();
@@ -106,8 +117,12 @@ NBV::runOneKeyNBV()
       break;
     }
   }
+  timer.end();
 
+  timer.start("view optimize");
   viewClustering();
+  timer.end();
+
 
   scan_candidates->clear();
   for (int i = 0; i < nbv_candidates->vert.size(); ++i)
@@ -379,10 +394,12 @@ void
   }
 
   //parallel
+  double gaussian_para = 2.0;
   int iso_points_size = iso_points->vert.size();
   double optimal_D = (n_dist + f_dist) / 2.0f;
   double half_D = n_dist;
   double half_D2 = half_D * half_D; //
+  double gaussian_term = - gaussian_para / half_D2; 
   double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
   double sigma_threshold = pow(max(1e-8, 1-cos(sigma / 180.0 * 3.1415926)), 2);
 
@@ -391,7 +408,7 @@ void
   cout << "Angle Delta/resolution:  " << angle_delta << " , " << PI / angle_delta << endl;
 
 #ifdef LINKED_WITH_TBB
-  tbb::mutex _mutex;
+  //tbb::mutex _mutex;
   tbb::parallel_for(tbb::blocked_range<size_t>(0, iso_points_size), 
     [&](const tbb::blocked_range<size_t>& r)
   {
@@ -446,7 +463,7 @@ void
             if (view_grid_points->vert[index].is_ray_stop) break;            
             if (view_grid_points->vert[index].is_ray_hit)  continue;
 
-            _mutex.lock();
+            //_mutex.lock();
             //if the grid get first hit 
             view_grid_points->vert[index].is_ray_hit = true;
             //1. set the confidence of the grid center
@@ -456,7 +473,8 @@ void
             double dist = sqrt(dist2);
 
             Point3f view_direction = diff.Normalize();
-            double coefficient1 = exp(-(dist - optimal_D) * (dist - optimal_D) / half_D2);
+            double opt_dist = dist - optimal_D;
+            double coefficient1 = exp(opt_dist * opt_dist * gaussian_term);
             double coefficient2 = exp(-pow(1-v.N() * view_direction, 2) / sigma_threshold);
 
             float iso_confidence = 1 - v.eigen_confidence;     
@@ -479,7 +497,7 @@ void
               //t.eigen_confidence += confidence_weight * 1.0;              
             }
             
-            _mutex.unlock();
+            //_mutex.unlock();
             if (use_average_confidence)
             {
               confidence_weight_sum[index] += 1.;
@@ -586,7 +604,8 @@ void
           double dist = sqrt(dist2);
 
           Point3f view_direction = diff.Normalize();
-          double coefficient1 = exp(-(dist - optimal_D) * (dist - optimal_D) / half_D2);
+          double opt_dist = dist - optimal_D;
+          double coefficient1 = exp(opt_dist * opt_dist * gaussian_term);
           double coefficient2 = exp(-pow(1-v.N()*view_direction, 2)/sigma_threshold);
 
           float iso_confidence = 1 - v.eigen_confidence;
@@ -1204,7 +1223,7 @@ bool NBV::updateViewDirections()
   double iradius16 = -4/radius2;
 
   GlobalFun::computeBallNeighbors(iso_points, NULL, 
-    radius, iso_points->bbox);
+                                  radius, iso_points->bbox);
   for (int i = 0; i < iso_points->vert.size(); i++)
   {
     CVertex& v = iso_points->vert[i];
