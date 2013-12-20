@@ -36,7 +36,7 @@ void CameraParaDlg::initConnects()
   connect(ui->doubleSpinBox_near_distance, SIGNAL(valueChanged(double)), this, SLOT(getCameraNearDistance(double)));
   connect(ui->doubleSpinBox_predicted_model_size, SIGNAL(valueChanged(double)), this, SLOT(getPredictedModelSize(double)));
   connect(ui->doubleSpinBox_optimal_plane_width, SIGNAL(valueChanged(double)), this, SLOT(getOptimalPlaneWidth(double)));
-  connect(ui->ray_resolution_para, SIGNAL(valueChanged(double)), this, SLOT(getRayReselotion(double)));
+  connect(ui->ray_resolution_para, SIGNAL(valueChanged(double)), this, SLOT(getRayResolutionPara(double)));
   
   connect(ui->pushButton_build_grid, SIGNAL(clicked()), this, SLOT(buildGrid()));
   connect(ui->pushButton_propagate, SIGNAL(clicked()), this, SLOT(propagate()));
@@ -84,6 +84,7 @@ bool CameraParaDlg::initWidgets()
   ui->doubleSpinBox_predicted_model_size->setValue(m_paras->camera.getDouble("Predicted Model Size"));
   ui->doubleSpinBox_optimal_plane_width->setValue(m_paras->camera.getDouble("Optimal Plane Width"));
   ui->propagate_one_point_index->setValue(m_paras->nbv.getDouble("Propagate One Point Index"));
+  ui->ray_resolution_para->setValue(m_paras->nbv.getDouble("Ray Resolution Para"));
 
   Qt::CheckState state = m_paras->nbv.getBool("Test Other Inside Segment") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
   ui->use_other_inside_segment->setCheckState(state);
