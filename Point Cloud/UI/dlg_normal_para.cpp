@@ -179,7 +179,7 @@ void NormalParaDlg::applyPCANormalUsingDirection()
     }
     vector<Point3f> before_normal;
     for (int i = 0; i < samples->vert.size(); ++i)
-      before_normal.push_back(samples->vert[i].N());
+      before_normal.push_back(samples->vert[i].N()); 
 
     vcg::NormalExtrapolation<vector<CVertex> >::ExtrapolateNormals(samples->vert.begin(), samples->vert.end(), knn, -1);
 
