@@ -38,8 +38,8 @@ void PoissonParaDlg::initConnects()
   connect(ui->pushButton_poisson_field_samples,SIGNAL(clicked()),this,SLOT(runPoissonFieldSamples()));  
   connect(ui->pushButton_poisson_MC_original,SIGNAL(clicked()),this,SLOT(runPoissonAndExtractMC_Original()));
   connect(ui->pushButton_poisson_MC_samples,SIGNAL(clicked()),this,SLOT(runPoissonAndExtractMC_Samples()));
-  connect(ui->pushButton_label_iso_points,SIGNAL(clicked()),this,SLOT(labelIsoPoints()));
-  //connect(ui->pushButton_label_smooth,SIGNAL(clicked()),this,SLOT(labelSmooth()));
+  //connect(ui->pushButton_label_iso_points,SIGNAL(clicked()),this,SLOT(labelIsoPoints()));
+  connect(ui->pushButton_label_smooth,SIGNAL(clicked()),this,SLOT(labelSmooth()));
   //connect(ui->pushButton_label_boundary_points,SIGNAL(clicked()), this, SLOT(labelBoundaryPoints()));
   //connect(ui->pushButton_compute_view_candidates, SIGNAL(clicked()), this, SLOT(computeViewCandidates()));
   //connect(ui->pushButton_clear_label,SIGNAL(clicked()),this,SLOT(clearLabel()));
@@ -245,9 +245,9 @@ void PoissonParaDlg::labelIsoPoints()
 
 void PoissonParaDlg::labelSmooth()
 {
-  global_paraMgr.poisson.setValue("Run Label Smooth", BoolValue(true));
+  global_paraMgr.poisson.setValue("Run ISO Confidence Smooth", BoolValue(true));
   area->runPoisson();
-  global_paraMgr.poisson.setValue("Run Label Smooth", BoolValue(false));
+  global_paraMgr.poisson.setValue("Run ISO Confidence Smooth", BoolValue(false));
 }
 
 void PoissonParaDlg::labelBoundaryPoints()

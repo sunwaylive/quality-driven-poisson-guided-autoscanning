@@ -338,6 +338,19 @@
       <string>Show View Grid Slice</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="pushButton_smooth_grid_confidence">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>540</y>
+       <width>211</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Smooth Grid Confidence</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="tab_2">
     <attribute name="title">
@@ -426,32 +439,19 @@
       <rect>
        <x>10</x>
        <y>250</y>
-       <width>201</width>
+       <width>211</width>
        <height>31</height>
       </rect>
      </property>
      <property name="text">
-      <string>Compute Confidence on ISO</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_label_iso_points">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>310</y>
-       <width>221</width>
-       <height>23</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Merge or Label ISO points</string>
+      <string>Compute Poisson Confidence on ISO</string>
      </property>
     </widget>
     <widget class="QPushButton" name="pushButton_compute_confidence_iso_new">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>360</y>
+       <y>300</y>
        <width>201</width>
        <height>31</height>
       </rect>
@@ -464,7 +464,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>400</y>
+       <y>340</y>
        <width>201</width>
        <height>31</height>
       </rect>
@@ -477,7 +477,7 @@
      <property name="geometry">
       <rect>
        <x>118</x>
-       <y>453</y>
+       <y>393</y>
        <width>101</width>
        <height>20</height>
       </rect>
@@ -502,7 +502,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>450</y>
+       <y>390</y>
        <width>102</width>
        <height>26</height>
       </rect>
@@ -515,13 +515,26 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>480</y>
+       <y>420</y>
        <width>201</width>
        <height>31</height>
       </rect>
      </property>
      <property name="text">
       <string>Estimate Original KNN</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_label_smooth">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>470</y>
+       <width>191</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Smooth ISO Confidence</string>
      </property>
     </widget>
    </widget>

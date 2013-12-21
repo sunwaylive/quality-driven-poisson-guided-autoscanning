@@ -103,7 +103,7 @@ void ParameterMgr::initGlareaParameter()
 
 
 	glarea.addParam(new RichPoint3f("Light Position", vcg::Point3f(-4.0, -4.0, -4.0)));
-	glarea.addParam(new RichColor("Light Ambient Color", QColor(85, 85, 85)));
+	glarea.addParam(new RichColor("Light Ambient Color", QColor(55, 55, 55)));
 	glarea.addParam(new RichColor("Light Diffuse Color", QColor(164, 241, 101)));
 	glarea.addParam(new RichColor("Light Specular Color", QColor(255, 255, 255)));
 
@@ -345,7 +345,7 @@ void ParameterMgr::initPoissonParameter()
 
 	poisson.addParam(new RichBool("Run Poisson On Samples", false));  
 	poisson.addParam(new RichBool("Run Label ISO Points", false));
-	poisson.addParam(new RichBool("Run Label Smooth", false));
+	poisson.addParam(new RichBool("Run ISO Confidence Smooth", false));
 	poisson.addParam(new RichBool("Run Label Boundary Points", false));
 	poisson.addParam(new RichBool("Run Compute View Candidates", false));
 	poisson.addParam(new RichBool("Run View Candidates Clustering", false));
