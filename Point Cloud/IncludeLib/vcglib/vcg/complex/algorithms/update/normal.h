@@ -21,6 +21,8 @@
 *                                                                           *
 ****************************************************************************/
 
+
+
 #ifndef __VCG_TRI_UPDATE_NORMALS
 #define __VCG_TRI_UPDATE_NORMALS
 

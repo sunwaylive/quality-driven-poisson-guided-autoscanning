@@ -7,8 +7,11 @@
 
 #include "Algorithm/normal_extrapolation.h"
 #include "..//GeneratedFiles//ui_normal_para.h"
+#include "Algorithm/pointcloud_normal.h"
+
 #include "ParameterMgr.h"
 #include "glarea.h"
+//#include <vcg/complex/algorithms/pointcloud_normal.h>
 
 using namespace std;
 

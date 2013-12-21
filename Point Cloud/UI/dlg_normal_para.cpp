@@ -93,8 +93,13 @@ void NormalParaDlg::reorientateNormal()
 		return;
 	}
 
-	CMesh* samples;
-  if (global_paraMgr.glarea.getBool("Show ISO Points")
+  CMesh* samples;
+  if (global_paraMgr.glarea.getBool("Show Original")
+    && !area->dataMgr.isOriginalEmpty())
+  {
+    samples = area->dataMgr.getCurrentOriginal();
+  }
+  else if (global_paraMgr.glarea.getBool("Show ISO Points")
     && !area->dataMgr.isIsoPointsEmpty())
   {
     samples = area->dataMgr.getCurrentIsoPoints();
@@ -119,7 +124,8 @@ void NormalParaDlg::applyNormalSmoothing()
 
 void NormalParaDlg::applyPCANormal()
 {
-  cout<<"***************************Run PCA Normal*******************" <<endl;
+  Timer timer;
+  timer.start("Run PCA Normal");
   
 	if (m_paras->norSmooth.getBool("Run Anistropic PCA"))
 	{
@@ -143,17 +149,22 @@ void NormalParaDlg::applyPCANormal()
     {
       samples = area->dataMgr.getCurrentSamples();
     }
-		vcg::NormalExtrapolation<vector<CVertex> >::ExtrapolateNormals(samples->vert.begin(), samples->vert.end(), knn, -1);
+		//vcg::NormalExtrapolation<vector<CVertex> >::ExtrapolateNormals(samples->vert.begin(), samples->vert.end(), knn, -1);
+    vcg::tri::PointCloudNormal<CMesh>::Param pca_para;
+    pca_para.fittingAdjNum = knn;
+    vcg::tri::PointCloudNormal<CMesh>::Compute(*samples, pca_para, NULL);
 	}
   
 	area->dataMgr.recomputeQuad();
 	area->updateGL();
-  cout<<"***************************End PCA Normal*******************" <<endl;
+  
+  timer.end();
 }
 
 void NormalParaDlg::applyPCANormalUsingDirection()
 {
-  cout<<"***************************Run PCA Normal*******************" <<endl;
+  Timer timer;
+  timer.start("Run PCA Normal");
 
   if (m_paras->norSmooth.getBool("Run Anistropic PCA"))
   {
@@ -181,7 +192,10 @@ void NormalParaDlg::applyPCANormalUsingDirection()
     for (int i = 0; i < samples->vert.size(); ++i)
       before_normal.push_back(samples->vert[i].N()); 
 
-    vcg::NormalExtrapolation<vector<CVertex> >::ExtrapolateNormals(samples->vert.begin(), samples->vert.end(), knn, -1);
+    //vcg::NormalExtrapolation<vector<CVertex> >::ExtrapolateNormals(samples->vert.begin(), samples->vert.end(), knn, -1);
+    vcg::tri::PointCloudNormal<CMesh>::Param pca_para;
+    pca_para.fittingAdjNum = knn;
+    vcg::tri::PointCloudNormal<CMesh>::Compute(*samples, pca_para, NULL);
 
     for (int i = 0; i < samples->vert.size(); ++i)
     {
@@ -192,7 +206,7 @@ void NormalParaDlg::applyPCANormalUsingDirection()
 
   area->dataMgr.recomputeQuad();
   area->updateGL();
-  cout<<"***************************End PCA Normal*******************" <<endl;
+   timer.end();
 }
 
 NormalParaDlg::~NormalParaDlg()

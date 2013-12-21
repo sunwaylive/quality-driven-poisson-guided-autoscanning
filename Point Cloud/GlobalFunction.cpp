@@ -237,10 +237,7 @@ void GlobalFun::computeKnnNeigbhors(vector<CVertex> &datapts, vector<CVertex> &q
 		vector<CVertex>::iterator vi;
 		for(vi = datapts.begin(); vi != datapts.end(); ++vi)
 		{
-			for(int j = 0; j < 3; j++)
-			{
-				vi->neighbors.clear();
-			}
+			vi->neighbors.clear();	
 		}
 		return;
 	}

@@ -9,7 +9,7 @@ Class for triangle meshes.
 */
 
 #include "Vec.h"
-#include "Box.h"
+#include "TriBox.h"
 #include "Color.h"
 #include <vector>
 #ifndef M_PIf
