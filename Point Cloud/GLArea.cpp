@@ -353,13 +353,13 @@ void GLArea::paintGL()
 			if(!nbv_candidates->vert.empty()) 
 				glDrawer.draw(GLDrawer::DOT, nbv_candidates);
 
-      //CMesh *view_grid_points = dataMgr.getViewGridPoints();
-      //if (NULL == view_grid_points) return;
+      CMesh *view_grid_points = dataMgr.getViewGridPoints();
+      if (NULL == view_grid_points) return;
 
-      //if(!view_grid_points->vert.empty())
-      //{
-      //  glDrawer.drawGrid(view_grid_points, 3);
-      //}
+      if(!view_grid_points->vert.empty())
+      {
+        glDrawer.drawGrid(view_grid_points, 4);
+      }
 		}
 
 		if (para->getBool("Show Scan Candidates"))
