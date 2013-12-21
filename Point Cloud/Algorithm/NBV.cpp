@@ -1,6 +1,6 @@
 #include "NBV.h"
 
-int NBV::view_bins_each_axis = 3;
+int NBV::view_bins_each_axis = 4;
 
 NBV::NBV(RichParameterSet *_para)
 {
@@ -746,17 +746,17 @@ void
     CVertex &v = view_grid_points->vert[i];
 
     //get the x,y,z index of each iso_points
-    int t_indexX = getIsoPointsViewBinIndex(v.P(), 1);
+    /*int t_indexX = getIsoPointsViewBinIndex(v.P(), 1);
     int t_indexY = getIsoPointsViewBinIndex(v.P(), 2);
-    int t_indexZ = getIsoPointsViewBinIndex(v.P(), 3);
+    int t_indexZ = getIsoPointsViewBinIndex(v.P(), 3);*/
 
-    /*int t_indexX = static_cast<int>( floor((v.P()[0] - whole_space_box_min.X()) / bin_length_x ));
+    int t_indexX = static_cast<int>( floor((v.P()[0] - whole_space_box_min.X()) / bin_length_x ));
     int t_indexY = static_cast<int>( floor((v.P()[1] - whole_space_box_min.Y()) / bin_length_y ));
-    int t_indexZ = static_cast<int>( floor((v.P()[2] - whole_space_box_min.Z()) / bin_length_z ));*/
+    int t_indexZ = static_cast<int>( floor((v.P()[2] - whole_space_box_min.Z()) / bin_length_z ));
 
-    /*t_indexX = (t_indexX >= NBV::view_bins_each_axis ? (NBV::view_bins_each_axis-1) : t_indexX);
+    t_indexX = (t_indexX >= NBV::view_bins_each_axis ? (NBV::view_bins_each_axis-1) : t_indexX);
     t_indexY = (t_indexY >= NBV::view_bins_each_axis ? (NBV::view_bins_each_axis-1) : t_indexY);
-    t_indexZ = (t_indexZ >= NBV::view_bins_each_axis ? (NBV::view_bins_each_axis-1) : t_indexZ);*/
+    t_indexZ = (t_indexZ >= NBV::view_bins_each_axis ? (NBV::view_bins_each_axis-1) : t_indexZ);
 
     int idx = t_indexX * NBV::view_bins_each_axis * NBV::view_bins_each_axis 
       + t_indexZ * NBV::view_bins_each_axis + t_indexY;
@@ -769,20 +769,27 @@ void
   }
 
   //put bin direction into nbv_candidates
+  //fix:view_bin one value unset
   for (int i = 0; i < NBV::view_bins_each_axis; ++i)
   {
     for (int j = 0; j < NBV::view_bins_each_axis; ++j)
     {
       for (int k = 0; k < NBV::view_bins_each_axis; ++k)
       {
-        nbv_candidates->vert.push_back(view_grid_points->vert[view_bins[i][j][k]]);
+        if (view_bins[i][j][k] < 0  || view_bins[i][j][k] > view_grid_points->vert.size() - 1)
+        {
+          cout<< i << " " << j << " "<< k << " "<<endl;
+          cout<< view_bins[i][j][k] <<endl;
+        }else
+        {
+          nbv_candidates->vert.push_back(view_grid_points->vert[view_bins[i][j][k]]);
+        }
       }
     }
   }
-
   nbv_candidates->vn = nbv_candidates->vert.size();
 
-  double confidence_threshold = para->getDouble("Confidence Filter Threshold");
+  /*double confidence_threshold = para->getDouble("Confidence Filter Threshold");
   for (int i = 0; i < nbv_candidates->vert.size(); i++)
   {
     CVertex& v = nbv_candidates->vert[i];
@@ -791,7 +798,7 @@ void
       v.is_ignore = true;
     }
     nbv_candidates->vert[i].m_index = i;
-  }
+  }*/
   cout << "candidate number: " << nbv_candidates->vn << endl;
 
 
