@@ -381,6 +381,8 @@ void ParameterMgr::initPoissonParameter()
 	poisson.addParam(new RichBool("Use Sort Confidence Combination", true));
   poisson.addParam(new RichBool("Compute New ISO Confidence", false));
 
+  poisson.addParam(new RichBool("Run Smooth Grid Confidence", false));
+
   poisson.addParam(new RichInt("Field Points Resolution", -1));
 }
 

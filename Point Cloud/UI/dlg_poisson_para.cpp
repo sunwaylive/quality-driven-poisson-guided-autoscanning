@@ -66,7 +66,7 @@ void PoissonParaDlg::initConnects()
   connect(ui->pushButton_compute_confidence_iso,SIGNAL(clicked()),this,SLOT(computeIsoConfidence()));
   connect(ui->pushButton_compute_confidence_iso_new,SIGNAL(clicked()),this,SLOT(computeNewIsoConfidence()));  
   connect(ui->pushButton_clear_slice,SIGNAL(clicked()),this,SLOT(runClearSlice()));
-
+  connect(ui->pushButton_smooth_grid_confidence,SIGNAL(clicked()),this,SLOT(runSmoothGridConfidence()));
 
 }
 
@@ -219,6 +219,12 @@ void PoissonParaDlg::runEstimateOriginalSize()
 
 }
 
+ void PoissonParaDlg::runSmoothGridConfidence()
+ {
+   global_paraMgr.poisson.setValue("Run Smooth Grid Confidence", BoolValue(true));
+   area->runPoisson();
+   global_paraMgr.poisson.setValue("Run Smooth Grid Confidence", BoolValue(false));
+ }
 
 void PoissonParaDlg::clearLabel()
 {
