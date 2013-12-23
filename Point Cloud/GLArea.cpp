@@ -365,15 +365,17 @@ void GLArea::paintGL()
 		if (para->getBool("Show Scan Candidates"))
 		{
 			vcc::Camera current_camera;
-			double h_dist = global_paraMgr.camera.getDouble("Camera Horizon Dist");
-			double v_dist = global_paraMgr.camera.getDouble("Camera Vertical Dist");
-			//double max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
+      double h_dist = global_paraMgr.camera.getDouble("Camera Horizon Dist") / 
+                         global_paraMgr.camera.getDouble("Predicted Model Size");
+      double v_dist = global_paraMgr.camera.getDouble("Camera Vertical Dist") / 
+                         global_paraMgr.camera.getDouble("Predicted Model Size");
       double far_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
-                        global_paraMgr.camera.getDouble("Predicted Model Size");
+                           global_paraMgr.camera.getDouble("Predicted Model Size");
       double near_dist = global_paraMgr.camera.getDouble("Camera Near Distance") / 
-                        global_paraMgr.camera.getDouble("Predicted Model Size");
+                            global_paraMgr.camera.getDouble("Predicted Model Size");
+      double dist_to_model = global_paraMgr.camera.getDouble("Camera Dist To Model") / 
+                                global_paraMgr.camera.getDouble("Predicted Model Size");
 
-      double dist_to_model = global_paraMgr.camera.getDouble("Camera Dist To Model");
 			current_camera.far_horizon_dist = h_dist;
 			current_camera.far_vertical_dist = v_dist;
       current_camera.near_horizon_dist = h_dist / far_dist * near_dist;
