@@ -204,6 +204,11 @@ void Poisson::run()
     return;
   }
 
+  if (para->getBool("Run Smooth Grid Confidence"))
+  {
+    runSmoothGridConfidence();
+    return;
+  }
   //runPoisson();
    runPoissonFieldAndExtractIsoPoints_ByEXE();
 }
@@ -344,11 +349,72 @@ void Poisson::runLabelISO()
   }
 }
 
+void Poisson::runSmoothGridConfidence()
+{
+  cout << "run smooth grid" << endl;
+  double radius_threshold = para->getDouble("CGrid Radius") / 2;
+  double radius2 = radius_threshold * radius_threshold;
+  double iradius16 = -4/radius2;
+
+  double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
+  double sigma_threshold = pow(max(1e-8,1-cos(sigma/180.0*3.1415926)), 2);
+
+  Timer time;
+  time.start("Sample ISOpoints Neighbor Tree!!");
+  GlobalFun::computeBallNeighbors(field_points, NULL, 
+                                  radius_threshold, field_points->bbox);
+  time.end();
+
+  for (int i = 0; i < field_points->vert.size(); i++)
+  {
+    CVertex& v = field_points->vert[i];
+
+    if (i < 20)
+    {
+      cout << "before confidence: " << v.eigen_confidence << endl;
+    }
+
+    if (v.neighbors.empty())
+    {
+      cout << "empty neighbor" << endl;
+      continue;
+    }
+
+    double sum_confidence = 0;
+    double weight_sum = 0;
+    for(int j = 0; j < v.neighbors.size(); j++)
+    {
+      CVertex& t = field_points->vert[v.neighbors[j]];
+      double dist2 = GlobalFun::computeEulerDistSquare(v.P(), t.P());
+
+      double dist_diff = exp(dist2 * iradius16);
+      double normal_diff = exp(-pow(1-v.N()*t.N(), 2)/sigma_threshold);
+
+      double w = dist_diff * normal_diff;
+
+      sum_confidence += w * t.eigen_confidence;
+      weight_sum += w;
+
+    }
+
+    v.eigen_confidence = sum_confidence / weight_sum;
+
+    if (i < 20)
+    {
+       cout << "after confidence: " << v.eigen_confidence << endl;
+    }
+  }
+  cout << "neighbor size: " << field_points->vert[0].neighbors.size() << endl;
+}
+
 void Poisson::runIsoSmooth()
 {
   double radius_threshold = para->getDouble("CGrid Radius") / 2;
   double radius2 = radius_threshold * radius_threshold;
   double iradius16 = -4/radius2;
+
+  double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
+  double sigma_threshold = pow(max(1e-8,1-cos(sigma/180.0*3.1415926)), 2);
 
   Timer time;
   time.start("Sample ISOpoints Neighbor Tree!!");
@@ -373,7 +439,11 @@ void Poisson::runIsoSmooth()
       CVertex& t = iso_points->vert[v.neighbors[j]];
       double dist2 = GlobalFun::computeEulerDistSquare(v.P(), t.P());
 
-      double w = exp(dist2 * iradius16);
+      double dist_diff = exp(dist2 * iradius16);
+      double normal_diff = exp(-pow(1-v.N()*t.N(), 2)/sigma_threshold);
+
+      double w = dist_diff * normal_diff;
+
       sum_confidence += w * t.eigen_confidence;
       weight_sum += w;
       
@@ -381,6 +451,7 @@ void Poisson::runIsoSmooth()
 
     v.eigen_confidence = sum_confidence / weight_sum;
   }
+
   //if (global_paraMgr.drawer.getBool("Show Confidence Color"))
   //{
   //  for (int i = 0; i < iso_points->vert.size(); i++)
@@ -512,7 +583,7 @@ void Poisson::runViewCandidatesClustering()
   double radius2 = radius * radius;
   double iradius16 = -4/radius2;
 
-  double sigma = 45;
+  double sigma = 60;
   double cos_sigma = cos(sigma / 180.0 * 3.1415926);
   double sharpness_bandwidth = std::pow((std::max)(1e-8, 1 - cos_sigma), 2);
 
@@ -529,7 +600,6 @@ void Poisson::runViewCandidatesClustering()
   {
     CVertex& v = view_candidates->vert[i];
 
-    //if (v.neighbors.size() <= 5)
     if (v.neighbors.empty())
     {
       //update_temp.push_back(v);
@@ -549,7 +619,7 @@ void Poisson::runViewCandidatesClustering()
 
        double dist_weight = exp(dist2 * iradius16);
        double normal_weight = exp(-std::pow(1 - v.N() * t.N(), 2));
-       double weight = dist_weight;
+       double weight = dist_weight * normal_weight; // wsh 12-21 not sure
 
        average_positon += t.P() * weight;
        average_normal += t.N() * weight;

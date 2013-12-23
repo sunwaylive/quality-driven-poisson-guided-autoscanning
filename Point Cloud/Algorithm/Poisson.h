@@ -47,6 +47,7 @@ private:
   void runComputeIsoGradientConfidence();
   void runComputeNewIsoConfidence();
   void runAddWLOPtoISO();
+  void runSmoothGridConfidence();
 
   void samplePointsFromMesh(CMesh& mesh, CMesh* points);
 
