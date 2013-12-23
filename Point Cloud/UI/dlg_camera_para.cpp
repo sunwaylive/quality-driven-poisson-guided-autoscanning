@@ -343,11 +343,18 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
       {
         //make the merged mesh invisible
         (*it)->vert[0].is_scanned_visible = false;
+        //compute new scanned mesh's iso neighbors
+        GlobalFun::computeAnnNeigbhors(area->dataMgr.getCurrentIsoPoints()->vert, (*it)->vert, 1, false, "runNewScannedMeshNearestIsoPoint");
 
         int index = original->vert.back().m_index;
         for (int k = 0; k < (*it)->vert.size(); ++k)
         {
           CVertex& v = (*it)->vert[k];
+          //add or not
+          CVertex &nearest = area->dataMgr.getCurrentIsoPoints()->vert[v.neighbors[0]];
+          if ((nearest.eigen_confidence > 0.8) && (1.0f * rand() / RAND_MAX < 0.9f))
+            continue;
+
           CVertex t;
           t.m_index = ++index;
           t.is_original = true;
