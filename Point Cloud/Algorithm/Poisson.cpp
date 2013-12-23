@@ -352,7 +352,7 @@ void Poisson::runLabelISO()
 void Poisson::runSmoothGridConfidence()
 {
   cout << "run smooth grid" << endl;
-  double radius_threshold = para->getDouble("CGrid Radius") / 2;
+  double radius_threshold = para->getDouble("CGrid Radius");
   double radius2 = radius_threshold * radius_threshold;
   double iradius16 = -4/radius2;
 
@@ -409,7 +409,7 @@ void Poisson::runSmoothGridConfidence()
 
 void Poisson::runIsoSmooth()
 {
-  double radius_threshold = para->getDouble("CGrid Radius") / 2;
+  double radius_threshold = para->getDouble("CGrid Radius");
   double radius2 = radius_threshold * radius_threshold;
   double iradius16 = -4/radius2;
 
