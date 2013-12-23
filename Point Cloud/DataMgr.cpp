@@ -37,8 +37,8 @@ void DataMgr::initDefaultScanCamera()
   init_scan_candidates.push_back(make_pair(Point3f(1.0f, 0.0f, 0.0f), Point3f(-1.0f, 0.0f, 0.0f)));
   init_scan_candidates.push_back(make_pair(Point3f(-1.0f, 0.0f, 0.0f), Point3f(1.0f, 0.0f, 0.0f)));
   //y axis
-  init_scan_candidates.push_back(make_pair(Point3f(0.0f, 1.0f, 0.0f), Point3f(0.0f, -1.0f, 0.0f)));
-  init_scan_candidates.push_back(make_pair(Point3f(0.0f, -1.0f, 0.0f), Point3f(0.0f, 1.0f, 0.0f)));
+  init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f), Point3f(0.0f, 0.0f, -1.0f)));
+  init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, -1.0f), Point3f(0.0f, 0.0f, 1.0f)));
   //z axis
   /*init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f), Point3f(0.0f, 0.0f, -1.0f)));
   init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, -1.0f), Point3f(0.0f, 0.0f, 1.0f)));*/

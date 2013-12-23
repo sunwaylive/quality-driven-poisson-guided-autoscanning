@@ -368,7 +368,7 @@ void ParameterMgr::initPoissonParameter()
 	poisson.addParam(new RichDouble("Current Y Slice Position", 0.5));
 	poisson.addParam(new RichDouble("Current Z Slice Position", 0.5));
 	poisson.addParam(new RichDouble("Show Slice Percentage", 0.75));
-	poisson.addParam(new RichDouble("Poisson Disk Sample Number", 4000));
+	poisson.addParam(new RichDouble("Poisson Disk Sample Number", 10000));
   poisson.addParam(new RichDouble("Original KNN", 251));
 
 	poisson.addParam(new RichBool("Use Confidence 1", false));
@@ -380,7 +380,6 @@ void ParameterMgr::initPoissonParameter()
 	poisson.addParam(new RichBool("Compute ISO Confidence", false));
 	poisson.addParam(new RichBool("Use Sort Confidence Combination", true));
   poisson.addParam(new RichBool("Compute New ISO Confidence", false));
-
   poisson.addParam(new RichBool("Run Smooth Grid Confidence", false));
 
   poisson.addParam(new RichInt("Field Points Resolution", -1));
@@ -394,17 +393,17 @@ void ParameterMgr::initCameraParameter()
 	camera.addParam(new RichBool("Run Initial Scan", false));
 	camera.addParam(new RichBool("Run NBV Scan", false));
 	camera.addParam(new RichBool("Run Virtual Scan", false));
-	camera.addParam(new RichDouble("Camera Resolution",1.0f / 200.0f));
-	camera.addParam(new RichDouble("Camera Max Dist", 2.1f));
-	camera.addParam(new RichDouble("Camera Horizon Dist", 1.0f));
-	camera.addParam(new RichDouble("Camera Vertical Dist", 0.6f));
-	camera.addParam(new RichDouble("Camera Dist To Model", 1.0f));
 	camera.addParam(new RichBool("Is Init Camera Show", false));
 
-  camera.addParam(new RichDouble("Camera Far Distance", 30.0f)); //cm
-  camera.addParam(new RichDouble("Camera Near Distance", 17.0f)); //cm
-  camera.addParam(new RichDouble("Optimal Plane Width", 10.0f)); //cm
-  camera.addParam(new RichDouble("Predicted Model Size", 20.0f)); //cm
+  camera.addParam(new RichDouble("Camera Far Distance", 30.0f));   //cm
+  camera.addParam(new RichDouble("Camera Near Distance", 17.0f));  //cm
+  camera.addParam(new RichDouble("Optimal Plane Width", 10.0f));   //cm
+  camera.addParam(new RichDouble("Predicted Model Size", 20.0f));  //cm
+  camera.addParam(new RichDouble("Camera Horizon Dist", 14.0f));   //cm
+  camera.addParam(new RichDouble("Camera Vertical Dist", 18.0f));  //cm
+  camera.addParam(new RichDouble("Camera Dist To Model", ((30.0f + 17.0f)/2 + 0.6 * 20.0f))); //cm
+
+  camera.addParam(new RichDouble("Camera Resolution",1.0f / 200.0f));
 
   camera.addParam(new RichDouble("Grid Step Size", -1));
 }

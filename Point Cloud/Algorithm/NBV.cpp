@@ -22,7 +22,6 @@ NBV::~NBV()
 void
   NBV::run()
 {
-  //double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
   double camera_max_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
     global_paraMgr.camera.getDouble("Predicted Model Size");
 
@@ -366,7 +365,6 @@ void
     confidence_weight_sum.assign(view_grid_points->vert.size(), 0.0);
   //normalizeConfidence(iso_points->vert, 0);
 
-  //double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
   double camera_max_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
     global_paraMgr.camera.getDouble("Predicted Model Size");
 
@@ -1210,8 +1208,6 @@ bool NBV::updateViewDirections()
   //double radius = global_paraMgr.wLop.getDouble("CGrid Radius"); 
   //radius *= 2.0;
   //double radius = 0.3;
-
-  //double camera_max_dist = global_paraMgr.camera.getDouble("Camera Max Dist");
   double camera_max_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
     global_paraMgr.camera.getDouble("Predicted Model Size");
   double camera_near_dist = global_paraMgr.camera.getDouble("Camera Near Distance") /

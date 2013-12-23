@@ -19,17 +19,20 @@ void vcc::Camera::setInput(DataMgr* pData)
      scanned_results = pData->getScannedResults();
 	   nbv_candidates = pData->getNbvCandidates();
 
-     far_horizon_dist = global_paraMgr.camera.getDouble("Camera Horizon Dist");
-     far_vertical_dist = global_paraMgr.camera.getDouble("Camera Vertical Dist");
+     far_horizon_dist = global_paraMgr.camera.getDouble("Camera Horizon Dist") 
+                        / global_paraMgr.camera.getDouble("Predicted Model Size");
+     far_vertical_dist = global_paraMgr.camera.getDouble("Camera Vertical Dist")
+                        / global_paraMgr.camera.getDouble("Predicted Model Size");
 
-     far_distance = global_paraMgr.camera.getDouble("Camera Far Distance") /
-                    global_paraMgr.camera.getDouble("Predicted Model Size");
-     near_distance = global_paraMgr.camera.getDouble("Camera Near Distance");
+     far_distance = global_paraMgr.camera.getDouble("Camera Far Distance") 
+                   / global_paraMgr.camera.getDouble("Predicted Model Size");
+     near_distance = global_paraMgr.camera.getDouble("Camera Near Distance")
+                    / global_paraMgr.camera.getDouble("Predicted Model Size");
 
-     dist_to_model = global_paraMgr.camera.getDouble("Camera Dist To Model");
+     dist_to_model = global_paraMgr.camera.getDouble("Camera Dist To Model")
+                   / global_paraMgr.camera.getDouble("Predicted Model Size");
+
      resolution = global_paraMgr.camera.getDouble("Camera Resolution");
-
-     vcg::tri::UpdateNormals<CMesh>::PerFace(*target);
    }else
    {
      cout<<"ERROR: Camera::setInput empty!!" << endl;

@@ -27,7 +27,6 @@ void CameraParaDlg::initConnects()
   connect(ui->pushButton_initial_scan, SIGNAL(clicked()), this, SLOT(initialScan()));
   connect(ui->horizon_dist, SIGNAL(valueChanged(double)), this, SLOT(getCameraHorizonDist(double)));
   connect(ui->vertical_dist, SIGNAL(valueChanged(double)), this, SLOT(getCameraVerticalDist(double)));
-  connect(ui->max_dist, SIGNAL(valueChanged(double)), this, SLOT(getCameraMaxDist(double)));
   connect(ui->dist_to_model, SIGNAL(valueChanged(double)), this, SLOT(getCameraDistToModel(double)));
   connect(ui->tableView_scan_candidates, SIGNAL(clicked(QModelIndex)), this, SLOT(showSelectedScannCandidates(QModelIndex)));
   connect(ui->tableView_scan_results, SIGNAL(clicked(QModelIndex)), this, SLOT(showSelectedScannedMesh(QModelIndex)));
@@ -75,7 +74,6 @@ bool CameraParaDlg::initWidgets()
 {
   ui->horizon_dist->setValue(m_paras->camera.getDouble("Camera Horizon Dist"));
   ui->vertical_dist->setValue(m_paras->camera.getDouble("Camera Vertical Dist"));
-  ui->max_dist->setValue(m_paras->camera.getDouble("Camera Max Dist"));
   ui->view_grid_resolution->setValue(m_paras->nbv.getDouble("View Grid Resolution"));
   ui->max_ray_steps->setValue(m_paras->nbv.getDouble("Max Ray Steps Para"));
   
@@ -375,11 +373,6 @@ void CameraParaDlg::getCameraHorizonDist(double _val)
 void CameraParaDlg::getCameraVerticalDist(double _val)
 {
   global_paraMgr.camera.setValue("Camera Vertical Dist", DoubleValue(_val));
-}
-
-void CameraParaDlg::getCameraMaxDist(double _val)
-{
-  global_paraMgr.camera.setValue("Camera Max Dist", DoubleValue(_val));
 }
 
 void CameraParaDlg::getCameraDistToModel(double _val)
