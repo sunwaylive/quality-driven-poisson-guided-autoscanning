@@ -351,6 +351,19 @@
       <string>Smooth Grid Confidence</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="pushButton_slice_points">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>570</y>
+       <width>211</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Slice Points</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="tab_2">
     <attribute name="title">

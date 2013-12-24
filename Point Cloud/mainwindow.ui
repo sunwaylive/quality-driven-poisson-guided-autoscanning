@@ -66,6 +66,8 @@
     <addaction name="actionSwitch_Sample_with_ISO"/>
     <addaction name="actionTransform"/>
     <addaction name="actionAdd_Sample_To_Original"/>
+    <addaction name="actionRemove_Ignore"/>
+    <addaction name="actionRecover_Ignore"/>
    </widget>
    <widget class="QMenu" name="menuAlgorithom">
     <property name="title">
@@ -883,6 +885,16 @@
   <action name="actionAdd_Sample_To_Original">
    <property name="text">
     <string>Add Sample To Original</string>
+   </property>
+  </action>
+  <action name="actionRemove_Ignore">
+   <property name="text">
+    <string>Remove Ignore</string>
+   </property>
+  </action>
+  <action name="actionRecover_Ignore">
+   <property name="text">
+    <string>Recover Ignore</string>
    </property>
   </action>
  </widget>
