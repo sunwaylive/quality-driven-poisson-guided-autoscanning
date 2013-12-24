@@ -333,6 +333,16 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
   double merge_confidence_threshold = global_paraMgr.camera.getDouble("Merge Confidence Threshold");
   cout<< "merge_confidence_threshold: " <<merge_confidence_threshold <<endl;
 
+  //wsh added 12-24
+  double radius_threshold = global_paraMgr.wLop.getDouble("CGrid Radius");
+  double radius2 = radius_threshold * radius_threshold;
+  double iradius16 = -4/radius2;
+
+  double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
+  double sigma_threshold = pow(max(1e-8,1-cos(sigma/180.0*3.1415926)), 2);
+  CMesh* iso_points = area->dataMgr.getCurrentIsoPoints();
+  //end wsh added
+
   int row_of_mesh = 0;
   for (vector<CMesh* >::iterator it = scanned_results->begin(); 
     it != scanned_results->end(); ++it, ++row_of_mesh)
@@ -348,7 +358,17 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
         //make the merged mesh invisible
         (*it)->vert[0].is_scanned_visible = false;
         //compute new scanned mesh's iso neighbors
-        GlobalFun::computeAnnNeigbhors(area->dataMgr.getCurrentIsoPoints()->vert, (*it)->vert, 1, false, "runNewScannedMeshNearestIsoPoint");
+
+        //wsh updated 12-24
+        //GlobalFun::computeAnnNeigbhors(area->dataMgr.getCurrentIsoPoints()->vert, (*it)->vert, 1, false, "runNewScannedMeshNearestIsoPoint");
+        Timer time;
+        time.start("Sample ISOpoints Neighbor Tree!!");
+        GlobalFun::computeBallNeighbors((*it), area->dataMgr.getCurrentIsoPoints(), 
+                                        radius_threshold, (*it)->bbox);
+        time.end();
+        //end wsh updated
+        
+        
         cout<<"Before merge with original: " << original->vert.size() <<endl;
         cout<<"scanned mesh num: "<<(*it)->vert.size() <<endl;
         int skip_num = 0;
@@ -356,21 +376,40 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
         int index = original->vert.back().m_index;
         for (int k = 0; k < (*it)->vert.size(); ++k)
         {
+          //wsh updated 12-24
           CVertex& v = (*it)->vert[k];
           //add or not
-          CVertex &nearest = area->dataMgr.getCurrentIsoPoints()->vert[v.neighbors[0]];
-          if ((nearest.eigen_confidence > merge_confidence_threshold)/* && (1.0f * rand() / RAND_MAX < 0.9f)*/)
+          //CVertex &nearest = area->dataMgr.getCurrentIsoPoints()->vert[v.neighbors[0]];
+          double sum_confidence = 0.0;
+          double sum_w = 0.0;
+          for(int ni = 0; ni < v.neighbors.size(); ni++)
+          {
+            CVertex& t = iso_points->vert[v.neighbors[ni]];
+            double dist2 = GlobalFun::computeEulerDistSquare(v.P(), t.P());
+
+            double dist_diff = exp(dist2 * iradius16);
+            //double normal_diff = exp(-pow(1-v.N()*t.N(), 2)/sigma_threshold);
+            double normal_diff = 1.0;
+            double w = dist_diff * normal_diff;
+
+            sum_confidence += w * t.eigen_confidence;
+            sum_w += w;
+          }
+          sum_confidence /= sum_w;
+
+          if ((sum_confidence > merge_confidence_threshold)/* && (1.0f * rand() / RAND_MAX < 0.9f)*/)
           {
             skip_num++;
             continue;
           }
-          CVertex t;
-          t.m_index = ++index;
-          t.is_original = true;
-          t.P() = v.P();
-          t.N() = v.N();
-          original->vert.push_back(t);
-          original->bbox.Add(t.P());
+          CVertex new_v;
+          new_v.m_index = ++index;
+          new_v.is_original = true;
+          new_v.P() = v.P();
+          new_v.N() = v.N();
+          original->vert.push_back(new_v);
+          original->bbox.Add(new_v.P());
+          //end wsh updated
         }
         original->vn = original->vert.size();
         cout<<"skip points num:" <<skip_num <<endl;
