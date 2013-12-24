@@ -213,9 +213,6 @@ NormalParaDlg::~NormalParaDlg()
 {
 	delete ui;
 	ui = NULL;
-
-	// 
 	area = NULL;
 	m_paras = NULL;
-
 }

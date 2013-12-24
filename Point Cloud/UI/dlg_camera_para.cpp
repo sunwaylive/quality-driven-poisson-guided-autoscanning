@@ -31,6 +31,7 @@ void CameraParaDlg::initConnects()
   connect(ui->tableView_scan_candidates, SIGNAL(clicked(QModelIndex)), this, SLOT(showSelectedScannCandidates(QModelIndex)));
   connect(ui->tableView_scan_results, SIGNAL(clicked(QModelIndex)), this, SLOT(showSelectedScannedMesh(QModelIndex)));
   connect(ui->pushButton_merge_with_original, SIGNAL(clicked()), this, SLOT(mergeScannedMeshWithOriginal()));
+  connect(ui->doubleSpinBox_merge_confidence_threshold, SIGNAL(valueChanged(double)), this, SLOT(getMergeConfidenceThreshold(double)));
   connect(ui->doubleSpinBox_far_distance, SIGNAL(valueChanged(double)), this, SLOT(getCameraFarDistance(double)));
   connect(ui->doubleSpinBox_near_distance, SIGNAL(valueChanged(double)), this, SLOT(getCameraNearDistance(double)));
   connect(ui->doubleSpinBox_predicted_model_size, SIGNAL(valueChanged(double)), this, SLOT(getPredictedModelSize(double)));
@@ -72,6 +73,7 @@ void CameraParaDlg::initConnects()
 
 bool CameraParaDlg::initWidgets()
 {
+  ui->doubleSpinBox_merge_confidence_threshold->setValue(m_paras->camera.getDouble("Merge Confidence Threshold"));
   ui->horizon_dist->setValue(m_paras->camera.getDouble("Camera Horizon Dist"));
   ui->vertical_dist->setValue(m_paras->camera.getDouble("Camera Vertical Dist"));
   ui->view_grid_resolution->setValue(m_paras->nbv.getDouble("View Grid Resolution"));
@@ -328,6 +330,8 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
 
   CMesh* original = area->dataMgr.getCurrentOriginal();
   vector<CMesh* > *scanned_results = area->dataMgr.getScannedResults();
+  double merge_confidence_threshold = global_paraMgr.camera.getDouble("Merge Confidence Threshold");
+  cout<< "merge_confidence_threshold: " <<merge_confidence_threshold <<endl;
 
   int row_of_mesh = 0;
   for (vector<CMesh* >::iterator it = scanned_results->begin(); 
@@ -345,16 +349,21 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
         (*it)->vert[0].is_scanned_visible = false;
         //compute new scanned mesh's iso neighbors
         GlobalFun::computeAnnNeigbhors(area->dataMgr.getCurrentIsoPoints()->vert, (*it)->vert, 1, false, "runNewScannedMeshNearestIsoPoint");
-
+        cout<<"Before merge with original: " << original->vert.size() <<endl;
+        cout<<"scanned mesh num: "<<(*it)->vert.size() <<endl;
+        int skip_num = 0;
+        
         int index = original->vert.back().m_index;
         for (int k = 0; k < (*it)->vert.size(); ++k)
         {
           CVertex& v = (*it)->vert[k];
           //add or not
           CVertex &nearest = area->dataMgr.getCurrentIsoPoints()->vert[v.neighbors[0]];
-          if ((nearest.eigen_confidence > 0.8) && (1.0f * rand() / RAND_MAX < 0.9f))
+          if ((nearest.eigen_confidence > merge_confidence_threshold)/* && (1.0f * rand() / RAND_MAX < 0.9f)*/)
+          {
+            skip_num++;
             continue;
-
+          }
           CVertex t;
           t.m_index = ++index;
           t.is_original = true;
@@ -364,6 +373,8 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
           original->bbox.Add(t.P());
         }
         original->vn = original->vert.size();
+        cout<<"skip points num:" <<skip_num <<endl;
+        cout<<"After merge with original: " << original->vert.size() <<endl;
         //set combined row unable to be chosen
         ui->tableView_scan_candidates->setRowHidden(row, true);
         ui->tableView_scan_results->setRowHidden(row, true);
@@ -400,6 +411,10 @@ void CameraParaDlg::getMaxRaySteps(double _val)
 void CameraParaDlg::getIsoBottomDelta(double _val)
 {
   global_paraMgr.nbv.setValue("Iso Bottom Delta", DoubleValue(_val));
+}
+void CameraParaDlg::getMergeConfidenceThreshold(double _val)
+{
+  global_paraMgr.camera.setValue("Merge Confidence Threshold", DoubleValue(_val));
 }
 
 void CameraParaDlg::getCameraFarDistance(double _val)

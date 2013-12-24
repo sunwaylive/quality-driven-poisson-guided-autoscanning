@@ -42,6 +42,7 @@ private slots:
   void showSelectedScannCandidates(QModelIndex index);
   void showSelectedScannedMesh(QModelIndex index);
   void mergeScannedMeshWithOriginal();
+  void getMergeConfidenceThreshold(double _val);
   void getCameraHorizonDist(double _val);
   void getCameraVerticalDist(double _val);
   void getCameraDistToModel(double _val);

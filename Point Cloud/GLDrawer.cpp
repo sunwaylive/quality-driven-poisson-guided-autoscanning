@@ -501,7 +501,11 @@ void GLDrawer::drawCamera(vcc::Camera& camera)
   Point3f near_bottom_left = near_end + camera.right * (-camera.near_horizon_dist / 2)
     + camera.up * (-camera.near_vertical_dist / 2);
 
-	glBegin(GL_LINES);
+  glBegin(GL_LINES);
+  //draw direction
+  glColor3f(0.0, 1.0f, 0.0f);
+  glVertex(camera.pos); glVertex(far_end);
+
 	glColor3f(1.0, 0.0, 0.0);
 	glVertex(camera.pos); glVertex(far_top_left);
 	glVertex(camera.pos); glVertex(far_top_right);

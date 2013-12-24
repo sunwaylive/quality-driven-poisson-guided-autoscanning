@@ -94,8 +94,8 @@
     <widget class="QPushButton" name="pushButton_reset">
      <property name="geometry">
       <rect>
-       <x>170</x>
-       <y>676</y>
+       <x>176</x>
+       <y>708</y>
        <width>71</width>
        <height>31</height>
       </rect>
@@ -133,8 +133,8 @@
     <widget class="QPushButton" name="pushButton_merge_with_original">
      <property name="geometry">
       <rect>
-       <x>0</x>
-       <y>676</y>
+       <x>6</x>
+       <y>708</y>
        <width>131</width>
        <height>31</height>
       </rect>
@@ -300,8 +300,8 @@
     <widget class="QPushButton" name="pushButton_wlop_on_scanned_mesh">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>716</y>
+       <x>36</x>
+       <y>751</y>
        <width>191</width>
        <height>31</height>
       </rect>
@@ -313,8 +313,8 @@
     <widget class="Line" name="line_4">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>704</y>
+       <x>16</x>
+       <y>739</y>
        <width>231</width>
        <height>16</height>
       </rect>
@@ -326,14 +326,49 @@
     <widget class="QPushButton" name="pushButton_ICP">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>756</y>
+       <x>36</x>
+       <y>791</y>
        <width>191</width>
        <height>31</height>
       </rect>
      </property>
      <property name="text">
       <string>ICP On Original、Samples</string>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="doubleSpinBox_merge_confidence_threshold">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>680</y>
+       <width>62</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="decimals">
+      <number>10</number>
+     </property>
+     <property name="maximum">
+      <double>1.000000000000000</double>
+     </property>
+     <property name="singleStep">
+      <double>0.050000000000000</double>
+     </property>
+     <property name="value">
+      <double>0.900000000000000</double>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_15">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>680</y>
+       <width>111</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>merge threshold:</string>
      </property>
     </widget>
    </widget>

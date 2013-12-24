@@ -325,7 +325,6 @@ void ParameterMgr::initUpsamplingParameter()
 	upsampling.addParam(new RichDouble("Upsample Radius", grid_r * 0.5) );
 	upsampling.addParam(new RichBool("Use Proj New Term", false));
 	upsampling.addParam(new RichBool("Run Projection", false));
-
 }
 
 void ParameterMgr::initPoissonParameter()
@@ -404,7 +403,7 @@ void ParameterMgr::initCameraParameter()
   camera.addParam(new RichDouble("Camera Dist To Model", ((30.0f + 17.0f)/2 + 0.6 * 20.0f))); //cm
 
   camera.addParam(new RichDouble("Camera Resolution",1.0f / 200.0f));
-
+  camera.addParam(new RichDouble("Merge Confidence Threshold", 0.9f));
   camera.addParam(new RichDouble("Grid Step Size", -1));
 }
 
@@ -425,7 +424,7 @@ void ParameterMgr::initNBVParameter()
   nbv.addParam(new RichBool("Run Set Iso Bottom Confidence", false));
   nbv.addParam(new RichBool("Run Update View Directions", false));
   
-  nbv.addParam(new RichDouble("View Grid Resolution", 40.f));
+  nbv.addParam(new RichDouble("View Grid Resolution", 80.f));
   nbv.addParam(new RichBool("Test Other Inside Segment", false));
 
   nbv.addParam(new RichBool("Use Confidence Separation", false));
