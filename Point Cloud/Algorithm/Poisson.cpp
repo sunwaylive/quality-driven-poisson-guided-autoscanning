@@ -2309,7 +2309,6 @@ void Poisson::runComputeIsoGradientConfidence()
     }
 
     normalizeConfidence(iso_points->vert, 0);
-
   }
   //if (para->getBool("Use Confidence 4"))
   //{

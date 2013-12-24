@@ -196,28 +196,28 @@
       <item>
        <widget class="QPushButton" name="pushButton_poisson_field_original">
         <property name="text">
-         <string>Run Poisson Field on original</string>
+         <string>Generate Poisson Field on original</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="pushButton_poisson_field_samples">
         <property name="text">
-         <string>Run Poisson Field on samples</string>
+         <string>Generate Poisson Field on samples</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="pushButton_poisson_MC_original">
         <property name="text">
-         <string>Extract MC iso points on original</string>
+         <string>Extract ISO points on original</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="pushButton_poisson_MC_samples">
         <property name="text">
-         <string>Extract MC iso points on sample</string>
+         <string>Extract ISO points on sample</string>
         </property>
        </widget>
       </item>

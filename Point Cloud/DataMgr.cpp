@@ -1584,27 +1584,52 @@ void DataMgr::replaceMesh2(CMesh& src_mesh, CMesh& target_mesh, bool isIso)
 
 void DataMgr::coordinateTransform()
 {
-  vcg::Quaternionf quaternion;
-  Point3f translation;
-
+  vcg::Quaternionf L_to_R_rotation_Qua;
+  Point3f C_to_L_translation;
+  Point3f L_to_R_translation;
+  Point3f L_displacement;
 
   ifstream infile("transform.txt");
-  std::string temp;
-  infile >> temp; 
-  infile >> translation[0] >> translation[1] >> translation[2];
-  infile >> temp >> quaternion.X() >> quaternion.Y() >> quaternion.Z() >> quaternion.W();
+  std::string temp_str;
+
+  infile >> temp_str; 
+  infile >> C_to_L_translation[0] >> C_to_L_translation[1] >> C_to_L_translation[2];
+  
+  infile >> temp_str;
+  vcg::Matrix33f C_to_L_rotation;
+  float temp_f = 0.0;
+  for (int i = 0; i < 3; i++)
+  {
+    for (int j = 0; j < 3; j++)
+    {
+      infile >> temp_f;
+      C_to_L_rotation[i][j] = temp_f;
+    }
+  }
+
+  infile >> temp_str; 
+  infile >> L_displacement[0] >> L_displacement[1] >> L_displacement[2];
+
+  infile >> temp_str; 
+  infile >> L_to_R_translation[0] >> L_to_R_translation[1] >> L_to_R_translation[2];
+
+  infile >> temp_str >> L_to_R_rotation_Qua.X() >> L_to_R_rotation_Qua.Y() >> L_to_R_rotation_Qua.Z() >> L_to_R_rotation_Qua.W();
+  
+
   infile.close();
 
 
   vcg::Matrix44f matrix;
-  quaternion.ToMatrix(matrix);
+  L_to_R_rotation_Qua.ToMatrix(matrix);
 
   for (int i = 0; i < samples.vert.size(); i++)
   {
     CVertex& v = samples.vert[i];
-    Point3f p = v.P();
-    p -= translation;
-    v.P() = matrix * p;
+
+    v.P() -= C_to_L_translation;
+    v.P() = matrix * v.P();;
+    v.P() = C_to_L_rotation * v.P();
+    v.P() -= L_displacement;
   }
 
 }

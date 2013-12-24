@@ -225,8 +225,8 @@ void GLArea::paintGL()
 			if (!dataMgr.isModelEmpty())
 			{
 				glw.m = dataMgr.getCurrentModel();
-				glw.Draw(GLW::DMWire, GLW::CMPerMesh, GLW::TMNone);
-				//glw.Draw(GLW::DMSmooth, GLW::CMPerMesh, GLW::TMNone);
+				//glw.Draw(GLW::DMWire, GLW::CMPerMesh, GLW::TMNone);
+				glw.Draw(GLW::DMSmooth, GLW::CMPerMesh, GLW::TMNone);
 			}
 		}
 
