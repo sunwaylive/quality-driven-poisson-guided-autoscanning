@@ -359,7 +359,7 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
           CVertex& v = (*it)->vert[k];
           //add or not
           CVertex &nearest = area->dataMgr.getCurrentIsoPoints()->vert[v.neighbors[0]];
-          if ((nearest.eigen_confidence > merge_confidence_threshold) && (1.0f * rand() / RAND_MAX < 0.9f))
+          if ((nearest.eigen_confidence > merge_confidence_threshold)/* && (1.0f * rand() / RAND_MAX < 0.9f)*/)
           {
             skip_num++;
             continue;
