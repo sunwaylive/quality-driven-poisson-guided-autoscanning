@@ -503,6 +503,8 @@ void GLDrawer::drawCamera(vcc::Camera& camera)
 
 	glBegin(GL_LINES);
 	glColor3f(1.0, 0.0, 0.0);
+  //draw direction
+  glVertex(camera.pos); glVertex(far_end);
 	glVertex(camera.pos); glVertex(far_top_left);
 	glVertex(camera.pos); glVertex(far_top_right);
 	glVertex(camera.pos); glVertex(far_bottom_left);
