@@ -31,7 +31,7 @@ void CameraParaDlg::initConnects()
   connect(ui->tableView_scan_candidates, SIGNAL(clicked(QModelIndex)), this, SLOT(showSelectedScannCandidates(QModelIndex)));
   connect(ui->tableView_scan_results, SIGNAL(clicked(QModelIndex)), this, SLOT(showSelectedScannedMesh(QModelIndex)));
   connect(ui->pushButton_merge_with_original, SIGNAL(clicked()), this, SLOT(mergeScannedMeshWithOriginal()));
-  //connect(ui->doubleSpinBox_merge_confidence_threshold, SIGNAL(valueChanged(double)), this, SLOT(getMergeConfidenceThreshold(double)));
+  connect(ui->doubleSpinBox_merge_confidence_threshold, SIGNAL(valueChanged(double)), this, SLOT(getMergeConfidenceThreshold(double)));
   connect(ui->doubleSpinBox_far_distance, SIGNAL(valueChanged(double)), this, SLOT(getCameraFarDistance(double)));
   connect(ui->doubleSpinBox_near_distance, SIGNAL(valueChanged(double)), this, SLOT(getCameraNearDistance(double)));
   connect(ui->doubleSpinBox_predicted_model_size, SIGNAL(valueChanged(double)), this, SLOT(getPredictedModelSize(double)));
@@ -73,7 +73,7 @@ void CameraParaDlg::initConnects()
 
 bool CameraParaDlg::initWidgets()
 {
-  //ui->doubleSpinBox_merge_confidence_threshold->setValue(m_paras->camera.getDouble("Merge Confidence Threshold"));
+  ui->doubleSpinBox_merge_confidence_threshold->setValue(m_paras->camera.getDouble("Merge Confidence Threshold"));
   ui->horizon_dist->setValue(m_paras->camera.getDouble("Camera Horizon Dist"));
   ui->vertical_dist->setValue(m_paras->camera.getDouble("Camera Vertical Dist"));
   ui->view_grid_resolution->setValue(m_paras->nbv.getDouble("View Grid Resolution"));
@@ -367,12 +367,11 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
                                         radius_threshold, (*it)->bbox);
         time.end();
         //end wsh updated
-        
-        
+
         cout<<"Before merge with original: " << original->vert.size() <<endl;
         cout<<"scanned mesh num: "<<(*it)->vert.size() <<endl;
         int skip_num = 0;
-        
+
         int index = original->vert.back().m_index;
         for (int k = 0; k < (*it)->vert.size(); ++k)
         {
@@ -382,26 +381,34 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
           //CVertex &nearest = area->dataMgr.getCurrentIsoPoints()->vert[v.neighbors[0]];
           double sum_confidence = 0.0;
           double sum_w = 0.0;
-          for(int ni = 0; ni < v.neighbors.size(); ni++)
+          for(int ni = 0; ni < v.original_neighbors.size(); ni++)
           {
-            CVertex& t = iso_points->vert[v.neighbors[ni]];
+            CVertex& t = iso_points->vert[v.original_neighbors[ni]];
             double dist2 = GlobalFun::computeEulerDistSquare(v.P(), t.P());
 
             double dist_diff = exp(dist2 * iradius16);
-            double normal_diff = exp(-pow(1-v.N()*t.N(), 2)/sigma_threshold);
-            //double normal_diff = 1.0;
+            //double normal_diff = exp(-pow(1-v.N()*t.N(), 2)/sigma_threshold);
+            double normal_diff = 1.0;
             double w = dist_diff * normal_diff;
 
             sum_confidence += w * t.eigen_confidence;
             sum_w += w;
           }
-          sum_confidence /= sum_w;
+
+          if (v.neighbors.size() > 0 )
+            sum_confidence /= sum_w;
+
+          if (k < 100)
+            cout << " sum_confidence after normalize: " << sum_confidence <<endl;
 
           if ((sum_confidence > merge_confidence_threshold)/* && (1.0f * rand() / RAND_MAX < 0.9f)*/)
           {
+            //ignore the skip points
+            v.is_ignore = true;
             skip_num++;
             continue;
           }
+
           CVertex new_v;
           new_v.m_index = ++index;
           new_v.is_original = true;
@@ -413,10 +420,10 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
         }
         original->vn = original->vert.size();
         cout<<"skip points num:" <<skip_num <<endl;
-        cout<<"After merge with original: " << original->vert.size() <<endl;
+        cout<<"After merge with original: " << original->vert.size() <<endl <<endl;
         //set combined row unable to be chosen
-        ui->tableView_scan_candidates->setRowHidden(row, true);
-        ui->tableView_scan_results->setRowHidden(row, true);
+        //ui->tableView_scan_candidates->setRowHidden(row, true);
+        //ui->tableView_scan_results->setRowHidden(row, true);
       }
     }
   }
