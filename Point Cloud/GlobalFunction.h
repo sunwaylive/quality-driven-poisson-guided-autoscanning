@@ -86,6 +86,9 @@ namespace GlobalFun
   void computeICP(CMesh *dst, CMesh *src);
   void downSample(CMesh *dst, CMesh *src, double sample_ratio, bool use_random_downsample = true);
   void clearCMesh(CMesh &mesh);
+
+  void deleteIgnore(CMesh* mesh);
+  void recoverIgnore(CMesh* mesh);
 }
 
 class Timer

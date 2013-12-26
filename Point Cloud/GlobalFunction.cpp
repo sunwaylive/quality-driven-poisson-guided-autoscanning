@@ -1096,6 +1096,38 @@ GlobalFun::clearCMesh(CMesh &mesh)
   mesh.bbox = Box3f();
 }
 
+void GlobalFun::deleteIgnore(CMesh* mesh)
+{
+  vector<CVertex> temp_vert;
+  for (int i = 0; i < mesh->vert.size(); i++)
+  {
+    CVertex& v = mesh->vert[i];
+    if (!v.is_ignore)
+    {
+      temp_vert.push_back(v);
+    }
+  }
+
+  mesh->vert.clear();
+  for (int i = 0; i < temp_vert.size(); i++)
+  {
+    CVertex& v = temp_vert[i];
+    v.m_index = i;
+    mesh->vert.push_back(v);
+  }
+  mesh->vn = mesh->vert.size();
+}
+
+void GlobalFun::recoverIgnore(CMesh* mesh)
+{
+  for (int i = 0; i < mesh->vert.size(); i++)
+  {
+    CVertex& v = mesh->vert[i];
+    v.is_ignore = false;
+  }
+}
+
+
 //void Slice::build_slice(Point3f a, Point3f b, Point3f c, float c_length)
 //{
 //  cell_length = c_length;

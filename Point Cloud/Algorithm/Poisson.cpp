@@ -460,67 +460,7 @@ void Poisson::runIsoSmooth()
     v.eigen_confidence = sum_confidence / weight_sum;
   }
 
-  //if (global_paraMgr.drawer.getBool("Show Confidence Color"))
-  //{
-  //  for (int i = 0; i < iso_points->vert.size(); i++)
-  //  {
-  //    CVertex& v = iso_points->vert[i];
-  //    if (v.neighbors.size() <= 1)
-  //    {
-  //      continue;
-  //    }
-
-  //    float confidence_sum = 0;
-  //    for(int j = 0; j < v.neighbors.size(); j++)
-  //    {
-  //      CVertex& t = iso_points->vert[v.neighbors[j]];
-  //      confidence_sum += t.eigen_confidence;
-  //    }
-
-  //    v.eigen_confidence = confidence_sum / v.neighbors.size();
-  //  }
-
-  //}
-  //else
-  //{
-  //  for (int i = 0; i < iso_points->vert.size(); i++)
-  //  {
-  //    CVertex& v = iso_points->vert[i];
-
-  //    if (v.neighbors.empty())
-  //    {
-  //      continue;
-  //    }
-
-  //    double sum = 0;
-  //    double weight_sum = 0;
-  //    for(int j = 0; j < v.neighbors.size(); j++)
-  //    {
-  //      CVertex& t = iso_points->vert[v.neighbors[j]];
-  //      double dist2 = GlobalFun::computeEulerDistSquare(v.P(), t.P());
-  //      if (t.is_hole)
-  //      {
-  //        double w = exp(dist2 * iradius16);
-  //        sum += 1;
-  //        weight_sum += w;
-  //      }
-  //    }
-
-  //    double avg = sum / v.neighbors.size();
-  //    //double avg = sum / weight_sum;
-
-  //    if (avg > 0.5)
-  //    {
-  //      v.is_hole = true;
-  //    }
-  //    else
-  //    {
-  //      v.is_hole = false;
-  //    }
-
-  //  }
-  //}
-
+  normalizeConfidence(iso_points->vert, 0);
 }
 
 void Poisson::runLabelBoundaryPoints()
