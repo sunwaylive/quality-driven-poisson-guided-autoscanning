@@ -1033,6 +1033,7 @@ void NBV::viewClustering()
     }
   }
 
+  normalizeConfidence(nbv_candidates, 0.0f);
 
 }
 //void NBV::viewClustering()
@@ -1100,6 +1101,7 @@ void NBV::viewClustering()
 //  }
 //  nbv_candidates->vn = nbv_candidates->vert.size(); 
 //}
+
 
 
 double NBV::computeLocalScores(CVertex& view_t, CVertex& iso_v, 

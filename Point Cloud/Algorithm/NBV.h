@@ -24,7 +24,6 @@ public:
   void clear();
 
 private:
-
   void runOneKeyNBV();
 
   void buildGrid();

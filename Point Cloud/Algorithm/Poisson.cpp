@@ -2089,13 +2089,14 @@ void Poisson::runComputeNewIsoConfidence()
       {
         CVertex& t = original->vert[(*neighbors)[j]];
         float dist2  = (v.P() - t.P()).SquaredNorm();
-        float w = exp(dist2 * iradius16);
+        float dist_diff = exp(dist2 * iradius16);
         double normal_diff = exp(-pow(1-v.N()*t.N(), 2)/sigma_threshold);
 
-        sum_diff += w * normal_diff;
-        sum_weight +=  w;
+        sum_diff += dist_diff * normal_diff;
+        //sum_weight +=  w;
       }
-      confidences[i][curr] = sum_diff / sum_weight;
+      //confidences[i][curr] = sum_diff / sum_weight;
+      confidences[i][curr] = sum_diff;
     }
 
     curr++;

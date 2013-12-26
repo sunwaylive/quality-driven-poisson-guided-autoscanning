@@ -1,16 +1,17 @@
 #pragma once
 
-#include <QtGui>
-#include <QtGui/QFrame>
-#include <QtGui/QWidget>
-#include <iostream>
-
 #include "Algorithm/normal_extrapolation.h"
 #include "../GeneratedFiles/ui_camera_para.h"
 #include "DataMgr.h"
 #include "ParameterMgr.h"
 #include "glarea.h"
+#include "pointcloud_normal.h"
 
+#include <QtGui>
+#include <QtGui/QFrame>
+#include <QtGui/QWidget>
+
+#include <iostream>
 
 using namespace std;
 
@@ -76,6 +77,7 @@ private slots:
   void runWlopOnScannedMesh();
   void runICP();
   void runStep4NewScans();
+  void runOneKeyNbvIteration();
 
 private:
 	Ui::camera_paras * ui;
