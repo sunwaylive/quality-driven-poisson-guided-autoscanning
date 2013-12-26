@@ -87,7 +87,8 @@ void vcc::Camera::runVirtualScan()
       //line direction vector
       Point3f line_dir = viewray_iter.Normalize();
       Point3f intersect_point;
-      if (GlobalFun::computeMeshLineIntersectPoint(target, pos, line_dir, intersect_point) <= far_distance)
+      double dist = GlobalFun::computeMeshLineIntersectPoint(target, pos, line_dir, intersect_point);
+      if ( dist <= far_distance && dist >= near_distance)
       {        
         //add some random noise
        /* srand(time(NULL)); 
@@ -183,9 +184,9 @@ void vcc::Camera::runNBVScan()
     pos = it->first;
     direction = it->second;
     /********* call runVirtualScan() *******/
-    cout<< i << "th candidate Begin!" <<endl;
+    cout<< i << "th candidate Begins!" <<endl;
     runVirtualScan();
-    cout<< i++ << "th candidate End!" <<endl;
+    cout<< i++ << "th candidate Ends!" <<endl;
 
     scanned_results->push_back(current_scanned_mesh);
   }

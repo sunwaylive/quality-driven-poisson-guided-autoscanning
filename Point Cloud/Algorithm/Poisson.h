@@ -45,7 +45,7 @@ private:
   void runComputeOriginalConfidence();
   void runComputeSampleConfidence();
   void runComputeIsoGradientConfidence();
-  void runComputeNewIsoConfidence();
+  void runComputeIsoSmoothnessConfidence();
   void runAddWLOPtoISO();
   void runSmoothGridConfidence();
 

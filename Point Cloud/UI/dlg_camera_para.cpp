@@ -381,27 +381,30 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
           //CVertex &nearest = area->dataMgr.getCurrentIsoPoints()->vert[v.neighbors[0]];
           double sum_confidence = 0.0;
           double sum_w = 0.0;
+
           for(int ni = 0; ni < v.original_neighbors.size(); ni++)
           {
             CVertex& t = iso_points->vert[v.original_neighbors[ni]];
-            double dist2 = GlobalFun::computeEulerDistSquare(v.P(), t.P());
 
+            /*double dist2 = GlobalFun::computeEulerDistSquare(v.P(), t.P());
             double dist_diff = exp(dist2 * iradius16);
-            //double normal_diff = exp(-pow(1-v.N()*t.N(), 2)/sigma_threshold);
+            double normal_diff = exp(-pow(1-v.N()*t.N(), 2)/sigma_threshold);
             double normal_diff = 1.0;
-            double w = dist_diff * normal_diff;
-
+            double w = dist_diff * normal_diff;*/
+            double w = 1.0f;
             sum_confidence += w * t.eigen_confidence;
             sum_w += w;
           }
 
-          if (v.neighbors.size() > 0 )
+          if (v.original_neighbors.size() > 0 )
             sum_confidence /= sum_w;
 
           if (k < 100)
-            cout << " sum_confidence after normalize: " << sum_confidence <<endl;
+          {
+            cout<<"sum_confidence: " << sum_confidence <<endl;
+          }
 
-          if ((sum_confidence > merge_confidence_threshold)/* && (1.0f * rand() / RAND_MAX < 0.9f)*/)
+          if ((sum_confidence > merge_confidence_threshold) && (1.0f * rand() / RAND_MAX < 0.96f))
           {
             //ignore the skip points
             v.is_ignore = true;
@@ -421,6 +424,20 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
         original->vn = original->vert.size();
         cout<<"skip points num:" <<skip_num <<endl;
         cout<<"After merge with original: " << original->vert.size() <<endl <<endl;
+
+        //increase the confidence of iso_points that is around the added points
+        for (int p = 0; p < (*it)->vert.size(); ++p)
+        {
+          CVertex &sp = (*it)->vert[p];
+          if (sp.is_ignore)
+            continue;
+
+          for (int ni = 0; ni < sp.original_neighbors.size(); ++ni)
+          {
+            CVertex &spn = iso_points->vert[sp.original_neighbors[ni]];
+            spn.eigen_confidence = 1.0f;
+          }
+        }
         //set combined row unable to be chosen
         //ui->tableView_scan_candidates->setRowHidden(row, true);
         //ui->tableView_scan_results->setRowHidden(row, true);

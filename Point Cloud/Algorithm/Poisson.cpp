@@ -194,7 +194,7 @@ void Poisson::run()
 
   if (para->getBool("Compute New ISO Confidence"))
   {
-    runComputeNewIsoConfidence();
+    runComputeIsoSmoothnessConfidence();
     return;
   }
 
@@ -230,7 +230,7 @@ void Poisson::runOneKeyPoissonConfidence()
   para->setValue("Use Confidence 2",BoolValue(false));
   para->setValue("Use Confidence 3",BoolValue(false));
   para->setValue("Use Confidence 4",BoolValue(true));
-  runComputeNewIsoConfidence();
+  runComputeIsoSmoothnessConfidence();
 
   para->setValue("Use Confidence 1",BoolValue(false));
   para->setValue("Use Confidence 2",BoolValue(false));
@@ -238,6 +238,7 @@ void Poisson::runOneKeyPoissonConfidence()
   para->setValue("Use Confidence 4", BoolValue(true));
   runComputeIsoGradientConfidence();
 
+  runIsoSmooth();
 }
 
 //ole method
@@ -255,7 +256,7 @@ void Poisson::runOneKeyPoissonConfidence()
 //  para->setValue("Use Confidence 2",BoolValue(false));
 //  para->setValue("Use Confidence 3",BoolValue(true));
 //  para->setValue("Use Confidence 4",BoolValue(false));
-//  runComputeNewIsoConfidence();
+//  runComputeIsoSmoothnessConfidence();
 //
 //  para->setValue("Use Confidence 1",BoolValue(false));
 //  para->setValue("Use Confidence 2",BoolValue(false));
@@ -357,6 +358,7 @@ void Poisson::runSmoothGridConfidence()
   double iradius16 = -4/radius2;
 
   double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
+  //double sigma = 25;  
   double sigma_threshold = pow(max(1e-8,1-cos(sigma/180.0*3.1415926)), 2);
 
   Timer time;
@@ -404,7 +406,7 @@ void Poisson::runSmoothGridConfidence()
        cout << "after confidence: " << v.eigen_confidence << endl;
     }
   }
-  cout << "neighbor size: " << field_points->vert[0].neighbors.size() << endl;
+  //cout << "neighbor size: " << field_points->vert[0].neighbors.size() << endl;
 }
 
 void Poisson::runIsoSmooth()
@@ -414,6 +416,7 @@ void Poisson::runIsoSmooth()
   double iradius16 = -4/radius2;
 
   double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
+  //double sigma = 25;  
   double sigma_threshold = pow(max(1e-8,1-cos(sigma/180.0*3.1415926)), 2);
 
   Timer time;
@@ -1924,7 +1927,7 @@ void Poisson::runComputeSampleConfidence()
 
 }
 
-void Poisson::runComputeNewIsoConfidence()
+void Poisson::runComputeIsoSmoothnessConfidence()
 {
   vector< vector<float>>confidences;
 
@@ -1956,7 +1959,7 @@ void Poisson::runComputeNewIsoConfidence()
     time.start("confidence 1");
     int knn = global_paraMgr.norSmooth.getInt("PCA KNN");
     cout << "Knn: " << knn << endl;
-    GlobalFun::computeAnnNeigbhors(original->vert, iso_points->vert, knn, false, "runComputeNewIsoConfidence");
+    GlobalFun::computeAnnNeigbhors(original->vert, iso_points->vert, knn, false, "runComputeIsoSmoothnessConfidence");
     //b_already_compute_neighborhood = true;
 
     //float sum_confidence = 0;
@@ -1999,7 +2002,7 @@ void Poisson::runComputeNewIsoConfidence()
     time.start("confidence 2");
     int knn = global_paraMgr.norSmooth.getInt("PCA KNN");
     cout << "Knn: " << knn << endl;
-    GlobalFun::computeAnnNeigbhors(original->vert, iso_points->vert, knn, false, "runComputeNewIsoConfidence");
+    GlobalFun::computeAnnNeigbhors(original->vert, iso_points->vert, knn, false, "runComputeIsoSmoothnessConfidence");
     //b_already_compute_neighborhood = true;
     //float sum_confidence = 0;
 
@@ -2054,7 +2057,7 @@ void Poisson::runComputeNewIsoConfidence()
     time.start("confidence 4");
     int knn = para->getDouble("Original KNN");
     cout << "Knn: " << knn << endl;
-    GlobalFun::computeAnnNeigbhors(original->vert, iso_points->vert, knn, false, "runComputeNewIsoConfidence");
+    GlobalFun::computeAnnNeigbhors(original->vert, iso_points->vert, knn, false, "runComputeIsoSmoothnessConfidence");
     
     double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
     double sigma_threshold = pow(max(1e-8,1-cos(sigma/180.0*3.1415926)), 2);
@@ -2089,13 +2092,14 @@ void Poisson::runComputeNewIsoConfidence()
       {
         CVertex& t = original->vert[(*neighbors)[j]];
         float dist2  = (v.P() - t.P()).SquaredNorm();
-        float w = exp(dist2 * iradius16);
+        float dist_diff = exp(dist2 * iradius16);
         double normal_diff = exp(-pow(1-v.N()*t.N(), 2)/sigma_threshold);
 
-        sum_diff += w * normal_diff;
-        sum_weight +=  w;
+        sum_diff += dist_diff * normal_diff;
+        //sum_weight +=  w;
       }
-      confidences[i][curr] = sum_diff / sum_weight;
+      //confidences[i][curr] = sum_diff / sum_weight;
+      confidences[i][curr] = sum_diff;
     }
 
     curr++;

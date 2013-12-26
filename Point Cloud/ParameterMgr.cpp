@@ -287,9 +287,9 @@ void ParameterMgr::initNormalSmootherParameter()
 {
 	norSmooth.addParam(new RichString("Algorithm Name", "NormalSmooth") );
 
-	norSmooth.addParam(new RichInt("PCA KNN", 20));
+	norSmooth.addParam(new RichInt("PCA KNN", 50));
 	norSmooth.addParam(new RichDouble("CGrid Radius", grid_r));
-	norSmooth.addParam(new RichDouble("Sharpe Feature Bandwidth Sigma", 60));
+	norSmooth.addParam(new RichDouble("Sharpe Feature Bandwidth Sigma", 45));
 	norSmooth.addParam(new RichBool("Run Anistropic PCA", false));
 	norSmooth.addParam(new RichBool("Run Init Samples Using Normal", false));
 
@@ -368,7 +368,7 @@ void ParameterMgr::initPoissonParameter()
 	poisson.addParam(new RichDouble("Current Z Slice Position", 0.5));
 	poisson.addParam(new RichDouble("Show Slice Percentage", 0.75));
 	poisson.addParam(new RichDouble("Poisson Disk Sample Number", 10000));
-  poisson.addParam(new RichDouble("Original KNN", 251));
+  poisson.addParam(new RichDouble("Original KNN", 551));
 
 	poisson.addParam(new RichBool("Use Confidence 1", false));
 	poisson.addParam(new RichBool("Use Confidence 2", false));
@@ -396,14 +396,14 @@ void ParameterMgr::initCameraParameter()
 
   camera.addParam(new RichDouble("Camera Far Distance", 30.0f));   //cm
   camera.addParam(new RichDouble("Camera Near Distance", 17.0f));  //cm
-  camera.addParam(new RichDouble("Optimal Plane Width", 10.0f));   //cm
+  camera.addParam(new RichDouble("Optimal Plane Width", 3.0f));    //cm
   camera.addParam(new RichDouble("Predicted Model Size", 20.0f));  //cm
   camera.addParam(new RichDouble("Camera Horizon Dist", 14.0f));   //cm
   camera.addParam(new RichDouble("Camera Vertical Dist", 18.0f));  //cm
   camera.addParam(new RichDouble("Camera Dist To Model", ((30.0f + 17.0f)/2 + 0.6 * 20.0f))); //cm
 
   camera.addParam(new RichDouble("Camera Resolution",1.0f / 200.0f));
-  camera.addParam(new RichDouble("Merge Confidence Threshold", 0.9f));
+  camera.addParam(new RichDouble("Merge Confidence Threshold", 0.55f));
   camera.addParam(new RichDouble("Grid Step Size", -1));
 }
 

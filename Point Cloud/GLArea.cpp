@@ -352,14 +352,6 @@ void GLArea::paintGL()
 
 			if(!nbv_candidates->vert.empty()) 
 				glDrawer.draw(GLDrawer::DOT, nbv_candidates);
-
-      CMesh *view_grid_points = dataMgr.getViewGridPoints();
-      if (NULL == view_grid_points) return;
-
-      if(!view_grid_points->vert.empty())
-      {
-        glDrawer.drawGrid(view_grid_points, 4);
-      }
 		}
 
 		if (para->getBool("Show Scan Candidates"))
@@ -435,6 +427,15 @@ void GLArea::paintGL()
       glBoxWire(dataMgr.whole_space_box);
 
 			CoordinateFrame(dataMgr.whole_space_box.Diag()/2.0).Render(this, NULL);
+
+
+      CMesh *view_grid_points = dataMgr.getViewGridPoints();
+      if (NULL == view_grid_points) return;
+
+      if(!view_grid_points->vert.empty())
+      {
+        glDrawer.drawGrid(view_grid_points, 4);
+      }
 		}
 
 
@@ -2135,6 +2136,8 @@ void GLArea::mouseReleaseEvent(QMouseEvent *e)
 
         cout << "Pos: " << v.P()[0] << ", " 
                         << v.P()[1] << ", " << v.P()[2] << ", "<<endl;
+
+        cout << "Confidence: " <<v.eigen_confidence <<endl;
 			}
 		}
 	}
