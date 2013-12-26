@@ -1280,7 +1280,7 @@ bool NBV::updateViewDirections()
 void NBV::runSmoothGridConfidence()
 {
   cout << "run smooth grid" << endl;
-  double radius_threshold = para->getDouble("CGrid Radius");
+  double radius_threshold = global_paraMgr.wLop.getDouble("CGrid Radius");
   double radius2 = radius_threshold * radius_threshold;
   double iradius16 = -4/radius2;
 
