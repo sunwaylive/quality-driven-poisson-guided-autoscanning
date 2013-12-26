@@ -683,7 +683,7 @@ CameraParaDlg::runOneKeyNbvIteration()
   QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
   if (!file_location.size()) return;
   
-  int iteration_cout = 1;
+  int iteration_cout = global_paraMgr.nbv.getDouble("NBV Iteration Count");
   CMesh *original = area->dataMgr.getCurrentOriginal();
   for (int ic = 0; ic < iteration_cout; ++ic)
   {
@@ -730,10 +730,17 @@ CameraParaDlg::runOneKeyNbvIteration()
 
     runStep3NBVcandidates();
     NBVCandidatesScan();
+    QString s_nbv;
+    s_nbv.sprintf("\\%d_nbv.skel", ic);
+    s_nbv = file_location + s_nbv;
+    area->dataMgr.saveSkeletonAsSkel(s_nbv);
+    s_nbv.replace(".skel", ".View");
+    area->saveView(s_nbv);
+
     mergeScannedMeshWithOriginal();
     //save merged scan
     QString s_merged_mesh;
-    s_merged_mesh.sprintf("\\%d_merged mesh", ic);
+    s_merged_mesh.sprintf("\\%d_merged_mesh", ic);
     s_merged_mesh = file_location + s_merged_mesh;
     area->dataMgr.saveMergedMesh(s_merged_mesh);
     //fixme: increase the radius

@@ -1544,8 +1544,8 @@ DataMgr::saveMergedMesh(QString fileName)
   {
     QString s_i;
     s_i.sprintf("_%d.ply", i);
-    fileName += s_i;
-    savePly(fileName, *scanned_results[i]);
+    QString r = fileName + s_i;
+    savePly(r, *scanned_results[i]);
   }
 }
 

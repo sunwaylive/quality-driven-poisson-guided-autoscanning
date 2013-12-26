@@ -397,7 +397,7 @@ void ParameterMgr::initCameraParameter()
   camera.addParam(new RichDouble("Camera Far Distance", 30.0f));   //cm
   camera.addParam(new RichDouble("Camera Near Distance", 17.0f));  //cm
   camera.addParam(new RichDouble("Optimal Plane Width", 3.0f));    //cm
-  camera.addParam(new RichDouble("Predicted Model Size", 20.0f));  //cm
+  camera.addParam(new RichDouble("Predicted Model Size", 10.0f));  //cm lion:20
   camera.addParam(new RichDouble("Camera Horizon Dist", 14.0f));   //cm
   camera.addParam(new RichDouble("Camera Vertical Dist", 18.0f));  //cm
   camera.addParam(new RichDouble("Camera Dist To Model", ((30.0f + 17.0f)/2 + 0.6 * 20.0f))); //cm
