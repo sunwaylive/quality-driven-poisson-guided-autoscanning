@@ -93,7 +93,7 @@ public:
 	void     saveSkeletonAsSkel(QString fileName);
   void     saveFieldPoints(QString fileName);
   void     saveViewGrids(QString fileName);
-
+  void     saveMergedMesh(QString fileName);
 
   void switchSampleToOriginal();
   void switchSampleToISO();

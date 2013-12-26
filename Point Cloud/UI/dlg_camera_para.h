@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Algorithm/normal_extrapolation.h"
+#include "Algorithm/pointcloud_normal.h"
 #include "../GeneratedFiles/ui_camera_para.h"
 #include "DataMgr.h"
 #include "ParameterMgr.h"
 #include "glarea.h"
-#include "pointcloud_normal.h"
 
 #include <QtGui>
 #include <QtGui/QFrame>
@@ -56,7 +56,7 @@ private slots:
   void getOptimalPlaneWidth(double _val);
   void getPropagateIndex(double _val);
   void getRayResolutionPara(double _val);
-
+  void getNbvIterationCount(double _val);
 
 
   void buildGrid();

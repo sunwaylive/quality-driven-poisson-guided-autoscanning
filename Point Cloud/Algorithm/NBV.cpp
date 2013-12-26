@@ -103,9 +103,9 @@ NBV::runOneKeyNBV()
   propagate();
   timer.end();
 
-  timer.start("smooth grid confidence");
-  runSmoothGridConfidence();
-  timer.end();
+  //timer.start("smooth grid confidence");
+  //runSmoothGridConfidence();
+  //timer.end();
 
   timer.start("view bin selection");
   viewExtractionIntoBins();
@@ -125,7 +125,6 @@ NBV::runOneKeyNBV()
   timer.start("view optimize");
   viewClustering();
   timer.end();
-
 
   scan_candidates->clear();
   for (int i = 0; i < nbv_candidates->vert.size(); ++i)
@@ -1037,8 +1036,12 @@ void NBV::viewClustering()
     }
   }
 
-  normalizeConfidence(nbv_candidates, 0.0f);
+  sort(nbv_candidates->vert.begin(), nbv_candidates->vert.end(), cmp);
 
+  if (nbv_candidates->vert.size() > 5)
+    nbv_candidates->vert.erase(nbv_candidates->vert.begin()+5, nbv_candidates->vert.end());
+
+  return;
 }
 //void NBV::viewClustering()
 //{
@@ -1282,7 +1285,7 @@ bool NBV::updateViewDirections()
 void NBV::runSmoothGridConfidence()
 {
   cout << "run smooth grid" << endl;
-  double radius_threshold = para->getDouble("CGrid Radius");
+  double radius_threshold = global_paraMgr.data.getDouble("CGrid Radius");
   double radius2 = radius_threshold * radius_threshold;
   double iradius16 = -4/radius2;
 

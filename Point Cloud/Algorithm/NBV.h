@@ -43,7 +43,7 @@ private:
   double computeLocalScores(CVertex& view_t, CVertex& iso_v, 
                           double& optimal_D, double& half_D2, double& sigma_threshold);
   int    getIsoPointsViewBinIndex(Point3f& p, int which_axis);
-  bool   cmp(const CVertex &v1, const CVertex &v2);
+  static bool  cmp(const CVertex &v1, const CVertex &v2);
 
 private:
   RichParameterSet      *para;

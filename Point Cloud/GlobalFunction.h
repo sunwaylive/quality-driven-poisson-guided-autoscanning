@@ -23,7 +23,10 @@
 #define EIGEN_DEFAULT_TO_ROW_MAJOR
 #define EIGEN_EXCEPTIONS
 const double PI = 3.1415926;
+
 const double EPI = 1e-6;
+const double EPI_BOX = 1e-6;
+
 const double BIG = 100000;
 //#include <Eigen/Dense>
 

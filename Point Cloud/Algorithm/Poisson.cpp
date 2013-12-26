@@ -232,13 +232,18 @@ void Poisson::runOneKeyPoissonConfidence()
   para->setValue("Use Confidence 4",BoolValue(true));
   runComputeIsoSmoothnessConfidence();
 
+  Timer timer;
+  timer.start("runComputeIsoGradientConfidence");
   para->setValue("Use Confidence 1",BoolValue(false));
   para->setValue("Use Confidence 2",BoolValue(false));
   para->setValue("Use Confidence 3",BoolValue(false));
   para->setValue("Use Confidence 4", BoolValue(true));
   runComputeIsoGradientConfidence();
+  timer.end();
 
+  timer.start("Run Iso Smooth");
   runIsoSmooth();
+  timer.end();
 }
 
 //ole method

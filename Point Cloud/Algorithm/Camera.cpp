@@ -100,7 +100,7 @@ void vcc::Camera::runVirtualScan()
         t.is_scanned = true;
         t.m_index = index++;
         t.P() = intersect_point; //+ Point3f(rndax, rnday, rndaz);
-        t.N() = -direction.Normalize(); //set out direction as approximate normal
+        t.N() = -line_dir; //set out direction as approximate normal
         current_scanned_mesh->vert.push_back(t);
         current_scanned_mesh->bbox.Add(t.P());
       }
@@ -150,15 +150,15 @@ void vcc::Camera::runInitialScan()
     for (int i = 0; i < current_scanned_mesh->vert.size(); ++i)
     {
       CVertex& v = current_scanned_mesh->vert[i];
-      CVertex t;
+      CVertex t = v;
       t.m_index = ++index;
       t.is_original = true;
-      t.P() = v.P();
       original->vert.push_back(t);
       original->bbox.Add(t.P());
     }
     original->vn = original->vert.size();
   }
+
 }
 
 void vcc::Camera::runNBVScan()
@@ -195,20 +195,6 @@ void vcc::Camera::runNBVScan()
 void vcc::Camera::runOneKeyNewScan()
 {
 	runNBVScan();
-
-	//merge with original points
-  int index = original->vert.back().m_index;
-	vector<CMesh*>::iterator it_scan_result = scanned_results->begin();
-	for (; it_scan_result != scanned_results->end(); ++it_scan_result)
-	{
-		CMesh *r = *it_scan_result;
-		for (int i = 0; i < r->vert.size(); ++i)
-		{
-      r->vert[i].is_original = true;
-      r->vert[i].m_index = ++index;
-			original->vert.push_back(r->vert[i]);
-		}
-	}
 }
 
 void vcc::Camera::computeUpAndRight()

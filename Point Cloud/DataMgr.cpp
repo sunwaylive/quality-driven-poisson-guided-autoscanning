@@ -1537,6 +1537,18 @@ DataMgr::saveViewGrids(QString fileName)
   out_dat.close();
 }
 
+void
+DataMgr::saveMergedMesh(QString fileName)
+{
+  for(int i = 0; i < scanned_results.size(); ++i)
+  {
+    QString s_i;
+    s_i.sprintf("_%d.ply", i);
+    fileName += s_i;
+    savePly(fileName, *scanned_results[i]);
+  }
+}
+
 void DataMgr::switchSampleToOriginal()
 {
   CMesh temp_mesh;
@@ -1580,7 +1592,6 @@ void DataMgr::replaceMesh2(CMesh& src_mesh, CMesh& target_mesh, bool isIso)
   target_mesh.vn = src_mesh.vn;
   target_mesh.bbox = src_mesh.bbox;
 }
-
 
 void DataMgr::coordinateTransform()
 {

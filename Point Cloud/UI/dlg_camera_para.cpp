@@ -22,6 +22,8 @@ void CameraParaDlg::initConnects()
     cout << "can not connect signal" << endl;
   }
 
+  connect(ui->spinBox_nbv_iteration_count, SIGNAL(valueChanged(double)), this, SLOT(getNbvIterationCount(double)));
+  connect(ui->pushButton_one_key_nbv_iteration, SIGNAL(clicked()), this, SLOT(runOneKeyNbvIteration()));
   connect(ui->checkBox_show_init_cameras,SIGNAL(clicked(bool)),this,SLOT(showInitCameras(bool)));
   connect(ui->pushButton_scan, SIGNAL(clicked()), this, SLOT(NBVCandidatesScan()));
   connect(ui->pushButton_initial_scan, SIGNAL(clicked()), this, SLOT(initialScan()));
@@ -74,6 +76,7 @@ void CameraParaDlg::initConnects()
 bool CameraParaDlg::initWidgets()
 {
   ui->doubleSpinBox_merge_confidence_threshold->setValue(m_paras->camera.getDouble("Merge Confidence Threshold"));
+  ui->spinBox_nbv_iteration_count->setValue(m_paras->nbv.getDouble("NBV Iteration Count"));
   ui->horizon_dist->setValue(m_paras->camera.getDouble("Camera Horizon Dist"));
   ui->vertical_dist->setValue(m_paras->camera.getDouble("Camera Vertical Dist"));
   ui->view_grid_resolution->setValue(m_paras->nbv.getDouble("View Grid Resolution"));
@@ -200,17 +203,17 @@ void CameraParaDlg::initialScan()
 void CameraParaDlg::NBVCandidatesScan()
 {
   //scan only the candidates those are chosen
-  vector<ScanCandidate> *sc = area->dataMgr.getScanCandidates();
+  /*vector<ScanCandidate> *sc = area->dataMgr.getScanCandidates();
   vector<ScanCandidate> select_scan_candidates;
   QModelIndexList sil = ui->tableView_scan_candidates->selectionModel()->selectedRows();
   for (int i = 0; i < sil.size(); ++i)
   {
-    int row = sil[i].row();
-    select_scan_candidates.push_back((*sc)[row]);
+  int row = sil[i].row();
+  select_scan_candidates.push_back((*sc)[row]);
   }
   sc->clear();
-  std::copy(select_scan_candidates.begin(), select_scan_candidates.end(), std::back_inserter(*sc));
-
+  std::copy(select_scan_candidates.begin(), select_scan_candidates.end(), std::back_inserter(*sc));*/
+  
   global_paraMgr.camera.setValue("Run NBV Scan", BoolValue(true));
   area->runCamera();
   global_paraMgr.camera.setValue("Run NBV Scan", BoolValue(false));
@@ -343,18 +346,18 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
   CMesh* iso_points = area->dataMgr.getCurrentIsoPoints();
   //end wsh added
 
-  int row_of_mesh = 0;
+  /*int row_of_mesh = 0;*/
   for (vector<CMesh* >::iterator it = scanned_results->begin(); 
-    it != scanned_results->end(); ++it, ++row_of_mesh)
+    it != scanned_results->end(); ++it /*++row_of_mesh*/)
   {
     if ((*it)->vert.empty()) continue;
 
-    for (int i = 0; i < sil.size(); ++i)
-    {
-      int row = sil[i].row();
+   // for (int i = 0; i < sil.size(); ++i)
+   // {
+      //int row = sil[i].row();
       //combine the selected mesh with original
-      if (row == row_of_mesh) 
-      {
+     // if (row == row_of_mesh) 
+     // {
         //make the merged mesh invisible
         (*it)->vert[0].is_scanned_visible = false;
         //compute new scanned mesh's iso neighbors
@@ -400,9 +403,7 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
             sum_confidence /= sum_w;
 
           if (k < 100)
-          {
             cout<<"sum_confidence: " << sum_confidence <<endl;
-          }
 
           if ((sum_confidence > merge_confidence_threshold) && (1.0f * rand() / RAND_MAX < 0.96f))
           {
@@ -441,9 +442,14 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
         //set combined row unable to be chosen
         //ui->tableView_scan_candidates->setRowHidden(row, true);
         //ui->tableView_scan_results->setRowHidden(row, true);
-      }
-    }
+      //}
+   // }//end for sil
   }
+}
+
+void CameraParaDlg::getNbvIterationCount(double _val)
+{
+  global_paraMgr.nbv.setValue("NBV Iteration Count", DoubleValue(_val));
 }
 
 void CameraParaDlg::getCameraHorizonDist(double _val)
@@ -603,7 +609,7 @@ void CameraParaDlg::runStep1WLOP()
   CMesh* samples = area->dataMgr.getCurrentSamples();
   vcg::NormalExtrapolation<vector<CVertex> >::ExtrapolateNormals(samples->vert.begin(), samples->vert.end(), knn, -1);
   area->dataMgr.recomputeQuad();
-  GlobalFun::removeOutliers(samples, global_paraMgr.data.getDouble("CGrid Radius"), 0.01);
+  GlobalFun::removeOutliers(samples, global_paraMgr.data.getDouble("CGrid Radius"), 0.001);
 }
 
 void CameraParaDlg::runStep2PoissonConfidence()
@@ -674,19 +680,63 @@ void CameraParaDlg::runICP()
 void
 CameraParaDlg::runOneKeyNbvIteration()
 {
-  int iteration_cout = 5;
+  QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
+  if (!file_location.size()) return;
+  
+  int iteration_cout = 1;
+  CMesh *original = area->dataMgr.getCurrentOriginal();
   for (int ic = 0; ic < iteration_cout; ++ic)
   {
+    //save original
+    QString s_original;
+    s_original.sprintf("\\%d_original.ply", ic);
+    s_original = file_location + s_original;
+    area->dataMgr.savePly(s_original, *area->dataMgr.getCurrentOriginal());
+
     //compute normal on original
-    /*int knn = global_paraMgr.norSmooth.getInt("PCA KNN");
+    vector<Point3f> before_normal;
+    for (int i = 0; i < original->vert.size(); ++i)
+      before_normal.push_back(original->vert[i].N()); 
+
+    int knn = global_paraMgr.norSmooth.getInt("PCA KNN");
     vcg::tri::PointCloudNormal<CMesh>::Param pca_para;
     pca_para.fittingAdjNum = knn;
-    vcg::tri::PointCloudNormal<CMesh>::Compute(*samples, pca_para, NULL);*/
+    vcg::tri::PointCloudNormal<CMesh>::Compute(*original, pca_para, NULL);
+
+    for (int i = 0; i < original->vert.size(); ++i)
+    {
+      if (before_normal[i] * original->vert[i].N() < 0.0f)
+        original->vert[i].N() *= -1;
+    }
+
+    //save normalized original
+    QString s_normal_original;
+    s_normal_original.sprintf("\\%d_normal_original.ply", ic);
+    s_normal_original = file_location + s_normal_original;
+    area->dataMgr.savePly(s_normal_original, *area->dataMgr.getCurrentOriginal());
+
+    //compute radius
+    area->dataMgr.downSamplesByNum();
+    area->initSetting();
 
     runStep2PoissonConfidence();
+    //save skel and view
+    QString s_iso;
+    s_iso.sprintf("\\%d_iso.skel", ic);
+    s_iso = file_location + s_iso;
+    area->dataMgr.saveSkeletonAsSkel(s_iso);
+    s_iso.replace(".skel", ".View");
+    area->saveView(s_iso);
+
     runStep3NBVcandidates();
-    //fixme: pick the topest 5 to scan
     NBVCandidatesScan();
     mergeScannedMeshWithOriginal();
+    //save merged scan
+    QString s_merged_mesh;
+    s_merged_mesh.sprintf("\\%d_merged mesh", ic);
+    s_merged_mesh = file_location + s_merged_mesh;
+    area->dataMgr.saveMergedMesh(s_merged_mesh);
+    //fixme: increase the radius
+    GlobalFun::removeOutliers(original, global_paraMgr.data.getDouble("CGrid Radius"), 0.001);
   }
 }
