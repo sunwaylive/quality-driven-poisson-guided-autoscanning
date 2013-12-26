@@ -103,6 +103,10 @@ NBV::runOneKeyNBV()
   propagate();
   timer.end();
 
+  timer.start("smooth grid confidence");
+  runSmoothGridConfidence();
+  timer.end();
+
   timer.start("view bin selection");
   viewExtractionIntoBins();
   timer.end();
@@ -1272,4 +1276,64 @@ bool NBV::updateViewDirections()
   }
 
   return have_direction_move;
+}
+
+
+void NBV::runSmoothGridConfidence()
+{
+  cout << "run smooth grid" << endl;
+  double radius_threshold = para->getDouble("CGrid Radius");
+  double radius2 = radius_threshold * radius_threshold;
+  double iradius16 = -4/radius2;
+
+  double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
+  //double sigma = 25;  
+  double sigma_threshold = pow(max(1e-8,1-cos(sigma/180.0*3.1415926)), 2);
+
+  Timer time;
+  time.start("Sample ISOpoints Neighbor Tree!!");
+  GlobalFun::computeBallNeighbors(field_points, NULL, 
+    radius_threshold, field_points->bbox);
+  time.end();
+
+  for (int i = 0; i < field_points->vert.size(); i++)
+  {
+    CVertex& v = field_points->vert[i];
+
+    if (i < 20)
+    {
+      cout << "before confidence: " << v.eigen_confidence << endl;
+    }
+
+    if (v.neighbors.empty())
+    {
+      cout << "empty neighbor" << endl;
+      continue;
+    }
+
+    double sum_confidence = 0;
+    double weight_sum = 0;
+    for(int j = 0; j < v.neighbors.size(); j++)
+    {
+      CVertex& t = field_points->vert[v.neighbors[j]];
+      double dist2 = GlobalFun::computeEulerDistSquare(v.P(), t.P());
+
+      double dist_diff = exp(dist2 * iradius16);
+      double normal_diff = exp(-pow(1-v.N()*t.N(), 2)/sigma_threshold);
+
+      double w = dist_diff * normal_diff;
+
+      sum_confidence += w * t.eigen_confidence;
+      weight_sum += w;
+
+    }
+
+    v.eigen_confidence = sum_confidence / weight_sum;
+
+    if (i < 20)
+    {
+      cout << "after confidence: " << v.eigen_confidence << endl;
+    }
+  }
+  //cout << "neighbor size: " << field_points->vert[0].neighbors.size() << endl;
 }
