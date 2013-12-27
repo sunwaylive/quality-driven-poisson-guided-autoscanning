@@ -1905,9 +1905,6 @@ void Poisson::runComputeIsoSmoothnessConfidence()
     int knn = global_paraMgr.norSmooth.getInt("PCA KNN");
     cout << "Knn: " << knn << endl;
     GlobalFun::computeAnnNeigbhors(original->vert, iso_points->vert, knn, false, "runComputeIsoSmoothnessConfidence");
-    //b_already_compute_neighborhood = true;
-
-    //float sum_confidence = 0;
     
     float min_confidence = GlobalFun::getDoubleMAXIMUM();
     float max_confidence = 0;
@@ -1930,10 +1927,6 @@ void Poisson::runComputeIsoSmoothnessConfidence()
         double proj = v.N()*(t.P() - v.P());
         double proj2 = proj * proj;
         sum_proj2 += proj2;
-        //float dist2  = (v.P() - t.P()).SquaredNorm();
-        //float den = exp(dist2*iradius16);
-
-        //confidences[i][curr] += den;
       }
       confidences[i][curr] = -sum_proj2 / neighbors->size();
     }
@@ -1944,57 +1937,13 @@ void Poisson::runComputeIsoSmoothnessConfidence()
 
   if (para->getBool("Use Confidence 2"))
   {
-    time.start("confidence 2");
-    int knn = global_paraMgr.norSmooth.getInt("PCA KNN");
-    cout << "Knn: " << knn << endl;
-    GlobalFun::computeAnnNeigbhors(original->vert, iso_points->vert, knn, false, "runComputeIsoSmoothnessConfidence");
-    //b_already_compute_neighborhood = true;
-    //float sum_confidence = 0;
-
-    float min_confidence = GlobalFun::getDoubleMAXIMUM();
-    float max_confidence = 0;
     for (int i = 0; i < iso_points->vert.size(); i++)
     {
-      confidences[i][curr] = 0.01;
+      confidences[i][curr] = 0.5;
       CVertex& v = iso_points->vert[i];
-
-      if (v.neighbors.empty())
-      {
-        cout << "empty neighborhood" << endl;
-        continue;
-      }
-      vector<int>* neighbors = &v.neighbors;
-      double sum_proj2 = 0.0;
-
-      double max_dist2 = 0.0;
-      for (int j = 0; j < v.neighbors.size(); j++)
-      {
-         CVertex& t = original->vert[(*neighbors)[j]];
-         //double proj = v.N()*(t.P() - v.P());
-         //double proj2 = proj * proj;
-         double dist2 = GlobalFun::computeEulerDistSquare(v.P(), t.P());
-         if (dist2 > max_dist2)
-         {
-           max_dist2 = dist2;
-         }
-      }
-      //cout << "max dist2:   " << max_dist2 << endl;
-      //double max_dist = sqrt(max_dist2);
-      max_dist2 = (std::max)(max_dist2, 1e-6);
-
-      for (int j = 0; j < v.neighbors.size(); j++)
-      {
-        CVertex& t = original->vert[(*neighbors)[j]];
-
-        double proj = v.N()*(t.P() - v.P());
-        double proj2 = proj * proj;
-        sum_proj2 += exp(-4.0 * proj2/max_dist2);
-      }
-      confidences[i][curr] = sum_proj2 / neighbors->size();
+      v.eigen_confidence = 0.5;
     }
-
     curr++;
-    time.end();
   }
 
   if (para->getBool("Use Confidence 4"))
@@ -2054,44 +2003,60 @@ void Poisson::runComputeIsoSmoothnessConfidence()
 
   if (para->getBool("Use Confidence 3"))
   {
-    time.start("confidence 3");
-    GlobalFun::computeBallNeighbors(iso_points, samples, 
-      radius, 
-      original->bbox);
-
+    time.start("confidence 4");
+    int knn = para->getDouble("Original KNN");
+    cout << "Knn: " << knn << endl;
+    GlobalFun::computeAnnNeigbhors(original->vert, iso_points->vert, knn, false, "runComputeIsoSmoothnessConfidence");
 
     double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
-    double sigma_threshold = pow(max(1e-8, 1-cos(sigma/180.0*3.1415926)), 2);
+    double sigma_threshold = pow(max(1e-8,1-cos(sigma/180.0*3.1415926)), 2);
 
-    float min_confidence = GlobalFun::getDoubleMAXIMUM();
-    float max_confidence = 0;
     for (int i = 0; i < iso_points->vert.size(); i++)
     {
-      confidences[i][curr] = 0.;
-
+      confidences[i][curr] = 0.01;
       CVertex& v = iso_points->vert[i];
-      if (v.original_neighbors.empty())
+
+      if (v.neighbors.empty())
       {
+        cout << "empty neighborhood" << endl;
         continue;
       }
+      vector<int>* neighbors = &v.neighbors;
+      double sum_diff = 0.0;
 
-      vector<int>* neighbors = &v.original_neighbors;
-      for (int j = 0; j < v.original_neighbors.size(); j++)
+      double max_dist2 = 0.0;
+      for (int j = 0; j < v.neighbors.size(); j++)
       {
-        CVertex& t = samples->vert[(*neighbors)[j]];
+        CVertex& t = original->vert[(*neighbors)[j]];
+        double dist2 = GlobalFun::computeEulerDistSquare(v.P(), t.P());
+        if (dist2 > max_dist2)
+        {
+          max_dist2 = dist2;
+        }
+      }
+      double iradius16 = -4.0/max_dist2;
+      //double max_dist = sqrt(max_dist2);
+      double sum_weight = 0.0;
+      for (int j = 0; j < v.neighbors.size(); j++)
+      {
+        CVertex& t = original->vert[(*neighbors)[j]];
         float dist2  = (v.P() - t.P()).SquaredNorm();
-        float w = exp(dist2 * iradius16);
+        float dist_diff = exp(dist2 * iradius16);
         double normal_diff = exp(-pow(1-v.N()*t.N(), 2)/sigma_threshold);
 
-        confidences[i][curr] += w * normal_diff;
+        sum_diff += dist_diff * normal_diff;
+        sum_weight +=  dist_diff;
       }
+      confidences[i][curr] = sum_diff / sum_weight;
+      //confidences[i][curr] = sum_diff;
     }
+
     curr++;
     time.end();
+
   }
 
   time.start("new multiply");
-
   for (int i = 0; i < iso_points->vn; i++)
   {
     CVertex& v = iso_points->vert[i];
@@ -2102,32 +2067,26 @@ void Poisson::runComputeIsoSmoothnessConfidence()
     }
     v.eigen_confidence = multiply_confidence;
   }
-
-
   time.end();
 
  
-
-
   time.start("ending");
   normalizeConfidence(iso_points->vert, 0);
 
-  if (para->getBool("Use Confidence 1"))
-  {
-    for (int i = 0; i < iso_points->vn; i++)
-    {
-      CVertex& v = iso_points->vert[i];
-      v.eigen_confidence -= float(0.98);
-      //outfile_iso << v.eigen_confidence << endl;
-      v.eigen_confidence = (std::max)(float(0.0), v.eigen_confidence);
-    }
+  //if (para->getBool("Use Confidence 1"))
+  //{
+  //  for (int i = 0; i < iso_points->vn; i++)
+  //  {
+  //    CVertex& v = iso_points->vert[i];
+  //    v.eigen_confidence -= float(0.98);
+  //    //outfile_iso << v.eigen_confidence << endl;
+  //    v.eigen_confidence = (std::max)(float(0.0), v.eigen_confidence);
+  //  }
 
-    normalizeConfidence(iso_points->vert, 0);
-  }
-
+  //  normalizeConfidence(iso_points->vert, 0);
+  //}
+  //time.end();
   
-
-  time.end();
   ofstream outfile_iso("iso_confidences.txt");
   for (int i = 0; i < iso_points->vn; i++)
   {

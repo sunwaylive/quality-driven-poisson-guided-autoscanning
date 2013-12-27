@@ -1630,17 +1630,45 @@ void DataMgr::coordinateTransform()
   infile.close();
 
 
-  vcg::Matrix44f matrix;
-  L_to_R_rotation_Qua.ToMatrix(matrix);
+  //vcg::Matrix44f matrix;
+  //L_to_R_rotation_Qua.ToMatrix(matrix);
 
-  for (int i = 0; i < samples.vert.size(); i++)
-  {
-    CVertex& v = samples.vert[i];
+  //for (int i = 0; i < samples.vert.size(); i++)
+  //{
+  //  CVertex& v = samples.vert[i];
 
-    v.P() -= C_to_L_translation;
-    v.P() = matrix * v.P();;
-    v.P() = C_to_L_rotation * v.P();
-    v.P() -= L_displacement;
-  }
+  //  v.P() -= C_to_L_translation;
+  //  v.P() = matrix * v.P();;
+  //  v.P() = C_to_L_rotation * v.P();
+  //  v.P() -= L_displacement;
+  //}
+
+  ofstream outfile("transform_out.txt");
+  vcg::Quaternionf C_to_L_rotation_Qua;
+  C_to_L_rotation_Qua.FromMatrix(C_to_L_rotation);
+
+  outfile << "C_to_L_rotation_Qua:  " << C_to_L_rotation_Qua.X() << " "
+                                      << C_to_L_rotation_Qua.Y() << " "
+                                      << C_to_L_rotation_Qua.Z() << " "
+                                      << C_to_L_rotation_Qua.W() << endl;
+
+  vcg::Quaternionf C_to_R_rotation_Qua;
+  C_to_R_rotation_Qua = C_to_L_rotation_Qua * L_to_R_rotation_Qua;
+  outfile << "C_to_R_rotation_Qua:  " << C_to_R_rotation_Qua.X() << " "
+                                      << C_to_R_rotation_Qua.Y() << " "
+                                      << C_to_R_rotation_Qua.Z() << " "
+                                      << C_to_R_rotation_Qua.W() << endl;
+
+  vcg::Quaternionf R_to_C_rotation_Qua = C_to_R_rotation_Qua.Inverse();
+  outfile << "R_to_C_rotation_Qua:  " << R_to_C_rotation_Qua.X() << " "
+                                      << R_to_C_rotation_Qua.Y() << " "
+                                      << R_to_C_rotation_Qua.Z() << " "
+                                      << R_to_C_rotation_Qua.W() << endl;
+  Point3f C_to_R_translation;
+  C_to_R_translation = C_to_L_translation + L_displacement + L_to_R_translation;
+  outfile << "C_to_R_translation:  " << C_to_R_translation[0] << " " 
+                                     << C_to_R_translation[1] << " "
+                                     << C_to_R_translation[2] << endl;
+
 
 }

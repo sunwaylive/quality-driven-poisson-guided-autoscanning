@@ -396,7 +396,7 @@ void ParameterMgr::initCameraParameter()
 
   camera.addParam(new RichDouble("Camera Far Distance", 30.0f));   //cm
   camera.addParam(new RichDouble("Camera Near Distance", 17.0f));  //cm
-  camera.addParam(new RichDouble("Optimal Plane Width", 3.0f));    //cm
+  camera.addParam(new RichDouble("Optimal Plane Width", 4.0f));    //cm
   camera.addParam(new RichDouble("Predicted Model Size", 10.0f));  //cm lion:20
   camera.addParam(new RichDouble("Camera Horizon Dist", 14.0f));   //cm
   camera.addParam(new RichDouble("Camera Vertical Dist", 18.0f));  //cm
@@ -437,7 +437,7 @@ void ParameterMgr::initNBVParameter()
   nbv.addParam(new RichDouble("Max Ray Steps Para", 1.5));
   nbv.addParam(new RichDouble("Ray Resolution Para", 0.511111111111111));
 
-  nbv.addParam(new RichDouble("View Preserve Angle Threshold", 60));
+  nbv.addParam(new RichDouble("View Preserve Angle Threshold", 65));
 
   nbv.addParam(new RichDouble("Confidence Filter Threshold", 0.2f));
   nbv.addParam(new RichDouble("Propagate One Point Index", 0));
