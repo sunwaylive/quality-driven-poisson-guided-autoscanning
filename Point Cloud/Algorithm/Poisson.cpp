@@ -241,9 +241,9 @@ void Poisson::runOneKeyPoissonConfidence()
   runComputeIsoGradientConfidence();
   timer.end();
 
-  timer.start("Run Iso Smooth");
-  runIsoSmooth();
-  timer.end();
+  //timer.start("Run Iso Smooth");
+  //runIsoSmooth();
+  //timer.end();
 }
 
 //ole method

@@ -1035,45 +1035,22 @@ void NBV::viewClustering()
     }
   }
 
-  //sort(nbv_candidates->vert.begin(), nbv_candidates->vert.end(), cmp);
-  GlobalFun::deleteIgnore(nbv_candidates);
-
-  cout << endl << "before nbv size: "<< nbv_candidates->vert.size() << endl;
-  nbv_candidates->vn = nbv_candidates->vert.size();
-  for (int i = 0; i < nbv_candidates->vn; i++)
-  {
-    CVertex& v = nbv_candidates->vert[i];
-    nbv_candidates->vert[i].m_index = i;
-    cout << v.P()[0] << ", " << v.P()[1] << ", " << v.P()[2] << ", " << endl;
-  }
+  /*GlobalFun::deleteIgnore(nbv_candidates);
+  sort(nbv_candidates->vert.begin(), nbv_candidates->vert.end(), cmp);
 
   if (nbv_candidates->vert.size() > 8)
   {
-    for (int i = 0; i < nbv_candidates->vn; i++)
-    {
-
-      CVertex& v = nbv_candidates->vert[i];
-      if (i >= 8)
-      {
-        v.is_ignore = true;
-      }
-    }
-  }
-  GlobalFun::deleteIgnore(nbv_candidates);
-
-  cout << endl << "after nbv size: "<< nbv_candidates->vert.size() << endl;
-  nbv_candidates->vn = nbv_candidates->vert.size();
   for (int i = 0; i < nbv_candidates->vn; i++)
   {
-    CVertex& v = nbv_candidates->vert[i];
-    nbv_candidates->vert[i].m_index = i;
-    if (v.is_ignore)
-    {
-      continue;;
-    }
-    cout << v.P()[0] << ", " << v.P()[1] << ", " << v.P()[2] << ", " << endl;
+
+  CVertex& v = nbv_candidates->vert[i];
+  if (i >= 8)
+  {
+  v.is_ignore = true;
   }
- 
+  }
+  }
+  GlobalFun::deleteIgnore(nbv_candidates);*/
   return;
 }
 

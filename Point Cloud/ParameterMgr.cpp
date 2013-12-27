@@ -287,7 +287,7 @@ void ParameterMgr::initNormalSmootherParameter()
 {
 	norSmooth.addParam(new RichString("Algorithm Name", "NormalSmooth") );
 
-	norSmooth.addParam(new RichInt("PCA KNN", 150));
+	norSmooth.addParam(new RichInt("PCA KNN", 50));
 	norSmooth.addParam(new RichDouble("CGrid Radius", grid_r));
 	norSmooth.addParam(new RichDouble("Sharpe Feature Bandwidth Sigma", 45));
 	norSmooth.addParam(new RichBool("Run Anistropic PCA", false));
@@ -402,7 +402,7 @@ void ParameterMgr::initCameraParameter()
   camera.addParam(new RichDouble("Camera Vertical Dist", 18.0f));  //cm
   camera.addParam(new RichDouble("Camera Dist To Model", ((30.0f + 17.0f)/2 + 0.6 * 20.0f))); //cm
 
-  camera.addParam(new RichDouble("Camera Resolution",1.0f / 200.0f));
+  camera.addParam(new RichDouble("Camera Resolution",1.0f / 100.0f));
   camera.addParam(new RichDouble("Merge Confidence Threshold", 0.55f));
   camera.addParam(new RichDouble("Grid Step Size", -1));
 }
@@ -411,7 +411,7 @@ void ParameterMgr::initNBVParameter()
 {
   nbv.addParam(new RichString("Algorithm Name", "NBV"));
   nbv.addParam(new RichBool("Run One Key NBV", false));
-  nbv.addParam(new RichDouble("NBV Iteration Count", 8));
+  nbv.addParam(new RichDouble("NBV Iteration Count", 3));
   nbv.addParam(new RichBool("Run Build Grid", false));
   nbv.addParam(new RichBool("Run Propagate", false));
   nbv.addParam(new RichBool("Run Propagate One Point", false));
