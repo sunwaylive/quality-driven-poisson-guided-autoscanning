@@ -292,10 +292,8 @@ void ParameterMgr::initNormalSmootherParameter()
 	norSmooth.addParam(new RichDouble("Sharpe Feature Bandwidth Sigma", 30));
 	norSmooth.addParam(new RichBool("Run Anistropic PCA", false));
 	norSmooth.addParam(new RichBool("Run Init Samples Using Normal", false));
-
 	norSmooth.addParam(new RichInt("Number Of Iterate", 1));
 	norSmooth.addParam(new RichInt("Number of KNN", 400));
-
 	norSmooth.addParam(new RichDouble("PCA Threshold", 0.8));
 }
 

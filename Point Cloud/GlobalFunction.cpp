@@ -1054,6 +1054,7 @@ GlobalFun::computeICP(CMesh *dst, CMesh *src)
   
   //add new points to dst
   int index = (dst->vert.back()).m_index;
+  cout <<"original index: "<<index <<endl;;
   for (int i = 0; i < mesh2->vertices.size(); ++i)
   {
     point p = xf2 * mesh2->vertices[i];

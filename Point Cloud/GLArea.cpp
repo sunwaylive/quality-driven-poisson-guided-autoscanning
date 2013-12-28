@@ -1493,8 +1493,8 @@ void GLArea::saveView(QString fileName)
   outfile << global_paraMgr.glarea.getDouble("Grid ISO Value Shift") << endl;
   outfile << global_paraMgr.glarea.getDouble("Point ISO Color Scale") << endl;
   outfile << global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma") <<endl;
-  outfile << global_paraMgr.norSmooth.getDouble("PCA KNN") <<endl;
-
+  outfile << global_paraMgr.norSmooth.getInt("PCA KNN") <<endl;
+  outfile << global_paraMgr.camera.getDouble("Camera Resolution") <<endl;
 	outfile.close();
 }
 
@@ -1670,13 +1670,13 @@ void GLArea::loadView(QString fileName)
  infile >> temp;
  global_paraMgr.norSmooth.setValue("Sharpe Feature Bandwidth Sigma", DoubleValue(temp));
  infile >> temp;
- global_paraMgr.norSmooth.setValue("PCA KNN", DoubleValue(temp));
+ global_paraMgr.norSmooth.setValue("PCA KNN", IntValue(temp));
+ infile >> temp;
+ global_paraMgr.camera.setValue("Camera Resolution", DoubleValue(temp));
 
-	infile.close();
-	emit needUpdateStatus();
+ infile.close();
+ emit needUpdateStatus();
 }
-
-
 
 void GLArea::wheelEvent(QWheelEvent *e) 
 {

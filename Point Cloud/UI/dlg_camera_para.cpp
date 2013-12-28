@@ -22,6 +22,8 @@ void CameraParaDlg::initConnects()
     cout << "can not connect signal" << endl;
   }
 
+  connect(ui->pushButton_load_real_initial_scan, SIGNAL(clicked()), this, SLOT(loadRealInitialScan()));
+  connect(ui->pushButton_load_real_scan, SIGNAL(clicked()), this, SLOT(loadRealScan()));
   connect(ui->spinBox_nbv_iteration_count, SIGNAL(valueChanged(int)), this, SLOT(getNbvIterationCount(int)));
   connect(ui->pushButton_one_key_nbv_iteration, SIGNAL(clicked()), this, SLOT(runOneKeyNbvIteration()));
   connect(ui->checkBox_show_init_cameras,SIGNAL(clicked(bool)),this,SLOT(showInitCameras(bool)));
@@ -221,6 +223,76 @@ void CameraParaDlg::NBVCandidatesScan()
   area->updateGL();
   updateTableViewNBVCandidate();
   updateTabelViewScanResults();
+}
+
+void CameraParaDlg::loadRealScan()
+{
+  QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
+  if (!file_location.size()) 
+    return;
+
+  QDir dir(file_location);
+  if (!dir.exists()) 
+    return;
+
+  dir.setFilter(QDir::Files);
+  dir.setSorting(QDir::Name);
+  QFileInfoList list = dir.entryInfoList();
+
+  CMesh *original = area->dataMgr.getCurrentOriginal();
+  vector< CMesh* > *sc = area->dataMgr.getScannedResults();
+
+  for (int i = 0; i < list.size(); ++i)
+  {
+    QFileInfo fileInfo = list.at(i);
+    QString f_name = fileInfo.fileName();
+
+    if (!f_name.endsWith(".ply"))
+      continue;
+  
+    CMesh *real_scan = new CMesh;
+    int mask = tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL;
+    tri::io::ImporterPLY<CMesh>::Open(*real_scan, f_name.toAscii().data(), mask);
+    sc->push_back(real_scan);
+    GlobalFun::computeICP(original, real_scan);
+  }
+}
+
+void CameraParaDlg::loadRealInitialScan()
+{
+  QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
+  if (!file_location.size()) 
+    return;
+
+  QDir dir(file_location);
+  if (!dir.exists()) 
+    return;
+
+  dir.setFilter(QDir::Files);
+  dir.setSorting(QDir::Name);
+  QFileInfoList list = dir.entryInfoList();
+
+  CMesh *original = area->dataMgr.getCurrentOriginal();
+
+  for (int i = 0; i < list.size(); ++i)
+  {
+    QFileInfo fileInfo = list.at(i);
+    QString f_name = fileInfo.fileName();
+
+    if (!f_name.endsWith(".ply"))
+      continue;
+
+    CMesh initial_scan;
+    int mask = tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL;
+    if (i == 0)
+    {
+      area->dataMgr.loadPlyToOriginal(f_name);
+    }else
+    {
+      tri::io::ImporterPLY<CMesh>::Open(initial_scan, f_name.toAscii().data(), mask);
+      GlobalFun::computeICP(original, &initial_scan);
+    }
+  }
 }
 
 void CameraParaDlg::virtualScan()
@@ -688,6 +760,7 @@ CameraParaDlg::runOneKeyNbvIteration()
     int knn = global_paraMgr.norSmooth.getInt("PCA KNN");
     vcg::tri::PointCloudNormal<CMesh>::Param pca_para;
     pca_para.fittingAdjNum = knn;
+    //fixme: a debug error in compute
     vcg::tri::PointCloudNormal<CMesh>::Compute(*original, pca_para, NULL);
 
     for (int i = 0; i < original->vert.size(); ++i)
@@ -710,10 +783,10 @@ CameraParaDlg::runOneKeyNbvIteration()
     //save poissoned surface "cp poisson_out.ply file_location\\%d_poisson_out.ply"
     QString s_poisson_surface;
     s_poisson_surface.sprintf("\\%d_poisson_out.ply", ic);
-    QString s_cmd_copy_poisson = "cp poisson_out.ply ";
+    QString s_cmd_copy_poisson = "copy poisson_out.ply ";
     s_cmd_copy_poisson += file_location;
     s_cmd_copy_poisson += s_poisson_surface;
-    system(s_cmd_copy_poisson.toStdString().c_str());
+    system(s_cmd_copy_poisson.toAscii().data());
 
     //save iso skel and view
     QString s_iso;
@@ -741,12 +814,15 @@ CameraParaDlg::runOneKeyNbvIteration()
 
     mergeScannedMeshWithOriginal();
     //save merged scan
+    cout<<"begin to save merged mesh" <<endl;
     QString s_merged_mesh;
     s_merged_mesh.sprintf("\\%d_merged_mesh", ic);
     s_merged_mesh = file_location + s_merged_mesh;
     area->dataMgr.saveMergedMesh(s_merged_mesh);
+    cout<< "end save merged mesh" <<endl;
+
     cout << "Begin remove outliers!" <<endl;
-    GlobalFun::removeOutliers(original, global_paraMgr.data.getDouble("CGrid Radius"), 60);
+    GlobalFun::removeOutliers(original, global_paraMgr.data.getDouble("CGrid Radius") * 2, 60);
     cout << "End remove outliers!" <<endl;
   }
 

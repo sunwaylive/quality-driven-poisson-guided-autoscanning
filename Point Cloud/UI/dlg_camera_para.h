@@ -10,7 +10,6 @@
 #include <QtGui>
 #include <QtGui/QFrame>
 #include <QtGui/QWidget>
-
 #include <iostream>
 
 using namespace std;
@@ -31,6 +30,8 @@ private slots:
   void virtualScan();
   void initialScan();
   void NBVCandidatesScan();
+  void loadRealScan();
+  void loadRealInitialScan();
   void showInitCameras(bool is_show);
   void useOtherInsideSegment(bool _val);
   void useConfidenceSeparation(bool _val);
@@ -57,7 +58,6 @@ private slots:
   void getPropagateIndex(double _val);
   void getRayResolutionPara(double _val);
   void getNbvIterationCount(int _val);
-
 
   void buildGrid();
   void propagate();
