@@ -707,16 +707,31 @@ CameraParaDlg::runOneKeyNbvIteration()
     area->initSetting();
 
     runStep2PoissonConfidence();
-    //save skel and view
+    //save poissoned surface "cp poisson_out.ply file_location\\%d_poisson_out.ply"
+    QString s_poisson_surface;
+    s_poisson_surface.sprintf("\\%d_poisson_out.ply", ic);
+    QString s_cmd_copy_poisson = "cp poisson_out.ply ";
+    s_cmd_copy_poisson += file_location;
+    s_cmd_copy_poisson += s_poisson_surface;
+    system(s_cmd_copy_poisson.toStdString().c_str());
+
+    //save iso skel and view
     QString s_iso;
     s_iso.sprintf("\\%d_iso.skel", ic);
     s_iso = file_location + s_iso;
     area->dataMgr.saveSkeletonAsSkel(s_iso);
     s_iso.replace(".skel", ".View");
     area->saveView(s_iso);
+    //save iso dat and raw
+    s_iso.replace(".View", ".raw");
+    global_paraMgr.poisson.setValue("Run Normalize Field Confidence", BoolValue(true));  
+    area->runPoisson();
+    global_paraMgr.poisson.setValue("Run Normalize Field Confidence", BoolValue(false));  
+    area->dataMgr.saveFieldPoints(s_iso);    
 
     runStep3NBVcandidates();
     NBVCandidatesScan();
+    //save nbv skel and view
     QString s_nbv;
     s_nbv.sprintf("\\%d_nbv.skel", ic);
     s_nbv = file_location + s_nbv;
@@ -730,10 +745,9 @@ CameraParaDlg::runOneKeyNbvIteration()
     s_merged_mesh.sprintf("\\%d_merged_mesh", ic);
     s_merged_mesh = file_location + s_merged_mesh;
     area->dataMgr.saveMergedMesh(s_merged_mesh);
-    //fixme: increase the radius
-    //cout << "Begin remove outliers!" <<endl;
-    GlobalFun::removeOutliers(original, global_paraMgr.data.getDouble("CGrid Radius"), 20);
-    //cout << "End remove outliers!" <<endl;
+    cout << "Begin remove outliers!" <<endl;
+    GlobalFun::removeOutliers(original, global_paraMgr.data.getDouble("CGrid Radius"), 60);
+    cout << "End remove outliers!" <<endl;
   }
 
   QString last_original = "\\ultimate_original.ply";
