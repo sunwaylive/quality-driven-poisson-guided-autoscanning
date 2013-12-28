@@ -1053,7 +1053,7 @@ GlobalFun::computeICP(CMesh *dst, CMesh *src)
   printf("ICP succeeded - distance = %f\n", err);
   
   //add new points to dst
-  int index = (dst->vert.back()).m_index;
+  int index = (dst->vert.empty()) ? 0 : (dst->vert.back()).m_index;
   cout <<"original index: "<<index <<endl;;
   for (int i = 0; i < mesh2->vertices.size(); ++i)
   {
@@ -1174,6 +1174,7 @@ void GlobalFun::cutPointSelfSlice(CMesh* mesh, Point3f anchor, Point3f direction
   }
 
 }
+
 
 //void Slice::build_slice(Point3f a, Point3f b, Point3f c, float c_length)
 //{

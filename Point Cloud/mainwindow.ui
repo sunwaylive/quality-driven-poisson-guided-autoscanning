@@ -41,7 +41,7 @@
      <x>0</x>
      <y>0</y>
      <width>1295</width>
-     <height>21</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -115,6 +115,7 @@
     <addaction name="menuSkeleton"/>
     <addaction name="menuEAR"/>
     <addaction name="menuPoisson"/>
+    <addaction name="actionSave_Parameter"/>
    </widget>
    <widget class="QMenu" name="menuRender">
     <property name="title">
@@ -218,7 +219,7 @@
    <addaction name="menuAlgorithom"/>
    <addaction name="menuRender"/>
   </widget>
-  <widget class="QToolBar" name="mainToolBar">
+  <widget class="QToolBar" name="mainToolBar_save_parameter">
    <property name="baseSize">
     <size>
      <width>11</width>
@@ -237,6 +238,7 @@
    <addaction name="actionImport_Ply"/>
    <addaction name="actionSave_Ply"/>
    <addaction name="actionSave_Skel"/>
+   <addaction name="actionSave_Parameter"/>
    <addaction name="actionSnapShot"/>
    <addaction name="actionClear_Data"/>
    <addaction name="actionNormalize"/>
@@ -901,6 +903,11 @@
   <action name="actionSave_Grid_As_Points">
    <property name="text">
     <string>Save Grid As Points</string>
+   </property>
+  </action>
+  <action name="actionSave_Parameter">
+   <property name="text">
+    <string>Save Parameter</string>
    </property>
   </action>
  </widget>

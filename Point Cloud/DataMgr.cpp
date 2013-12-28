@@ -1644,6 +1644,37 @@ DataMgr::saveMergedMesh(QString fileName)
   }
 }
 
+void 
+DataMgr::saveParameters(QString fileName)
+{
+  ofstream out_para;
+  out_para.open(fileName.toAscii().data(), std::ios::out);
+  if (out_para == NULL)
+    return ;
+
+  out_para << "# KNN for compute PCA normal" <<endl
+    <<global_paraMgr.norSmooth.getInt("PCA KNN") <<endl <<endl; 
+}
+
+void
+DataMgr::loadParameters(QString fileName)
+{
+  ifstream in_para;
+  in_para.open(fileName.toAscii().data(), std::ios::in);
+  if (in_para == NULL)
+    return;
+
+  stringstream sem; 
+  sem << in_para.rdbuf(); 
+
+  string comment;
+  sem >> comment;
+
+  int knn;
+  sem >> knn;
+  global_paraMgr.norSmooth.setValue("PCA KNN", IntValue(knn));
+}
+
 void DataMgr::switchSampleToOriginal()
 {
   CMesh temp_mesh;

@@ -250,11 +250,16 @@ void CameraParaDlg::loadRealScan()
     if (!f_name.endsWith(".ply"))
       continue;
   
+    f_name = file_location + "\\" + f_name;
     CMesh *real_scan = new CMesh;
     int mask = tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL;
     tri::io::ImporterPLY<CMesh>::Open(*real_scan, f_name.toAscii().data(), mask);
     sc->push_back(real_scan);
-    GlobalFun::computeICP(original, real_scan);
+
+    if (original == NULL)
+      cout << "Empty original, real scans unable to ICP on original!" <<endl;
+    else
+      GlobalFun::computeICP(original, real_scan);
   }
 }
 
@@ -282,6 +287,7 @@ void CameraParaDlg::loadRealInitialScan()
     if (!f_name.endsWith(".ply"))
       continue;
 
+    f_name = file_location + "\\" + f_name;
     CMesh initial_scan;
     int mask = tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL;
     if (i == 0)
@@ -780,7 +786,7 @@ CameraParaDlg::runOneKeyNbvIteration()
     area->initSetting();
 
     runStep2PoissonConfidence();
-    //save poissoned surface "cp poisson_out.ply file_location\\%d_poisson_out.ply"
+    //save poisson surface "copy poisson_out.ply file_location\\%d_poisson_out.ply"
     QString s_poisson_surface;
     s_poisson_surface.sprintf("\\%d_poisson_out.ply", ic);
     QString s_cmd_copy_poisson = "copy poisson_out.ply ";
@@ -788,7 +794,7 @@ CameraParaDlg::runOneKeyNbvIteration()
     s_cmd_copy_poisson += s_poisson_surface;
     system(s_cmd_copy_poisson.toAscii().data());
 
-    //save iso skel and view
+    //save iso-skel and view
     QString s_iso;
     s_iso.sprintf("\\%d_iso.skel", ic);
     s_iso = file_location + s_iso;
