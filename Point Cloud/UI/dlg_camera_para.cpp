@@ -22,7 +22,7 @@ void CameraParaDlg::initConnects()
     cout << "can not connect signal" << endl;
   }
 
-  connect(ui->spinBox_nbv_iteration_count, SIGNAL(valueChanged(double)), this, SLOT(getNbvIterationCount(double)));
+  connect(ui->spinBox_nbv_iteration_count, SIGNAL(valueChanged(int)), this, SLOT(getNbvIterationCount(int)));
   connect(ui->pushButton_one_key_nbv_iteration, SIGNAL(clicked()), this, SLOT(runOneKeyNbvIteration()));
   connect(ui->checkBox_show_init_cameras,SIGNAL(clicked(bool)),this,SLOT(showInitCameras(bool)));
   connect(ui->pushButton_scan, SIGNAL(clicked()), this, SLOT(NBVCandidatesScan()));
@@ -76,7 +76,7 @@ void CameraParaDlg::initConnects()
 bool CameraParaDlg::initWidgets()
 {
   ui->doubleSpinBox_merge_confidence_threshold->setValue(m_paras->camera.getDouble("Merge Confidence Threshold"));
-  ui->spinBox_nbv_iteration_count->setValue(m_paras->nbv.getDouble("NBV Iteration Count"));
+  ui->spinBox_nbv_iteration_count->setValue(m_paras->nbv.getInt("NBV Iteration Count"));
   ui->horizon_dist->setValue(m_paras->camera.getDouble("Camera Horizon Dist"));
   ui->vertical_dist->setValue(m_paras->camera.getDouble("Camera Vertical Dist"));
   ui->view_grid_resolution->setValue(m_paras->nbv.getDouble("View Grid Resolution"));
@@ -434,9 +434,9 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
   }
 }
 
-void CameraParaDlg::getNbvIterationCount(double _val)
+void CameraParaDlg::getNbvIterationCount(int _val)
 {
-  global_paraMgr.nbv.setValue("NBV Iteration Count", DoubleValue(_val));
+  global_paraMgr.nbv.setValue("NBV Iteration Count", IntValue(_val));
 }
 
 void CameraParaDlg::getCameraHorizonDist(double _val)
@@ -670,7 +670,7 @@ CameraParaDlg::runOneKeyNbvIteration()
   QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
   if (!file_location.size()) return;
   
-  int iteration_cout = global_paraMgr.nbv.getDouble("NBV Iteration Count");
+  int iteration_cout = global_paraMgr.nbv.getInt("NBV Iteration Count");
   CMesh *original = area->dataMgr.getCurrentOriginal();
   for (int ic = 0; ic < iteration_cout; ++ic)
   {
@@ -732,7 +732,7 @@ CameraParaDlg::runOneKeyNbvIteration()
     area->dataMgr.saveMergedMesh(s_merged_mesh);
     //fixme: increase the radius
     //cout << "Begin remove outliers!" <<endl;
-    //GlobalFun::removeOutliers(original, global_paraMgr.data.getDouble("CGrid Radius"), 0.0006);
+    GlobalFun::removeOutliers(original, global_paraMgr.data.getDouble("CGrid Radius"), 20);
     //cout << "End remove outliers!" <<endl;
   }
 

@@ -82,7 +82,8 @@ namespace GlobalFun
   bool isPointInTriangle_3(Point3f& v0, Point3f& v1, Point3f& v2, Point3f& p);
   double computeMeshLineIntersectPoint(CMesh *target, Point3f& p, Point3f& line_dir, Point3f& result);
 
-  void removeOutliers(CMesh *m, double radius, double remove_percent);
+  void removeOutliers(CMesh *mesh, double radius, double remove_percent);
+  void removeOutliers(CMesh *mesh, double radius, int remove_num);
   void computeICP(CMesh *dst, CMesh *src);
   void downSample(CMesh *dst, CMesh *src, double sample_ratio, bool use_random_downsample = true);
   void clearCMesh(CMesh &mesh);
