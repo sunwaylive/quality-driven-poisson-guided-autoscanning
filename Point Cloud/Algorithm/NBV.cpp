@@ -391,7 +391,7 @@ void
   }
 
   //parallel
-  double gaussian_para = 2.0;
+  double gaussian_para = 4.0;//control steepness
   int iso_points_size = iso_points->vert.size();
   double optimal_D = (n_dist + f_dist) / 2.0f;
   double half_D = n_dist;
@@ -1037,18 +1037,18 @@ void NBV::viewClustering()
 
   /*GlobalFun::deleteIgnore(nbv_candidates);
   sort(nbv_candidates->vert.begin(), nbv_candidates->vert.end(), cmp);
-
+ 
   if (nbv_candidates->vert.size() > 8)
   {
-  for (int i = 0; i < nbv_candidates->vn; i++)
-  {
+    for (int i = 0; i < nbv_candidates->vn; i++)
+    {
 
-  CVertex& v = nbv_candidates->vert[i];
-  if (i >= 8)
-  {
-  v.is_ignore = true;
-  }
-  }
+      CVertex& v = nbv_candidates->vert[i];
+      if (i >= 8)
+      {
+        v.is_ignore = true;
+      }
+    }
   }
   GlobalFun::deleteIgnore(nbv_candidates);*/
   return;
@@ -1318,7 +1318,7 @@ void NBV::runSmoothGridConfidence()
       cout << "before confidence: " << v.eigen_confidence << endl;
     }
 
-    if (v.neighbors.empty())
+    if (v.neighbors.empty() && i < 50)
     {
       cout << "empty neighbor" << endl;
       continue;

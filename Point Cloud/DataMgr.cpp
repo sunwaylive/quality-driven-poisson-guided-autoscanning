@@ -774,6 +774,100 @@ void DataMgr::recomputeQuad()
   }
 }
 
+void DataMgr::saveGridPoints(QString fileName)
+{
+  CMesh* grid_points;
+  if (global_paraMgr.glarea.getBool("Show View Grid Slice"))
+  {
+    grid_points = &view_grid_points;
+  }
+  else
+  {
+    grid_points = &field_points;
+  }
+
+  ofstream outfile;
+  outfile.open(fileName.toStdString().c_str());
+
+  ostringstream strStream; 
+
+  strStream << "GN " << grid_points->vert.size() << endl;
+  for(int i = 0; i < grid_points->vert.size(); i++)
+  {
+    CVertex& v = grid_points->vert[i];
+    strStream << v.P()[0] << "	" << v.P()[1] << "	" << v.P()[2] << "	";
+    strStream << v.N()[0] << "	" << v.N()[1] << "	" << v.N()[2] << "	" << endl;
+  }
+  strStream << endl;
+
+  strStream << "Confidence " << grid_points->vert.size() << endl;
+  for(int i = 0; i < grid_points->vert.size(); i++)
+  {
+    CVertex& v = grid_points->vert[i];
+    strStream << v.eigen_confidence << "  ";
+  }
+  strStream << endl;
+
+  outfile.write( strStream.str().c_str(), strStream.str().size() ); 
+  outfile.close();
+}
+
+void DataMgr::LoadGridPoints(QString fileName, bool is_poisson_field)
+{
+  CMesh* grid_points;
+  if (!is_poisson_field)
+  {
+    grid_points = &view_grid_points;
+  }
+  else
+  {
+    grid_points = &field_points;
+  }
+
+  ifstream infile;
+  infile.open(fileName.toStdString().c_str());
+
+  stringstream sem; 
+  sem << infile.rdbuf(); 
+
+  string str;
+  int num;
+  int num2;
+
+  grid_points->vert.clear();
+  sem >> str;
+  if (str == "GN")
+  {
+    sem >> num;
+
+    for (int i = 0; i < num; i++)
+    {
+      CVertex v;
+      v.is_field_grid = is_poisson_field;
+      v.is_grid_center = !is_poisson_field;
+      v.m_index = i;
+      sem >> v.P()[0] >> v.P()[1] >> v.P()[2];
+      sem >> v.N()[0] >> v.N()[1] >> v.N()[2];
+      grid_points->vert.push_back(v);
+      grid_points->bbox.Add(v.P());
+    }
+    grid_points->vn = original.vert.size();
+  }
+
+  sem >> str;
+  float temp;
+  if (str == "Confidence")
+  {
+    sem >> num;
+    for (int i = 0; i < num; i++)
+    {
+      sem >> temp;
+      grid_points->vert[i].eigen_confidence = temp;
+    }
+  }
+
+}
+
 
 void DataMgr::saveSkeletonAsSkel(QString fileName)
 {
@@ -985,6 +1079,7 @@ void DataMgr::saveSkeletonAsSkel(QString fileName)
 	outfile.write( strStream.str().c_str(), strStream.str().size() ); 
 	outfile.close();
 }
+
 
 void DataMgr::loadSkeletonFromSkel(QString fileName)
 {
@@ -1630,17 +1725,45 @@ void DataMgr::coordinateTransform()
   infile.close();
 
 
-  vcg::Matrix44f matrix;
-  L_to_R_rotation_Qua.ToMatrix(matrix);
+  //vcg::Matrix44f matrix;
+  //L_to_R_rotation_Qua.ToMatrix(matrix);
 
-  for (int i = 0; i < samples.vert.size(); i++)
-  {
-    CVertex& v = samples.vert[i];
+  //for (int i = 0; i < samples.vert.size(); i++)
+  //{
+  //  CVertex& v = samples.vert[i];
 
-    v.P() -= C_to_L_translation;
-    v.P() = matrix * v.P();;
-    v.P() = C_to_L_rotation * v.P();
-    v.P() -= L_displacement;
-  }
+  //  v.P() -= C_to_L_translation;
+  //  v.P() = matrix * v.P();;
+  //  v.P() = C_to_L_rotation * v.P();
+  //  v.P() -= L_displacement;
+  //}
+
+  ofstream outfile("transform_out.txt");
+  vcg::Quaternionf C_to_L_rotation_Qua;
+  C_to_L_rotation_Qua.FromMatrix(C_to_L_rotation);
+
+  outfile << "C_to_L_rotation_Qua:  " << C_to_L_rotation_Qua.X() << " "
+                                      << C_to_L_rotation_Qua.Y() << " "
+                                      << C_to_L_rotation_Qua.Z() << " "
+                                      << C_to_L_rotation_Qua.W() << endl;
+
+  vcg::Quaternionf C_to_R_rotation_Qua;
+  C_to_R_rotation_Qua = C_to_L_rotation_Qua * L_to_R_rotation_Qua;
+  outfile << "C_to_R_rotation_Qua:  " << C_to_R_rotation_Qua.X() << " "
+                                      << C_to_R_rotation_Qua.Y() << " "
+                                      << C_to_R_rotation_Qua.Z() << " "
+                                      << C_to_R_rotation_Qua.W() << endl;
+
+  vcg::Quaternionf R_to_C_rotation_Qua = C_to_R_rotation_Qua.Inverse();
+  outfile << "R_to_C_rotation_Qua:  " << R_to_C_rotation_Qua.X() << " "
+                                      << R_to_C_rotation_Qua.Y() << " "
+                                      << R_to_C_rotation_Qua.Z() << " "
+                                      << R_to_C_rotation_Qua.W() << endl;
+  Point3f C_to_R_translation;
+  C_to_R_translation = C_to_L_translation + L_displacement + L_to_R_translation;
+  outfile << "C_to_R_translation:  " << C_to_R_translation[0] << " " 
+                                     << C_to_R_translation[1] << " "
+                                     << C_to_R_translation[2] << endl;
+
 
 }

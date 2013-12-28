@@ -68,6 +68,7 @@
     <addaction name="actionAdd_Sample_To_Original"/>
     <addaction name="actionRemove_Ignore"/>
     <addaction name="actionRecover_Ignore"/>
+    <addaction name="actionSave_Grid_As_Points"/>
    </widget>
    <widget class="QMenu" name="menuAlgorithom">
     <property name="title">
@@ -895,6 +896,11 @@
   <action name="actionRecover_Ignore">
    <property name="text">
     <string>Recover Ignore</string>
+   </property>
+  </action>
+  <action name="actionSave_Grid_As_Points">
+   <property name="text">
+    <string>Save Grid As Points</string>
    </property>
   </action>
  </widget>

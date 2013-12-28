@@ -68,6 +68,8 @@ void PoissonParaDlg::initConnects()
   connect(ui->pushButton_clear_slice,SIGNAL(clicked()),this,SLOT(runClearSlice()));
   connect(ui->pushButton_smooth_grid_confidence,SIGNAL(clicked()),this,SLOT(runSmoothGridConfidence()));
 
+  connect(ui->pushButton_slice_points,SIGNAL(clicked()),this,SLOT(runCutPointSlice()));
+
 }
 
 // 
@@ -276,6 +278,15 @@ void PoissonParaDlg::viewCandidatesClustering()
   area->runPoisson();
   global_paraMgr.poisson.setValue("Run View Candidates Clustering", BoolValue(false));
 }
+
+void PoissonParaDlg::runCutPointSlice()
+{
+  cout << "runCutPointSlice" << endl;
+  global_paraMgr.poisson.setValue("Run Cut Slice Points", BoolValue(true));
+  area->runPoisson();
+  global_paraMgr.poisson.setValue("Run Cut Slice Points", BoolValue(false));
+}
+
 
 void PoissonParaDlg::showParallerSlice(bool _val)
 {

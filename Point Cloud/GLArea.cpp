@@ -628,6 +628,16 @@ void GLArea::openByDrop(QString fileName)
 		dataMgr.loadXYZN(fileName);
 	}
 
+  if(fileName.endsWith("viewgrid"))
+  {
+    dataMgr.LoadGridPoints(fileName, false);
+  }
+
+  if(fileName.endsWith("poissonfield"))
+  {
+    dataMgr.LoadGridPoints(fileName, true);
+  }
+
   emit needUpdateStatus();
 	initAfterOpenFile();
 	updateGL();

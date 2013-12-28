@@ -81,7 +81,8 @@ void MainWindow::initConnect()
   connect(ui.actionSave_NBV_Grids, SIGNAL(triggered()), this, SLOT(saveViewGridsForVoreen()));
 	connect(ui.actionSave_Skel, SIGNAL(triggered()), this, SLOT(saveSkel()));
   connect(ui.actionQianSample, SIGNAL(triggered()), this, SLOT(getQianSample()));
-	
+  connect(ui.actionSave_Grid_As_Points, SIGNAL(triggered()), this, SLOT(saveGridAsPoints()));
+
 	connect(ui.actionSnapShot, SIGNAL(triggered()), this, SLOT(saveSnapshot()));
 	connect(ui.actionRun_Wlop, SIGNAL(triggered()), this, SLOT(runWLop()));
 	connect(ui.actionRun_PCA, SIGNAL(triggered()), this, SLOT(runPCA_Normal()));
@@ -146,6 +147,8 @@ void MainWindow::initConnect()
   connect(ui.actionTransform,SIGNAL(triggered()),this,SLOT(coordinateTransform()));
   connect(ui.actionAdd_Sample_To_Original,SIGNAL(triggered()),this,SLOT(addSamplesToOriginal()));
   
+  connect(ui.actionRemove_Ignore,SIGNAL(triggered()),this,SLOT(deleteIgnore()));
+  connect(ui.actionRecover_Ignore,SIGNAL(triggered()),this,SLOT(recoverIgnore()));
 
   //connect(ui.actionPoisson_test,SIGNAL(triggered()),this,SLOT(poissonTest()));
   //connect(ui.actionPoisson_test_all,SIGNAL(triggered()),this,SLOT(poissonTestAll()));
@@ -600,6 +603,24 @@ void MainWindow::saveSkel()
 	area->updateGL();
 }
 
+void MainWindow::saveGridAsPoints()
+{
+  QString file;
+  if (global_paraMgr.glarea.getBool("Show View Grid Slice"))
+  {
+     file = QFileDialog::getSaveFileName(this, "Save samples as", "", "*.viewgrid");
+  }
+  else
+  {
+     file = QFileDialog::getSaveFileName(this, "Save samples as", "", "*.poissonfield");
+  }
+  if(!file.size()) return;
+
+  area->dataMgr.saveGridPoints(file);
+
+  area->updateGL();
+}
+
 void MainWindow::saveFieldPoints()
 {
   global_paraMgr.poisson.setValue("Run Normalize Field Confidence", BoolValue(true));  
@@ -1022,4 +1043,47 @@ void MainWindow::addSamplesToOriginal()
     original->vert.push_back(t);
   }
 
+}
+
+void MainWindow::deleteIgnore()
+{
+  CMesh* mesh;
+  if (global_paraMgr.glarea.getBool("Show ISO Points")
+    && !area->dataMgr.isIsoPointsEmpty())
+  {
+    mesh = area->dataMgr.getCurrentIsoPoints();
+  }
+  else if (global_paraMgr.glarea.getBool("Show Original")
+    && !area->dataMgr.isOriginalEmpty())
+  {
+    mesh = area->dataMgr.getCurrentOriginal();
+  }
+  else
+  {
+    mesh = area->dataMgr.getCurrentSamples();
+  }
+
+  GlobalFun::deleteIgnore(mesh);
+}
+
+void MainWindow::recoverIgnore()
+{
+  CMesh* mesh;
+  if (global_paraMgr.glarea.getBool("Show ISO Points")
+    && !area->dataMgr.isIsoPointsEmpty())
+  {
+    mesh = area->dataMgr.getCurrentIsoPoints();
+  }
+  else if (global_paraMgr.glarea.getBool("Show Original")
+    && !area->dataMgr.isOriginalEmpty())
+  {
+    mesh = area->dataMgr.getCurrentOriginal();
+  }
+  else
+  {
+    mesh = area->dataMgr.getCurrentSamples();
+  }
+
+  GlobalFun::recoverIgnore(mesh);
+  cout << "recover!!" << endl;
 }
