@@ -934,6 +934,20 @@ GlobalFun::removeOutliers(CMesh *mesh, double radius, double remove_percent)
 }
 
 void
+GlobalFun::removeOutliers(CMesh *mesh, double radius, int remove_num)
+{
+  if (NULL == mesh) 
+  { 
+    cout<<"Empty Mesh, When RemoveOutliers!"<<endl;
+    return;
+  }
+
+  double remove_percent = remove_num / mesh->vert.size();
+
+  GlobalFun::removeOutliers(mesh, radius, remove_percent);
+}
+
+void
 GlobalFun::computeICP(CMesh *dst, CMesh *src)
 {
   if (dst->vert.empty() || src->vert.empty())

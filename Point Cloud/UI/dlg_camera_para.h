@@ -56,7 +56,7 @@ private slots:
   void getOptimalPlaneWidth(double _val);
   void getPropagateIndex(double _val);
   void getRayResolutionPara(double _val);
-  void getNbvIterationCount(double _val);
+  void getNbvIterationCount(int _val);
 
 
   void buildGrid();
