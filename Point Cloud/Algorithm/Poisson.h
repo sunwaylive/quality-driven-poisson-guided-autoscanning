@@ -49,6 +49,8 @@ private:
   void runAddWLOPtoISO();
   void runSmoothGridConfidence();
 
+  void runSlicePoints();
+
   void samplePointsFromMesh(CMesh& mesh, CMesh* points);
 
 private:

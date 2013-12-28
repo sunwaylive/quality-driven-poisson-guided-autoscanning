@@ -47,6 +47,8 @@ public:
   bool      isViewGridsEmpty();
   bool      isNBVCandidatesEmpty();
 
+  
+
   void                    setCurrentTemperalSample(CMesh *mesh);
 
   CMesh*                  getCurrentSamples();
@@ -94,6 +96,9 @@ public:
   void     saveFieldPoints(QString fileName);
   void     saveViewGrids(QString fileName);
   void     saveMergedMesh(QString fileName);
+
+  void saveGridPoints(QString fileName);
+  void LoadGridPoints(QString fileName, bool is_poisson_field);
 
   void switchSampleToOriginal();
   void switchSampleToISO();

@@ -62,14 +62,17 @@ private slots:
 	void initialSampling();
 	void setStop();
 	void removePickPoints();
-	//void poissonTest();
- // void poissonTestAll();
 
   void switchSampleOriginal();
   void switchSampleISO();
   
   void coordinateTransform();
   void addSamplesToOriginal();
+
+  void saveGridAsPoints();
+
+  void deleteIgnore();
+  void recoverIgnore();
 
 
 private slots:

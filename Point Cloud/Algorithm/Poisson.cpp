@@ -209,6 +209,12 @@ void Poisson::run()
     runSmoothGridConfidence();
     return;
   }
+
+  if (para->getBool("Run Cut Slice Points"))
+  {
+    runSlicePoints();
+    return;
+  }
   //runPoisson();
    runPoissonFieldAndExtractIsoPoints_ByEXE();
 }
@@ -1526,6 +1532,91 @@ void Poisson::runSlice()
   }
 }
 
+void Poisson::runSlicePoints()
+{
+  CMesh* source_points;
+  if (global_paraMgr.glarea.getBool("Show ISO Points"))
+  {
+    source_points = iso_points;
+  }
+  else if (global_paraMgr.glarea.getBool("Show Original"))
+  {
+    source_points = original;
+  }
+  else
+  {
+    source_points = samples;
+  }
+
+  int iso_num = field_points->vert.size();
+  double show_percentage = para->getDouble("Show Slice Percentage");
+  bool paraller_slice_mode = para->getBool("Parallel Slices Mode");
+
+  int res = 0;
+  for (; res < iso_num; res++)
+  {
+    if (res * res * res >= iso_num)
+    {
+      break;
+    }
+  }
+  int res2 = res * res;
+
+  double cut_width = para->getDouble("CGrid Radius") * 0.5;
+
+  if (para->getBool("Show X Slices"))
+  {
+    double slice_i_position = para->getDouble("Current X Slice Position");
+
+    int slice_i_num = res * slice_i_position;
+    slice_i_num = (std::min)(slice_i_num, res-2);
+
+    int anchor_index = slice_i_num * res2;
+    int anchor_next_index = (slice_i_num+1) * res2;
+
+    Point3f anchor_point = field_points->vert[anchor_index];
+    Point3f anchor_next_point = field_points->vert[anchor_next_index];
+    Point3f direction = (anchor_next_point - anchor_point).Normalize();
+
+    GlobalFun::cutPointSelfSlice(source_points, anchor_point, direction, cut_width);
+    
+  }
+
+  if (para->getBool("Show Y Slices"))
+  {
+    double slice_j_position = para->getDouble("Current Y Slice Position");
+
+    int slice_j_num = res * slice_j_position;
+    slice_j_num = (std::min)(slice_j_num, res-2);
+
+    int anchor_index = slice_j_num * res;
+    int anchor_next_index = (slice_j_num+1) * res;
+
+    Point3f anchor_point = field_points->vert[anchor_index];
+    Point3f anchor_next_point = field_points->vert[anchor_next_index];
+    Point3f direction = (anchor_next_point - anchor_point).Normalize();
+
+    GlobalFun::cutPointSelfSlice(source_points, anchor_point, direction, cut_width);
+  }
+
+  if (para->getBool("Show Z Slices"))
+  {
+    double slice_k_position = para->getDouble("Current Z Slice Position");
+    
+    int slice_k_num = res * slice_k_position;
+    slice_k_num = (std::min)(slice_k_num, res-2);
+
+    int anchor_index = slice_k_num;
+    int anchor_next_index = (slice_k_num+1);
+
+    Point3f anchor_point = field_points->vert[anchor_index];
+    Point3f anchor_next_point = field_points->vert[anchor_next_index];
+    Point3f direction = (anchor_next_point - anchor_point).Normalize();
+
+    GlobalFun::cutPointSelfSlice(source_points, anchor_point, direction, cut_width);
+
+  }
+}
 
 void Poisson::runComputeOriginalConfidence()
 {
@@ -1913,7 +2004,7 @@ void Poisson::runComputeIsoSmoothnessConfidence()
       confidences[i][curr] = 0.01;
       CVertex& v = iso_points->vert[i];
 
-      if (v.neighbors.empty())
+      if (v.neighbors.empty() && i < 100)
       {
         cout << "empty neighborhood" << endl;
         continue;

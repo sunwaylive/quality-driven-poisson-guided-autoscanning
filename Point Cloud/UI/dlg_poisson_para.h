@@ -42,6 +42,7 @@ private slots:
   void runAddWLOPtoISO();
   void runEstimateOriginalSize();
   void runSmoothGridConfidence();
+  void runCutPointSlice();
 
   void labelIsoPoints();
   void labelSmooth();

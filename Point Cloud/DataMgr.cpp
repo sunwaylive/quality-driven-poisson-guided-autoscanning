@@ -774,6 +774,100 @@ void DataMgr::recomputeQuad()
   }
 }
 
+void DataMgr::saveGridPoints(QString fileName)
+{
+  CMesh* grid_points;
+  if (global_paraMgr.glarea.getBool("Show View Grid Slice"))
+  {
+    grid_points = &view_grid_points;
+  }
+  else
+  {
+    grid_points = &field_points;
+  }
+
+  ofstream outfile;
+  outfile.open(fileName.toStdString().c_str());
+
+  ostringstream strStream; 
+
+  strStream << "GN " << grid_points->vert.size() << endl;
+  for(int i = 0; i < grid_points->vert.size(); i++)
+  {
+    CVertex& v = grid_points->vert[i];
+    strStream << v.P()[0] << "	" << v.P()[1] << "	" << v.P()[2] << "	";
+    strStream << v.N()[0] << "	" << v.N()[1] << "	" << v.N()[2] << "	" << endl;
+  }
+  strStream << endl;
+
+  strStream << "Confidence " << grid_points->vert.size() << endl;
+  for(int i = 0; i < grid_points->vert.size(); i++)
+  {
+    CVertex& v = grid_points->vert[i];
+    strStream << v.eigen_confidence << "  ";
+  }
+  strStream << endl;
+
+  outfile.write( strStream.str().c_str(), strStream.str().size() ); 
+  outfile.close();
+}
+
+void DataMgr::LoadGridPoints(QString fileName, bool is_poisson_field)
+{
+  CMesh* grid_points;
+  if (!is_poisson_field)
+  {
+    grid_points = &view_grid_points;
+  }
+  else
+  {
+    grid_points = &field_points;
+  }
+
+  ifstream infile;
+  infile.open(fileName.toStdString().c_str());
+
+  stringstream sem; 
+  sem << infile.rdbuf(); 
+
+  string str;
+  int num;
+  int num2;
+
+  grid_points->vert.clear();
+  sem >> str;
+  if (str == "GN")
+  {
+    sem >> num;
+
+    for (int i = 0; i < num; i++)
+    {
+      CVertex v;
+      v.is_field_grid = is_poisson_field;
+      v.is_grid_center = !is_poisson_field;
+      v.m_index = i;
+      sem >> v.P()[0] >> v.P()[1] >> v.P()[2];
+      sem >> v.N()[0] >> v.N()[1] >> v.N()[2];
+      grid_points->vert.push_back(v);
+      grid_points->bbox.Add(v.P());
+    }
+    grid_points->vn = original.vert.size();
+  }
+
+  sem >> str;
+  float temp;
+  if (str == "Confidence")
+  {
+    sem >> num;
+    for (int i = 0; i < num; i++)
+    {
+      sem >> temp;
+      grid_points->vert[i].eigen_confidence = temp;
+    }
+  }
+
+}
+
 
 void DataMgr::saveSkeletonAsSkel(QString fileName)
 {
@@ -985,6 +1079,7 @@ void DataMgr::saveSkeletonAsSkel(QString fileName)
 	outfile.write( strStream.str().c_str(), strStream.str().size() ); 
 	outfile.close();
 }
+
 
 void DataMgr::loadSkeletonFromSkel(QString fileName)
 {

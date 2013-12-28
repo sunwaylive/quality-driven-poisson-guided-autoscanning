@@ -89,6 +89,8 @@ namespace GlobalFun
 
   void deleteIgnore(CMesh* mesh);
   void recoverIgnore(CMesh* mesh);
+
+  void cutPointSelfSlice(CMesh* mesh, Point3f anchor, Point3f direction, double width);
 }
 
 class Timer

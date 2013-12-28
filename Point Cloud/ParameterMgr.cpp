@@ -340,6 +340,8 @@ void ParameterMgr::initPoissonParameter()
 
 	poisson.addParam(new RichBool("Run Poisson On Original", false));
 	poisson.addParam(new RichBool("Run Generate Poisson Field", false));
+  poisson.addParam(new RichBool("Run Cut Slice Points", false));
+
 
 
 	poisson.addParam(new RichBool("Run Poisson On Samples", false));  

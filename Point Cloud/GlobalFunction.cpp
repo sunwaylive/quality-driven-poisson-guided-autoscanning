@@ -1127,6 +1127,38 @@ void GlobalFun::recoverIgnore(CMesh* mesh)
   }
 }
 
+void GlobalFun::cutPointSelfSlice(CMesh* mesh, Point3f anchor, Point3f direction, double width)
+{
+  //mesh->vert.clear();
+  cout << "cut anchor point: " << anchor[0] << ", " << anchor[1] << ", " << anchor[2] << endl;
+  cout << "direction: " << direction[0] << ", " << direction[1] << ", " << direction[2] << endl;
+
+  double width2 = width * width;
+  for (int i = 0; i < mesh->vert.size(); i++)
+  {
+    CVertex& v = mesh->vert[i];
+    //double perpend_dist2 = GlobalFun::computePerpendicularDistSquare(anchor, v.P(), direction);
+    double proj_dist = GlobalFun::computeProjDist(anchor, v.P(), direction);
+    double proj_dist2 = proj_dist * proj_dist;
+
+    //if (i < 100)
+    //{
+    //   cout << perpend_dist2 << " " << width2 << endl;
+    //}
+
+    if (proj_dist2 > width2)
+    {
+      v.is_ignore = true;
+      continue;
+    }
+    
+    //cout << "Not Ignore!!!!" << endl;
+
+    Point3f new_p = v.P() - direction * proj_dist;
+    v.P() = new_p;
+  }
+
+}
 
 //void Slice::build_slice(Point3f a, Point3f b, Point3f c, float c_length)
 //{
