@@ -412,7 +412,7 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
   CMesh* original = area->dataMgr.getCurrentOriginal();
   vector<CMesh* > *scanned_results = area->dataMgr.getScannedResults();
   double merge_confidence_threshold = global_paraMgr.camera.getDouble("Merge Confidence Threshold");
-  cout<< "merge_confidence_threshold: " <<merge_confidence_threshold <<endl;
+  int merge_pow = static_cast<int>(global_paraMgr.nbv.getDouble("Merge Probability Pow"));
 
   //wsh added 12-24
   double radius_threshold = global_paraMgr.wLop.getDouble("CGrid Radius");
@@ -467,24 +467,24 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
           {
             CVertex& t = iso_points->vert[v.original_neighbors[ni]];
 
-            /*double dist2 = GlobalFun::computeEulerDistSquare(v.P(), t.P());
+            double dist2 = GlobalFun::computeEulerDistSquare(v.P(), t.P());
             double dist_diff = exp(dist2 * iradius16);
-            double normal_diff = exp(-pow(1-v.N()*t.N(), 2)/sigma_threshold);
+            //double normal_diff = exp(-pow(1-v.N()*t.N(), 2)/sigma_threshold);
             double normal_diff = 1.0;
-            double w = dist_diff * normal_diff;*/
-            double w = 1.0f;
+            double w = dist_diff * normal_diff;
+            //double w = 1.0f;
             sum_confidence += w * t.eigen_confidence;
-            sum_w += w;
+            sum_w += 1;
           }
 
           if (v.original_neighbors.size() > 0 )
             sum_confidence /= sum_w;
-
-          if (k < 100)
+          
+          if (k < 10)
             cout<<"sum_confidence: " << sum_confidence <<endl;
 
           if ( (sum_confidence > merge_confidence_threshold) 
-            || (1.0f * rand() / (RAND_MAX+1.0) > pow((1 - sum_confidence), global_paraMgr.nbv.getDouble("Merge Probability Pow"))))
+            || (1.0f * rand() / (RAND_MAX+1.0) > pow((1 - sum_confidence), merge_pow)))
           {
             //ignore the skip points
             v.is_ignore = true;
@@ -833,7 +833,7 @@ CameraParaDlg::runOneKeyNbvIteration()
     cout<< "end save merged mesh" <<endl;
 
     cout << "Begin remove outliers!" <<endl;
-    GlobalFun::removeOutliers(original, global_paraMgr.data.getDouble("CGrid Radius") * 2, 20);
+    GlobalFun::removeOutliers(original, global_paraMgr.data.getDouble("CGrid Radius") * 2, 10);
     cout << "End remove outliers!" <<endl;
   }
 

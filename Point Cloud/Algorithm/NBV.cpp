@@ -1065,6 +1065,13 @@ bool NBV::updateViewDirections()
 
   double predicted_model_length = global_paraMgr.camera.getDouble("Predicted Model Size");
   double optimal_plane_width = global_paraMgr.camera.getDouble("Optimal Plane Width");
+
+  if (optimal_plane_width < 0.001)
+  {
+    cout << "Unable to Update view direction" <<endl;
+    return false;
+  }
+
   optimal_plane_width /= predicted_model_length;
 
 
@@ -1121,7 +1128,7 @@ bool NBV::updateViewDirections()
       }
     }
 
-    if (best_iso_index != nbvc.remember_iso_index)
+    if (best_iso_index != nbvc.remember_iso_index)//以后应该加上碰撞检测
     {
       have_direction_move = true;
       cout << "Max scores:  " << max_score << endl;
