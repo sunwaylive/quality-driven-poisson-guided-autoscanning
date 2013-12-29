@@ -665,6 +665,7 @@ void GLArea::loadDefaultModel()
 	//dataMgr.loadPlyToModel("model.ply"); 
 	//dataMgr.loadPlyToOriginal("model.ply");
 	//dataMgr.loadCameraModel("camera.ply");
+
 	initAfterOpenFile();
 	updateGL();
 }
@@ -2175,22 +2176,23 @@ void
 GLArea::removeOutliers()
 {
   double outlier_percentage = global_paraMgr.wLop.getDouble("Outlier Percentage");
+  int outlie_num = 20;
 
   if (global_paraMgr.glarea.getBool("Show Original"))
   {
-    GlobalFun::removeOutliers(dataMgr.getCurrentOriginal(), global_paraMgr.data.getDouble("CGrid Radius") / 8, outlier_percentage);
+    GlobalFun::removeOutliers(dataMgr.getCurrentOriginal(), global_paraMgr.data.getDouble("CGrid Radius"), outlie_num);
     cout<<"has removed original outliers"<<endl;
   }
 
   if (global_paraMgr.glarea.getBool("Show Samples"))
   {
-    GlobalFun::removeOutliers(dataMgr.getCurrentSamples(), global_paraMgr.data.getDouble("CGrid Radius"), outlier_percentage);
+    GlobalFun::removeOutliers(dataMgr.getCurrentSamples(), global_paraMgr.data.getDouble("CGrid Radius"), outlie_num);
     cout<<"has removed samples outliers"<<endl;
   }
 
   if (global_paraMgr.glarea.getBool("Show ISO Points"))
   {
-    GlobalFun::removeOutliers(dataMgr.getCurrentIsoPoints(), global_paraMgr.data.getDouble("CGrid Radius"), outlier_percentage);
+    GlobalFun::removeOutliers(dataMgr.getCurrentIsoPoints(), global_paraMgr.data.getDouble("CGrid Radius"), outlie_num);
     cout<<"has removed ISO points outliers"<<endl;
   }
 }

@@ -867,6 +867,9 @@ double GlobalFun::computeMeshLineIntersectPoint( CMesh *target, Point3f& p, Poin
 bool
 GlobalFun::cmp(DesityAndIndex &a, DesityAndIndex &b)
 {
+  if (a.density == b.density)
+    return false;
+
   return a.density < b.density;
 }
 
@@ -905,7 +908,7 @@ GlobalFun::removeOutliers(CMesh *mesh, double radius, double remove_percent)
 
   //sort the density and remove low ones
   sort(mesh_density.begin(), mesh_density.end(), cmp);
-  int remove_num = mesh_density.size() * remove_percent;
+  int remove_num = static_cast<int> (mesh_density.size() * remove_percent);
   //set those who are removed, ignored = false
   for (int i = 0; i < remove_num; ++i)
   {
@@ -942,7 +945,7 @@ GlobalFun::removeOutliers(CMesh *mesh, double radius, int remove_num)
     return;
   }
 
-  double remove_percent = remove_num / mesh->vert.size();
+  double remove_percent = 1.0f * remove_num / mesh->vert.size();
 
   GlobalFun::removeOutliers(mesh, radius, remove_percent);
 }

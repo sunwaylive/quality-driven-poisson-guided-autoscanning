@@ -1652,27 +1652,103 @@ DataMgr::saveParameters(QString fileName)
   if (out_para == NULL)
     return ;
 
-  out_para << "# KNN for compute PCA normal" <<endl
-    <<global_paraMgr.norSmooth.getInt("PCA KNN") <<endl <<endl; 
+  out_para << "# KNN for compute PCA normal" << endl
+    << global_paraMgr.norSmooth.getInt("PCA KNN") << endl << endl; 
+
+  out_para << "# Camera Resolution, something like(1.0 / 50.0f)" << endl
+    << global_paraMgr.camera.getDouble("Camera Resolution") << endl << endl;
+
+  out_para << "# Sharp Sigma" << endl
+    << global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma") << endl <<endl;
+
+  out_para << "# View Grid Resolution" <<endl
+    << global_paraMgr.nbv.getDouble("View Grid Resolution") << endl <<endl;
+
+  out_para << "# Poisson Max Depth" <<endl
+    << global_paraMgr.poisson.getDouble("Max Depth") << endl <<endl;
+
+  out_para << "# Original KNN" <<endl
+    << global_paraMgr.poisson.getDouble("Original KNN") << endl << endl;
+
+  out_para << "# merge probability X . pow(1-confidence, x)" <<endl
+    << global_paraMgr.nbv.getDouble("Merge Probability Pow") <<endl <<endl;
+
+  out_para << "# Optimal Plane Width" <<endl
+    << global_paraMgr.camera.getDouble("Optimal Plane Width") <<endl <<endl;
+
+  out_para << "# Merge Confidence Threshold" <<endl
+    << global_paraMgr.camera.getDouble("Merge Confidence Threshold") <<endl <<endl;
+
+  out_para.close();
 }
 
 void
 DataMgr::loadParameters(QString fileName)
 {
   ifstream in_para;
-  in_para.open(fileName.toAscii().data(), std::ios::in);
+  in_para.open(fileName.toAscii().data());
   if (in_para == NULL)
     return;
+  
+  string value;
 
-  stringstream sem; 
-  sem << in_para.rdbuf(); 
-
-  string comment;
-  sem >> comment;
-
+  in_para.ignore(1000, '\n');
   int knn;
-  sem >> knn;
+  getline(in_para, value);
+  knn = atoi(value.c_str());
   global_paraMgr.norSmooth.setValue("PCA KNN", IntValue(knn));
+
+  in_para.ignore(1000, '\n');
+  in_para.ignore(1000, '\n');
+  double camera_resolution;
+  getline(in_para, value);
+  camera_resolution = atof(value.c_str());
+  global_paraMgr.camera.setValue("Camera Resolution", DoubleValue(camera_resolution));
+
+  in_para.ignore(1000, '\n');
+  in_para.ignore(1000, '\n');
+  double sharp_sigma;
+  getline(in_para, value);
+  sharp_sigma = atof(value.c_str());
+  global_paraMgr.norSmooth.setValue("Sharpe Feature Bandwidth Sigma", DoubleValue(sharp_sigma));
+
+  in_para.ignore(1000, '\n');
+  in_para.ignore(1000, '\n');
+  int grid_resolution;
+  getline(in_para, value);
+  grid_resolution = atoi(value.c_str());
+  global_paraMgr.nbv.setValue("View Grid Resolution", DoubleValue(grid_resolution));
+
+  in_para.ignore(1000, '\n');
+  in_para.ignore(1000, '\n');
+  int poisson_depth;
+  getline(in_para, value);
+  poisson_depth = atoi(value.c_str());
+  global_paraMgr.poisson.setValue("Max Depth", DoubleValue(poisson_depth));
+
+  in_para.ignore(1000, '\n');
+  in_para.ignore(1000, '\n');
+  double merge_pow;
+  getline(in_para, value);
+  merge_pow = atof(value.c_str());
+  global_paraMgr.nbv.setValue("Merge Probability Pow", DoubleValue(merge_pow));
+
+
+  in_para.ignore(1000, '\n');
+  in_para.ignore(1000, '\n');
+  double optimal_plane_width;
+  getline(in_para, value);
+  optimal_plane_width = atof(value.c_str());
+  global_paraMgr.camera.setValue("Optimal Plane Width", DoubleValue(optimal_plane_width));
+
+  in_para.ignore(1000, '\n');
+  in_para.ignore(1000, '\n');
+  double merge_confidence_threshold;
+  getline(in_para, value);
+  merge_confidence_threshold = atof(value.c_str());
+  global_paraMgr.camera.setValue("Merge Confidence Threshold", DoubleValue(merge_confidence_threshold));
+
+  in_para.close();
 }
 
 void DataMgr::switchSampleToOriginal()

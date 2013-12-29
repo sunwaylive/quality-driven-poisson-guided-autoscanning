@@ -483,7 +483,8 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
           if (k < 100)
             cout<<"sum_confidence: " << sum_confidence <<endl;
 
-          if ((1.0f * rand() / (RAND_MAX+1.0) > pow((1 - sum_confidence), 5)))
+          if ( (sum_confidence > merge_confidence_threshold) 
+            || (1.0f * rand() / (RAND_MAX+1.0) > pow((1 - sum_confidence), global_paraMgr.nbv.getDouble("Merge Probability Pow"))))
           {
             //ignore the skip points
             v.is_ignore = true;
@@ -748,6 +749,10 @@ CameraParaDlg::runOneKeyNbvIteration()
   QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
   if (!file_location.size()) return;
   
+  QString para = "\\parameter.para";
+  para = file_location + para;
+  area->dataMgr.saveParameters(para);
+
   int iteration_cout = global_paraMgr.nbv.getInt("NBV Iteration Count");
   CMesh *original = area->dataMgr.getCurrentOriginal();
   for (int ic = 0; ic < iteration_cout; ++ic)
@@ -828,11 +833,13 @@ CameraParaDlg::runOneKeyNbvIteration()
     cout<< "end save merged mesh" <<endl;
 
     cout << "Begin remove outliers!" <<endl;
-    GlobalFun::removeOutliers(original, global_paraMgr.data.getDouble("CGrid Radius") * 2, 60);
+    GlobalFun::removeOutliers(original, global_paraMgr.data.getDouble("CGrid Radius") * 2, 20);
     cout << "End remove outliers!" <<endl;
   }
 
   QString last_original = "\\ultimate_original.ply";
   last_original = file_location + last_original;
   area->dataMgr.savePly(last_original, *area->dataMgr.getCurrentOriginal());
+
+  cout << "All is done!" <<endl;
 }

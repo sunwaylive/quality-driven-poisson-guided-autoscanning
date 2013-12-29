@@ -48,6 +48,7 @@ private slots:
 	void saveSkel();
   void getQianSample();
   void saveFieldPoints();
+  void savePara();
 
 	void showWLopDlg();
 	void showNormalDlg();
