@@ -847,9 +847,9 @@ CameraParaDlg::runOneKeyNbvIteration()
     area->dataMgr.saveMergedMesh(s_merged_mesh);
     cout<< "end save merged mesh" <<endl;
 
-    cout << "Begin remove outliers!" <<endl;
+    /* cout << "Begin remove outliers!" <<endl;
     GlobalFun::removeOutliers(original, global_paraMgr.data.getDouble("CGrid Radius") * 2, 10);
-    cout << "End remove outliers!" <<endl;
+    cout << "End remove outliers!" <<endl;*/
   }
 
   QString last_original = "\\ultimate_original.ply";

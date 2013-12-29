@@ -797,10 +797,17 @@ double GlobalFun::computeMeshLineIntersectPoint( CMesh *target, Point3f& p, Poin
       //if the face can't be seen, then continue
       if(face_norm * line_dir > 0) continue;
       //the line cross the point: pos, and line vector is viewray_iter 
-      double t = ( (v0.X() - p.X()) * face_norm.X() 
-        + (v0.Y() - p.Y()) * face_norm.Y() 
-        + (v0.Z() - p.Z()) * face_norm.Z() ) 
-        / ( face_norm.X() * line_dir.X() + face_norm.Y() * line_dir.Y() + face_norm.Z() * line_dir.Z() ) ;
+      double tmp = face_norm * line_dir;
+      if (tmp < 1e-10)
+        continue;
+
+      double tmp2 = 1.0f / tmp;
+      double t = (v0 - p) * face_norm * tmp2;
+
+      /*double t = ( (v0.X() - p.X()) * face_norm.X() 
+      + (v0.Y() - p.Y()) * face_norm.Y() 
+      + (v0.Z() - p.Z()) * face_norm.Z() ) 
+      / ( face_norm.X() * line_dir.X() + face_norm.Y() * line_dir.Y() + face_norm.Z() * line_dir.Z() ) ;*/
 
       Point3f intersect_point = p + line_dir * t;
 
@@ -878,7 +885,7 @@ GlobalFun::removeOutliers(CMesh *mesh, double radius, double remove_percent)
 {
   if (NULL == mesh) 
   { 
-    cout<<"Empty Mesh, When RemoveOutliers!"<<endl;
+    cout<<"Empty Mesh, When Remove Outliers!"<<endl;
     return;
   }
 
