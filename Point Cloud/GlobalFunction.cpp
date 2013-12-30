@@ -798,7 +798,8 @@ double GlobalFun::computeMeshLineIntersectPoint( CMesh *target, Point3f& p, Poin
       if(face_norm * line_dir > 0) continue;
       //the line cross the point: pos, and line vector is viewray_iter 
       double tmp = face_norm * line_dir;
-      if (tmp < 1e-10)
+
+      if (abs(tmp) < 1e-10)
         continue;
 
       double tmp2 = 1.0f / tmp;
