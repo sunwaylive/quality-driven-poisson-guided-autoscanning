@@ -1812,6 +1812,85 @@ void DataMgr::replaceMesh2(CMesh& src_mesh, CMesh& target_mesh, bool isIso)
   target_mesh.bbox = src_mesh.bbox;
 }
 
+void DataMgr::loadCurrentTF(QString fileName)
+{
+  //ifstream infile;
+  //infile.open(fileName.toStdString().c_str());
+  
+  QFile file(fileName);
+  
+  if(!file.open( QIODevice::ReadOnly ))
+  {
+    return;
+  }
+
+  QTextStream infile(&file);
+  std::string temp_str;
+  float temp_float;
+  char temp_c;
+  QString line;
+
+  line = infile.readLine();
+  cout << line.toStdString() << endl;
+
+  line.replace("- Translation: [", "");
+  line.replace("]", "");
+
+  QStringList str_list;
+  str_list = line.split(", ");
+  if (str_list.size() != 3)
+  {
+    cout << "wrong tf file!!!" << endl;
+    return;
+  }
+  for (int i = 0; i < 3; i++)
+  {
+    QString qstr = str_list.at(i);
+    float f_value = qstr.toFloat();
+    current_tf_translation[i] = f_value;
+  }
+
+
+  line = infile.readLine();
+  cout << line.toStdString() << endl;
+
+  line.replace("- Rotation: in Quaternion [", "");
+  line.replace("]", "");
+
+  str_list = line.split(", ");
+  if (str_list.size() != 4)
+  {
+    cout << "wrong tf file!!!" << endl;
+    return;
+  }
+  for (int i = 0; i < 4; i++)
+  {
+    QString qstr = str_list.at(i);
+    float f_value = qstr.toFloat();
+    current_tf_Qua[i] = f_value;
+  }
+
+
+  line = infile.readLine();
+  cout << line.toStdString() << endl;
+  line.replace("in RPY [", "");
+  line.replace("]", "");
+
+  str_list = line.split(", ");
+  if (str_list.size() != 3)
+  {
+    cout << "wrong tf file!!!" << endl;
+    return;
+  }
+  for (int i = 0; i < 3; i++)
+  {
+    QString qstr = str_list.at(i);
+    float f_value = qstr.toFloat();
+    current_tf_angle[i] = f_value;
+  }
+ 
+}
+
 void DataMgr::coordinateTransform()
 {
   vcg::Quaternionf L_to_R_rotation_Qua;

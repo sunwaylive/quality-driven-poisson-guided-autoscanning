@@ -5,6 +5,10 @@
 #include "GlobalFunction.h"
 #include "Algorithm/Skeleton.h"
 
+#include <qfile.h>
+#include <qtextstream.h>
+#include <qtextcodec.h>
+
 #include <wrap/io_trimesh/import.h>
 #include <wrap/io_trimesh/export.h>
 
@@ -35,6 +39,8 @@ public:
 	void      loadImage(QString fileName);
   void      loadXYZN(QString fileName);
   void      loadCameraModel(QString fileName);
+
+  void      loadCurrentTF(QString fileName);
 
 
   bool      isModelEmpty();
@@ -143,5 +149,9 @@ public:
 	QString             curr_file_name;
 
   Box3f whole_space_box;
+
+  Point3f current_tf_translation;
+  Quaternionf current_tf_Qua;
+  Point3f current_tf_angle;
 };
 

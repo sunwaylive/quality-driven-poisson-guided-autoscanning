@@ -643,6 +643,11 @@ void GLArea::openByDrop(QString fileName)
     dataMgr.loadParameters(fileName);
   }
 
+  if (fileName.endsWith("tf"))
+  {
+    dataMgr.loadCurrentTF(fileName);
+  }
+
   emit needUpdateStatus();
 	initAfterOpenFile();
 	updateGL();
