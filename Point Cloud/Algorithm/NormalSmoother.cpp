@@ -83,8 +83,6 @@ void NormalSmoother::runAnisotropicPCA()
 		radius, para->getDouble("Sharpe Feature Bandwidth Sigma"));
 }
 
-
-
 void NormalSmoother::initVertexes()
 {
 	CMesh::VertexIterator vi;

@@ -766,6 +766,22 @@ double GlobalFun::computeTriangleArea_3(Point3f& v0, Point3f& v1, Point3f& v2)
   return AP.Norm() / 2.0f;
 }
 
+bool GlobalFun::isPointInBoundingBox(Point3f &v0, CMesh *mesh)
+{
+  if (NULL == mesh)
+  {
+    cout << "Empty Mesh When isPointInBoundingBox" << endl;
+    return false; 
+  }
+
+  Point3f &bmin = mesh->bbox.min;
+  Point3f &bmax = mesh->bbox.max;
+  if ( v0 >= bmin && v0 <= bmax)
+    return true;
+
+  return false;
+}
+
 bool GlobalFun::isPointInTriangle_3(Point3f& v0, Point3f& v1, Point3f& v2, Point3f& p)
 {
   double area1 = GlobalFun::computeTriangleArea_3(v0, v1, p);
@@ -797,10 +813,18 @@ double GlobalFun::computeMeshLineIntersectPoint( CMesh *target, Point3f& p, Poin
       //if the face can't be seen, then continue
       if(face_norm * line_dir > 0) continue;
       //the line cross the point: pos, and line vector is viewray_iter 
-      double t = ( (v0.X() - p.X()) * face_norm.X() 
-        + (v0.Y() - p.Y()) * face_norm.Y() 
-        + (v0.Z() - p.Z()) * face_norm.Z() ) 
-        / ( face_norm.X() * line_dir.X() + face_norm.Y() * line_dir.Y() + face_norm.Z() * line_dir.Z() ) ;
+      double tmp = face_norm * line_dir;
+
+      if (abs(tmp) < 1e-6)
+        continue;
+
+      double tmp2 = 1.0f / tmp;
+      double t = (v0 - p) * face_norm * tmp2;
+
+      /*double t = ( (v0.X() - p.X()) * face_norm.X() 
+      + (v0.Y() - p.Y()) * face_norm.Y() 
+      + (v0.Z() - p.Z()) * face_norm.Z() ) 
+      / ( face_norm.X() * line_dir.X() + face_norm.Y() * line_dir.Y() + face_norm.Z() * line_dir.Z() ) ;*/
 
       Point3f intersect_point = p + line_dir * t;
 
@@ -867,6 +891,9 @@ double GlobalFun::computeMeshLineIntersectPoint( CMesh *target, Point3f& p, Poin
 bool
 GlobalFun::cmp(DesityAndIndex &a, DesityAndIndex &b)
 {
+  if (a.density == b.density)
+    return false;
+
   return a.density < b.density;
 }
 
@@ -875,7 +902,7 @@ GlobalFun::removeOutliers(CMesh *mesh, double radius, double remove_percent)
 {
   if (NULL == mesh) 
   { 
-    cout<<"Empty Mesh, When RemoveOutliers!"<<endl;
+    cout<<"Empty Mesh, When Remove Outliers!"<<endl;
     return;
   }
 
@@ -905,7 +932,7 @@ GlobalFun::removeOutliers(CMesh *mesh, double radius, double remove_percent)
 
   //sort the density and remove low ones
   sort(mesh_density.begin(), mesh_density.end(), cmp);
-  int remove_num = mesh_density.size() * remove_percent;
+  int remove_num = static_cast<int> (mesh_density.size() * remove_percent);
   //set those who are removed, ignored = false
   for (int i = 0; i < remove_num; ++i)
   {
@@ -942,7 +969,7 @@ GlobalFun::removeOutliers(CMesh *mesh, double radius, int remove_num)
     return;
   }
 
-  double remove_percent = remove_num / mesh->vert.size();
+  double remove_percent = 1.0f * remove_num / mesh->vert.size();
 
   GlobalFun::removeOutliers(mesh, radius, remove_percent);
 }
@@ -1053,7 +1080,7 @@ GlobalFun::computeICP(CMesh *dst, CMesh *src)
   printf("ICP succeeded - distance = %f\n", err);
   
   //add new points to dst
-  int index = (dst->vert.back()).m_index;
+  int index = (dst->vert.empty()) ? 0 : (dst->vert.back()).m_index;
   cout <<"original index: "<<index <<endl;;
   for (int i = 0; i < mesh2->vertices.size(); ++i)
   {
@@ -1174,6 +1201,7 @@ void GlobalFun::cutPointSelfSlice(CMesh* mesh, Point3f anchor, Point3f direction
   }
 
 }
+
 
 //void Slice::build_slice(Point3f a, Point3f b, Point3f c, float c_length)
 //{

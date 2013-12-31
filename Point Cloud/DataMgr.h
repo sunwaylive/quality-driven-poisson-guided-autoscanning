@@ -29,7 +29,8 @@ public:
   void      loadPlyToOriginal(QString fileName);
   void      loadPlyToSample(QString fileName);
   void      loadPlyToISO(QString fileName);
-
+  void      saveParameters(QString fileName);
+  void      loadParameters(QString fileName);
 	void      savePly(QString fileName, CMesh& mesh);
 	void      loadImage(QString fileName);
   void      loadXYZN(QString fileName);

@@ -1644,6 +1644,130 @@ DataMgr::saveMergedMesh(QString fileName)
   }
 }
 
+void 
+DataMgr::saveParameters(QString fileName)
+{
+  ofstream out_para;
+  out_para.open(fileName.toAscii().data(), std::ios::out);
+  if (out_para == NULL)
+    return ;
+
+  out_para << "#1. KNN for compute PCA normal" << endl
+    << global_paraMgr.norSmooth.getInt("PCA KNN") << endl << endl; 
+
+  out_para << "#2. Camera Resolution, something like(1.0 / 50.0f)" << endl
+    << global_paraMgr.camera.getDouble("Camera Resolution") << endl << endl;
+
+  out_para << "#3. Sharp Sigma" << endl
+    << global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma") << endl <<endl;
+
+  out_para << "#4. View Grid Resolution" <<endl
+    << global_paraMgr.nbv.getDouble("View Grid Resolution") << endl <<endl;
+
+  out_para << "#5. Poisson Max Depth" <<endl
+    << global_paraMgr.poisson.getDouble("Max Depth") << endl <<endl;
+
+  out_para << "#6. Original KNN" <<endl
+    << global_paraMgr.poisson.getDouble("Original KNN") << endl << endl;
+
+  out_para << "#7. merge probability X . pow(1-confidence, x)" <<endl
+    << global_paraMgr.nbv.getDouble("Merge Probability Pow") <<endl <<endl;
+
+  out_para << "#8. Optimal Plane Width" <<endl
+    << global_paraMgr.camera.getDouble("Optimal Plane Width") <<endl <<endl;
+
+  out_para << "#9. Merge Confidence Threshold" << endl
+    << global_paraMgr.camera.getDouble("Merge Confidence Threshold") <<endl << endl;
+
+  out_para << "#10. View Bin Number On Each Axis" << endl
+    << global_paraMgr.nbv.getInt("View Bin Each Axis") <<endl << endl;
+
+  out_para.close();
+}
+
+void
+DataMgr::loadParameters(QString fileName)
+{
+  ifstream in_para;
+  in_para.open(fileName.toAscii().data());
+  if (in_para == NULL)
+    return;
+  
+  string value;
+
+  in_para.ignore(1000, '\n');
+  int knn;
+  getline(in_para, value);
+  knn = atoi(value.c_str());
+  global_paraMgr.norSmooth.setValue("PCA KNN", IntValue(knn));
+
+  in_para.ignore(1000, '\n');
+  in_para.ignore(1000, '\n');
+  double camera_resolution;
+  getline(in_para, value);
+  camera_resolution = atof(value.c_str());
+  global_paraMgr.camera.setValue("Camera Resolution", DoubleValue(camera_resolution));
+
+  in_para.ignore(1000, '\n');
+  in_para.ignore(1000, '\n');
+  double sharp_sigma;
+  getline(in_para, value);
+  sharp_sigma = atof(value.c_str());
+  global_paraMgr.norSmooth.setValue("Sharpe Feature Bandwidth Sigma", DoubleValue(sharp_sigma));
+
+  in_para.ignore(1000, '\n');
+  in_para.ignore(1000, '\n');
+  int grid_resolution;
+  getline(in_para, value);
+  grid_resolution = atoi(value.c_str());
+  global_paraMgr.nbv.setValue("View Grid Resolution", DoubleValue(grid_resolution));
+
+  in_para.ignore(1000, '\n');
+  in_para.ignore(1000, '\n');
+  int poisson_depth;
+  getline(in_para, value);
+  poisson_depth = atoi(value.c_str());
+  global_paraMgr.poisson.setValue("Max Depth", DoubleValue(poisson_depth));
+
+  in_para.ignore(1000, '\n');
+  in_para.ignore(1000, '\n');
+  double original_knn;
+  getline(in_para, value);
+  original_knn = atof(value.c_str());
+  global_paraMgr.poisson.setValue("Original KNN", DoubleValue(original_knn));
+
+  in_para.ignore(1000, '\n');
+  in_para.ignore(1000, '\n');
+  double merge_pow;
+  getline(in_para, value);
+  merge_pow = atof(value.c_str());
+  global_paraMgr.nbv.setValue("Merge Probability Pow", DoubleValue(merge_pow));
+
+
+  in_para.ignore(1000, '\n');
+  in_para.ignore(1000, '\n');
+  double optimal_plane_width;
+  getline(in_para, value);
+  optimal_plane_width = atof(value.c_str());
+  global_paraMgr.camera.setValue("Optimal Plane Width", DoubleValue(optimal_plane_width));
+
+  in_para.ignore(1000, '\n');
+  in_para.ignore(1000, '\n');
+  double merge_confidence_threshold;
+  getline(in_para, value);
+  merge_confidence_threshold = atof(value.c_str());
+  global_paraMgr.camera.setValue("Merge Confidence Threshold", DoubleValue(merge_confidence_threshold));
+
+  in_para.ignore(1000, '\n');
+  in_para.ignore(1000, '\n');
+  int nbv_bin_num;
+  getline(in_para, value);
+  nbv_bin_num = atoi(value.c_str());
+  global_paraMgr.nbv.setValue("View Bin Each Axis", IntValue(nbv_bin_num));
+
+  in_para.close();
+}
+
 void DataMgr::switchSampleToOriginal()
 {
   CMesh temp_mesh;

@@ -46,7 +46,9 @@ private:
   static bool  cmp(const CVertex &v1, const CVertex &v2);
 
 private:
+  int                   view_bin_each_axis;
   RichParameterSet      *para;
+  CMesh                 *model;
   CMesh                 *original;
   CMesh                 *iso_points;
   CMesh                 *view_grid_points;
@@ -60,7 +62,6 @@ private:
   int                   y_max;
   int                   z_max;
   vector<float>         confidence_weight_sum;
-  static int            view_bins_each_axis;
   vector<double>        nbv_scores;
-  Box3f* whole_space_box;
+  Box3f*                whole_space_box;
 };

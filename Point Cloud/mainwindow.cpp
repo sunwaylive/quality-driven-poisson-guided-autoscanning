@@ -68,6 +68,7 @@ void MainWindow::initConnect()
 		cout << "can not connect signal" << endl;
 	}
 
+  connect(ui.actionSave_Parameter, SIGNAL(triggered()), this, SLOT(savePara()));
 	connect(ui.actionImport_Ply, SIGNAL(triggered()), this, SLOT(openFile()));
 	connect(ui.actionSave_Ply, SIGNAL(triggered()), this, SLOT(saveFile()));
   connect(ui.actionRemove_Outlier, SIGNAL(triggered()), this, SLOT(removeOutliers()));
@@ -633,6 +634,12 @@ void MainWindow::saveFieldPoints()
 
   area->dataMgr.saveFieldPoints(file);
   //area->dataMgr.saveSkeletonAsSkel(file);
+}
+
+void 
+MainWindow::savePara()
+{
+  area->dataMgr.saveParameters("parameter.para");
 }
 
 void MainWindow::saveViewGridsForVoreen()

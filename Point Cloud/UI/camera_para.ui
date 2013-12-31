@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -777,6 +777,12 @@
         <width>61</width>
         <height>22</height>
        </rect>
+      </property>
+      <property name="decimals">
+       <number>8</number>
+      </property>
+      <property name="singleStep">
+       <double>0.000100000000000</double>
       </property>
       <property name="value">
        <double>20.000000000000000</double>
