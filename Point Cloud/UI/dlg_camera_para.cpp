@@ -871,6 +871,12 @@ CameraParaDlg::runOneKeyNbvIteration()
   QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
   if (!file_location.size()) return;
   
+  QString s_log = "\\log.txt";
+  s_log = file_location + s_log;
+  ofstream log;
+  log.open(s_log.toAscii().data());
+  cout.rdbuf(log.rdbuf());
+
   QString para = "\\parameter.para";
   para = file_location + para;
   area->dataMgr.saveParameters(para);
@@ -963,5 +969,6 @@ CameraParaDlg::runOneKeyNbvIteration()
   last_original = file_location + last_original;
   area->dataMgr.savePly(last_original, *area->dataMgr.getCurrentOriginal());
 
+  log.close();
   cout << "All is done!" <<endl;
 }

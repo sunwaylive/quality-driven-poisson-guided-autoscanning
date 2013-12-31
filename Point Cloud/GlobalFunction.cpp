@@ -766,6 +766,22 @@ double GlobalFun::computeTriangleArea_3(Point3f& v0, Point3f& v1, Point3f& v2)
   return AP.Norm() / 2.0f;
 }
 
+bool GlobalFun::isPointInBoundingBox(Point3f &v0, CMesh *mesh)
+{
+  if (NULL == mesh)
+  {
+    cout << "Empty Mesh When isPointInBoundingBox" << endl;
+    return false; 
+  }
+
+  Point3f &bmin = mesh->bbox.min;
+  Point3f &bmax = mesh->bbox.max;
+  if ( v0 >= bmin && v0 <= bmax)
+    return true;
+
+  return false;
+}
+
 bool GlobalFun::isPointInTriangle_3(Point3f& v0, Point3f& v1, Point3f& v2, Point3f& p)
 {
   double area1 = GlobalFun::computeTriangleArea_3(v0, v1, p);
@@ -799,7 +815,7 @@ double GlobalFun::computeMeshLineIntersectPoint( CMesh *target, Point3f& p, Poin
       //the line cross the point: pos, and line vector is viewray_iter 
       double tmp = face_norm * line_dir;
 
-      if (abs(tmp) < 1e-10)
+      if (abs(tmp) < 1e-6)
         continue;
 
       double tmp2 = 1.0f / tmp;

@@ -1,7 +1,5 @@
 #include "NBV.h"
 
-int NBV::view_bins_each_axis = 4;
-
 NBV::NBV(RichParameterSet *_para)
 {
   cout<<"NBV constructed!"<<endl;
@@ -27,9 +25,7 @@ void
 
   int grid_resolution = global_paraMgr.nbv.getDouble("View Grid Resolution");
   if (grid_resolution <= 2)
-  {
     return;
-  }
 
   grid_step_size = (camera_max_dist*2.0 + 1.0) / (grid_resolution - 1);
   global_paraMgr.camera.setValue("Grid Step Size", DoubleValue(grid_step_size));
@@ -163,7 +159,9 @@ NBV::setInput(DataMgr *pData)
     cout<<"ERROR: NBV::setInput empty!"<<endl;
     return;
   }
-
+  
+  view_bin_each_axis = global_paraMgr.nbv.getInt("View Bin Each Axis");
+  model = pData->getCurrentModel();
   view_grid_points = pData->getViewGridPoints();
   iso_points = pData->getCurrentIsoPoints();
   nbv_candidates = pData->getNbvCandidates();
@@ -720,23 +718,23 @@ void
 {
   nbv_candidates->vert.clear();
   Point3f diff = whole_space_box_max - whole_space_box_min;
-  double bin_length_x = diff.X() / NBV::view_bins_each_axis;
-  double bin_length_y = diff.Y() / NBV::view_bins_each_axis;
-  double bin_length_z = diff.Z() / NBV::view_bins_each_axis;
+  double bin_length_x = diff.X() / view_bin_each_axis;
+  double bin_length_y = diff.Y() / view_bin_each_axis;
+  double bin_length_z = diff.Z() / view_bin_each_axis;
 
   //dynamic allocate memory
-  int bin_confidence_size = NBV::view_bins_each_axis * NBV::view_bins_each_axis * NBV::view_bins_each_axis;
+  int bin_confidence_size = view_bin_each_axis * view_bin_each_axis * view_bin_each_axis;
   float *bin_confidence = new float[bin_confidence_size];
   memset(bin_confidence, 0, bin_confidence_size * sizeof(float));
 
   int ***view_bins;
-  view_bins = new int **[NBV::view_bins_each_axis];
-  for (int i = 0; i < NBV::view_bins_each_axis; ++i)
+  view_bins = new int **[view_bin_each_axis];
+  for (int i = 0; i < view_bin_each_axis; ++i)
   {
-    view_bins[i] = new int *[NBV::view_bins_each_axis];
-    for (int j = 0; j < NBV::view_bins_each_axis; ++j)
+    view_bins[i] = new int *[view_bin_each_axis];
+    for (int j = 0; j < view_bin_each_axis; ++j)
     {
-      view_bins[i][j] = new int[NBV::view_bins_each_axis];
+      view_bins[i][j] = new int[view_bin_each_axis];
     }
   }
 
@@ -755,12 +753,12 @@ void
     int t_indexY = static_cast<int>( floor((v.P()[1] - whole_space_box_min.Y()) / bin_length_y ));
     int t_indexZ = static_cast<int>( floor((v.P()[2] - whole_space_box_min.Z()) / bin_length_z ));
 
-    t_indexX = (t_indexX >= NBV::view_bins_each_axis ? (NBV::view_bins_each_axis-1) : t_indexX);
-    t_indexY = (t_indexY >= NBV::view_bins_each_axis ? (NBV::view_bins_each_axis-1) : t_indexY);
-    t_indexZ = (t_indexZ >= NBV::view_bins_each_axis ? (NBV::view_bins_each_axis-1) : t_indexZ);
+    t_indexX = (t_indexX >= view_bin_each_axis ? (view_bin_each_axis-1) : t_indexX);
+    t_indexY = (t_indexY >= view_bin_each_axis ? (view_bin_each_axis-1) : t_indexY);
+    t_indexZ = (t_indexZ >= view_bin_each_axis ? (view_bin_each_axis-1) : t_indexZ);
 
-    int idx = t_indexX * NBV::view_bins_each_axis * NBV::view_bins_each_axis 
-      + t_indexZ * NBV::view_bins_each_axis + t_indexY;
+    int idx = t_indexX * view_bin_each_axis * view_bin_each_axis 
+      + t_indexZ * view_bin_each_axis + t_indexY;
 
     if (v.eigen_confidence > bin_confidence[idx])
     {
@@ -769,38 +767,48 @@ void
     }
   }
 
-  //put bin direction into nbv_candidates
-  //fix:view_bin one value unset
-  for (int i = 0; i < NBV::view_bins_each_axis; ++i)
+  //put bin view into nbv_candidates
+  //fixme: view_bin one value uninitialized
+  for (int i = 0; i < view_bin_each_axis; ++i)
   {
-    for (int j = 0; j < NBV::view_bins_each_axis; ++j)
+    for (int j = 0; j < view_bin_each_axis; ++j)
     {
-      for (int k = 0; k < NBV::view_bins_each_axis; ++k)
+      for (int k = 0; k < view_bin_each_axis; ++k)
       {
         if (view_bins[i][j][k] < 0  || view_bins[i][j][k] > view_grid_points->vert.size() - 1)
-        {
-          cout<< i << " " << j << " "<< k << " "<<endl;
-          cout<< view_bins[i][j][k] <<endl;
-        }else
-        {
+          continue;
+        else
           nbv_candidates->vert.push_back(view_grid_points->vert[view_bins[i][j][k]]);
-        }
       }
     }
   }
   nbv_candidates->vn = nbv_candidates->vert.size();
 
-  /*double confidence_threshold = para->getDouble("Confidence Filter Threshold");
+  //delete unqualified candidates
+  double confidence_threshold = para->getDouble("Confidence Filter Threshold");
+  int nbv_candidate_num = 0;
   for (int i = 0; i < nbv_candidates->vert.size(); i++)
   {
     CVertex& v = nbv_candidates->vert[i];
-    if (v.eigen_confidence < confidence_threshold)
+    double dist_to_correspondese = GlobalFun::computeEulerDistSquare(v.P(), iso_points->vert[v.remember_iso_index].P());
+
+    if ( dist_to_correspondese >= global_paraMgr.camera.getDouble("Camera Far Distance")
+      || dist_to_correspondese <= global_paraMgr.camera.getDouble("Camera Near Distance")
+      || v.eigen_confidence < confidence_threshold
+      || GlobalFun::isPointInBoundingBox(v.P(), model))
     {
       v.is_ignore = true;
     }
+    else
+    {
+      nbv_candidate_num++;
+      cout << "nbv_candidate " <<nbv_candidate_num << " confidence: " << v.eigen_confidence <<endl;
+    }
     nbv_candidates->vert[i].m_index = i;
-  }*/
-  cout << "candidate number: " << nbv_candidates->vn << endl;
+  }
+
+  GlobalFun::deleteIgnore(nbv_candidates);
+  cout << "candidate number: " << nbv_candidate_num << endl;
 
 
   //for debug
@@ -812,9 +820,9 @@ void
   //  int t_indexY = static_cast<int>( floor((t.P()[1] - whole_space_box_min.Y()) / bin_length_y ));
   //  int t_indexZ = static_cast<int>( floor((t.P()[2] - whole_space_box_min.Z()) / bin_length_z ));
 
-  //  t_indexX = (t_indexX >= NBV::view_bins_each_axis ? (NBV::view_bins_each_axis-1) : t_indexX);
-  //  t_indexY = (t_indexY >= NBV::view_bins_each_axis ? (NBV::view_bins_each_axis-1) : t_indexY);
-  //  t_indexZ = (t_indexZ >= NBV::view_bins_each_axis ? (NBV::view_bins_each_axis-1) : t_indexZ);
+  //  t_indexX = (t_indexX >= view_bin_each_axis ? (view_bin_each_axis-1) : t_indexX);
+  //  t_indexY = (t_indexY >= view_bin_each_axis ? (view_bin_each_axis-1) : t_indexY);
+  //  t_indexZ = (t_indexZ >= view_bin_each_axis ? (view_bin_each_axis-1) : t_indexZ);
   //  cout<<"x: "<<t_indexX<<" "<<"y: "<<t_indexY<<" "<<"z: "<<t_indexZ<<" "<<endl;
   //  cout<<"x: "<<t.P()[0]<<" "<<"y: "<<t.P()[1]<<" "<<"z: "<<t.P()[2]<<" "<<endl;
   //}
@@ -822,9 +830,9 @@ void
   //release the memory
   delete [] bin_confidence;
 
-  for (int i = 0; i < NBV::view_bins_each_axis; ++i)
+  for (int i = 0; i < view_bin_each_axis; ++i)
   {
-    for (int j = 0; j < NBV::view_bins_each_axis; ++j)
+    for (int j = 0; j < view_bin_each_axis; ++j)
     {
       delete[] view_bins[i][j];
     }
@@ -907,16 +915,16 @@ void NBV::viewClustering()
   //}
   updateViewDirections();
 
-  double confidence_threshold = para->getDouble("Confidence Filter Threshold");
-  for (int i = 0; i < nbv_candidates->vert.size(); i++)
-  {
-    CVertex& v = nbv_candidates->vert[i];
-    if (v.eigen_confidence < confidence_threshold)
-    {
-      v.is_ignore = true;
-    }
-    nbv_candidates->vert[i].m_index = i;
-  }
+  //double confidence_threshold = para->getDouble("Confidence Filter Threshold");
+  //for (int i = 0; i < nbv_candidates->vert.size(); i++)
+  //{
+  //  CVertex& v = nbv_candidates->vert[i];
+  //  if (v.eigen_confidence < confidence_threshold)
+  //  {
+  //    v.is_ignore = true;
+  //  }
+  //  nbv_candidates->vert[i].m_index = i;
+  //}
 
   double predicted_model_length = global_paraMgr.camera.getDouble("Predicted Model Size");
   double optimal_plane_width = global_paraMgr.camera.getDouble("Optimal Plane Width");
@@ -1273,9 +1281,9 @@ int
   NBV::getIsoPointsViewBinIndex(Point3f& p, int which_axis)
 {
   Point3f diff = whole_space_box_max - whole_space_box_min;
-  double bin_length_x = diff.X() / NBV::view_bins_each_axis;
-  double bin_length_y = diff.Y() / NBV::view_bins_each_axis;
-  double bin_length_z = diff.Z() / NBV::view_bins_each_axis;
+  double bin_length_x = diff.X() / view_bin_each_axis;
+  double bin_length_y = diff.Y() / view_bin_each_axis;
+  double bin_length_z = diff.Z() / view_bin_each_axis;
   double l = 0.0f;
   double bl = 0.0f;
 

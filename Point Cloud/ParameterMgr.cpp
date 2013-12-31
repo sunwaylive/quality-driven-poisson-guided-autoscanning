@@ -439,6 +439,7 @@ void ParameterMgr::initNBVParameter()
 
   nbv.addParam(new RichDouble("View Preserve Angle Threshold", 65));
 
-  nbv.addParam(new RichDouble("Confidence Filter Threshold", 0.2f));
+  nbv.addParam(new RichDouble("Confidence Filter Threshold", 0.6f));
   nbv.addParam(new RichDouble("Propagate One Point Index", 0));
+  nbv.addParam(new RichInt("View Bin Each Axis", 4));
 }

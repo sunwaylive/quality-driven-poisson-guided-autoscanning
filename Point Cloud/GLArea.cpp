@@ -638,6 +638,11 @@ void GLArea::openByDrop(QString fileName)
     dataMgr.LoadGridPoints(fileName, true);
   }
 
+  if (fileName.endsWith("para"))
+  {
+    dataMgr.loadParameters(fileName);
+  }
+
   emit needUpdateStatus();
 	initAfterOpenFile();
 	updateGL();
