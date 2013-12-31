@@ -35,6 +35,7 @@ public:
   void      loadXYZN(QString fileName);
   void      loadCameraModel(QString fileName);
 
+
   bool      isModelEmpty();
   bool      isSamplesEmpty();
   bool      isOriginalEmpty();
@@ -47,10 +48,7 @@ public:
   bool      isViewGridsEmpty();
   bool      isNBVCandidatesEmpty();
 
-  
-
   void                    setCurrentTemperalSample(CMesh *mesh);
-
   CMesh*                  getCurrentSamples();
   CMesh*                  getCurrentTemperalSamples();
   CMesh*                  getCurrentModel();

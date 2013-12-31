@@ -289,8 +289,11 @@ void CameraParaDlg::loadRealInitialScan()
       area->dataMgr.loadPlyToOriginal(f_name);
     }else
     {
-      tri::io::ImporterPLY<CMesh>::Open(initial_scan, f_name.toAscii().data(), mask);
-      GlobalFun::computeICP(original, &initial_scan);
+      CMesh* iso_points = area->dataMgr.getCurrentIsoPoints();
+      tri::io::ImporterPLY<CMesh>::Open(*iso_points, f_name.toAscii().data(), mask);
+      GlobalFun::computeICP(original, iso_points);
+      //tri::io::ImporterPLY<CMesh>::Open(initial_scan, f_name.toAscii().data(), mask);
+      //GlobalFun::computeICP(original, &initial_scan);
     }
   }
 }
