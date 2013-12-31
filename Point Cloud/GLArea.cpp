@@ -434,7 +434,7 @@ void GLArea::paintGL()
 
       if(!view_grid_points->vert.empty())
       {
-        glDrawer.drawGrid(view_grid_points, 4);
+        glDrawer.drawGrid(view_grid_points, global_paraMgr.nbv.getInt("View Bin Each Axis"));
       }
 		}
 

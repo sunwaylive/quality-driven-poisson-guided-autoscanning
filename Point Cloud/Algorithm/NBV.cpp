@@ -786,14 +786,19 @@ void
 
   //delete unqualified candidates
   double confidence_threshold = para->getDouble("Confidence Filter Threshold");
+  double camera_far_dist = global_paraMgr.camera.getDouble("Camera Far Distance")
+                             / global_paraMgr.camera.getDouble("Predicted Model Size");
+  double camera_near_dist = global_paraMgr.camera.getDouble("Camera Near Distance") 
+                             / global_paraMgr.camera.getDouble("Predicted Model Size");
+
   int nbv_candidate_num = 0;
   for (int i = 0; i < nbv_candidates->vert.size(); i++)
   {
     CVertex& v = nbv_candidates->vert[i];
     double dist_to_correspondese = GlobalFun::computeEulerDistSquare(v.P(), iso_points->vert[v.remember_iso_index].P());
-
-    if ( dist_to_correspondese >= global_paraMgr.camera.getDouble("Camera Far Distance")
-      || dist_to_correspondese <= global_paraMgr.camera.getDouble("Camera Near Distance")
+    
+    if ( dist_to_correspondese <= camera_near_dist
+      || dist_to_correspondese >= camera_far_dist
       || v.eigen_confidence < confidence_threshold
       || GlobalFun::isPointInBoundingBox(v.P(), model))
     {
