@@ -68,6 +68,7 @@ void MainWindow::initConnect()
 		cout << "can not connect signal" << endl;
 	}
 
+  connect(ui.actionConvert_ply_to_obj, SIGNAL(triggered()), this, SLOT(convertPlyToObj()));
   connect(ui.actionSave_Parameter, SIGNAL(triggered()), this, SLOT(savePara()));
 	connect(ui.actionImport_Ply, SIGNAL(triggered()), this, SLOT(openFile()));
 	connect(ui.actionSave_Ply, SIGNAL(triggered()), this, SLOT(saveFile()));
@@ -1093,4 +1094,36 @@ void MainWindow::recoverIgnore()
 
   GlobalFun::recoverIgnore(mesh);
   cout << "recover!!" << endl;
+}
+
+void MainWindow::convertPlyToObj()
+{
+  QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
+  if (!file_location.size()) 
+    return;
+
+  QDir dir(file_location);
+  if (!dir.exists()) 
+    return;
+
+  dir.setFilter(QDir::Files);
+  dir.setSorting(QDir::Name);
+  QFileInfoList list = dir.entryInfoList();
+
+  for (int i = 0; i < list.size(); ++i)
+  {
+    QFileInfo fileInfo = list.at(i);
+    QString f_name = fileInfo.fileName();
+
+    if (!f_name.endsWith(".ply"))
+      continue;
+
+    f_name = file_location + "\\" + f_name;
+    QString out = f_name;
+    out.replace(".ply", ".obj");
+    CMesh ply;
+    int mask = tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL;
+    tri::io::ImporterPLY<CMesh>::Open(ply, f_name.toAscii().data(), mask);
+    tri::io::ExporterOBJ<CMesh>::Save(ply, out.toAscii().data(), mask);
+  }
 }

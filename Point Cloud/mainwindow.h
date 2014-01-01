@@ -49,6 +49,7 @@ private slots:
   void getQianSample();
   void saveFieldPoints();
   void savePara();
+  void convertPlyToObj();
 
 	void showWLopDlg();
 	void showNormalDlg();

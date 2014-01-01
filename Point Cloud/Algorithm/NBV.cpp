@@ -797,9 +797,9 @@ void
     CVertex& v = nbv_candidates->vert[i];
     double dist_to_correspondese = GlobalFun::computeEulerDistSquare(v.P(), iso_points->vert[v.remember_iso_index].P());
     
-    if ( dist_to_correspondese <= camera_near_dist
-      || dist_to_correspondese >= camera_far_dist
-      || v.eigen_confidence < confidence_threshold
+    if ( /*dist_to_correspondese <= camera_near_dist
+         || dist_to_correspondese >= camera_far_dist
+         || */v.eigen_confidence < confidence_threshold
       || GlobalFun::isPointInBoundingBox(v.P(), model))
     {
       v.is_ignore = true;
