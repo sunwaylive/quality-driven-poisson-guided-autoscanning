@@ -5,6 +5,10 @@
 #include "GlobalFunction.h"
 #include "Algorithm/Skeleton.h"
 
+#include <qfile.h>
+#include <qtextstream.h>
+#include <qtextcodec.h>
+
 #include <wrap/io_trimesh/import.h>
 #include <wrap/io_trimesh/export.h>
 
@@ -36,6 +40,9 @@ public:
   void      loadXYZN(QString fileName);
   void      loadCameraModel(QString fileName);
 
+  void      loadCurrentTF(QString fileName);
+
+
   bool      isModelEmpty();
   bool      isSamplesEmpty();
   bool      isOriginalEmpty();
@@ -48,10 +55,7 @@ public:
   bool      isViewGridsEmpty();
   bool      isNBVCandidatesEmpty();
 
-  
-
   void                    setCurrentTemperalSample(CMesh *mesh);
-
   CMesh*                  getCurrentSamples();
   CMesh*                  getCurrentTemperalSamples();
   CMesh*                  getCurrentModel();
@@ -145,5 +149,9 @@ public:
 	QString             curr_file_name;
 
   Box3f whole_space_box;
+
+  Point3f current_tf_translation;
+  Quaternionf current_tf_Qua;
+  Point3f current_tf_angle;
 };
 
