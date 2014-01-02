@@ -788,7 +788,7 @@ bool GlobalFun::isPointInTriangle_3(Point3f& v0, Point3f& v1, Point3f& v2, Point
   double area2 = GlobalFun::computeTriangleArea_3(v0, v2, p);
   double area3 = GlobalFun::computeTriangleArea_3(v1, v2, p);
   double area  = GlobalFun::computeTriangleArea_3(v0, v1, v2);
-  if (fabs(area - (area1 + area2 + area3)) < EPI_CHILDREN) return true;
+  if (fabs(area - (area1 + area2 + area3)) < EPS) return true;
   else return false;
 }
 

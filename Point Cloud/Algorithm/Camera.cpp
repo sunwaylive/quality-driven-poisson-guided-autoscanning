@@ -206,7 +206,7 @@ void vcc::Camera::computeUpAndRight()
   if (viewray.Z() > 0)
   {
     up = viewray ^ x_axis;
-  }else if (fabs(viewray.Z()) < EPI)
+  }else if (fabs(viewray.Z()) < EPS)
   {
     up = viewray ^ z_axis;
   }else

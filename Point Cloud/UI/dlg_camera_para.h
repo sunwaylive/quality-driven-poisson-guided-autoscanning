@@ -30,6 +30,7 @@ private slots:
   void virtualScan();
   void initialScan();
   void NBVCandidatesScan();
+  void NBVCandidatesScanByHand();
   void loadRealScan();
   void loadRealInitialScan();
   void showInitCameras(bool is_show);
@@ -44,6 +45,7 @@ private slots:
   void showSelectedScannCandidates(QModelIndex index);
   void showSelectedScannedMesh(QModelIndex index);
   void mergeScannedMeshWithOriginal();
+  void mergeScannedMeshWithOriginalByHand();
   void getMergeConfidenceThreshold(double _val);
   void getCameraHorizonDist(double _val);
   void getCameraVerticalDist(double _val);
