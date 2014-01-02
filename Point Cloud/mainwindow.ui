@@ -41,7 +41,7 @@
      <x>0</x>
      <y>0</y>
      <width>1295</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -239,6 +239,7 @@
    <addaction name="actionSave_Ply"/>
    <addaction name="actionSave_Skel"/>
    <addaction name="actionSave_Parameter"/>
+   <addaction name="actionTransform"/>
    <addaction name="actionSnapShot"/>
    <addaction name="actionClear_Data"/>
    <addaction name="actionNormalize"/>

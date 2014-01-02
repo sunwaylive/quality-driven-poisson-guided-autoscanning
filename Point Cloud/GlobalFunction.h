@@ -93,6 +93,13 @@ namespace GlobalFun
   void recoverIgnore(CMesh* mesh);
 
   void cutPointSelfSlice(CMesh* mesh, Point3f anchor, Point3f direction, double width);
+
+  void printMatrix33(ostream& out, vcg::Matrix33f mat33);
+  void printMatrix44(ostream& out, vcg::Matrix44f mat44);
+  void printPoint3(ostream& out, vcg::Point3f p);
+
+  vcg::Matrix33f myQuaternionToMatrix33(Quaternionf qua_in);
+
 }
 
 class Timer

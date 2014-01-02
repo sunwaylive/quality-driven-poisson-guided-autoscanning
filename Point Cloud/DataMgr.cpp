@@ -1847,7 +1847,7 @@ void DataMgr::loadCurrentTF(QString fileName)
   {
     QString qstr = str_list.at(i);
     float f_value = qstr.toFloat();
-    current_tf_translation[i] = f_value;
+    current_L_to_R_Translation[i] = f_value * 1000.;
   }
 
 
@@ -1867,7 +1867,7 @@ void DataMgr::loadCurrentTF(QString fileName)
   {
     QString qstr = str_list.at(i);
     float f_value = qstr.toFloat();
-    current_tf_Qua[i] = f_value;
+    current_L_to_R_Rotation_Qua[i] = f_value;
   }
 
 
@@ -1886,59 +1886,44 @@ void DataMgr::loadCurrentTF(QString fileName)
   {
     QString qstr = str_list.at(i);
     float f_value = qstr.toFloat();
-    current_tf_angle[i] = f_value;
+    current_L_to_R_Angle[i] = f_value;
   }
  
 }
 
-void DataMgr::coordinateTransform()
+void DataMgr::loadCommonTransform()
 {
-  vcg::Quaternionf L_to_R_rotation_Qua;
-  Point3f C_to_L_translation;
-  Point3f L_to_R_translation;
-  Point3f L_displacement;
-
-  ifstream infile("new_tf.txt");
+  ifstream infile("common_transform.txt");
   std::string temp_str;
 
-  infile >> temp_str; 
-  infile >> L_to_R_translation[0] >> L_to_R_translation[1] >> L_to_R_translation[2];
+  infile >> temp_str;
+  Point3f R_to_S_angle;
+  infile >> R_to_S_angle[0] >> R_to_S_angle[1] >> R_to_S_angle[2];
+  infile >> temp_str;
+  Point3f R_to_S_translation;
+  infile >> R_to_S_translation[0] >> R_to_S_translation[1] >> R_to_S_translation[2];
+  
+  Quaternionf R_to_S__Qua;
+  R_to_S__Qua.FromEulerAngles(R_to_S_angle[0], R_to_S_angle[1], R_to_S_angle[2]);  
+  
+  vcg::Matrix33f R_to_S_Matrix33;
+  R_to_S__Qua.ToMatrix(R_to_S_Matrix33);
 
-  infile >> temp_str; 
-  infile >> L_to_R_rotation_Qua.X() >> L_to_R_rotation_Qua.Y() >> L_to_R_rotation_Qua.Z() >> L_to_R_rotation_Qua.W();
-
-  Matrix44f L_to_R_Matrix44;
-  L_to_R_Matrix44.SetIdentity();
-  Matrix33f L_to_R_Matrix33;
-  L_to_R_rotation_Qua.ToMatrix(L_to_R_Matrix33);
+  R_to_S_Matrix44.SetIdentity();
   for (int i = 0; i < 3; i++)
   {
     for (int j = 0; j < 3; j++)
     {
-      L_to_R_Matrix44[i][j] = L_to_R_Matrix33[i][j];
+      R_to_S_Matrix44[i][j] = R_to_S_Matrix33[i][j];
     }
   }
-  L_to_R_Matrix44[0][3] = L_to_R_translation[0];
-  L_to_R_Matrix44[1][3] = L_to_R_translation[1];
-  L_to_R_Matrix44[2][3] = L_to_R_translation[2];
+  R_to_S_Matrix44[0][3] = R_to_S_translation[0];
+  R_to_S_Matrix44[1][3] = R_to_S_translation[1];
+  R_to_S_Matrix44[2][3] = R_to_S_translation[2];
 
 
-   Matrix44f R_to_C_Matrix44;
   infile >> temp_str;
-  vcg::Matrix44f R_to_C_Matrix;
   float temp_f = 0.0;
-  for (int i = 0; i < 4; i++)
-  {
-    for (int j = 0; j < 4; j++)
-    {
-      infile >> temp_f;
-      R_to_C_Matrix44[i][j] = temp_f;
-    }
-  }
-
-  Matrix44f T_to_L_Matrix44;
-  infile >> temp_str;
-  temp_f = 0.0;
   for (int i = 0; i < 4; i++)
   {
     for (int j = 0; j < 4; j++)
@@ -1947,49 +1932,165 @@ void DataMgr::coordinateTransform()
       T_to_L_Matrix44[i][j] = temp_f;
     }
   }
+}
 
-  vcg::Quaternionf R_to_C_rotation_Qua;
-  Point3f R_to_C_Translation;
+void DataMgr::coordinateTransform()
+{
 
-  infile >> temp_str; 
-  infile >> R_to_C_Translation[0] >> R_to_C_Translation[1] >> R_to_C_Translation[2];
+  Matrix44f L_to_R_Matrix44;
+  L_to_R_Matrix44.SetIdentity();
+  Matrix33f L_to_R_Matrix33;
+  //vcg::Transpose(L_to_R_Matrix33);
+  //current_L_to_R_Rotation_Qua.ToMatrix(L_to_R_Matrix33);
+  L_to_R_Matrix33 = GlobalFun::myQuaternionToMatrix33(current_L_to_R_Rotation_Qua);
 
-  infile >> temp_str; 
-  infile >> R_to_C_rotation_Qua.X() >> R_to_C_rotation_Qua.Y() >> R_to_C_rotation_Qua.Z() >> R_to_C_rotation_Qua.W();
-
-  R_to_C_Matrix44.SetIdentity();
-  Matrix33f R_to_C_Matrix33;
-  L_to_R_rotation_Qua.ToMatrix(R_to_C_Matrix33);
   for (int i = 0; i < 3; i++)
   {
     for (int j = 0; j < 3; j++)
     {
-      R_to_C_Matrix44[i][j] = R_to_C_Matrix33[i][j];
+      L_to_R_Matrix44[i][j] = L_to_R_Matrix33[i][j];
     }
   }
-  R_to_C_Matrix44[0][3] = R_to_C_Translation[0];
-  R_to_C_Matrix44[1][3] = R_to_C_Translation[1];
-  R_to_C_Matrix44[2][3] = R_to_C_Translation[2];
 
-  vcg::Matrix44f matrix = T_to_L_Matrix44 * L_to_R_Matrix44 * R_to_C_Matrix44;
-  
-  //R_to_C_Qua.FromMatrix(R_to_C_Matrix44);
+  L_to_R_Matrix44[0][3] = current_L_to_R_Translation[0];
+  L_to_R_Matrix44[1][3] = current_L_to_R_Translation[1];
+  L_to_R_Matrix44[2][3] = current_L_to_R_Translation[2];
 
-  //Matrix44f C_to_R_Matrix44 = vcg::Inverse(R_to_C_Matrix44);
-  //
-  //vcg::Quaternionf C_to_R_Qua;
-  //C_to_R_Qua.FromMatrix(C_to_R_Matrix44);
-  //vcg::Matrix44f matrix = C_to_R_Matrix44;
-  //vcg::Matrix44f matrix_inv = vcg::Inverse(matrix);
+  vcg::Matrix44f T_to_S_Matrix44 = T_to_L_Matrix44 * L_to_R_Matrix44 * R_to_S_Matrix44;
+  //vcg::Matrix44f inv_T_to_S_Matrix44 = vcg::Inverse(T_to_S_Matrix44);
+  ofstream out("test_trans_out.txt");
+  out << "T_to_L_Matrix44 " << endl;
+  GlobalFun::printMatrix44(out, T_to_L_Matrix44);
+  out << "L_to_R_Matrix44 " << endl;
+  GlobalFun::printMatrix44(out, L_to_R_Matrix44);
+  out << "R_to_S_Matrix44" << endl;
+  GlobalFun::printMatrix44(out, R_to_S_Matrix44);
+  out << "T_to_S_Matrix44" << endl;
+  GlobalFun::printMatrix44(out, T_to_S_Matrix44);
+
 
   for (int i = 0; i < samples.vert.size(); i++)
   {
+
     CVertex& v = samples.vert[i];
-    v.P() = matrix * v.P();
+    if (i < 10)
+    {
+      out << "before trans: ";
+      GlobalFun::printPoint3(out, v.P());
+    }
+
+    v.P() = T_to_S_Matrix44 * v.P();
+
+    if (i < 10)
+    {
+      out << "after trans: ";
+      GlobalFun::printPoint3(out, v.P());
+    }
+
   }
-
-
 }
+
+
+//void DataMgr::coordinateTransform()
+//{
+//  vcg::Quaternionf L_to_R_rotation_Qua;
+//  Point3f C_to_L_translation;
+//  Point3f L_to_R_translation;
+//  Point3f L_displacement;
+//
+//  ifstream infile("common_transform.txt");
+//  std::string temp_str;
+//
+//  infile >> temp_str; 
+//  infile >> L_to_R_translation[0] >> L_to_R_translation[1] >> L_to_R_translation[2];
+//
+//  infile >> temp_str; 
+//  infile >> L_to_R_rotation_Qua.X() >> L_to_R_rotation_Qua.Y() >> L_to_R_rotation_Qua.Z() >> L_to_R_rotation_Qua.W();
+//
+//  Matrix44f L_to_R_Matrix44;
+//  L_to_R_Matrix44.SetIdentity();
+//  Matrix33f L_to_R_Matrix33;
+//  L_to_R_rotation_Qua.ToMatrix(L_to_R_Matrix33);
+//  for (int i = 0; i < 3; i++)
+//  {
+//    for (int j = 0; j < 3; j++)
+//    {
+//      L_to_R_Matrix44[i][j] = L_to_R_Matrix33[i][j];
+//    }
+//  }
+//  L_to_R_Matrix44[0][3] = L_to_R_translation[0];
+//  L_to_R_Matrix44[1][3] = L_to_R_translation[1];
+//  L_to_R_Matrix44[2][3] = L_to_R_translation[2];
+//
+//
+//   Matrix44f R_to_S_Matrix44;
+//  infile >> temp_str;
+//  vcg::Matrix44f R_to_S_Matrix;
+//  float temp_f = 0.0;
+//  for (int i = 0; i < 4; i++)
+//  {
+//    for (int j = 0; j < 4; j++)
+//    {
+//      infile >> temp_f;
+//      R_to_S_Matrix44[i][j] = temp_f;
+//    }
+//  }
+//
+//  Matrix44f T_to_L_Matrix44;
+//  infile >> temp_str;
+//  temp_f = 0.0;
+//  for (int i = 0; i < 4; i++)
+//  {
+//    for (int j = 0; j < 4; j++)
+//    {
+//      infile >> temp_f;
+//      T_to_L_Matrix44[i][j] = temp_f;
+//    }
+//  }
+//
+//  vcg::Quaternionf R_to_S_rotation_Qua;
+//  Point3f R_to_S_Translation;
+//
+//  infile >> temp_str; 
+//  infile >> R_to_S_Translation[0] >> R_to_S_Translation[1] >> R_to_S_Translation[2];
+//
+//  infile >> temp_str; 
+//  infile >> R_to_S_rotation_Qua.X() >> R_to_S_rotation_Qua.Y() >> R_to_S_rotation_Qua.Z() >> R_to_S_rotation_Qua.W();
+//
+//  R_to_S_Matrix44.SetIdentity();
+//  Matrix33f R_to_S_Matrix33;
+//  L_to_R_rotation_Qua.ToMatrix(R_to_S_Matrix33);
+//  for (int i = 0; i < 3; i++)
+//  {
+//    for (int j = 0; j < 3; j++)
+//    {
+//      R_to_S_Matrix44[i][j] = R_to_S_Matrix33[i][j];
+//    }
+//  }
+//  R_to_S_Matrix44[0][3] = R_to_S_Translation[0];
+//  R_to_S_Matrix44[1][3] = R_to_S_Translation[1];
+//  R_to_S_Matrix44[2][3] = R_to_S_Translation[2];
+//
+//  vcg::Matrix44f matrix = T_to_L_Matrix44 * L_to_R_Matrix44 * R_to_S_Matrix44;
+//  
+//  //R_to_S_Qua.FromMatrix(R_to_S_Matrix44);
+//
+//  //Matrix44f C_to_R_Matrix44 = vcg::Inverse(R_to_S_Matrix44);
+//  //
+//  //vcg::Quaternionf C_to_R_Qua;
+//  //C_to_R_Qua.FromMatrix(C_to_R_Matrix44);
+//  //vcg::Matrix44f matrix = C_to_R_Matrix44;
+//  //vcg::Matrix44f matrix_inv = vcg::Inverse(matrix);
+//
+//  for (int i = 0; i < samples.vert.size(); i++)
+//  {
+//    CVertex& v = samples.vert[i];
+//    v.P() = matrix * v.P();
+//  }
+//
+//
+//}
+
 
 //void DataMgr::coordinateTransform()
 //{
@@ -2013,7 +2114,7 @@ void DataMgr::coordinateTransform()
 //  Point3f L_displacement;
 //
 //  ifstream infile("transform.txt");
-//  std::string temp_str;
+//  //std::string temp_str;
 //
 //  infile >> temp_str; 
 //  infile >> C_to_L_translation[0] >> C_to_L_translation[1] >> C_to_L_translation[2];
@@ -2074,11 +2175,11 @@ void DataMgr::coordinateTransform()
 //                                      << C_to_R_rotation_Qua.Z() << " "
 //                                      << C_to_R_rotation_Qua.W() << endl;
 //
-//  vcg::Quaternionf R_to_C_rotation_Qua = C_to_R_rotation_Qua.Inverse();
-//  outfile << "R_to_C_rotation_Qua:  " << R_to_C_rotation_Qua.X() << " "
-//                                      << R_to_C_rotation_Qua.Y() << " "
-//                                      << R_to_C_rotation_Qua.Z() << " "
-//                                      << R_to_C_rotation_Qua.W() << endl;
+//  vcg::Quaternionf R_to_S_rotation_Qua = C_to_R_rotation_Qua.Inverse();
+//  outfile << "R_to_S_rotation_Qua:  " << R_to_S_rotation_Qua.X() << " "
+//                                      << R_to_S_rotation_Qua.Y() << " "
+//                                      << R_to_S_rotation_Qua.Z() << " "
+//                                      << R_to_S_rotation_Qua.W() << endl;
 //  Point3f C_to_R_translation;
 //  C_to_R_translation = C_to_L_translation + L_displacement + L_to_R_translation;
 //  outfile << "C_to_R_translation:  " << C_to_R_translation[0] << " " 
@@ -2088,7 +2189,8 @@ void DataMgr::coordinateTransform()
 //
 //
 //  Quaternionf test_qua;
-//  test_qua.FromEulerAngles(1.57, 1.57, 0.26);
+//  //test_qua.FromEulerAngles(1.57, 1.57, 0.26);
+//  test_qua.FromEulerAngles(2.87979, 0, 1.5707);  
 //  outfile << "test_qua:  " << test_qua.X() << " "
 //                                      << test_qua.Y() << " "
 //                                      << test_qua.Z() << " "
@@ -2104,21 +2206,22 @@ void DataMgr::coordinateTransform()
 //    outfile << endl;
 //  }
 //
-//  Matrix33f test_mat2;
-//  test_mat2[0][0] = -0.021;
-//  test_mat2[0][1] = 0.977;
-//  test_mat2[0][2] = 0.249;
-//  test_mat2[1][0] = 0.98377;
-//  test_mat2[1][1] = -0.04260;
-//  test_mat2[1][2] = -0.041029;
-//  test_mat2[2][0] = -0.050324;
-//  test_mat2[2][1] = -0.29;
-//  test_mat2[2][2] = -0.967985;
-//  Quaternionf test_qua2;
-//  test_qua2.FromMatrix(test_mat2);
-//  float a, b, c;
-//  test_qua2.ToEulerAngles(a, b, c);
-//  outfile << "test angle: " << a << " " << b << " " << c << endl;
+//  //Matrix33f test_mat2;
+//  //test_mat2[0][0] = -0.021;
+//  //test_mat2[0][1] = 0.977;
+//  //test_mat2[0][2] = 0.249;
+//  //test_mat2[1][0] = 0.98377;
+//  //test_mat2[1][1] = -0.04260;
+//  //test_mat2[1][2] = -0.041029;
+//  //test_mat2[2][0] = -0.050324;
+//  //test_mat2[2][1] = -0.29;
+//  //test_mat2[2][2] = -0.967985;
+//  //Quaternionf test_qua2;
+//  //test_qua2.FromMatrix(test_mat2);
+//  //float a, b, c;
+//  //test_qua2.ToEulerAngles(a, b, c);
+//  //outfile << "test angle: " << a << " " << b << " " << c << endl;
+//
 //  //double dist = GlobalFun::computeEulerDist(v.P(), anchor);
 //  //double perpend_dist = GlobalFun::computePerpendicularDist(anchor, v.P(), direction);
 //

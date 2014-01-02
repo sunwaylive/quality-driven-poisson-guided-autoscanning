@@ -40,7 +40,6 @@ public:
   void      loadXYZN(QString fileName);
   void      loadCameraModel(QString fileName);
 
-  void      loadCurrentTF(QString fileName);
 
 
   bool      isModelEmpty();
@@ -111,6 +110,8 @@ public:
   void replaceMesh2(CMesh& src_mesh, CMesh& target_mesh, bool isIso);
 
   void coordinateTransform();
+  void loadCommonTransform();
+  void loadCurrentTF(QString fileName);
 
 private:
 	void clearCMesh(CMesh& mesh);
@@ -150,8 +151,13 @@ public:
 
   Box3f whole_space_box;
 
-  Point3f current_tf_translation;
-  Quaternionf current_tf_Qua;
-  Point3f current_tf_angle;
+  Point3f current_L_to_R_Translation;
+  Quaternionf current_L_to_R_Rotation_Qua;
+  Point3f current_L_to_R_Angle;
+
+  Matrix44f R_to_S_Matrix44;
+  Matrix44f T_to_L_Matrix44;
+
+
 };
 
