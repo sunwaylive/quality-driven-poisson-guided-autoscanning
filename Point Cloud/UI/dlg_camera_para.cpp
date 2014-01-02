@@ -27,14 +27,14 @@ void CameraParaDlg::initConnects()
   connect(ui->spinBox_nbv_iteration_count, SIGNAL(valueChanged(int)), this, SLOT(getNbvIterationCount(int)));
   connect(ui->pushButton_one_key_nbv_iteration, SIGNAL(clicked()), this, SLOT(runOneKeyNbvIteration()));
   connect(ui->checkBox_show_init_cameras,SIGNAL(clicked(bool)),this,SLOT(showInitCameras(bool)));
-  connect(ui->pushButton_scan, SIGNAL(clicked()), this, SLOT(NBVCandidatesScan()));
+  connect(ui->pushButton_scan, SIGNAL(clicked()), this, SLOT(NBVCandidatesScanByHand()));
   connect(ui->pushButton_initial_scan, SIGNAL(clicked()), this, SLOT(initialScan()));
   connect(ui->horizon_dist, SIGNAL(valueChanged(double)), this, SLOT(getCameraHorizonDist(double)));
   connect(ui->vertical_dist, SIGNAL(valueChanged(double)), this, SLOT(getCameraVerticalDist(double)));
   connect(ui->dist_to_model, SIGNAL(valueChanged(double)), this, SLOT(getCameraDistToModel(double)));
   connect(ui->tableView_scan_candidates, SIGNAL(clicked(QModelIndex)), this, SLOT(showSelectedScannCandidates(QModelIndex)));
   connect(ui->tableView_scan_results, SIGNAL(clicked(QModelIndex)), this, SLOT(showSelectedScannedMesh(QModelIndex)));
-  connect(ui->pushButton_merge_with_original, SIGNAL(clicked()), this, SLOT(mergeScannedMeshWithOriginal()));
+  connect(ui->pushButton_merge_with_original, SIGNAL(clicked()), this, SLOT(mergeScannedMeshWithOriginalByHand()));
   connect(ui->doubleSpinBox_merge_confidence_threshold, SIGNAL(valueChanged(double)), this, SLOT(getMergeConfidenceThreshold(double)));
   connect(ui->doubleSpinBox_far_distance, SIGNAL(valueChanged(double)), this, SLOT(getCameraFarDistance(double)));
   connect(ui->doubleSpinBox_near_distance, SIGNAL(valueChanged(double)), this, SLOT(getCameraNearDistance(double)));
@@ -215,6 +215,29 @@ void CameraParaDlg::NBVCandidatesScan()
   }
   sc->clear();
   std::copy(select_scan_candidates.begin(), select_scan_candidates.end(), std::back_inserter(*sc));*/
+  
+  global_paraMgr.camera.setValue("Run NBV Scan", BoolValue(true));
+  area->runCamera();
+  global_paraMgr.camera.setValue("Run NBV Scan", BoolValue(false));
+
+  area->updateGL();
+  updateTableViewNBVCandidate();
+  updateTabelViewScanResults();
+}
+
+void CameraParaDlg::NBVCandidatesScanByHand()
+{
+  //scan only the candidates those are chosen
+  vector<ScanCandidate> *sc = area->dataMgr.getScanCandidates();
+  vector<ScanCandidate> select_scan_candidates;
+  QModelIndexList sil = ui->tableView_scan_candidates->selectionModel()->selectedRows();
+  for (int i = 0; i < sil.size(); ++i)
+  {
+  int row = sil[i].row();
+  select_scan_candidates.push_back((*sc)[row]);
+  }
+  sc->clear();
+  std::copy(select_scan_candidates.begin(), select_scan_candidates.end(), std::back_inserter(*sc));
   
   global_paraMgr.camera.setValue("Run NBV Scan", BoolValue(true));
   area->runCamera();
@@ -532,111 +555,129 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
   }
 }
 
-//void CameraParaDlg::mergeScannedMeshWithOriginal()
-//{
-//  QModelIndexList sil = ui->tableView_scan_results->selectionModel()->selectedRows();
-//  if (sil.isEmpty()) return;
-//
-//  CMesh* original = area->dataMgr.getCurrentOriginal();
-//  vector<CMesh* > *scanned_results = area->dataMgr.getScannedResults();
-//  double merge_confidence_threshold = global_paraMgr.camera.getDouble("Merge Confidence Threshold");
-//  cout<< "merge_confidence_threshold: " <<merge_confidence_threshold <<endl;
-//
-//  //wsh added 12-24
-//  double radius_threshold = global_paraMgr.wLop.getDouble("CGrid Radius");
-//  double radius2 = radius_threshold * radius_threshold;
-//  double iradius16 = -4/radius2;
-//
-//  double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
-//  double sigma_threshold = pow(max(1e-8,1-cos(sigma/180.0*3.1415926)), 2);
-//  CMesh* iso_points = area->dataMgr.getCurrentIsoPoints();
-//  //end wsh added
-//
-//  int row_of_mesh = 0;
-//  for (vector<CMesh* >::iterator it = scanned_results->begin(); 
-//    it != scanned_results->end(); ++it, ++row_of_mesh)
-//  {
-//    if ((*it)->vert.empty()) continue;
-//
-//    for (int i = 0; i < sil.size(); ++i)
-//    {
-//      int row = sil[i].row();
-//      //combine the selected mesh with original
-//      if (row == row_of_mesh) 
-//      {
-//        //make the merged mesh invisible
-//        (*it)->vert[0].is_scanned_visible = false;
-//        //compute new scanned mesh's iso neighbors
-//
-//        //wsh updated 12-24
-//        //GlobalFun::computeAnnNeigbhors(area->dataMgr.getCurrentIsoPoints()->vert, (*it)->vert, 1, false, "runNewScannedMeshNearestIsoPoint");
-//        Timer time;
-//        time.start("Sample ISOpoints Neighbor Tree!!");
-//        GlobalFun::computeBallNeighbors((*it), area->dataMgr.getCurrentIsoPoints(), 
-//          radius_threshold, (*it)->bbox);
-//        time.end();
-//        //end wsh updated
-//
-//        cout<<"Before merge with original: " << original->vert.size() <<endl;
-//        cout<<"scanned mesh num: "<<(*it)->vert.size() <<endl;
-//        int skip_num = 0;
-//
-//        int index = original->vert.back().m_index;
-//        for (int k = 0; k < (*it)->vert.size(); ++k)
-//        {
-//          //wsh updated 12-24
-//          CVertex& v = (*it)->vert[k];
-//          //add or not
-//          //CVertex &nearest = area->dataMgr.getCurrentIsoPoints()->vert[v.neighbors[0]];
-//          double sum_confidence = 0.0;
-//          double sum_w = 0.0;
-//          for(int ni = 0; ni < v.original_neighbors.size(); ni++)
-//          {
-//            CVertex& t = iso_points->vert[v.original_neighbors[ni]];
-//            double dist2 = GlobalFun::computeEulerDistSquare(v.P(), t.P());
-//
-//            double dist_diff = exp(dist2 * iradius16);
-//            //double normal_diff = exp(-pow(1-v.N()*t.N(), 2)/sigma_threshold);
-//            double normal_diff = 1.0;
-//            double w = dist_diff * normal_diff;
-//
-//            sum_confidence += w * t.eigen_confidence;
-//            sum_w += w;
-//          }
-//
-//          if (v.neighbors.size() > 0 )
-//            sum_confidence /= sum_w;
-//
-//          if (k < 100)
-//            cout << " sum_confidence after normalize: " << sum_confidence <<endl;
-//
-//          //if ((sum_confidence > merge_confidence_threshold)/* && (1.0f * rand() / RAND_MAX < 0.9f)*/)
-//          //{
-//          //  //ignore the skip points
-//          //  v.is_ignore = true;
-//          //  skip_num++;
-//          //  continue;
-//          //}
-//
-//          CVertex new_v;
-//          new_v.m_index = ++index;
-//          new_v.is_original = true;
-//          new_v.P() = v.P();
-//          new_v.N() = v.N();
-//          original->vert.push_back(new_v);
-//          original->bbox.Add(new_v.P());
-//          //end wsh updated
-//        }
-//        original->vn = original->vert.size();
-//        cout<<"skip points num:" <<skip_num <<endl;
-//        cout<<"After merge with original: " << original->vert.size() <<endl <<endl;
-//        //set combined row unable to be chosen
-//        //ui->tableView_scan_candidates->setRowHidden(row, true);
-//        //ui->tableView_scan_results->setRowHidden(row, true);
-//      }
-//    }
-//  }
-//}
+void CameraParaDlg::mergeScannedMeshWithOriginalByHand()
+{
+  QModelIndexList sil = ui->tableView_scan_results->selectionModel()->selectedRows();
+  if (sil.isEmpty()) return;
+
+  CMesh* original = area->dataMgr.getCurrentOriginal();
+  vector<CMesh* > *scanned_results = area->dataMgr.getScannedResults();
+  double merge_confidence_threshold = global_paraMgr.camera.getDouble("Merge Confidence Threshold");
+  int merge_pow = static_cast<int>(global_paraMgr.nbv.getDouble("Merge Probability Pow"));
+  cout<< "merge_confidence_threshold: " <<merge_confidence_threshold <<endl;
+
+  //wsh added 12-24
+  double radius_threshold = global_paraMgr.wLop.getDouble("CGrid Radius");
+  double radius2 = radius_threshold * radius_threshold;
+  double iradius16 = -4/radius2;
+
+  double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
+  double sigma_threshold = pow(max(1e-8,1-cos(sigma/180.0*3.1415926)), 2);
+  CMesh* iso_points = area->dataMgr.getCurrentIsoPoints();
+  //end wsh added
+
+  int row_of_mesh = 0;
+  for (vector<CMesh* >::iterator it = scanned_results->begin(); 
+    it != scanned_results->end(); ++it, ++row_of_mesh)
+  {
+    if ((*it)->vert.empty()) continue;
+
+    for (int i = 0; i < sil.size(); ++i)
+    {
+      int row = sil[i].row();
+      //combine the selected mesh with original
+      if (row == row_of_mesh) 
+      {
+        (*it)->vert[0].is_scanned_visible = false;
+        //compute new scanned mesh's iso neighbors
+
+        //wsh updated 12-24
+        //GlobalFun::computeAnnNeigbhors(area->dataMgr.getCurrentIsoPoints()->vert, (*it)->vert, 1, false, "runNewScannedMeshNearestIsoPoint");
+        Timer time;
+        time.start("Sample ISOpoints Neighbor Tree!!");
+        GlobalFun::computeBallNeighbors((*it), area->dataMgr.getCurrentIsoPoints(), 
+          radius_threshold, (*it)->bbox);
+        time.end();
+        //end wsh updated
+
+        cout<<"Before merge with original: " << original->vert.size() <<endl;
+        cout<<"scanned mesh num: "<<(*it)->vert.size() <<endl;
+        int skip_num = 0;
+
+        vector<double> v_confidence;
+        double max_confidence = 0.0f;
+        double min_confidence = BIG;
+
+        for (int k = 0; k < (*it)->vert.size(); ++k)
+        {
+          //wsh updated 12-24
+          CVertex& v = (*it)->vert[k];
+          //add or not
+          //CVertex &nearest = area->dataMgr.getCurrentIsoPoints()->vert[v.neighbors[0]];
+          double sum_confidence = 0.0;
+          double sum_w = 0.0;
+
+          for(int ni = 0; ni < v.original_neighbors.size(); ni++)
+          {
+            CVertex& t = iso_points->vert[v.original_neighbors[ni]];
+
+            double dist2 = GlobalFun::computeEulerDistSquare(v.P(), t.P());
+            double dist_diff = exp(dist2 * iradius16);
+            //double normal_diff = exp(-pow(1-v.N()*t.N(), 2)/sigma_threshold);
+            double normal_diff = 1.0;
+            double w = dist_diff * normal_diff;
+            //double w = 1.0f;
+            sum_confidence += w * t.eigen_confidence;
+            sum_w += 1;
+          }
+
+          if (v.original_neighbors.size() > 0 )
+            sum_confidence /= sum_w;
+
+          v_confidence.push_back(sum_confidence);
+
+          max_confidence = sum_confidence > max_confidence ? sum_confidence : max_confidence;
+          min_confidence = sum_confidence < min_confidence ? sum_confidence : min_confidence;
+        }
+
+        //normalize the confidence
+        for (vector<double>::iterator it = v_confidence.begin(); it != v_confidence.end(); ++it)
+          *it = (*it - min_confidence) / (max_confidence - min_confidence);
+
+        int index = original->vert.empty() ? 0 : original->vert.back().m_index;
+        for (int k = 0;  k < (*it)->vert.size(); ++k)
+        {
+          CVertex& v = (*it)->vert[k];
+
+          if (k < 10)
+            cout<<"sum_confidence: " << v_confidence[k] <<endl;
+
+          if (v_confidence[k] > merge_confidence_threshold 
+            || (1.0f * rand() / (RAND_MAX+1.0) > pow((1 - v_confidence[k]), merge_pow)))
+          {
+            v.is_ignore = true;
+            skip_num++; 
+            continue;
+          }
+
+          CVertex new_v;
+          new_v.m_index = ++index;
+          new_v.is_original = true;
+          new_v.P() = v.P();
+          new_v.N() = v.N();
+          original->vert.push_back(new_v);
+          original->bbox.Add(new_v.P());
+        } 
+        original->vn = original->vert.size();
+        cout<<"skip points num:" <<skip_num <<endl;
+        cout<<"After merge with original: " << original->vert.size() <<endl <<endl;
+        //set combined row unable to be chosen
+        //ui->tableView_scan_candidates->setRowHidden(row, true);
+        //ui->tableView_scan_results->setRowHidden(row, true);
+      }
+    }
+  }
+}
 
 void CameraParaDlg::getNbvIterationCount(int _val)
 {

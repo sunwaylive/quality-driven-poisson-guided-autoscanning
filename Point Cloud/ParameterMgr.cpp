@@ -402,7 +402,7 @@ void ParameterMgr::initCameraParameter()
   camera.addParam(new RichDouble("Camera Vertical Dist", 18.0f));  //cm
   camera.addParam(new RichDouble("Camera Dist To Model", ((30.0f + 17.0f)/2 + 0.6 * 20.0f))); //cm
 
-  camera.addParam(new RichDouble("Camera Resolution",1.0f / 50.0f));
+  camera.addParam(new RichDouble("Camera Resolution",1.0f / 100.0f));
   camera.addParam(new RichDouble("Merge Confidence Threshold", 0.9f));
   camera.addParam(new RichDouble("Grid Step Size", -1));
 }

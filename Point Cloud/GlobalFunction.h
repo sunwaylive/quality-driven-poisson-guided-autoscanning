@@ -24,8 +24,7 @@
 #define EIGEN_EXCEPTIONS
 const double PI = 3.1415926;
 
-const double EPI = 1e-6;
-const double EPI_BOX = 1e-6;
+const double EPS = 1e-8;
 
 const double BIG = 100000;
 //#include <Eigen/Dense>

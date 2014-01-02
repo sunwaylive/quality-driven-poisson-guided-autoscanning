@@ -788,7 +788,7 @@ bool GlobalFun::isPointInTriangle_3(Point3f& v0, Point3f& v1, Point3f& v2, Point
   double area2 = GlobalFun::computeTriangleArea_3(v0, v2, p);
   double area3 = GlobalFun::computeTriangleArea_3(v1, v2, p);
   double area  = GlobalFun::computeTriangleArea_3(v0, v1, v2);
-  if (fabs(area - (area1 + area2 + area3)) < EPI_BOX) return true;
+  if (fabs(area - (area1 + area2 + area3)) < EPS) return true;
   else return false;
 }
 
@@ -797,7 +797,7 @@ double GlobalFun::computeMeshLineIntersectPoint( CMesh *target, Point3f& p, Poin
   //compute the intersecting point between the ray and the mesh
   int n_face = target->face.size();
   double min_dist = BIG;
-  
+
 #ifdef LINKED_WITH_TBB
   tbb::parallel_for(tbb::blocked_range<size_t>(0, n_face), 
     [&](const tbb::blocked_range<size_t>& r)
@@ -815,8 +815,8 @@ double GlobalFun::computeMeshLineIntersectPoint( CMesh *target, Point3f& p, Poin
       //the line cross the point: pos, and line vector is viewray_iter 
       double tmp = face_norm * line_dir;
 
-      if (abs(tmp) < 1e-6)
-        continue;
+      if (abs(tmp) < 1e-10)
+      continue;
 
       double tmp2 = 1.0f / tmp;
       double t = (v0 - p) * face_norm * tmp2;

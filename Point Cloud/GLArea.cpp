@@ -655,9 +655,7 @@ void GLArea::openByDrop(QString fileName)
 
 void GLArea::loadDefaultModel()
 {
-  dataMgr.loadCommonTransform();
-
-	dataMgr.loadPlyToModel("lion_model.ply");
+	dataMgr.loadPlyToModel("model.ply");
   //dataMgr.loadPlyToModel("box_model.ply");  
   //dataMgr.loadSkeletonFromSkel("child.skel");
 	//dataMgr.loadPlyToOriginal("child_original.ply");
