@@ -249,6 +249,7 @@ void GLArea::paintGL()
 				if (!dataMgr.isNBVCandidatesEmpty())
 				{
 					glDrawer.draw(GLDrawer::NORMAL, dataMgr.getNbvCandidates());
+          glDrawer.drawCandidatesAxis(dataMgr.getNbvCandidates());
 				}
 			}else if (para->getBool("Show View Grids"))
 			{
@@ -1518,12 +1519,12 @@ GLArea::saveNBV(QString fileName)
   Point3f original_center_point = dataMgr.original_center_point;
   double max_normalize_length = global_paraMgr.data.getDouble("Max Normalize Length");
   
+  GlobalFun::deleteIgnore(nbv_candidates);
   CMesh nbv;
   int index = 0;
   for (int i = 0; i < nbv_candidates->vert.size(); ++i)
   {
     CVertex &v = nbv_candidates->vert[i];
-    if (v.is_ignore) continue;
 
     CVertex t = v;
     t.P() = (t.P() + original_center_point) * max_normalize_length;
@@ -1536,6 +1537,60 @@ GLArea::saveNBV(QString fileName)
 
   fileName.replace(".ply", "_nbv.ply");
   dataMgr.savePly(fileName, nbv);
+
+
+  //QString fileName_nbv = fileName;
+  //fileName_nbv.replace(".ply", ".nbv");
+  //for (int i = 0; i < nbv_candidates->vert.size(); ++i)
+  //{
+  //  CVertex &v = nbv_candidates->vert[i];
+
+  //  
+  //}
+
+  QString fileName_nbs = fileName;
+  fileName_nbs.replace(".ply", ".nbs");
+
+  ofstream outfile;
+  outfile.open(fileName_nbs.toStdString().c_str());
+
+  ostringstream strStream; 
+  for (int i = 0; i < nbv_candidates->vert.size(); ++i)
+  {
+    CVertex v = nbv_candidates->vert[i];
+
+    v.P() = (v.P() + original_center_point) * max_normalize_length;
+    v.N().Normalize();
+
+    strStream << i << ":" << endl;
+    strStream << "T_to_S_translation: " << v.P().X() << " " << v.P().Y() << " " << v.P().Z() << endl;
+    strStream << endl;
+
+    Matrix33f T_to_S_Rotation_mat = GlobalFun::axisToMatrix33(v);
+    strStream << "T_to_S_rotation_matrix: " << endl;
+    for (int i = 0; i < 3; i++)
+    {
+      for (int j = 0; j < 3; j++)
+      {
+        strStream << T_to_S_Rotation_mat[i][j] << "\t\t ";
+      }
+      strStream << endl;
+    }
+    strStream << endl;
+
+    strStream << "T_to_S_rotation_Quaternion: " << endl;
+    Quaternionf qua;
+    qua.FromMatrix(T_to_S_Rotation_mat);
+    strStream << qua.X() << "   " << qua.Y() << "   " << qua.Z() << "   " << qua.W() << endl << endl;
+
+    strStream << "T_to_S_rotation_Angle: " << endl;
+    Point3f angle;
+    qua.ToEulerAngles(angle.X(), angle.Y(), angle.Z());
+    strStream << angle.X() << "   " << angle.Y() << "   " << angle.Z() << endl << endl;
+
+  }
+  outfile.write( strStream.str().c_str(), strStream.str().size() ); 
+  outfile.close();
 }
 
 void GLArea::loadView(QString fileName)

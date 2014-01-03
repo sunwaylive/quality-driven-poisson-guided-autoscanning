@@ -112,6 +112,7 @@ public:
   void coordinateTransform();
   void loadCommonTransform();
   void loadCurrentTF(QString fileName);
+  void recomputeCandidatesAxis();
 
 private:
 	void clearCMesh(CMesh& mesh);

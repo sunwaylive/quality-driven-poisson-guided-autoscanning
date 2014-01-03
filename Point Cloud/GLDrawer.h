@@ -71,6 +71,8 @@ public:
   void glDrawLine(Point3f& p0, Point3f& p1, GLColor color, double width);
   void drawSphere(const CVertex& v);
 
+  void drawCandidatesAxis(CMesh *mesh);
+
 private:
 	GLColor getColorByType(const CVertex& v);
 	void draw(DrawType type);

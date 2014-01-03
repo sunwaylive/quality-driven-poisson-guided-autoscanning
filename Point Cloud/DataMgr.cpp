@@ -772,6 +772,61 @@ void DataMgr::recomputeQuad()
   {
     original.vert[i].recompute_m_render();
   }
+
+  recomputeCandidatesAxis();
+}
+
+void DataMgr::recomputeCandidatesAxis()
+{
+  for (int i = 0; i < nbv_candidates.vert.size(); i++)
+  {
+    CVertex& v = nbv_candidates.vert[i];
+
+    Point3f directionZ = v.N();
+
+    Point3f X_axis(1, 0, 0);;
+
+    Point3f directionX = directionZ ^ X_axis;
+    Point3f directionY = directionX ^ directionZ;
+
+    v.eigen_vector0 = -directionX.Normalize();
+    v.eigen_vector1 = -directionY.Normalize();
+  }
+
+  //for (int i = 0; i < nbv_candidates.vert.size(); i++)
+  //{
+  //  CVertex& v = nbv_candidates.vert[i];
+
+  //  Point3f directionZ = v.N();
+
+  //  Point3f Y_axis(0, 1, 0);;
+
+  //  Point3f directionX = directionZ ^ Y_axis;
+  //  Point3f directionY = directionX ^ directionZ;
+
+  //  v.eigen_vector0 = directionX;
+  //  v.eigen_vector1 = directionY;
+  //}
+
+  //for (int i = 0; i < nbv_candidates.vert.size(); i++)
+  //{
+  //  CVertex& v = nbv_candidates.vert[i];
+  //  
+  //  Point3f directionZ = v.N();
+
+  //  float rand_fvalue1 = (rand() % 1000) * 0.001;
+  //  float rand_fvalue2 = (rand() % 1000) * 0.001;
+
+  //  Point3f ground_dir(rand_fvalue1, 0, rand_fvalue2);
+  //  ground_dir = ground_dir.Normalize();
+
+  //  Point3f directionY = directionZ ^ ground_dir;
+  //  Point3f directionX = directionY ^ directionZ;
+
+  //  v.eigen_vector0 = directionX;
+  //  v.eigen_vector1 = directionY;
+  //}
+
 }
 
 void DataMgr::saveGridPoints(QString fileName)

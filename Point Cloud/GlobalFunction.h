@@ -99,6 +99,8 @@ namespace GlobalFun
 
   vcg::Matrix33f myQuaternionToMatrix33(Quaternionf qua_in);
   vcg::Matrix33f directionToMatrix33(Point3f direction);
+  vcg::Matrix33f axisToMatrix33(CVertex v);
+
 }
 
 class Timer
