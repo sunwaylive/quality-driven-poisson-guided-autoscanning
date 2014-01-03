@@ -1048,6 +1048,8 @@ void NBV::viewClustering()
     }
   }
 
+  GlobalFun::deleteIgnore(nbv_candidates);
+
   /*GlobalFun::deleteIgnore(nbv_candidates);
   sort(nbv_candidates->vert.begin(), nbv_candidates->vert.end(), cmp);
  
