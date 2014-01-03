@@ -98,7 +98,7 @@ namespace GlobalFun
   void printPoint3(ostream& out, vcg::Point3f p);
 
   vcg::Matrix33f myQuaternionToMatrix33(Quaternionf qua_in);
-
+  vcg::Matrix33f directionToMatrix33(Point3f direction);
 }
 
 class Timer

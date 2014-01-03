@@ -12,7 +12,7 @@ DataMgr::DataMgr(RichParameterSet* _para)
   whole_space_box.Add(Point3f(2.0, 2.0, 2.0));
   whole_space_box.Add(Point3f(-2.0, -2.0, -2.0));
 
-
+  loadCommonTransform();
   slices.assign(3, Slice());
 }
 

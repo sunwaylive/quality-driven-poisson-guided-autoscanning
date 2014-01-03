@@ -1249,6 +1249,23 @@ vcg::Matrix33f GlobalFun::myQuaternionToMatrix33(Quaternionf qua_in)
   return mat;
 }
 
+vcg::Matrix33f GlobalFun::directionToMatrix33(Point3f direction)
+{
+  Point3f directionZ = direction.Normalize();
+  
+  float rand_fvalue1 = (rand() % 1000) * 0.001;
+  float rand_fvalue2 = (rand() % 1000) * 0.001;
+
+  Point3f ground_dir(rand_fvalue1, 0, rand_fvalue2);
+  ground_dir = ground_dir.Normalize();
+
+  Point3f directionY = directionZ ^ ground_dir;
+  Point3f directionX = directionY ^ directionZ;
+  Matrix33f mat;
+
+  return mat;
+}
+
 //void Slice::build_slice(Point3f a, Point3f b, Point3f c, float c_length)
 //{
 //  cell_length = c_length;
