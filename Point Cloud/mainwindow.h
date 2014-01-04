@@ -50,7 +50,7 @@ private slots:
   void saveFieldPoints();
   void savePara();
   void convertPlyToObj();
-  void savePR2Orders();
+  void nbvReOrders();
 
 	void showWLopDlg();
 	void showNormalDlg();

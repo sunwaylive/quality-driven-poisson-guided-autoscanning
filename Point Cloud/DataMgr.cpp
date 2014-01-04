@@ -785,18 +785,53 @@ bool cmp_angle(const CVertex &v1, const CVertex &v2)
   return v1.ground_angle > v2.ground_angle;
 }
 
-void DataMgr::savePR2_orders()
+void DataMgr::savePR2_orders(QString fileName_commands)
 {
+  if (nbv_candidates.vert.empty())
+  {
+    return;
+  }
 
   double max_normalize_length = global_paraMgr.data.getDouble("Max Normalize Length");
 
-  CVertex v0 = nbv_candidates.vert[2];
-  CVertex v1 = nbv_candidates.vert[3];
+  ofstream outfile;
+  outfile.open(fileName_commands.toStdString().c_str());
 
-  v0.P() = (v0.P() + original_center_point) * max_normalize_length;
-  v1.P() = (v1.P() + original_center_point) * max_normalize_length;
+  vector<PR2_order> pr2_orders;
+  CVertex v_start;
+  v_start.P() = Point3f(131.07, -135.973, -113.974);
+  PR2_order order = computePR2orderFromTwoCandidates(v_start, nbv_candidates.vert[0]);
+  pr2_orders.push_back(order);
 
-  computePR2orderFromTwoCandidates(v0, v1);
+  for (int i = 0; i < nbv_candidates.vert.size()-1; i++)
+  {
+    CVertex v0 = nbv_candidates.vert[i];
+    CVertex v1 = nbv_candidates.vert[i+1];
+
+    v0.P() = (v0.P() + original_center_point) * max_normalize_length;
+    v1.P() = (v1.P() + original_center_point) * max_normalize_length;
+
+    PR2_order order = computePR2orderFromTwoCandidates(v0, v1);
+    pr2_orders.push_back(order);
+  }
+
+  outfile << "number_of_candidate " << pr2_orders.size() << endl << endl;
+  for (int i = 0; i < pr2_orders.size(); i++)
+  {
+    PR2_order order = pr2_orders[i];
+    outfile << "rotation " << order.left_rotation << endl;
+    outfile << "position " << order.L_to_R_translation.X() << " "
+                           << order.L_to_R_translation.Y() << " "
+                           << order.L_to_R_translation.Z() << endl;
+    outfile << "orientation  " << order.L_to_R_rotation_Qua.X() << " "
+                               << order.L_to_R_rotation_Qua.Y() << " "
+                               << order.L_to_R_rotation_Qua.Z() << " "
+                               << order.L_to_R_rotation_Qua.W() << endl;
+    outfile << endl;
+  }
+
+  //outfile.write( strStream.str().c_str(), strStream.str().size() ); 
+  outfile.close();
 }
 
 PR2_order DataMgr::computePR2orderFromTwoCandidates(CVertex v0, CVertex v1)
@@ -807,33 +842,27 @@ PR2_order DataMgr::computePR2orderFromTwoCandidates(CVertex v0, CVertex v1)
   double angle = GlobalFun::computeRealAngleOfTwoVertor(dir0, dir1) * 3.1415926 / 180.;
   order.left_rotation = angle;
 
-  cout << "2 to 3" << endl;
-  GlobalFun::printPoint3(cout, v0.P());
-  GlobalFun::printPoint3(cout, v1.P());
-
+  //cout << "2 to 3" << endl;
+  //GlobalFun::printPoint3(cout, v0.P());
+  //GlobalFun::printPoint3(cout, v1.P());
 
   Matrix33f T_to_S_Rotation_mat33 = GlobalFun::axisToMatrix33(v1); //»¹Ã»×ªÖÃ
 
   Matrix44f T_to_S_Matirx44 = GlobalFun::getMat44FromMat33AndVector(T_to_S_Rotation_mat33.transpose(), v1.P());
-  cout << "T_to_S_Matirx44" << endl;
-  GlobalFun::printMatrix44(cout, T_to_S_Matirx44);
+  //cout << "T_to_S_Matirx44" << endl;
+  //GlobalFun::printMatrix44(cout, T_to_S_Matirx44);
 
- /* Matrix33f R_to_S_Matrix33 = GlobalFun::getMat33FromMat44(R_to_S_Matrix44);
-  Point3f vec = GlobalFun::getVectorFromMat44(R_to_S_Matrix44);
-  Matrix33f S_to_R_Matrix33 = vcg::Inverse(R_to_S_Matrix33);
-
-  Matrix44f S_to_R_Matrix44 =  GlobalFun::getMat44FromMat33AndVector(S_to_R_Matrix33, vec);*/
   Matrix44f S_to_R_Matrix44 =  vcg::Inverse(R_to_S_Matrix44);
-  cout << "S_to_R_Matrix44" << endl;
-  GlobalFun::printMatrix44(cout, S_to_R_Matrix44);
+//   cout << "S_to_R_Matrix44" << endl;
+//   GlobalFun::printMatrix44(cout, S_to_R_Matrix44);
 
   Matrix44f T_to_R_Matrix44 = T_to_S_Matirx44 * S_to_R_Matrix44;
-  cout << "T_to_R_Matrix44" << endl;
-  GlobalFun::printMatrix44(cout, T_to_R_Matrix44);
+//   cout << "T_to_R_Matrix44" << endl;
+//   GlobalFun::printMatrix44(cout, T_to_R_Matrix44);
 
   Matrix44f L_to_R_Matrix44 = vcg::Inverse(T_to_L_Matrix44) * T_to_R_Matrix44;
-  cout << "L_to_R_Matrix44" << endl;
-  GlobalFun::printMatrix44(cout, L_to_R_Matrix44);
+//   cout << "L_to_R_Matrix44" << endl;
+//   GlobalFun::printMatrix44(cout, L_to_R_Matrix44);
 
   Matrix33f L_to_R_Matrix33 = GlobalFun::getMat33FromMat44(L_to_R_Matrix44);
   Quaternionf L_to_R_Qua;
@@ -844,20 +873,44 @@ PR2_order DataMgr::computePR2orderFromTwoCandidates(CVertex v0, CVertex v1)
   order.L_to_R_rotation_Qua.Z() = L_to_R_Qua.W();
   order.L_to_R_rotation_Qua.W() = L_to_R_Qua.X();
 
-
   order.L_to_R_translation = GlobalFun::getVectorFromMat44(L_to_R_Matrix44);
   order.L_to_R_translation *= 0.001;
 
-  cout << "leftRotation " << order.left_rotation << endl;
-  cout << "Trans_LR ";
-  GlobalFun::printPoint3(cout, order.L_to_R_translation);
-  cout << endl;
+  //cout << "leftRotation " << order.left_rotation << endl;
+  //cout << "Trans_LR ";
+  //GlobalFun::printPoint3(cout, order.L_to_R_translation);
+  //cout << endl;
 
-  cout << "Q_LR ";
-  GlobalFun::printQuaternionf(cout, order.L_to_R_rotation_Qua);
-  cout << endl;
+  //cout << "Q_LR ";
+  //GlobalFun::printQuaternionf(cout, order.L_to_R_rotation_Qua);
+  //cout << endl;
 
   return order;
+}
+
+void DataMgr::nbvReoders()
+{
+  for (int i = 0; i < nbv_candidates.vert.size(); i++)
+  {
+    CVertex& v = nbv_candidates.vert[i];
+
+    Point3f direction = v.N();
+    direction.X() = 0;
+    direction = direction.Normalize();
+
+    Point3f Z_axis = Point3f(0, 0, 1);
+    Point3f X_axis(1, 0, 0);
+    double angle = GlobalFun::computeRealAngleOfTwoVertor(direction, Z_axis);
+    Point3f up_direction = Z_axis ^ direction;
+    if (up_direction.X() < 0)
+    {
+      angle = 360 - angle;
+    }
+
+    v.ground_angle = angle;
+  }
+
+  sort(nbv_candidates.vert.begin(), nbv_candidates.vert.end(), cmp_angle);
 }
 
 void DataMgr::recomputeCandidatesAxis()
@@ -886,27 +939,7 @@ void DataMgr::recomputeCandidatesAxis()
     v.eigen_vector1 *= -1;
   }
   /*
-  for (int i = 0; i < nbv_candidates.vert.size(); i++)
-  {
-    CVertex& v = nbv_candidates.vert[i];
-
-    Point3f direction = v.N();
-    direction.X() = 0;
-    direction = direction.Normalize();
-
-    Point3f Z_axis = Point3f(0, 0, 1);
-    Point3f X_axis(1, 0, 0);
-    double angle = GlobalFun::computeRealAngleOfTwoVertor(direction, Z_axis);
-    Point3f up_direction = Z_axis ^ direction;
-    if (up_direction.X() < 0)
-    {
-      angle = 360 - angle;
-    }
-
-    v.ground_angle = angle;
-  }
-
-  sort(nbv_candidates.vert.begin(), nbv_candidates.vert.end(), cmp_angle);*/
+*/
 
 
 

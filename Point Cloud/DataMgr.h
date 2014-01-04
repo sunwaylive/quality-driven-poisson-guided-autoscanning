@@ -128,7 +128,8 @@ public:
   void loadNBVformMartrix44(QString fileName);
   
   PR2_order computePR2orderFromTwoCandidates(CVertex v0, CVertex v1);
-  void savePR2_orders();
+  void savePR2_orders(QString fileName_commands);
+  void nbvReoders();
 
 private:
 	void clearCMesh(CMesh& mesh);

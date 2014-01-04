@@ -70,7 +70,7 @@
     <addaction name="actionRemove_Ignore"/>
     <addaction name="actionRecover_Ignore"/>
     <addaction name="actionSave_Grid_As_Points"/>
-    <addaction name="actionSave_PR2_Orders"/>
+    <addaction name="actionNBV_ReOrders"/>
    </widget>
    <widget class="QMenu" name="menuAlgorithom">
     <property name="title">
@@ -924,9 +924,9 @@
     <string>Switch Sample NBV</string>
    </property>
   </action>
-  <action name="actionSave_PR2_Orders">
+  <action name="actionNBV_ReOrders">
    <property name="text">
-    <string>Save PR2 Orders</string>
+    <string>NBV ReOrders</string>
    </property>
   </action>
  </widget>
