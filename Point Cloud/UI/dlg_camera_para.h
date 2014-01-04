@@ -39,6 +39,7 @@ private slots:
   void useAverageConfidence(bool _val);
   void useNbvTest1(bool _val);
   void useMaxConfidencePropagation(bool _val);
+  void showCandidateIndex();
 
   void updateTableViewNBVCandidate();
   void updateTabelViewScanResults();

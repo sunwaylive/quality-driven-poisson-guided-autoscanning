@@ -2190,19 +2190,19 @@ GLArea::removeOutliers()
 
   if (global_paraMgr.glarea.getBool("Show Original"))
   {
-    GlobalFun::removeOutliers(dataMgr.getCurrentOriginal(), global_paraMgr.data.getDouble("CGrid Radius"), outlie_num);
+    GlobalFun::removeOutliers(dataMgr.getCurrentOriginal(), global_paraMgr.data.getDouble("CGrid Radius"), outlier_percentage);
     cout<<"has removed original outliers"<<endl;
   }
 
   if (global_paraMgr.glarea.getBool("Show Samples"))
   {
-    GlobalFun::removeOutliers(dataMgr.getCurrentSamples(), global_paraMgr.data.getDouble("CGrid Radius"), outlie_num);
+    GlobalFun::removeOutliers(dataMgr.getCurrentSamples(), global_paraMgr.data.getDouble("CGrid Radius"), outlier_percentage);
     cout<<"has removed samples outliers"<<endl;
   }
 
   if (global_paraMgr.glarea.getBool("Show ISO Points"))
   {
-    GlobalFun::removeOutliers(dataMgr.getCurrentIsoPoints(), global_paraMgr.data.getDouble("CGrid Radius"), outlie_num);
+    GlobalFun::removeOutliers(dataMgr.getCurrentIsoPoints(), global_paraMgr.data.getDouble("CGrid Radius"), outlier_percentage);
     cout<<"has removed ISO points outliers"<<endl;
   }
 }

@@ -626,7 +626,7 @@ void DataMgr::subSamples()
 void DataMgr::savePly(QString fileName, CMesh& mesh)
 {
 	int mask= tri::io::Mask::IOM_VERTNORMAL ;
-	//mask += tri::io::Mask::IOM_VERTCOLOR;
+	mask += tri::io::Mask::IOM_VERTCOLOR;
   //mask += tri::io::Mask::IOM_ALL;
 	//mask += tri::io::Mask::IOM_BITPOLYGONAL;
   //mask += tri::io::Mask::IOM_FACEINDEX;

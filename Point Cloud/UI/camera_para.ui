@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -369,6 +369,19 @@
      </property>
      <property name="text">
       <string>merge threshold:</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_show_candidate_index">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>400</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Show Index</string>
      </property>
     </widget>
    </widget>
