@@ -94,10 +94,15 @@ void NormalParaDlg::reorientateNormal()
 	}
 
   CMesh* samples;
+  
   if (global_paraMgr.glarea.getBool("Show Original")
     && !area->dataMgr.isOriginalEmpty())
   {
     samples = area->dataMgr.getCurrentOriginal();
+  }
+  else if (global_paraMgr.glarea.getBool("Show ISO Points")
+    && !area->dataMgr.isNBVCandidatesEmpty() )
+  {
   }
   else if (global_paraMgr.glarea.getBool("Show ISO Points")
     && !area->dataMgr.isIsoPointsEmpty())

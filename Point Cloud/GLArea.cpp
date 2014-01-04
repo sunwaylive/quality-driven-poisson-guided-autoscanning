@@ -138,6 +138,7 @@ void GLArea::resizeGL(int w, int h)
 
 void GLArea::paintGL() 
 {
+  QPainter painter(this);
 	paintMutex.lock();{
 
 		if (is_paintGL_locked)
@@ -250,6 +251,7 @@ void GLArea::paintGL()
 				{
 					glDrawer.draw(GLDrawer::NORMAL, dataMgr.getNbvCandidates());
           glDrawer.drawCandidatesAxis(dataMgr.getNbvCandidates());
+          glDrawer.drawMeshLables(dataMgr.getNbvCandidates(), &painter);
 				}
 			}else if (para->getBool("Show View Grids"))
 			{
