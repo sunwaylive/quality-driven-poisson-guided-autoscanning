@@ -785,6 +785,81 @@ bool cmp_angle(const CVertex &v1, const CVertex &v2)
   return v1.ground_angle > v2.ground_angle;
 }
 
+void DataMgr::savePR2_orders()
+{
+
+  double max_normalize_length = global_paraMgr.data.getDouble("Max Normalize Length");
+
+  CVertex v0 = nbv_candidates.vert[2];
+  CVertex v1 = nbv_candidates.vert[3];
+
+  v0.P() = (v0.P() + original_center_point) * max_normalize_length;
+  v1.P() = (v1.P() + original_center_point) * max_normalize_length;
+
+  computePR2orderFromTwoCandidates(v0, v1);
+}
+
+PR2_order DataMgr::computePR2orderFromTwoCandidates(CVertex v0, CVertex v1)
+{
+  PR2_order order;
+  Point3f dir0 = Point3f(0, v0.P().Y(), v0.P().Z());
+  Point3f dir1 = Point3f(0, v1.P().Y(), v1.P().Z());
+  double angle = GlobalFun::computeRealAngleOfTwoVertor(dir0, dir1) * 3.1415926 / 180.;
+  order.left_rotation = angle;
+
+  cout << "2 to 3" << endl;
+  GlobalFun::printPoint3(cout, v0.P());
+  GlobalFun::printPoint3(cout, v1.P());
+
+
+  Matrix33f T_to_S_Rotation_mat33 = GlobalFun::axisToMatrix33(v1); //»¹Ã»×ªÖÃ
+
+  Matrix44f T_to_S_Matirx44 = GlobalFun::getMat44FromMat33AndVector(T_to_S_Rotation_mat33.transpose(), v1.P());
+  cout << "T_to_S_Matirx44" << endl;
+  GlobalFun::printMatrix44(cout, T_to_S_Matirx44);
+
+ /* Matrix33f R_to_S_Matrix33 = GlobalFun::getMat33FromMat44(R_to_S_Matrix44);
+  Point3f vec = GlobalFun::getVectorFromMat44(R_to_S_Matrix44);
+  Matrix33f S_to_R_Matrix33 = vcg::Inverse(R_to_S_Matrix33);
+
+  Matrix44f S_to_R_Matrix44 =  GlobalFun::getMat44FromMat33AndVector(S_to_R_Matrix33, vec);*/
+  Matrix44f S_to_R_Matrix44 =  vcg::Inverse(R_to_S_Matrix44);
+  cout << "S_to_R_Matrix44" << endl;
+  GlobalFun::printMatrix44(cout, S_to_R_Matrix44);
+
+  Matrix44f T_to_R_Matrix44 = T_to_S_Matirx44 * S_to_R_Matrix44;
+  cout << "T_to_R_Matrix44" << endl;
+  GlobalFun::printMatrix44(cout, T_to_R_Matrix44);
+
+  Matrix44f L_to_R_Matrix44 = vcg::Inverse(T_to_L_Matrix44) * T_to_R_Matrix44;
+  cout << "L_to_R_Matrix44" << endl;
+  GlobalFun::printMatrix44(cout, L_to_R_Matrix44);
+
+  Matrix33f L_to_R_Matrix33 = GlobalFun::getMat33FromMat44(L_to_R_Matrix44);
+  Quaternionf L_to_R_Qua;
+  L_to_R_Qua.FromMatrix(L_to_R_Matrix33);
+
+  order.L_to_R_rotation_Qua.X() = L_to_R_Qua.Y();
+  order.L_to_R_rotation_Qua.Y() = L_to_R_Qua.Z();
+  order.L_to_R_rotation_Qua.Z() = L_to_R_Qua.W();
+  order.L_to_R_rotation_Qua.W() = L_to_R_Qua.X();
+
+
+  order.L_to_R_translation = GlobalFun::getVectorFromMat44(L_to_R_Matrix44);
+  order.L_to_R_translation *= 0.001;
+
+  cout << "leftRotation " << order.left_rotation << endl;
+  cout << "Trans_LR ";
+  GlobalFun::printPoint3(cout, order.L_to_R_translation);
+  cout << endl;
+
+  cout << "Q_LR ";
+  GlobalFun::printQuaternionf(cout, order.L_to_R_rotation_Qua);
+  cout << endl;
+
+  return order;
+}
+
 void DataMgr::recomputeCandidatesAxis()
 {
   for (int i = 0; i < nbv_candidates.vert.size(); i++)
@@ -802,7 +877,7 @@ void DataMgr::recomputeCandidatesAxis()
     v.eigen_vector1 = -directionY.Normalize();
   }
 
-  for (int i = 0; i < nbv_candidates.vert.size(); i++)
+ for (int i = 0; i < nbv_candidates.vert.size(); i++)
   {
     CVertex& v = nbv_candidates.vert[i];
 
@@ -810,7 +885,7 @@ void DataMgr::recomputeCandidatesAxis()
     v.eigen_vector0 *= -1;
     v.eigen_vector1 *= -1;
   }
-
+  /*
   for (int i = 0; i < nbv_candidates.vert.size(); i++)
   {
     CVertex& v = nbv_candidates.vert[i];
@@ -831,7 +906,9 @@ void DataMgr::recomputeCandidatesAxis()
     v.ground_angle = angle;
   }
 
-  sort(nbv_candidates.vert.begin(), nbv_candidates.vert.end(), cmp_angle);
+  sort(nbv_candidates.vert.begin(), nbv_candidates.vert.end(), cmp_angle);*/
+
+
 
   //for (int i = 0; i < nbv_candidates.vert.size(); i++)
   //{
@@ -2144,6 +2221,8 @@ void DataMgr::coordinateTransform()
 
   }
 }
+
+
 
 
 //void DataMgr::coordinateTransform()

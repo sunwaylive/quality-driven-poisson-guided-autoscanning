@@ -23,6 +23,15 @@ using namespace tri;
 
 typedef pair<Point3f, Point3f> ScanCandidate;
 
+class PR2_order
+{
+public:
+  double left_rotation;
+  Quaternionf L_to_R_rotation_Qua;
+  Point3f L_to_R_translation;
+};
+
+
 class DataMgr
 {
 public:
@@ -117,6 +126,9 @@ public:
   void loadCurrentTF(QString fileName);
   void recomputeCandidatesAxis();
   void loadNBVformMartrix44(QString fileName);
+  
+  PR2_order computePR2orderFromTwoCandidates(CVertex v0, CVertex v1);
+  void savePR2_orders();
 
 private:
 	void clearCMesh(CMesh& mesh);

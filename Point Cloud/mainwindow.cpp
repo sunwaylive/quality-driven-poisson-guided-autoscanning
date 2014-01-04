@@ -84,6 +84,7 @@ void MainWindow::initConnect()
 	connect(ui.actionSave_Skel, SIGNAL(triggered()), this, SLOT(saveSkel()));
   connect(ui.actionQianSample, SIGNAL(triggered()), this, SLOT(getQianSample()));
   connect(ui.actionSave_Grid_As_Points, SIGNAL(triggered()), this, SLOT(saveGridAsPoints()));
+  connect(ui.actionSave_PR2_Orders, SIGNAL(triggered()), this, SLOT(savePR2Orders()));
 
 	connect(ui.actionSnapShot, SIGNAL(triggered()), this, SLOT(saveSnapshot()));
 	connect(ui.actionRun_Wlop, SIGNAL(triggered()), this, SLOT(runWLop()));
@@ -643,6 +644,12 @@ void
 MainWindow::savePara()
 {
   area->dataMgr.saveParameters("parameter.para");
+}
+
+void MainWindow::savePR2Orders()
+{
+  area->dataMgr.savePR2_orders();
+
 }
 
 void MainWindow::saveViewGridsForVoreen()
