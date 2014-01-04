@@ -776,6 +776,15 @@ void DataMgr::recomputeQuad()
   recomputeCandidatesAxis();
 }
 
+bool cmp_angle(const CVertex &v1, const CVertex &v2)
+{
+  if (v1.ground_angle == v2.ground_angle) 
+    return false;
+
+  //in ascending order
+  return v1.ground_angle > v2.ground_angle;
+}
+
 void DataMgr::recomputeCandidatesAxis()
 {
   for (int i = 0; i < nbv_candidates.vert.size(); i++)
@@ -801,6 +810,28 @@ void DataMgr::recomputeCandidatesAxis()
     v.eigen_vector0 *= -1;
     v.eigen_vector1 *= -1;
   }
+
+  for (int i = 0; i < nbv_candidates.vert.size(); i++)
+  {
+    CVertex& v = nbv_candidates.vert[i];
+
+    Point3f direction = v.N();
+    direction.X() = 0;
+    direction = direction.Normalize();
+
+    Point3f Z_axis = Point3f(0, 0, 1);
+    Point3f X_axis(1, 0, 0);
+    double angle = GlobalFun::computeRealAngleOfTwoVertor(direction, Z_axis);
+    Point3f up_direction = Z_axis ^ direction;
+    if (up_direction.X() < 0)
+    {
+      angle = 360 - angle;
+    }
+
+    v.ground_angle = angle;
+  }
+
+  sort(nbv_candidates.vert.begin(), nbv_candidates.vert.end(), cmp_angle);
 
   //for (int i = 0; i < nbv_candidates.vert.size(); i++)
   //{

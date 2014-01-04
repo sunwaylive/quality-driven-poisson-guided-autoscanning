@@ -1557,6 +1557,7 @@ GLArea::saveNBV(QString fileName)
   outfile.open(fileName_nbs.toStdString().c_str());
 
   ostringstream strStream; 
+  strStream << nbv_candidates->vert.size() << endl << endl;
   for (int i = 0; i < nbv_candidates->vert.size(); ++i)
   {
     CVertex v = nbv_candidates->vert[i];
@@ -1564,33 +1565,69 @@ GLArea::saveNBV(QString fileName)
     v.P() = (v.P() + original_center_point) * max_normalize_length;
     v.N().Normalize();
 
-    strStream << i << ":" << endl;
-    strStream << "T_to_S_translation: " << v.P().X() << " " << v.P().Y() << " " << v.P().Z() << endl;
-    strStream << endl;
+    Matrix33f T_to_S_Rotation_mat33 = GlobalFun::axisToMatrix33(v);
 
-    Matrix33f T_to_S_Rotation_mat = GlobalFun::axisToMatrix33(v);
-    strStream << "T_to_S_rotation_matrix: " << endl;
-    for (int i = 0; i < 3; i++)
-    {
-      for (int j = 0; j < 3; j++)
-      {
-        strStream << T_to_S_Rotation_mat[i][j] << "\t\t ";
-      }
-      strStream << endl;
-    }
-    strStream << endl;
 
-    strStream << "T_to_S_rotation_Quaternion: " << endl;
-    Quaternionf qua;
-    qua.FromMatrix(T_to_S_Rotation_mat);
-    strStream << qua.X() << "   " << qua.Y() << "   " << qua.Z() << "   " << qua.W() << endl << endl;
+     Matrix44f T_to_S_Rotation_mat44;
+     T_to_S_Rotation_mat44.SetIdentity();
+     for (int i = 0; i < 3; i++)
+     {
+       for (int j = 0; j < 3; j++)
+       {
+         T_to_S_Rotation_mat44[i][j] = T_to_S_Rotation_mat33[i][j];
+       }
+     }
+     T_to_S_Rotation_mat44[0][3] = v.P().X();
+     T_to_S_Rotation_mat44[1][3] = v.P().Y();
+     T_to_S_Rotation_mat44[2][3] = v.P().Z();
 
-    strStream << "T_to_S_rotation_Angle: " << endl;
-    Point3f angle;
-    qua.ToEulerAngles(angle.X(), angle.Y(), angle.Z());
-    strStream << angle.X() << "   " << angle.Y() << "   " << angle.Z() << endl << endl;
-
+     strStream << i << endl;
+     for (int i = 0; i < 4; i++)
+     {
+       for (int j = 0; j < 4; j++)
+       {
+         strStream << T_to_S_Rotation_mat44[i][j] << "\t\t ";
+       }
+       strStream << endl;
+     }
+     strStream << endl;
+ 
   }
+
+  //for (int i = 0; i < nbv_candidates->vert.size(); ++i)
+  //{
+  //  CVertex v = nbv_candidates->vert[i];
+
+  //  v.P() = (v.P() + original_center_point) * max_normalize_length;
+  //  v.N().Normalize();
+
+  //  strStream << i << ":" << endl;
+  //  strStream << "T_to_S_translation: " << v.P().X() << " " << v.P().Y() << " " << v.P().Z() << endl;
+  //  strStream << endl;
+
+  //  Matrix33f T_to_S_Rotation_mat = GlobalFun::axisToMatrix33(v);
+  //  strStream << "T_to_S_rotation_matrix: " << endl;
+  //  for (int i = 0; i < 3; i++)
+  //  {
+  //    for (int j = 0; j < 3; j++)
+  //    {
+  //      strStream << T_to_S_Rotation_mat[i][j] << "\t\t ";
+  //    }
+  //    strStream << endl;
+  //  }
+  //  strStream << endl;
+
+  //  strStream << "T_to_S_rotation_Quaternion: " << endl;
+  //  Quaternionf qua;
+  //  qua.FromMatrix(T_to_S_Rotation_mat);
+  //  strStream << qua.X() << "   " << qua.Y() << "   " << qua.Z() << "   " << qua.W() << endl << endl;
+
+  //  strStream << "T_to_S_rotation_Angle: " << endl;
+  //  Point3f angle;
+  //  qua.ToEulerAngles(angle.X(), angle.Y(), angle.Z());
+  //  strStream << angle.X() << "   " << angle.Y() << "   " << angle.Z() << endl << endl;
+
+  //}
   outfile.write( strStream.str().c_str(), strStream.str().size() ); 
   outfile.close();
 }

@@ -74,6 +74,7 @@ public:
     float skel_radius; // remember radius for branches
     float weight_sum; //
     int remember_iso_index;
+    float ground_angle;
   };
 	
 public:
