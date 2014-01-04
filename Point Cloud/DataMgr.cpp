@@ -793,6 +793,15 @@ void DataMgr::recomputeCandidatesAxis()
     v.eigen_vector1 = -directionY.Normalize();
   }
 
+  for (int i = 0; i < nbv_candidates.vert.size(); i++)
+  {
+    CVertex& v = nbv_candidates.vert[i];
+
+    v.N() *= -1;
+    v.eigen_vector0 *= -1;
+    v.eigen_vector1 *= -1;
+  }
+
   //for (int i = 0; i < nbv_candidates.vert.size(); i++)
   //{
   //  CVertex& v = nbv_candidates.vert[i];
