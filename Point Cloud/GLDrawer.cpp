@@ -102,7 +102,7 @@ void GLDrawer::draw(DrawType type, CMesh* _mesh)
 		Point3f& p = vi->P();      
 		Point3f& normal = vi->N();
 
-		if(!(bCullFace && !vi->is_original) || isCanSee(p, normal))		
+		if(!(bCullFace /*&& !vi->is_original*/) || isCanSee(p, normal))		
 		{
 			switch(type)
 			{
@@ -906,4 +906,46 @@ void GLDrawer::drawSlice(Slice& slice, double trans_val)
 
 		}
 	}
+}
+
+void GLDrawer::drawCandidatesAxis(CMesh *mesh)
+{
+  double width = normal_width;
+  double length = normal_length;
+  double half_length = normal_length / 2.0;
+  QColor qcolor = normal_color;
+
+  for (int i = 0; i < mesh->vert.size(); i++)
+  {
+    CVertex& v = mesh->vert[i];
+
+    glLineWidth(width); 
+    GLColor color(qcolor);
+    glColor4f(color.r, color.g, color.b, 1);  
+
+    Point3f p = v.P(); 
+    Point3f m0 = v.N();
+    Point3f m1 = v.eigen_vector0;
+    Point3f m2 = v.eigen_vector1;
+
+    // Z
+    glBegin(GL_LINES);	
+    glVertex3d(p[0], p[1], p[2]);
+    glVertex3f(p[0] + m0[0]*length, p[1]+m0[1]*length, p[2]+m0[2]*length);
+    glEnd(); 
+
+    // X
+    glColor4f(1, 0, 0, 1);
+    glBegin(GL_LINES);	
+    glVertex3d(p[0], p[1], p[2]);
+    glVertex3f(p[0] + m1[0]*half_length, p[1]+m1[1]*half_length, p[2]+m1[2]*half_length);
+    glEnd(); 
+
+    // Y
+    glColor4f(0, 1, 0, 1);
+    glBegin(GL_LINES);	
+    glVertex3d(p[0], p[1], p[2]);
+    glVertex3f(p[0] + m2[0]*half_length, p[1]+m2[1]*half_length, p[2]+m2[2]*half_length);
+    glEnd(); 
+  }
 }

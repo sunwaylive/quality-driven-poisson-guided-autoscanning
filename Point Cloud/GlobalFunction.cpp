@@ -1202,6 +1202,77 @@ void GlobalFun::cutPointSelfSlice(CMesh* mesh, Point3f anchor, Point3f direction
 
 }
 
+void GlobalFun::printMatrix33(ostream& out, vcg::Matrix33f mat33)
+{
+  for (int i = 0; i < 3; i++)
+  {
+    for (int j = 0; j < 3; j++)
+    {
+      out << mat33[i][j] << "   ";
+    }
+    out << endl;
+  }
+  out << endl;
+}
+
+void GlobalFun::printMatrix44(ostream& out, vcg::Matrix44f mat44)
+{
+  for (int i = 0; i < 4; i++)
+  {
+    for (int j = 0; j < 4; j++)
+    {
+      out << mat44[i][j] << "   ";
+    }
+    out << endl;
+  }
+  out << endl;
+}
+
+void GlobalFun::printPoint3(ostream& out, vcg::Point3f p)
+{
+  out << "[ " << p.X() << "  " << p.Y() << "  " << p.Z() << " ]"<<endl;
+}
+
+vcg::Matrix33f GlobalFun::myQuaternionToMatrix33(Quaternionf qua_in)
+{
+  Matrix33f mat;
+  mat[0][0] = (2. * (qua_in.X()*qua_in.X() + qua_in.W()*qua_in.W()) -1.);
+  mat[0][1] = (2. * (qua_in.X()*qua_in.Y() - qua_in.Z()*qua_in.W()));
+  mat[0][2] = (2. * (qua_in.X()*qua_in.Z() + qua_in.Y()*qua_in.W()));
+  mat[1][0] = (2. * (qua_in.X()*qua_in.Y() + qua_in.Z()*qua_in.W()));
+  mat[1][1] = (2. * (qua_in.Y()*qua_in.Y() + qua_in.W()*qua_in.W())-1.);
+  mat[1][2] = (2. * (qua_in.Y()*qua_in.Z() - qua_in.X()*qua_in.W()));
+  mat[2][0] = (2. * (qua_in.X()*qua_in.Z() - qua_in.Y()*qua_in.W()));
+  mat[2][1] = (2. * (qua_in.Y()*qua_in.Z() + qua_in.X()*qua_in.W()));
+  mat[2][2] = (2. * (qua_in.Z()*qua_in.Z() + qua_in.W()*qua_in.W())-1.);
+
+  return mat;
+}
+
+vcg::Matrix33f GlobalFun::directionToMatrix33(Point3f direction)
+{
+  Matrix33f mat;
+
+
+  return mat;
+}
+
+vcg::Matrix33f GlobalFun::axisToMatrix33(CVertex v)
+{
+  Matrix33f mat;
+
+  mat[0][0] = v.eigen_vector0[0];
+  mat[0][1] = v.eigen_vector0[1];
+  mat[0][2] = v.eigen_vector0[2];
+  mat[1][0] = v.eigen_vector1[0];
+  mat[1][1] = v.eigen_vector1[1];
+  mat[1][2] = v.eigen_vector1[2];
+  mat[2][0] = v.N()[0];
+  mat[2][1] = v.N()[1];
+  mat[2][2] = v.N()[2];
+
+  return mat;
+}
 
 //void Slice::build_slice(Point3f a, Point3f b, Point3f c, float c_length)
 //{
