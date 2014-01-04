@@ -45,7 +45,7 @@ public:
 	vector<int> original_neighbors;
   bool is_ray_hit;
   bool is_ray_stop;
-  bool is_grid_center;// should change name to is_view_grid
+  bool is_view_grid;// should change name to is_view_grid
   bool is_field_grid;
   bool is_model;
   bool is_scanned;
@@ -95,7 +95,7 @@ public:
 
 	CVertex():
 		m_index(0),
-    is_grid_center(false),
+    is_view_grid(false),
     is_ray_stop(false),
     is_ray_hit(false),
     is_model(false),

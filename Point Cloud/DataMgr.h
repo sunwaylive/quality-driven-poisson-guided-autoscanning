@@ -106,13 +106,17 @@ public:
 
   void switchSampleToOriginal();
   void switchSampleToISO();
+  void switchSampleToNBV();
+
   void replaceMesh(CMesh& src_mesh, CMesh& target_mesh, bool isOriginal);
-  void replaceMesh2(CMesh& src_mesh, CMesh& target_mesh, bool isIso);
+  void replaceMeshISO(CMesh& src_mesh, CMesh& target_mesh, bool isIso);
+  void replaceMeshView(CMesh& src_mesh, CMesh& target_mesh, bool isViewGrid);
 
   void coordinateTransform();
   void loadCommonTransform();
   void loadCurrentTF(QString fileName);
   void recomputeCandidatesAxis();
+  void loadNBVformMartrix44(QString fileName);
 
 private:
 	void clearCMesh(CMesh& mesh);

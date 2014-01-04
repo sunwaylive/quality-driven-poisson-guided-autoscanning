@@ -651,6 +651,11 @@ void GLArea::openByDrop(QString fileName)
     dataMgr.loadCurrentTF(fileName);
   }
 
+  if (fileName.endsWith("mat44"))
+  {
+    dataMgr.loadNBVformMartrix44(fileName);
+  }
+
   emit needUpdateStatus();
 	initAfterOpenFile();
 	updateGL();
@@ -1566,7 +1571,7 @@ GLArea::saveNBV(QString fileName)
     v.N().Normalize();
 
     Matrix33f T_to_S_Rotation_mat33 = GlobalFun::axisToMatrix33(v);
-
+    T_to_S_Rotation_mat33 = T_to_S_Rotation_mat33.Transpose();
 
      Matrix44f T_to_S_Rotation_mat44;
      T_to_S_Rotation_mat44.SetIdentity();

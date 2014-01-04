@@ -91,7 +91,7 @@ void GLDrawer::draw(DrawType type, CMesh* _mesh)
 			continue;
 		}
 
-		if (bUseConfidenceSeparation && vi->is_grid_center)
+		if (bUseConfidenceSeparation && vi->is_view_grid)
 		{
 			if (vi->eigen_confidence < confidence_Separation_value)
 			{
@@ -251,7 +251,7 @@ GLColor GLDrawer::getColorByType(const CVertex& v)
 		}
 	}
 
-  if (v.is_grid_center)
+  if (v.is_view_grid)
   {
     //if (v.is_ray_hit) 
     //{
@@ -294,7 +294,7 @@ GLColor GLDrawer::getColorByType(const CVertex& v)
 
 void GLDrawer::drawDot(const CVertex& v)
 {
-	//if (bShowGridCenters && v.is_grid_center && !v.is_ray_stop)
+	//if (bShowGridCenters && v.is_view_grid && !v.is_ray_stop)
 	//{
 	//  return;
 	//}

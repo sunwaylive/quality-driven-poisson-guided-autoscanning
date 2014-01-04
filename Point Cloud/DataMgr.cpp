@@ -939,7 +939,7 @@ void DataMgr::LoadGridPoints(QString fileName, bool is_poisson_field)
     {
       CVertex v;
       v.is_field_grid = is_poisson_field;
-      v.is_grid_center = !is_poisson_field;
+      v.is_view_grid = !is_poisson_field;
       v.m_index = i;
       sem >> v.P()[0] >> v.P()[1] >> v.P()[2];
       sem >> v.N()[0] >> v.N()[1] >> v.N()[2];
@@ -1529,7 +1529,7 @@ void DataMgr::loadSkeletonFromSkel(QString fileName)
     {
       CVertex v;
       v.is_original = false;
-      //v.is_grid_center = true;
+      //v.is_view_grid = true;
       v.m_index = i;
       sem >> v.P()[0] >> v.P()[1] >> v.P()[2];
       sem >> v.N()[0] >> v.N()[1] >> v.N()[2];
@@ -1874,9 +1874,17 @@ void DataMgr::switchSampleToOriginal()
 void DataMgr::switchSampleToISO()
 {
   CMesh temp_mesh;
-  replaceMesh2(iso_points, temp_mesh, false);
-  replaceMesh2(samples, iso_points, true);
-  replaceMesh2(temp_mesh, samples, false);
+  replaceMeshISO(iso_points, temp_mesh, false);
+  replaceMeshISO(samples, iso_points, true);
+  replaceMeshISO(temp_mesh, samples, false);
+}
+
+void DataMgr::switchSampleToNBV()
+{
+  CMesh temp_mesh;
+  replaceMeshView(nbv_candidates, temp_mesh, false);
+  replaceMeshView(samples, nbv_candidates, true);
+  replaceMeshView(temp_mesh, samples, false);
 }
 
 void DataMgr::replaceMesh(CMesh& src_mesh, CMesh& target_mesh, bool isOriginal)
@@ -1893,7 +1901,7 @@ void DataMgr::replaceMesh(CMesh& src_mesh, CMesh& target_mesh, bool isOriginal)
   target_mesh.bbox = src_mesh.bbox;
 }
 
-void DataMgr::replaceMesh2(CMesh& src_mesh, CMesh& target_mesh, bool isIso)
+void DataMgr::replaceMeshISO(CMesh& src_mesh, CMesh& target_mesh, bool isIso)
 {
   clearCMesh(target_mesh);
   for(int i = 0; i < src_mesh.vert.size(); i++)
@@ -1905,6 +1913,58 @@ void DataMgr::replaceMesh2(CMesh& src_mesh, CMesh& target_mesh, bool isIso)
   }
   target_mesh.vn = src_mesh.vn;
   target_mesh.bbox = src_mesh.bbox;
+}
+
+void DataMgr::replaceMeshView(CMesh& src_mesh, CMesh& target_mesh, bool isViewGrid)
+{
+  clearCMesh(target_mesh);
+  for(int i = 0; i < src_mesh.vert.size(); i++)
+  {
+    CVertex v = src_mesh.vert[i];
+    v.is_view_grid = isViewGrid;
+    v.m_index = i;
+    target_mesh.vert.push_back(v);
+  }
+  target_mesh.vn = src_mesh.vn;
+  target_mesh.bbox = src_mesh.bbox;
+}
+
+void DataMgr::loadNBVformMartrix44(QString fileName)
+{
+  ifstream infile;
+  infile.open(fileName.toStdString().c_str());
+
+  Matrix44f mat44;
+  for (int i = 0; i < 4; i++)
+  {
+    for (int j = 0; j < 4; j++)
+    {
+      infile >> mat44[i][j];
+    }
+  }
+
+  CVertex v;
+  //v.is_view_grid
+  v.P().X() = mat44[0][3];
+  v.P().Y() = mat44[1][3];
+  v.P().Z() = mat44[2][3];
+
+  v.N().X() = mat44[2][0];
+  v.N().Y() = mat44[2][1];
+  v.N().Z() = mat44[2][2];
+
+  v.eigen_vector0.X() = mat44[0][0];
+  v.eigen_vector0.Y() = mat44[0][1];
+  v.eigen_vector0.Z() = mat44[0][2];
+
+  v.eigen_vector1.X() = mat44[1][0];
+  v.eigen_vector1.Y() = mat44[1][1];
+  v.eigen_vector1.Z() = mat44[1][2];
+
+  v.m_index = nbv_candidates.vert.size(); 
+  v.is_view_grid = true;
+  nbv_candidates.vert.push_back(v);
+  nbv_candidates.vn = nbv_candidates.vert.size();
 }
 
 void DataMgr::loadCurrentTF(QString fileName)

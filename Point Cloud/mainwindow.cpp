@@ -146,6 +146,8 @@ void MainWindow::initConnect()
 	
   connect(ui.actionSwitch_Sample_Original,SIGNAL(triggered()),this,SLOT(switchSampleOriginal()));
   connect(ui.actionSwitch_Sample_with_ISO,SIGNAL(triggered()),this,SLOT(switchSampleISO()));
+  connect(ui.actionSwitch_Sample_NBV,SIGNAL(triggered()),this,SLOT(switchSampleNBV()));
+  
   connect(ui.actionTransform,SIGNAL(triggered()),this,SLOT(coordinateTransform()));
   connect(ui.actionAdd_Sample_To_Original,SIGNAL(triggered()),this,SLOT(addSamplesToOriginal()));
   
@@ -1027,6 +1029,13 @@ void MainWindow::switchSampleISO()
 {
   area->cleanPickPoints();
   area->dataMgr.switchSampleToISO();
+  area->updateUI();
+}
+
+void MainWindow::switchSampleNBV()
+{
+  area->cleanPickPoints();
+  area->dataMgr.switchSampleToNBV();
   area->updateUI();
 }
 
