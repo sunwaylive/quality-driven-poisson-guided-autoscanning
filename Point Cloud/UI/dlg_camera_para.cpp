@@ -22,6 +22,7 @@ void CameraParaDlg::initConnects()
     cout << "can not connect signal" << endl;
   }
 
+  connect(ui->pushButton_show_candidate_index, SIGNAL(clicked()), this, SLOT(showCandidateIndex()));
   connect(ui->pushButton_load_real_initial_scan, SIGNAL(clicked()), this, SLOT(loadRealInitialScan()));
   connect(ui->pushButton_load_real_scan, SIGNAL(clicked()), this, SLOT(loadRealScan()));
   connect(ui->spinBox_nbv_iteration_count, SIGNAL(valueChanged(int)), this, SLOT(getNbvIterationCount(int)));
@@ -284,6 +285,13 @@ void CameraParaDlg::loadRealScan()
     else
       GlobalFun::computeICP(original, real_scan);
   }
+}
+
+void CameraParaDlg::showCandidateIndex()
+{
+  global_paraMgr.nbv.setValue("Run Compute View Candidate Index", BoolValue(true));
+  area->runNBV();
+  global_paraMgr.nbv.setValue("Run Compute View Candidate Index", BoolValue(false));
 }
 
 void CameraParaDlg::loadRealInitialScan()
@@ -602,6 +610,7 @@ void CameraParaDlg::mergeScannedMeshWithOriginalByHand()
 
         cout<<"Before merge with original: " << original->vert.size() <<endl;
         cout<<"scanned mesh num: "<<(*it)->vert.size() <<endl;
+                
         int skip_num = 0;
 
         vector<double> v_confidence;
@@ -653,11 +662,11 @@ void CameraParaDlg::mergeScannedMeshWithOriginalByHand()
             cout<<"sum_confidence: " << v_confidence[k] <<endl;
 
           if (v_confidence[k] > merge_confidence_threshold 
-            || (1.0f * rand() / (RAND_MAX+1.0) > pow((1 - v_confidence[k]), merge_pow)))
+          || (1.0f * rand() / (RAND_MAX+1.0) > pow((1 - v_confidence[k]), merge_pow)))
           {
-            v.is_ignore = true;
-            skip_num++; 
-            continue;
+          v.is_ignore = true;
+          skip_num++; 
+          continue;
           }
 
           CVertex new_v;
@@ -665,6 +674,7 @@ void CameraParaDlg::mergeScannedMeshWithOriginalByHand()
           new_v.is_original = true;
           new_v.P() = v.P();
           new_v.N() = v.N();
+          new_v.C().SetRGB(255, 0, 0);
           original->vert.push_back(new_v);
           original->bbox.Add(new_v.P());
         } 

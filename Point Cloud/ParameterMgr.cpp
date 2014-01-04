@@ -152,7 +152,7 @@ void ParameterMgr::initDrawerParameter()
 	drawer.addParam(new RichDouble("ISO Dot Size", 4));
 	drawer.addParam(new RichDouble("Original Dot Size", 1));
 	drawer.addParam(new RichDouble("Normal Line Width", 2));
-	drawer.addParam(new RichDouble("Normal Line Length", 0.12));
+	drawer.addParam(new RichDouble("Normal Line Length", 0.25f));
 
 	drawer.addParam(new RichColor("Background Color", QColor(255, 255, 255) ));
 	drawer.addParam(new RichColor("Normal Line Color", QColor(0, 0, 255) ));
@@ -425,7 +425,7 @@ void ParameterMgr::initNBVParameter()
   nbv.addParam(new RichDouble("Iso Bottom Delta", 0.0));
   nbv.addParam(new RichBool("Run Set Iso Bottom Confidence", false));
   nbv.addParam(new RichBool("Run Update View Directions", false));
-  
+  nbv.addParam(new RichBool("Run Compute View Candidate Index", false));
   nbv.addParam(new RichDouble("View Grid Resolution", 80.f));
   nbv.addParam(new RichBool("Test Other Inside Segment", false));
 
@@ -443,5 +443,5 @@ void ParameterMgr::initNBVParameter()
 
   nbv.addParam(new RichDouble("Confidence Filter Threshold", 0.6f));
   nbv.addParam(new RichDouble("Propagate One Point Index", 0));
-  nbv.addParam(new RichInt("View Bin Each Axis", 4));
+  nbv.addParam(new RichInt("View Bin Each Axis", 3));
 }

@@ -1,5 +1,8 @@
 #include "NBV.h"
 
+typedef tbb::queuing_mutex CMEshMutexType;
+CMEshMutexType CMeshMutex;
+
 NBV::NBV(RichParameterSet *_para)
 {
   cout<<"NBV constructed!"<<endl;
@@ -74,14 +77,16 @@ void
   {
     updateViewDirections();
   }
+
+  if (para->getBool("Run Compute View Candidate Index"))
+  {
+    runComputeViewCandidateIndex();
+  }
 }
 
 bool
   NBV::cmp(const CVertex &v1, const CVertex &v2)
 {
-  if (v1.eigen_confidence == v2.eigen_confidence) 
-    return false;
-
   //in ascending order
   return v1.eigen_confidence > v2.eigen_confidence;
 }
@@ -166,6 +171,7 @@ NBV::setInput(DataMgr *pData)
   iso_points = pData->getCurrentIsoPoints();
   nbv_candidates = pData->getNbvCandidates();
   scan_candidates = pData->getScanCandidates();
+  seletedViewCameras = pData->getSelectedScanCandidates();
   whole_space_box = &pData->whole_space_box;
 }
 
@@ -393,7 +399,7 @@ void
   int iso_points_size = iso_points->vert.size();
   double optimal_D = (n_dist + f_dist) / 2.0f;
   double half_D = n_dist;
-  double half_D2 = half_D * half_D; //
+  double half_D2 = half_D * half_D;
   double gaussian_term = - gaussian_para / half_D2; 
   double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
   double sigma_threshold = pow(max(1e-8, 1-cos(sigma / 180.0 * 3.1415926)), 2);
@@ -402,8 +408,11 @@ void
   double angle_delta = (grid_step_size * ray_resolution_para) / camera_max_dist;
   cout << "Angle Delta/resolution:  " << angle_delta << " , " << PI / angle_delta << endl;
 
+  tbb::concurrent_vector<CVertex> view_vert;
+  std::copy(view_grid_points->vert.begin(), view_grid_points->vert.end(), 
+    std::back_inserter(view_vert));
+
 #ifdef LINKED_WITH_TBB
-  //tbb::mutex _mutex;
   tbb::parallel_for(tbb::blocked_range<size_t>(0, iso_points_size), 
     [&](const tbb::blocked_range<size_t>& r)
   {
@@ -453,16 +462,16 @@ void
             n_indexZ = n_indexZ + deltaZ;
             int index = round(n_indexX) * y_max * z_max + round(n_indexY) * z_max + round(n_indexZ);
 
-            if (index >= view_grid_points->vert.size())  break;
+            if (index >= view_vert.size())  break;
             //if the direction is into the model, or has been hit, then stop tracing
-            if (view_grid_points->vert[index].is_ray_stop) break;            
-            if (view_grid_points->vert[index].is_ray_hit)  continue;
+            if (view_vert[index].is_ray_stop) break;            
+            if (view_vert[index].is_ray_hit)  continue;
 
-            //_mutex.lock();
             //if the grid get first hit 
-            view_grid_points->vert[index].is_ray_hit = true;
+            view_vert[index].is_ray_hit = true;
+            
             //1. set the confidence of the grid center
-            CVertex& t = view_grid_points->vert[index];
+            CVertex& t = view_vert[index];
             Point3f diff = t.P() - v.P();
             double dist2 = diff.SquaredNorm();
             double dist = sqrt(dist2);
@@ -472,31 +481,23 @@ void
             double coefficient1 = exp(opt_dist * opt_dist * gaussian_term);
             double coefficient2 = exp(-pow(1-v.N() * view_direction, 2) / sigma_threshold);
 
-            float iso_confidence = 1 - v.eigen_confidence;     
-            float confidence_weight = coefficient1 * coefficient2;
+            double iso_confidence = 1 - v.eigen_confidence;     
+            double confidence_weight = coefficient1 * coefficient2;
 
-            
-            if (use_max_propagation)
+            //acquire a lock on t
+            /*CMEshMutexType::scoped_lock lock;
+            lock.acquire(CMeshMutex);*/
+            if (confidence_weight * iso_confidence > t.eigen_confidence)
             {
-              //t.eigen_confidence = (std::max)(float(t.eigen_confidence), float(confidence_weight * iso_confidence));          
-              if (confidence_weight * iso_confidence > t.eigen_confidence)
-              {
-                t.eigen_confidence = confidence_weight * iso_confidence;
-                t.N() = (v.P()-t.P()).Normalize();
-                t.remember_iso_index = v.m_index;
-              }
+              t.eigen_confidence = confidence_weight * iso_confidence;
+              t.N() = (v.P()-t.P()).Normalize();
+              t.remember_iso_index = v.m_index;
             }
-            else
-            {
-              t.eigen_confidence += coefficient1 * iso_confidence;
-              //t.eigen_confidence += confidence_weight * 1.0;              
-            }
+            //lock.release();
             
-            //_mutex.unlock();
             if (use_average_confidence)
-            {
               confidence_weight_sum[index] += 1.;
-            }
+
             // record hit_grid center index
             hit_grid_indexes.push_back(index);                        
           }//end for k
@@ -512,6 +513,16 @@ void
       if (use_propagate_one_point)  break;
     }//end for iso_points
   });
+
+  view_grid_points->vert.clear();
+
+  for (int i = 0; i < view_vert.size(); ++i)
+  {
+    CVertex t = view_vert[i];
+    view_grid_points->vert.push_back(t);
+  }
+  view_grid_points->vn = view_grid_points->vert.size();
+
 #else
   for (int i = 0 ;i < iso_points->vert.size(); ++i)//fix: < iso_points->vert.size()    
   {
@@ -717,6 +728,7 @@ void
   NBV::viewExtractionIntoBins()
 {
   nbv_candidates->vert.clear();
+  
   Point3f diff = whole_space_box_max - whole_space_box_min;
   double bin_length_x = diff.X() / view_bin_each_axis;
   double bin_length_y = diff.Y() / view_bin_each_axis;
@@ -1311,9 +1323,6 @@ int
 
 }
 
-
-
-
 void NBV::runSmoothGridConfidence()
 {
   cout << "run smooth grid" << endl;
@@ -1371,4 +1380,42 @@ void NBV::runSmoothGridConfidence()
     }
   }
   //cout << "neighbor size: " << field_points->vert[0].neighbors.size() << endl;
+}
+
+void NBV::runComputeViewCandidateIndex()
+{
+  //get the whole 3D space that a camera may exist
+  double camera_max_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
+    global_paraMgr.camera.getDouble("Predicted Model Size"); 
+
+  float scan_box_size = camera_max_dist + 0.5;
+  whole_space_box_min = Point3f(-scan_box_size, -scan_box_size, -scan_box_size);
+  whole_space_box_max = Point3f(scan_box_size, scan_box_size, scan_box_size);
+  whole_space_box->SetNull();
+  whole_space_box->Add(whole_space_box_min);
+  whole_space_box->Add(whole_space_box_max);
+
+  Point3f diff = whole_space_box_max - whole_space_box_min;
+  double bin_length_x = diff.X() / view_bin_each_axis;
+  double bin_length_y = diff.Y() / view_bin_each_axis;
+  double bin_length_z = diff.Z() / view_bin_each_axis;
+
+  int i = 1;
+  for (vector<ScanCandidate>::iterator it = seletedViewCameras->begin(); 
+    it != seletedViewCameras->end(); ++it, ++i)
+  {
+    Point3f &v = it->first;
+    int t_indexX = static_cast<int>( floor((v[0] - whole_space_box_min.X()) / bin_length_x ));
+    int t_indexY = static_cast<int>( floor((v[1] - whole_space_box_min.Y()) / bin_length_y ));
+    int t_indexZ = static_cast<int>( floor((v[2] - whole_space_box_min.Z()) / bin_length_z ));
+
+    t_indexX = (t_indexX >= view_bin_each_axis ? (view_bin_each_axis-1) : t_indexX);
+    t_indexY = (t_indexY >= view_bin_each_axis ? (view_bin_each_axis-1) : t_indexY);
+    t_indexZ = (t_indexZ >= view_bin_each_axis ? (view_bin_each_axis-1) : t_indexZ);
+
+    int index = t_indexX * view_bin_each_axis * view_bin_each_axis 
+      + t_indexZ * view_bin_each_axis + t_indexY;
+
+    cout << i <<"th selected view candidate index: " <<index <<endl;
+  }
 }

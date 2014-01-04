@@ -282,7 +282,10 @@ GLColor GLDrawer::getColorByType(const CVertex& v)
     return isoValue2color(v.eigen_confidence, iso_color_scale, iso_value_shift, true);
   }
 
-
+  if (v.is_scanned)
+  {
+    return cRed;
+  }
 
   if (bUseConfidenceColor)
   {
@@ -506,21 +509,21 @@ void GLDrawer::drawCamera(vcc::Camera& camera)
   glColor3f(0.0, 1.0f, 0.0f);
   glVertex(camera.pos); glVertex(far_end);
 
-	glColor3f(1.0, 0.0, 0.0);
-	glVertex(camera.pos); glVertex(far_top_left);
-	glVertex(camera.pos); glVertex(far_top_right);
-	glVertex(camera.pos); glVertex(far_bottom_left);
-	glVertex(camera.pos); glVertex(far_bottom_right);
-  //draw far face
-	glVertex(far_top_right); glVertex(far_top_left);
-	glVertex(far_top_left); glVertex(far_bottom_left);
-	glVertex(far_bottom_left); glVertex(far_bottom_right);
-	glVertex(far_bottom_right); glVertex(far_top_right);
-  //draw near face
-  glVertex(near_top_right); glVertex(near_top_left);
-  glVertex(near_top_left); glVertex(near_bottom_left);
-  glVertex(near_bottom_left); glVertex(near_bottom_right);
-  glVertex(near_bottom_right); glVertex(near_top_right);
+	//glColor3f(1.0, 0.0, 0.0);
+	//glVertex(camera.pos); glVertex(far_top_left);
+	//glVertex(camera.pos); glVertex(far_top_right);
+	//glVertex(camera.pos); glVertex(far_bottom_left);
+	//glVertex(camera.pos); glVertex(far_bottom_right);
+ // //draw far face
+	//glVertex(far_top_right); glVertex(far_top_left);
+	//glVertex(far_top_left); glVertex(far_bottom_left);
+	//glVertex(far_bottom_left); glVertex(far_bottom_right);
+	//glVertex(far_bottom_right); glVertex(far_top_right);
+ // //draw near face
+ // glVertex(near_top_right); glVertex(near_top_left);
+ // glVertex(near_top_left); glVertex(near_bottom_left);
+ // glVertex(near_bottom_left); glVertex(near_bottom_right);
+ // glVertex(near_bottom_right); glVertex(near_top_right);
 
 	glEnd();
 }

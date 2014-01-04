@@ -1,7 +1,8 @@
 #pragma once
 #include <iostream>
 #include <tbb/parallel_for.h>
-#include <tbb/mutex.h>
+#include <tbb/concurrent_vector.h>
+#include <tbb/queuing_mutex.h>
 #include "PointCloudAlgorithm.h"
 #include "GlobalFunction.h"
 
@@ -35,6 +36,7 @@ private:
   void setIsoBottomConfidence();
   bool updateViewDirections();
   void runSmoothGridConfidence();
+  void runComputeViewCandidateIndex();
   
   void   normalizeConfidence(vector<CVertex>& vertexes, float delta);
   double getAbsMax(double x, double y, double z);
@@ -54,6 +56,7 @@ private:
   CMesh                 *view_grid_points;
   CMesh                 *nbv_candidates;
   vector<ScanCandidate> *scan_candidates;
+  vector<ScanCandidate> *seletedViewCameras;
   CMesh                 *field_points;
   double                grid_step_size;
   Point3f               whole_space_box_max;
