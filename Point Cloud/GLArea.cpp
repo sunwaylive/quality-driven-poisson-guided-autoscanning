@@ -1542,8 +1542,9 @@ GLArea::saveNBV(QString fileName)
   }
   nbv.vn = nbv.vert.size();
 
-  fileName.replace(".ply", "_nbv.ply");
-  dataMgr.savePly(fileName, nbv);
+  QString fileName_nbvply = fileName;
+  fileName_nbvply.replace(".ply", "_nbv.ply");
+  dataMgr.savePly(fileName_nbvply, nbv);
 
   QString fileName_commands = fileName;
   fileName_commands.replace(".ply", ".PR2_commands");
