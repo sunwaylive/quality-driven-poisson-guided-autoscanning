@@ -112,6 +112,8 @@ NBV::runOneKeyNBV()
   viewExtractionIntoBins();
   timer.end();
 
+
+
   timer.start("optimize view direction");
   for (int i = 0; i < 5; i++)
   {
@@ -671,7 +673,6 @@ void NBV::normalizeConfidence(vector<CVertex>& vertexes, float delta)
     v.eigen_confidence = (v.eigen_confidence - min_confidence) / space;
     v.eigen_confidence += delta;
   }
-
 }
 double
   NBV::getAbsMax(double x, double y, double z)
@@ -818,7 +819,7 @@ void
     nbv_candidates->vert[i].m_index = i;
   }
 
-  GlobalFun::deleteIgnore(nbv_candidates);
+  //GlobalFun::deleteIgnore(nbv_candidates);
   cout << "candidate number: " << nbv_candidate_num << endl;
 
 

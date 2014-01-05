@@ -979,6 +979,7 @@ CameraParaDlg::runOneKeyNbvIteration()
     QString s_cmd_copy_poisson = "copy poisson_out.ply ";
     s_cmd_copy_poisson += file_location;
     s_cmd_copy_poisson += s_poisson_surface;
+    cout << s_cmd_copy_poisson.toStdString() <<endl;
     system(s_cmd_copy_poisson.toAscii().data());
 
     //save iso-skel and view
