@@ -64,11 +64,13 @@
     <addaction name="actionSave_NBV"/>
     <addaction name="actionSwitch_Sample_Original"/>
     <addaction name="actionSwitch_Sample_with_ISO"/>
+    <addaction name="actionSwitch_Sample_NBV"/>
     <addaction name="actionTransform"/>
     <addaction name="actionAdd_Sample_To_Original"/>
     <addaction name="actionRemove_Ignore"/>
     <addaction name="actionRecover_Ignore"/>
     <addaction name="actionSave_Grid_As_Points"/>
+    <addaction name="actionNBV_ReOrders"/>
    </widget>
    <widget class="QMenu" name="menuAlgorithom">
     <property name="title">
@@ -915,6 +917,16 @@
   <action name="actionConvert_ply_to_obj">
    <property name="text">
     <string>Convert Ply To Obj</string>
+   </property>
+  </action>
+  <action name="actionSwitch_Sample_NBV">
+   <property name="text">
+    <string>Switch Sample NBV</string>
+   </property>
+  </action>
+  <action name="actionNBV_ReOrders">
+   <property name="text">
+    <string>NBV ReOrders</string>
    </property>
   </action>
  </widget>

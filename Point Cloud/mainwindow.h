@@ -50,6 +50,7 @@ private slots:
   void saveFieldPoints();
   void savePara();
   void convertPlyToObj();
+  void nbvReOrders();
 
 	void showWLopDlg();
 	void showNormalDlg();
@@ -67,6 +68,7 @@ private slots:
 
   void switchSampleOriginal();
   void switchSampleISO();
+  void switchSampleNBV();
   
   void coordinateTransform();
   void addSamplesToOriginal();

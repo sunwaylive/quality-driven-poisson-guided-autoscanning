@@ -39,12 +39,12 @@ namespace vcg
     public:
       Mode()
       {
-        color=vcg::Color4b(vcg::Color4b::White);
+        color=vcg::Color4b(vcg::Color4b::Black);
         angle=0;
         rightAlign = false;
         qFont.setStyleStrategy(QFont::NoAntialias);
         qFont.setFamily("Helvetica");
-        qFont.setPixelSize(12);
+        qFont.setPixelSize(25);
       }
 
       Mode(QFont &_qFont, vcg::Color4b _color, float _angle,bool _rightAlign)

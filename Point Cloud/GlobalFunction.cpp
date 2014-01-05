@@ -1230,7 +1230,12 @@ void GlobalFun::printMatrix44(ostream& out, vcg::Matrix44f mat44)
 
 void GlobalFun::printPoint3(ostream& out, vcg::Point3f p)
 {
-  out << "[ " << p.X() << "  " << p.Y() << "  " << p.Z() << " ]"<<endl;
+  out  << p.X() << "  " << p.Y() << "  " << p.Z() <<endl;
+}
+
+void GlobalFun::printQuaternionf(ostream& out, vcg::Quaternionf qua)
+{
+  out  << qua.X() << "  " << qua.Y() << "  " << qua.Z() << "  " << qua.W() <<endl;
 }
 
 vcg::Matrix33f GlobalFun::myQuaternionToMatrix33(Quaternionf qua_in)
@@ -1272,6 +1277,50 @@ vcg::Matrix33f GlobalFun::axisToMatrix33(CVertex v)
   mat[2][2] = v.N()[2];
 
   return mat;
+}
+
+
+vcg::Matrix33f GlobalFun::getMat33FromMat44(vcg::Matrix44f mat44)
+{
+  vcg::Matrix33f mat33;
+
+  for (int i = 0; i < 3; i++)
+  {
+    for (int j = 0; j < 3; j++)
+    {
+      mat33[i][j] = mat44[i][j];
+    }
+  }
+  return mat33;
+}
+
+Point3f GlobalFun::getVectorFromMat44(vcg::Matrix44f mat44)
+{
+  Point3f vec;
+  vec.X() = mat44[0][3];
+  vec.Y() = mat44[1][3];
+  vec.Z() = mat44[2][3];
+
+  return vec;
+}
+
+vcg::Matrix44f GlobalFun::getMat44FromMat33AndVector(vcg::Matrix33f mat33, Point3f vec)
+{
+  vcg::Matrix44f mat44;
+  mat44.SetIdentity();
+  for (int i = 0; i < 3; i++)
+  {
+    for (int j = 0; j < 3; j++)
+    {
+      mat44[i][j] = mat33[i][j];
+    }
+  }
+
+  mat44[0][3] = vec.X();
+  mat44[1][3] = vec.Y();
+  mat44[2][3] = vec.Z();
+
+  return mat44;
 }
 
 //void Slice::build_slice(Point3f a, Point3f b, Point3f c, float c_length)

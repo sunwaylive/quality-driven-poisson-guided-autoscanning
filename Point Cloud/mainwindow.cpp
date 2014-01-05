@@ -84,6 +84,7 @@ void MainWindow::initConnect()
 	connect(ui.actionSave_Skel, SIGNAL(triggered()), this, SLOT(saveSkel()));
   connect(ui.actionQianSample, SIGNAL(triggered()), this, SLOT(getQianSample()));
   connect(ui.actionSave_Grid_As_Points, SIGNAL(triggered()), this, SLOT(saveGridAsPoints()));
+  connect(ui.actionNBV_ReOrders, SIGNAL(triggered()), this, SLOT(nbvReOrders()));
 
 	connect(ui.actionSnapShot, SIGNAL(triggered()), this, SLOT(saveSnapshot()));
 	connect(ui.actionRun_Wlop, SIGNAL(triggered()), this, SLOT(runWLop()));
@@ -146,6 +147,8 @@ void MainWindow::initConnect()
 	
   connect(ui.actionSwitch_Sample_Original,SIGNAL(triggered()),this,SLOT(switchSampleOriginal()));
   connect(ui.actionSwitch_Sample_with_ISO,SIGNAL(triggered()),this,SLOT(switchSampleISO()));
+  connect(ui.actionSwitch_Sample_NBV,SIGNAL(triggered()),this,SLOT(switchSampleNBV()));
+  
   connect(ui.actionTransform,SIGNAL(triggered()),this,SLOT(coordinateTransform()));
   connect(ui.actionAdd_Sample_To_Original,SIGNAL(triggered()),this,SLOT(addSamplesToOriginal()));
   
@@ -643,6 +646,12 @@ MainWindow::savePara()
   area->dataMgr.saveParameters("parameter.para");
 }
 
+void MainWindow::nbvReOrders()
+{
+  area->dataMgr.nbvReoders();
+
+}
+
 void MainWindow::saveViewGridsForVoreen()
 {
   QString file = QFileDialog::getSaveFileName(this, "Save View Grids as", "", "*.raw");
@@ -1027,6 +1036,13 @@ void MainWindow::switchSampleISO()
 {
   area->cleanPickPoints();
   area->dataMgr.switchSampleToISO();
+  area->updateUI();
+}
+
+void MainWindow::switchSampleNBV()
+{
+  area->cleanPickPoints();
+  area->dataMgr.switchSampleToNBV();
   area->updateUI();
 }
 

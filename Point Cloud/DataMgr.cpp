@@ -776,6 +776,143 @@ void DataMgr::recomputeQuad()
   recomputeCandidatesAxis();
 }
 
+bool cmp_angle(const CVertex &v1, const CVertex &v2)
+{
+  if (v1.ground_angle == v2.ground_angle) 
+    return false;
+
+  //in ascending order
+  return v1.ground_angle > v2.ground_angle;
+}
+
+void DataMgr::savePR2_orders(QString fileName_commands)
+{
+  if (nbv_candidates.vert.empty())
+  {
+    return;
+  }
+
+  double max_normalize_length = global_paraMgr.data.getDouble("Max Normalize Length");
+
+  ofstream outfile;
+  outfile.open(fileName_commands.toStdString().c_str());
+
+  vector<PR2_order> pr2_orders;
+  CVertex v_start;
+  v_start.P() = Point3f(131.07, -135.973, -113.974);
+  PR2_order order = computePR2orderFromTwoCandidates(v_start, nbv_candidates.vert[0]);
+  pr2_orders.push_back(order);
+
+  for (int i = 0; i < nbv_candidates.vert.size()-1; i++)
+  {
+    CVertex v0 = nbv_candidates.vert[i];
+    CVertex v1 = nbv_candidates.vert[i+1];
+
+    v0.P() = (v0.P() + original_center_point) * max_normalize_length;
+    v1.P() = (v1.P() + original_center_point) * max_normalize_length;
+
+    PR2_order order = computePR2orderFromTwoCandidates(v0, v1);
+    pr2_orders.push_back(order);
+  }
+
+  outfile << "number_of_candidate " << pr2_orders.size() << endl << endl;
+  for (int i = 0; i < pr2_orders.size(); i++)
+  {
+    PR2_order order = pr2_orders[i];
+    outfile << "rotation " << order.left_rotation << endl;
+    outfile << "position " << order.L_to_R_translation.X() << " "
+                           << order.L_to_R_translation.Y() << " "
+                           << order.L_to_R_translation.Z() << endl;
+    outfile << "orientation  " << order.L_to_R_rotation_Qua.X() << " "
+                               << order.L_to_R_rotation_Qua.Y() << " "
+                               << order.L_to_R_rotation_Qua.Z() << " "
+                               << order.L_to_R_rotation_Qua.W() << endl;
+    outfile << endl;
+  }
+
+  //outfile.write( strStream.str().c_str(), strStream.str().size() ); 
+  outfile.close();
+}
+
+PR2_order DataMgr::computePR2orderFromTwoCandidates(CVertex v0, CVertex v1)
+{
+  PR2_order order;
+  Point3f dir0 = Point3f(0, v0.P().Y(), v0.P().Z());
+  Point3f dir1 = Point3f(0, v1.P().Y(), v1.P().Z());
+  double angle = GlobalFun::computeRealAngleOfTwoVertor(dir0, dir1) * 3.1415926 / 180.;
+  order.left_rotation = angle;
+
+  //cout << "2 to 3" << endl;
+  //GlobalFun::printPoint3(cout, v0.P());
+  //GlobalFun::printPoint3(cout, v1.P());
+
+  Matrix33f T_to_S_Rotation_mat33 = GlobalFun::axisToMatrix33(v1); //»¹Ã»×ªÖÃ
+
+  Matrix44f T_to_S_Matirx44 = GlobalFun::getMat44FromMat33AndVector(T_to_S_Rotation_mat33.transpose(), v1.P());
+  //cout << "T_to_S_Matirx44" << endl;
+  //GlobalFun::printMatrix44(cout, T_to_S_Matirx44);
+
+  Matrix44f S_to_R_Matrix44 =  vcg::Inverse(R_to_S_Matrix44);
+//   cout << "S_to_R_Matrix44" << endl;
+//   GlobalFun::printMatrix44(cout, S_to_R_Matrix44);
+
+  Matrix44f T_to_R_Matrix44 = T_to_S_Matirx44 * S_to_R_Matrix44;
+//   cout << "T_to_R_Matrix44" << endl;
+//   GlobalFun::printMatrix44(cout, T_to_R_Matrix44);
+
+  Matrix44f L_to_R_Matrix44 = vcg::Inverse(T_to_L_Matrix44) * T_to_R_Matrix44;
+//   cout << "L_to_R_Matrix44" << endl;
+//   GlobalFun::printMatrix44(cout, L_to_R_Matrix44);
+
+  Matrix33f L_to_R_Matrix33 = GlobalFun::getMat33FromMat44(L_to_R_Matrix44);
+  Quaternionf L_to_R_Qua;
+  L_to_R_Qua.FromMatrix(L_to_R_Matrix33);
+
+  order.L_to_R_rotation_Qua.X() = L_to_R_Qua.Y();
+  order.L_to_R_rotation_Qua.Y() = L_to_R_Qua.Z();
+  order.L_to_R_rotation_Qua.Z() = L_to_R_Qua.W();
+  order.L_to_R_rotation_Qua.W() = L_to_R_Qua.X();
+
+  order.L_to_R_translation = GlobalFun::getVectorFromMat44(L_to_R_Matrix44);
+  order.L_to_R_translation *= 0.001;
+
+  //cout << "leftRotation " << order.left_rotation << endl;
+  //cout << "Trans_LR ";
+  //GlobalFun::printPoint3(cout, order.L_to_R_translation);
+  //cout << endl;
+
+  //cout << "Q_LR ";
+  //GlobalFun::printQuaternionf(cout, order.L_to_R_rotation_Qua);
+  //cout << endl;
+
+  return order;
+}
+
+void DataMgr::nbvReoders()
+{
+  for (int i = 0; i < nbv_candidates.vert.size(); i++)
+  {
+    CVertex& v = nbv_candidates.vert[i];
+
+    Point3f direction = v.N();
+    direction.X() = 0;
+    direction = direction.Normalize();
+
+    Point3f Z_axis = Point3f(0, 0, 1);
+    Point3f X_axis(1, 0, 0);
+    double angle = GlobalFun::computeRealAngleOfTwoVertor(direction, Z_axis);
+    Point3f up_direction = Z_axis ^ direction;
+    if (up_direction.X() < 0)
+    {
+      angle = 360 - angle;
+    }
+
+    v.ground_angle = angle;
+  }
+
+  sort(nbv_candidates.vert.begin(), nbv_candidates.vert.end(), cmp_angle);
+}
+
 void DataMgr::recomputeCandidatesAxis()
 {
   for (int i = 0; i < nbv_candidates.vert.size(); i++)
@@ -792,6 +929,19 @@ void DataMgr::recomputeCandidatesAxis()
     v.eigen_vector0 = -directionX.Normalize();
     v.eigen_vector1 = -directionY.Normalize();
   }
+
+ for (int i = 0; i < nbv_candidates.vert.size(); i++)
+  {
+    CVertex& v = nbv_candidates.vert[i];
+
+    v.N() *= -1;
+    v.eigen_vector0 *= -1;
+    v.eigen_vector1 *= -1;
+  }
+  /*
+*/
+
+
 
   //for (int i = 0; i < nbv_candidates.vert.size(); i++)
   //{
@@ -899,7 +1049,7 @@ void DataMgr::LoadGridPoints(QString fileName, bool is_poisson_field)
     {
       CVertex v;
       v.is_field_grid = is_poisson_field;
-      v.is_grid_center = !is_poisson_field;
+      v.is_view_grid = !is_poisson_field;
       v.m_index = i;
       sem >> v.P()[0] >> v.P()[1] >> v.P()[2];
       sem >> v.N()[0] >> v.N()[1] >> v.N()[2];
@@ -1489,7 +1639,7 @@ void DataMgr::loadSkeletonFromSkel(QString fileName)
     {
       CVertex v;
       v.is_original = false;
-      //v.is_grid_center = true;
+      //v.is_view_grid = true;
       v.m_index = i;
       sem >> v.P()[0] >> v.P()[1] >> v.P()[2];
       sem >> v.N()[0] >> v.N()[1] >> v.N()[2];
@@ -1834,9 +1984,17 @@ void DataMgr::switchSampleToOriginal()
 void DataMgr::switchSampleToISO()
 {
   CMesh temp_mesh;
-  replaceMesh2(iso_points, temp_mesh, false);
-  replaceMesh2(samples, iso_points, true);
-  replaceMesh2(temp_mesh, samples, false);
+  replaceMeshISO(iso_points, temp_mesh, false);
+  replaceMeshISO(samples, iso_points, true);
+  replaceMeshISO(temp_mesh, samples, false);
+}
+
+void DataMgr::switchSampleToNBV()
+{
+  CMesh temp_mesh;
+  replaceMeshView(nbv_candidates, temp_mesh, false);
+  replaceMeshView(samples, nbv_candidates, true);
+  replaceMeshView(temp_mesh, samples, false);
 }
 
 void DataMgr::replaceMesh(CMesh& src_mesh, CMesh& target_mesh, bool isOriginal)
@@ -1853,7 +2011,7 @@ void DataMgr::replaceMesh(CMesh& src_mesh, CMesh& target_mesh, bool isOriginal)
   target_mesh.bbox = src_mesh.bbox;
 }
 
-void DataMgr::replaceMesh2(CMesh& src_mesh, CMesh& target_mesh, bool isIso)
+void DataMgr::replaceMeshISO(CMesh& src_mesh, CMesh& target_mesh, bool isIso)
 {
   clearCMesh(target_mesh);
   for(int i = 0; i < src_mesh.vert.size(); i++)
@@ -1865,6 +2023,58 @@ void DataMgr::replaceMesh2(CMesh& src_mesh, CMesh& target_mesh, bool isIso)
   }
   target_mesh.vn = src_mesh.vn;
   target_mesh.bbox = src_mesh.bbox;
+}
+
+void DataMgr::replaceMeshView(CMesh& src_mesh, CMesh& target_mesh, bool isViewGrid)
+{
+  clearCMesh(target_mesh);
+  for(int i = 0; i < src_mesh.vert.size(); i++)
+  {
+    CVertex v = src_mesh.vert[i];
+    v.is_view_grid = isViewGrid;
+    v.m_index = i;
+    target_mesh.vert.push_back(v);
+  }
+  target_mesh.vn = src_mesh.vn;
+  target_mesh.bbox = src_mesh.bbox;
+}
+
+void DataMgr::loadNBVformMartrix44(QString fileName)
+{
+  ifstream infile;
+  infile.open(fileName.toStdString().c_str());
+
+  Matrix44f mat44;
+  for (int i = 0; i < 4; i++)
+  {
+    for (int j = 0; j < 4; j++)
+    {
+      infile >> mat44[i][j];
+    }
+  }
+
+  CVertex v;
+  //v.is_view_grid
+  v.P().X() = mat44[0][3];
+  v.P().Y() = mat44[1][3];
+  v.P().Z() = mat44[2][3];
+
+  v.N().X() = mat44[2][0];
+  v.N().Y() = mat44[2][1];
+  v.N().Z() = mat44[2][2];
+
+  v.eigen_vector0.X() = mat44[0][0];
+  v.eigen_vector0.Y() = mat44[0][1];
+  v.eigen_vector0.Z() = mat44[0][2];
+
+  v.eigen_vector1.X() = mat44[1][0];
+  v.eigen_vector1.Y() = mat44[1][1];
+  v.eigen_vector1.Z() = mat44[1][2];
+
+  v.m_index = nbv_candidates.vert.size(); 
+  v.is_view_grid = true;
+  nbv_candidates.vert.push_back(v);
+  nbv_candidates.vn = nbv_candidates.vert.size();
 }
 
 void DataMgr::loadCurrentTF(QString fileName)
@@ -2044,6 +2254,8 @@ void DataMgr::coordinateTransform()
 
   }
 }
+
+
 
 
 //void DataMgr::coordinateTransform()

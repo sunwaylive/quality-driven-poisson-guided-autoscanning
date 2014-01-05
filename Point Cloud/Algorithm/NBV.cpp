@@ -241,7 +241,7 @@ NBV::buildGrid()
          t.P()[1] = whole_space_box_min.Y() + j * grid_step_size;
          t.P()[2] = whole_space_box_min.Z() + k * grid_step_size;
          t.m_index = index;
-         t.is_grid_center = true;
+         t.is_view_grid = true;
          view_grid_points->vert[index] = t;
          view_grid_points->bbox.Add(t.P());
        }
@@ -709,7 +709,7 @@ void
     if (v.eigen_confidence > nbv_confidence_value)
     {
       v.m_index = index++;
-      //v.is_grid_center = false;
+      //v.is_view_grid = false;
       //v.is_iso = true;
       nbv_candidates->vert.push_back(v);
     }
