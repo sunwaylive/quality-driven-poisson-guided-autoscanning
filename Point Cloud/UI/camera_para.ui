@@ -1056,12 +1056,12 @@
       <rect>
        <x>0</x>
        <y>400</y>
-       <width>81</width>
+       <width>121</width>
        <height>20</height>
       </rect>
      </property>
      <property name="text">
-      <string>rotate step:</string>
+      <string>rotate/slice step:</string>
      </property>
     </widget>
     <widget class="QPushButton" name="pushButton_rotate">
@@ -1106,7 +1106,7 @@
     <widget class="QDoubleSpinBox" name="rotate_step">
      <property name="geometry">
       <rect>
-       <x>90</x>
+       <x>130</x>
        <y>400</y>
        <width>61</width>
        <height>20</height>
@@ -1280,7 +1280,7 @@
     <widget class="QDoubleSpinBox" name="rotate_angle">
      <property name="geometry">
       <rect>
-       <x>90</x>
+       <x>130</x>
        <y>430</y>
        <width>61</width>
        <height>20</height>
@@ -1370,6 +1370,19 @@
      </property>
      <property name="text">
       <string>snapshot index</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_slice_animation">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>480</y>
+       <width>131</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Slice Animation</string>
      </property>
     </widget>
    </widget>
