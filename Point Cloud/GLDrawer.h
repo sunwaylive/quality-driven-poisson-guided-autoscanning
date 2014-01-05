@@ -1,6 +1,7 @@
 #pragma once
 #include "gl/glew.h"
 #include <wrap/gl/space.h>
+#include <wrap/qt/gl_label.h>
 #include "cmesh.h"
 #include "ParameterMgr.h"
 
@@ -72,6 +73,7 @@ public:
   void drawSphere(const CVertex& v);
 
   void drawCandidatesAxis(CMesh *mesh);
+  void drawMeshLables(CMesh *mesh, QPainter *painter);
 
 private:
 	GLColor getColorByType(const CVertex& v);

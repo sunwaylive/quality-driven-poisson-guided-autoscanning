@@ -91,7 +91,7 @@ void GLDrawer::draw(DrawType type, CMesh* _mesh)
 			continue;
 		}
 
-		if (bUseConfidenceSeparation && vi->is_grid_center)
+		if (bUseConfidenceSeparation && vi->is_view_grid)
 		{
 			if (vi->eigen_confidence < confidence_Separation_value)
 			{
@@ -251,7 +251,7 @@ GLColor GLDrawer::getColorByType(const CVertex& v)
 		}
 	}
 
-  if (v.is_grid_center)
+  if (v.is_view_grid)
   {
     //if (v.is_ray_hit) 
     //{
@@ -297,7 +297,7 @@ GLColor GLDrawer::getColorByType(const CVertex& v)
 
 void GLDrawer::drawDot(const CVertex& v)
 {
-	//if (bShowGridCenters && v.is_grid_center && !v.is_ray_stop)
+	//if (bShowGridCenters && v.is_view_grid && !v.is_ray_stop)
 	//{
 	//  return;
 	//}
@@ -908,6 +908,25 @@ void GLDrawer::drawSlice(Slice& slice, double trans_val)
 	}
 }
 
+
+
+void GLDrawer::drawMeshLables(CMesh *mesh, QPainter *painter)
+{
+  for (int i = 0; i < mesh->vert.size(); i++)
+  {
+    CVertex& v = mesh->vert[i];
+
+
+    glPushAttrib(GL_LIGHTING_BIT | GL_CURRENT_BIT | GL_DEPTH_BUFFER_BIT );
+    glDepthFunc(GL_ALWAYS);
+    glDisable(GL_LIGHTING);
+
+    QString str = QString::number(i, 10);
+    glLabel::render(painter, v.P(),str);
+    glPopAttrib();	
+  }
+}
+
 void GLDrawer::drawCandidatesAxis(CMesh *mesh)
 {
   double width = normal_width;
@@ -947,5 +966,6 @@ void GLDrawer::drawCandidatesAxis(CMesh *mesh)
     glVertex3d(p[0], p[1], p[2]);
     glVertex3f(p[0] + m2[0]*half_length, p[1]+m2[1]*half_length, p[2]+m2[2]*half_length);
     glEnd(); 
+		
   }
 }

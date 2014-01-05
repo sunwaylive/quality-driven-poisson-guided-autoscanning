@@ -972,8 +972,11 @@ CameraParaDlg::runOneKeyNbvIteration()
     area->dataMgr.downSamplesByNum();
     area->initSetting();
 
+    cout<<"begin to run poisson confidence" <<endl;
     runStep2PoissonConfidence();
+    cout<<"end run poisson confidence" <<endl;
     //save poisson surface "copy poisson_out.ply file_location\\%d_poisson_out.ply"
+    cout<<"begin to copy poisson_surface" <<endl;
     QString s_poisson_surface;
     s_poisson_surface.sprintf("\\%d_poisson_out.ply", ic);
     QString s_cmd_copy_poisson = "copy poisson_out.ply ";
@@ -981,7 +984,7 @@ CameraParaDlg::runOneKeyNbvIteration()
     s_cmd_copy_poisson += s_poisson_surface;
     cout << s_cmd_copy_poisson.toStdString() <<endl;
     system(s_cmd_copy_poisson.toAscii().data());
-
+    cout<<"end to copy poisson_surface" <<endl;
     //save iso-skel and view
     QString s_iso;
     s_iso.sprintf("\\%d_iso.skel", ic);

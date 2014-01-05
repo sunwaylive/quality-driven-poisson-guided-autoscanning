@@ -97,12 +97,22 @@ namespace GlobalFun
   void printMatrix33(ostream& out, vcg::Matrix33f mat33);
   void printMatrix44(ostream& out, vcg::Matrix44f mat44);
   void printPoint3(ostream& out, vcg::Point3f p);
+  void printQuaternionf(ostream& out, vcg::Quaternionf qua);
+
+
 
   vcg::Matrix33f myQuaternionToMatrix33(Quaternionf qua_in);
   vcg::Matrix33f directionToMatrix33(Point3f direction);
   vcg::Matrix33f axisToMatrix33(CVertex v);
 
+  vcg::Matrix33f getMat33FromMat44(vcg::Matrix44f mat44);
+  Point3f getVectorFromMat44(vcg::Matrix44f mat44);
+  vcg::Matrix44f getMat44FromMat33AndVector(vcg::Matrix33f mat33, Point3f vec);
+
+  
 }
+
+
 
 class Timer
 {
