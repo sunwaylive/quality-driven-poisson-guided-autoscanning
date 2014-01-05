@@ -76,6 +76,22 @@ void CameraParaDlg::initConnects()
   connect(ui->step4_run_New_Scan, SIGNAL(clicked()), this, SLOT(runStep4NewScans()));
   connect(ui->pushButton_wlop_on_scanned_mesh, SIGNAL(clicked()), this, SLOT(runWlopOnScannedMesh()));
   connect(ui->pushButton_ICP, SIGNAL(clicked()), this, SLOT(runICP()));
+
+  connect(ui->rotate_center_X,SIGNAL(valueChanged(double)),this,SLOT(getRotateCenterX(double)));
+  connect(ui->rotate_center_Y,SIGNAL(valueChanged(double)),this,SLOT(getRotateCenterY(double)));
+  connect(ui->rotate_center_Z,SIGNAL(valueChanged(double)),this,SLOT(getRotateCenterZ(double)));
+  connect(ui->rotate_normal_X,SIGNAL(valueChanged(double)),this,SLOT(getRotateNormalX(double)));
+  connect(ui->rotate_normal_Y,SIGNAL(valueChanged(double)),this,SLOT(getRotateNormalY(double)));
+  connect(ui->rotate_normal_Z,SIGNAL(valueChanged(double)),this,SLOT(getRotateNormalZ(double)));
+  connect(ui->rotate_step,SIGNAL(valueChanged(double)),this,SLOT(getRotateStep(double)));
+  connect(ui->rotate_angle,SIGNAL(valueChanged(double)),this,SLOT(getRotateAngle(double)));
+
+  connect(ui->pushButton_rotate,SIGNAL(clicked()),this,SLOT(rotateStep()));
+  connect(ui->pushButton_rotate_around,SIGNAL(clicked()),this,SLOT(rotateAround()));
+  connect(ui->wlop_snap_shot_each_iteration,SIGNAL(clicked(bool)),this,SLOT(needSnapShotEachIteration(bool)));
+  connect(ui->wlop_snapshot_index,SIGNAL(valueChanged(double)),this,SLOT(getSnapShotIndex(double)));
+
+
 }
 
 bool CameraParaDlg::initWidgets()
@@ -103,6 +119,20 @@ bool CameraParaDlg::initWidgets()
 
   state = m_paras->nbv.getBool("Use Average Confidence") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
   ui->use_average_confidence->setCheckState(state);
+
+  state = m_paras->glarea.getBool("SnapShot Each Iteration") ? (Qt::CheckState::Checked): (Qt::CheckState::Unchecked);
+  ui->wlop_snap_shot_each_iteration->setCheckState(state);
+
+  ui->rotate_center_X->setValue(area->rotate_pos.X());
+  ui->rotate_center_Y->setValue(area->rotate_pos.Y());
+  ui->rotate_center_Z->setValue(area->rotate_pos.Z());
+  ui->rotate_normal_X->setValue(area->rotate_normal.X());
+  ui->rotate_normal_Y->setValue(area->rotate_normal.Y());
+  ui->rotate_normal_Z->setValue(area->rotate_normal.Z());
+  ui->rotate_step->setValue(area->rotate_delta);
+  ui->rotate_angle->setValue(area->rotate_angle);
+
+  ui->wlop_snapshot_index->setValue(m_paras->glarea.getDouble("Snapshot Index"));
 
   //state = m_paras->nbv.getBool("Use NBV Test1") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
   //ui->use_nbv_test1->setCheckState(state);
@@ -1044,4 +1074,98 @@ CameraParaDlg::runOneKeyNbvIteration()
 
   log.close();
   cout << "All is done!" <<endl;
+}
+
+
+void CameraParaDlg::getRotateCenterX(double _val)
+{
+  area->rotate_pos.X() = _val;
+  update(); area->update(); //area->updateGL();
+}
+
+void CameraParaDlg::getRotateCenterY(double _val)
+{
+  area->rotate_pos.Y() = _val;
+  update(); area->update(); //area->updateGL();
+}
+
+void CameraParaDlg::getRotateCenterZ(double _val)
+{
+  area->rotate_pos.Z() = _val;
+  update(); area->update(); //area->updateGL();
+}
+
+void CameraParaDlg::getRotateNormalX(double _val)
+{
+  area->rotate_normal.X() = _val;
+  update(); area->update(); //area->updateGL();
+}
+
+void CameraParaDlg::getRotateNormalY(double _val)
+{
+  area->rotate_normal.Y() = _val;
+  update(); area->update(); //area->updateGL();
+}
+
+void CameraParaDlg::getRotateNormalZ(double _val)
+{
+  area->rotate_normal.Z() = _val;
+  update(); area->update(); //area->updateGL();
+}
+
+void CameraParaDlg::getRotateStep(double _val)
+{
+  area->rotate_delta = _val;
+  update(); area->update(); //area->updateGL();
+}
+
+void CameraParaDlg::getRotateAngle(double _val)
+{
+  area->rotate_angle = _val;
+  update(); area->update(); //area->updateGL();
+}
+
+
+void CameraParaDlg::rotateStep()
+{
+  area->rotate_angle += area->rotate_delta;
+  if (area->rotate_angle >= 360)
+  {
+    area->rotate_angle -= 360;
+  }
+  initWidgets();
+  if (m_paras->glarea.getBool("SnapShot Each Iteration"))
+  {
+    area->figureSnapShot();
+  }
+  update(); area->update(); area->updateGL();
+}
+
+void CameraParaDlg::rotateAround()
+{
+  if (m_paras->glarea.getBool("SnapShot Each Iteration"))
+  {
+    area->figureSnapShot();
+  }
+
+  int rotate_time  = 360 / area->rotate_delta;
+  for (int i = 0; i < rotate_time; i++)
+  {
+    rotateStep();
+  }
+  update(); area->update(); area->updateGL();
+
+
+}
+
+void CameraParaDlg::needSnapShotEachIteration(bool _val)
+{
+  global_paraMgr.glarea.setValue("SnapShot Each Iteration",BoolValue(_val));
+}
+
+
+void CameraParaDlg::getSnapShotIndex(double _val)
+{
+  m_paras->glarea.setValue("Snapshot Index", DoubleValue(_val));
+  area->updateGL();
 }

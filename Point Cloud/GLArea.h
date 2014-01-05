@@ -151,15 +151,28 @@ private: // For snapshot
 	QString current_snap_path;
 	double snapDrawScal;
 	bool is_paintGL_locked;
+  bool is_figure_shot;
 
-	Point3f rotate_normal;
-	Point3f rotate_pos;
+	//Point3f rotate_normal;
+	//Point3f rotate_pos;
 
 	vcg::GlTrimesh<CMesh> glw; //绘制网格的对象
 
 public:
 	void saveSnapshot();
+  void figureSnapShot();
 	void changeColor(QString paraName);
+
+  //rotate
+  void rotatingAnimation();
+  float rotate_angle;
+  bool need_rotate;
+  Point3f rotate_normal;
+  Point3f rotate_pos;
+  double rotate_delta;
+  //void printPickPointInfo();
+  //void pickRotateCenter();
+  //void pickRotateNormal();
 
 public:
 	void poissonTest();

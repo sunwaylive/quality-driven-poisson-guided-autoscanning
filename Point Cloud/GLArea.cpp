@@ -36,6 +36,14 @@ GLArea::GLArea(QWidget *parent): QGLWidget(/*QGLFormat(QGL::DoubleBuffer | QGL::
 	is_paintGL_locked = false;
 	RGB_counter = 0;
 
+  need_rotate = false;
+  rotate_angle = 0.;
+  rotate_pos = Point3f(0, 0, 0);
+  rotate_normal = Point3f(1, 0, 0.);
+  is_figure_shot = false;
+  rotate_delta = 1;
+  rotate_angle = 0.;
+
 	cout << "GLArea constructed" << endl;
 
 	CVertex v;
@@ -202,6 +210,11 @@ void GLArea::paintGL()
 		glScalef(radius, radius, radius);
 		glTranslatef(c[0], c[1], c[2]);
 
+    glTranslatef(rotate_pos[0], rotate_pos[1], rotate_pos[2]);
+    glRotatef(rotate_angle, rotate_normal[0], rotate_normal[1], rotate_normal[2]);
+    glTranslatef(-rotate_pos[0], -rotate_pos[1], -rotate_pos[2]);
+
+
 		View<float> view;
 		view.GetView();
 		Point3f viewpoint = view.ViewPoint();
@@ -251,6 +264,7 @@ void GLArea::paintGL()
 				{
 					glDrawer.draw(GLDrawer::NORMAL, dataMgr.getNbvCandidates());
           //glDrawer.drawCandidatesAxis(dataMgr.getNbvCandidates());
+          //glDrawer.drawMeshLables(dataMgr.getNbvCandidates(), &painter);
           //glDrawer.drawMeshLables(dataMgr.getNbvCandidates(), &painter);
 				}
 			}else if (para->getBool("Show View Grids"))
@@ -330,14 +344,6 @@ void GLArea::paintGL()
 			if(!nbv_grids->vert.empty())
 			{
 				glDrawer.draw(GLDrawer::DOT, nbv_grids);
-				//if (global_paraMgr.nbv.getBool("Use Confidence Separation"))
-				//{
-				//  glDrawer.draw(GLDrawer::QUADE, nbv_grids);
-				//}
-				//else
-				//{
-				//  glDrawer.draw(GLDrawer::DOT, nbv_grids);
-				//}
 			}
       else 
       {
@@ -2532,4 +2538,41 @@ void GLArea::readRGBNormal(QString fileName)
 	infile.clear();
 }
 
+void GLArea::rotatingAnimation()
+{
+  if(-rotate_angle > 361)
+    return;
 
+  need_rotate = true;
+  //rotate_angle -= 1.7f;
+  rotate_angle -= 7.f;
+  updateGL();
+
+
+  cout << rotate_angle << endl;
+
+  double total_time = 6500;
+  double sleep_time = 45;
+  double delta = 360 / (total_time / sleep_time);
+  do
+  {
+    rotate_angle -= delta;
+    updateGL();
+    Sleep(sleep_time);
+  }while(-rotate_angle < 361);
+
+  rotate_angle += 360;
+}
+
+void GLArea::figureSnapShot()
+{
+  if (para->getBool("SnapShot Each Iteration"))
+  {
+
+    is_figure_shot = true;
+    //quickSaveSkeleton();
+    saveSnapshot();
+    is_figure_shot = false;
+  }
+
+}
