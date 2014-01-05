@@ -1156,6 +1156,7 @@ void GlobalFun::deleteIgnore(CMesh* mesh)
     CVertex& v = temp_vert[i];
     v.m_index = i;
     mesh->vert.push_back(v);
+    mesh->bbox.Add(v.P());
   }
   mesh->vn = mesh->vert.size();
 }

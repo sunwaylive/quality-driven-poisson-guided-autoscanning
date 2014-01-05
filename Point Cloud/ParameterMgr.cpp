@@ -420,13 +420,14 @@ void ParameterMgr::initNBVParameter()
   nbv.addParam(new RichBool("Run Grid Segment", false));
   nbv.addParam(new RichDouble("Merge Probability Pow", 3));
   nbv.addParam(new RichBool("Run Viewing Clustering", false));
+  nbv.addParam(new RichBool("Run View Prune", false));
   nbv.addParam(new RichBool("Run Extract Views Into Bins", false));
   nbv.addParam(new RichBool("Run Viewing Extract", false));
   nbv.addParam(new RichDouble("Iso Bottom Delta", 0.0));
   nbv.addParam(new RichBool("Run Set Iso Bottom Confidence", false));
   nbv.addParam(new RichBool("Run Update View Directions", false));
   nbv.addParam(new RichBool("Run Compute View Candidate Index", false));
-  nbv.addParam(new RichDouble("View Grid Resolution", 80.f));
+  nbv.addParam(new RichDouble("View Grid Resolution", 100.2f));
   nbv.addParam(new RichBool("Test Other Inside Segment", false));
 
   nbv.addParam(new RichBool("Use Confidence Separation", false));
@@ -443,5 +444,6 @@ void ParameterMgr::initNBVParameter()
 
   nbv.addParam(new RichDouble("Confidence Filter Threshold", 0.6f));
   nbv.addParam(new RichDouble("Propagate One Point Index", 0));
-  nbv.addParam(new RichInt("View Bin Each Axis", 3));
+  nbv.addParam(new RichInt("View Bin Each Axis", 10));
+  nbv.addParam(new RichDouble("View Prune Confidence Threshold", 0.8));
 }

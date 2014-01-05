@@ -21,7 +21,9 @@ void CameraParaDlg::initConnects()
   {
     cout << "can not connect signal" << endl;
   }
-
+  
+  connect(ui->doubleSpinBox_view_prune_confidence_threshold, SIGNAL(valueChanged(double)), this, SLOT(getViewPruneConfidenceThreshold(double)));
+  connect(ui->pushButton_view_prune, SIGNAL(clicked()), this, SLOT(runViewPrune()));
   connect(ui->pushButton_show_candidate_index, SIGNAL(clicked()), this, SLOT(showCandidateIndex()));
   connect(ui->pushButton_load_real_initial_scan, SIGNAL(clicked()), this, SLOT(loadRealInitialScan()));
   connect(ui->pushButton_load_real_scan, SIGNAL(clicked()), this, SLOT(loadRealScan()));
@@ -78,6 +80,7 @@ void CameraParaDlg::initConnects()
 
 bool CameraParaDlg::initWidgets()
 {
+  ui->doubleSpinBox_view_prune_confidence_threshold->setValue(m_paras->nbv.getDouble("View Prune Confidence Threshold"));
   ui->doubleSpinBox_merge_confidence_threshold->setValue(m_paras->camera.getDouble("Merge Confidence Threshold"));
   ui->spinBox_nbv_iteration_count->setValue(m_paras->nbv.getInt("NBV Iteration Count"));
   ui->horizon_dist->setValue(m_paras->camera.getDouble("Camera Horizon Dist"));
@@ -709,6 +712,11 @@ void CameraParaDlg::getCameraDistToModel(double _val)
   global_paraMgr.camera.setValue("Camera Dist To Model", DoubleValue(_val));
 }
 
+void CameraParaDlg::getViewPruneConfidenceThreshold(double _val)
+{
+  global_paraMgr.nbv.setValue("View Prune Confidence Threshold", DoubleValue(_val));
+}
+
 void CameraParaDlg::getGridResolution(double _val)
 {
   global_paraMgr.nbv.setValue("View Grid Resolution", DoubleValue(_val));
@@ -814,6 +822,13 @@ void CameraParaDlg::runViewClustering()
   global_paraMgr.nbv.setValue("Run Viewing Clustering", BoolValue(true));
   area->runNBV();
   global_paraMgr.nbv.setValue("Run Viewing Clustering", BoolValue(false));
+}
+
+void CameraParaDlg::runViewPrune()
+{
+  global_paraMgr.nbv.setValue("Run View Prune", BoolValue(true));
+  area->runNBV();
+  global_paraMgr.nbv.setValue("Run View Prune", BoolValue(false));
 }
 
 void CameraParaDlg::runSetIsoBottomConfidence()
