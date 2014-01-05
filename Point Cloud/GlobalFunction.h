@@ -22,11 +22,12 @@
 
 #define EIGEN_DEFAULT_TO_ROW_MAJOR
 #define EIGEN_EXCEPTIONS
+
 const double PI = 3.1415926;
-
-const double EPS = 1e-8;
-
+const double EPS = 1e-10;
+const double EPS_LION = 1e-8;
 const double BIG = 100000;
+
 //#include <Eigen/Dense>
 
 using namespace std;

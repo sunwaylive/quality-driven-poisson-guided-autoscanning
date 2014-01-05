@@ -112,6 +112,8 @@ NBV::runOneKeyNBV()
   viewExtractionIntoBins();
   timer.end();
 
+
+
   timer.start("optimize view direction");
   for (int i = 0; i < 5; i++)
   {
@@ -399,7 +401,7 @@ void
   int iso_points_size = iso_points->vert.size();
   double optimal_D = (n_dist + f_dist) / 2.0f;
   double half_D = n_dist;
-  double half_D2 = half_D * half_D;
+  double half_D2 = half_D * half_D; //
   double gaussian_term = - gaussian_para / half_D2; 
   double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
   double sigma_threshold = pow(max(1e-8, 1-cos(sigma / 180.0 * 3.1415926)), 2);
@@ -408,11 +410,8 @@ void
   double angle_delta = (grid_step_size * ray_resolution_para) / camera_max_dist;
   cout << "Angle Delta/resolution:  " << angle_delta << " , " << PI / angle_delta << endl;
 
-  tbb::concurrent_vector<CVertex> view_vert;
-  std::copy(view_grid_points->vert.begin(), view_grid_points->vert.end(), 
-    std::back_inserter(view_vert));
-
 #ifdef LINKED_WITH_TBB
+  //tbb::mutex _mutex;
   tbb::parallel_for(tbb::blocked_range<size_t>(0, iso_points_size), 
     [&](const tbb::blocked_range<size_t>& r)
   {
@@ -462,16 +461,16 @@ void
             n_indexZ = n_indexZ + deltaZ;
             int index = round(n_indexX) * y_max * z_max + round(n_indexY) * z_max + round(n_indexZ);
 
-            if (index >= view_vert.size())  break;
+            if (index >= view_grid_points->vert.size())  break;
             //if the direction is into the model, or has been hit, then stop tracing
-            if (view_vert[index].is_ray_stop) break;            
-            if (view_vert[index].is_ray_hit)  continue;
+            if (view_grid_points->vert[index].is_ray_stop) break;            
+            if (view_grid_points->vert[index].is_ray_hit)  continue;
 
+            //_mutex.lock();
             //if the grid get first hit 
-            view_vert[index].is_ray_hit = true;
-            
+            view_grid_points->vert[index].is_ray_hit = true;
             //1. set the confidence of the grid center
-            CVertex& t = view_vert[index];
+            CVertex& t = view_grid_points->vert[index];
             Point3f diff = t.P() - v.P();
             double dist2 = diff.SquaredNorm();
             double dist = sqrt(dist2);
@@ -481,23 +480,30 @@ void
             double coefficient1 = exp(opt_dist * opt_dist * gaussian_term);
             double coefficient2 = exp(-pow(1-v.N() * view_direction, 2) / sigma_threshold);
 
-            double iso_confidence = 1 - v.eigen_confidence;     
-            double confidence_weight = coefficient1 * coefficient2;
+            float iso_confidence = 1 - v.eigen_confidence;     
+            float confidence_weight = coefficient1 * coefficient2;
 
-            //acquire a lock on t
-            /*CMEshMutexType::scoped_lock lock;
-            lock.acquire(CMeshMutex);*/
-            if (confidence_weight * iso_confidence > t.eigen_confidence)
-            {
-              t.eigen_confidence = confidence_weight * iso_confidence;
-              t.N() = (v.P()-t.P()).Normalize();
-              t.remember_iso_index = v.m_index;
-            }
-            //lock.release();
             
+            if (use_max_propagation)
+            {
+              //t.eigen_confidence = (std::max)(float(t.eigen_confidence), float(confidence_weight * iso_confidence));          
+              if (confidence_weight * iso_confidence > t.eigen_confidence)
+              {
+                t.eigen_confidence = confidence_weight * iso_confidence;
+                t.N() = (v.P()-t.P()).Normalize();
+                t.remember_iso_index = v.m_index;
+              }
+            }
+            else
+            {
+              t.eigen_confidence += coefficient1 * iso_confidence;      
+            }
+            
+            //_mutex.unlock();
             if (use_average_confidence)
+            {
               confidence_weight_sum[index] += 1.;
-
+            }
             // record hit_grid center index
             hit_grid_indexes.push_back(index);                        
           }//end for k
@@ -513,16 +519,6 @@ void
       if (use_propagate_one_point)  break;
     }//end for iso_points
   });
-
-  view_grid_points->vert.clear();
-
-  for (int i = 0; i < view_vert.size(); ++i)
-  {
-    CVertex t = view_vert[i];
-    view_grid_points->vert.push_back(t);
-  }
-  view_grid_points->vn = view_grid_points->vert.size();
-
 #else
   for (int i = 0 ;i < iso_points->vert.size(); ++i)//fix: < iso_points->vert.size()    
   {
@@ -677,7 +673,6 @@ void NBV::normalizeConfidence(vector<CVertex>& vertexes, float delta)
     v.eigen_confidence = (v.eigen_confidence - min_confidence) / space;
     v.eigen_confidence += delta;
   }
-
 }
 double
   NBV::getAbsMax(double x, double y, double z)
@@ -768,9 +763,9 @@ void
     t_indexX = (t_indexX >= view_bin_each_axis ? (view_bin_each_axis-1) : t_indexX);
     t_indexY = (t_indexY >= view_bin_each_axis ? (view_bin_each_axis-1) : t_indexY);
     t_indexZ = (t_indexZ >= view_bin_each_axis ? (view_bin_each_axis-1) : t_indexZ);
-
-    int idx = t_indexX * view_bin_each_axis * view_bin_each_axis 
-      + t_indexZ * view_bin_each_axis + t_indexY;
+    
+    int idx = t_indexY * view_bin_each_axis * view_bin_each_axis
+      + t_indexZ * view_bin_each_axis + t_indexX;
 
     if (v.eigen_confidence > bin_confidence[idx])
     {
@@ -824,7 +819,7 @@ void
     nbv_candidates->vert[i].m_index = i;
   }
 
-  GlobalFun::deleteIgnore(nbv_candidates);
+  //GlobalFun::deleteIgnore(nbv_candidates);
   cout << "candidate number: " << nbv_candidate_num << endl;
 
 
@@ -1061,23 +1056,19 @@ void NBV::viewClustering()
   }
 
   GlobalFun::deleteIgnore(nbv_candidates);
-
-  /*GlobalFun::deleteIgnore(nbv_candidates);
+/*
   sort(nbv_candidates->vert.begin(), nbv_candidates->vert.end(), cmp);
- 
-  if (nbv_candidates->vert.size() > 8)
+  if (nbv_candidates->vert.size() > 4)
   {
     for (int i = 0; i < nbv_candidates->vn; i++)
     {
-
       CVertex& v = nbv_candidates->vert[i];
-      if (i >= 8)
-      {
+      if (i >= 4)
         v.is_ignore = true;
-      }
     }
-  }
-  GlobalFun::deleteIgnore(nbv_candidates);*/
+  }*/
+
+  GlobalFun::deleteIgnore(nbv_candidates);
   return;
 }
 
@@ -1412,10 +1403,10 @@ void NBV::runComputeViewCandidateIndex()
     t_indexX = (t_indexX >= view_bin_each_axis ? (view_bin_each_axis-1) : t_indexX);
     t_indexY = (t_indexY >= view_bin_each_axis ? (view_bin_each_axis-1) : t_indexY);
     t_indexZ = (t_indexZ >= view_bin_each_axis ? (view_bin_each_axis-1) : t_indexZ);
+    
+    int index = t_indexY * view_bin_each_axis * view_bin_each_axis
+      + t_indexZ * view_bin_each_axis + t_indexX;
 
-    int index = t_indexX * view_bin_each_axis * view_bin_each_axis 
-      + t_indexZ * view_bin_each_axis + t_indexY;
-
-    cout << i <<"th selected view candidate index: " <<index <<endl;
+    cout << i <<"th selected view candidate index: " <<index + 1<<endl;
   }
 }
