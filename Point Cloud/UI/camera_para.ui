@@ -1067,8 +1067,8 @@
     <widget class="QPushButton" name="pushButton_rotate">
      <property name="geometry">
       <rect>
-       <x>0</x>
-       <y>230</y>
+       <x>10</x>
+       <y>220</y>
        <width>75</width>
        <height>23</height>
       </rect>
@@ -1167,13 +1167,13 @@
      <property name="geometry">
       <rect>
        <x>90</x>
-       <y>230</y>
-       <width>101</width>
+       <y>220</y>
+       <width>131</width>
        <height>23</height>
       </rect>
      </property>
      <property name="text">
-      <string>Rotate around</string>
+      <string>Rotate animation</string>
      </property>
     </widget>
     <widget class="QCheckBox" name="wlop_snap_shot_each_iteration">

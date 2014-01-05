@@ -94,7 +94,8 @@ private slots:
   void getSnapShotIndex(double _val);
 
   void rotateStep();
-  void rotateAround();
+  void rotateAnimation();
+  void sliceAnimation();
 
 
 private:

@@ -1877,7 +1877,7 @@ void GLArea::wheelEvent(QWheelEvent *e)
 		{
       if (para->getBool("Show View Grid Slice"))
       {
-        if ((para->getBool("Show ISO Points") || para->getBool("Show Samples")) && !para->getBool("Show Normal"))
+        if (/*(para->getBool("Show ISO Points") || para->getBool("Show Samples")) &&*/ !para->getBool("Show Normal"))
         {
           size_temp = global_paraMgr.glarea.getDouble("Grid ISO Value Shift");
           if(e->delta() < 0)

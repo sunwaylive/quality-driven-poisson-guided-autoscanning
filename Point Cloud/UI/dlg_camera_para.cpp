@@ -85,9 +85,10 @@ void CameraParaDlg::initConnects()
   connect(ui->rotate_angle,SIGNAL(valueChanged(double)),this,SLOT(getRotateAngle(double)));
 
   connect(ui->pushButton_rotate,SIGNAL(clicked()),this,SLOT(rotateStep()));
-  connect(ui->pushButton_rotate_around,SIGNAL(clicked()),this,SLOT(rotateAround()));
+  connect(ui->pushButton_rotate_around,SIGNAL(clicked()),this,SLOT(rotateAnimation()));
   connect(ui->wlop_snap_shot_each_iteration,SIGNAL(clicked(bool)),this,SLOT(needSnapShotEachIteration(bool)));
   connect(ui->wlop_snapshot_index,SIGNAL(valueChanged(double)),this,SLOT(getSnapShotIndex(double)));
+  connect(ui->pushButton_slice_animation, SIGNAL(clicked()), this, SLOT(sliceAnimation()));
 
 
 }
@@ -1123,7 +1124,7 @@ void CameraParaDlg::rotateStep()
   update(); area->update(); area->updateGL();
 }
 
-void CameraParaDlg::rotateAround()
+void CameraParaDlg::rotateAnimation()
 {
   if (m_paras->glarea.getBool("SnapShot Each Iteration"))
   {
@@ -1138,6 +1139,82 @@ void CameraParaDlg::rotateAround()
   update(); area->update(); area->updateGL();
 
 
+}
+
+void CameraParaDlg::sliceAnimation()
+{
+  double step_percentage_size =  area->rotate_delta / 360.;
+  int step_number = 360. / area->rotate_delta;
+
+  if (m_paras->glarea.getBool("SnapShot Each Iteration"))
+  {
+    area->figureSnapShot();
+  }
+
+  if (global_paraMgr.poisson.getBool("Show X Slices"))
+  {
+    double recored_pos = global_paraMgr.poisson.getDouble("Current X Slice Position");
+    for (int i = 0; i < step_number+1; i++)
+    {
+      double position = step_percentage_size * i;
+      position = (std::min)(1.0, position);
+      global_paraMgr.poisson.setValue("Current X Slice Position", DoubleValue(position));
+
+      global_paraMgr.poisson.setValue("Run Slice", BoolValue(true));
+      area->runPoisson();
+      global_paraMgr.poisson.setValue("Run Slice", BoolValue(false));
+
+      initWidgets();
+      if (m_paras->glarea.getBool("SnapShot Each Iteration"))
+      {
+        area->figureSnapShot();
+      }
+      update(); area->update(); area->updateGL();
+    }
+
+  }
+  else if (global_paraMgr.poisson.getBool("Show Y Slices"))
+  {
+    double recored_pos = global_paraMgr.poisson.getDouble("Current Y Slice Position");
+    for (int i = 0; i < step_number+1; i++)
+    {
+      double position = step_percentage_size * i;
+      position = (std::min)(1.0, position);
+      global_paraMgr.poisson.setValue("Current Y Slice Position", DoubleValue(position));
+
+      global_paraMgr.poisson.setValue("Run Slice", BoolValue(true));
+      area->runPoisson();
+      global_paraMgr.poisson.setValue("Run Slice", BoolValue(false));
+
+      initWidgets();
+      if (m_paras->glarea.getBool("SnapShot Each Iteration"))
+      {
+        area->figureSnapShot();
+      }
+      update(); area->update(); area->updateGL();
+    }
+  }
+  else if (global_paraMgr.poisson.getBool("Show Z Slices"))
+  {
+    double recored_pos = global_paraMgr.poisson.getDouble("Current Z Slice Position");
+    for (int i = 0; i < step_number+1; i++)
+    {
+      double position = step_percentage_size * i;
+      position = (std::min)(1.0, position);
+      global_paraMgr.poisson.setValue("Current Z Slice Position", DoubleValue(position));
+
+      global_paraMgr.poisson.setValue("Run Slice", BoolValue(true));
+      area->runPoisson();
+      global_paraMgr.poisson.setValue("Run Slice", BoolValue(false));
+
+      initWidgets();
+      if (m_paras->glarea.getBool("SnapShot Each Iteration"))
+      {
+        area->figureSnapShot();
+      }
+      update(); area->update(); area->updateGL();
+    }
+  }
 }
 
 void CameraParaDlg::needSnapShotEachIteration(bool _val)
