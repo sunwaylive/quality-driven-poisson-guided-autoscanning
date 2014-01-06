@@ -84,21 +84,6 @@ private slots:
   void runStep4NewScans();
   void runOneKeyNbvIteration();
 
-  void getRotateCenterX(double _val);
-  void getRotateCenterY(double _val);
-  void getRotateCenterZ(double _val);
-  void getRotateNormalX(double _val);
-  void getRotateNormalY(double _val);
-  void getRotateNormalZ(double _val);
-  void getRotateStep(double _val);
-  void getRotateAngle(double _val);
-  void needSnapShotEachIteration(bool _val);
-  void getSnapShotIndex(double _val);
-
-  void rotateStep();
-  void rotateAround();
-
-
 private:
 	Ui::camera_paras * ui;
 	ParameterMgr * m_paras;

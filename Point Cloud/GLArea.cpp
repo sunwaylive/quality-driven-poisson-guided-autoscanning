@@ -434,7 +434,6 @@ void GLArea::paintGL()
 			//standard_box.max = Point3f(1, 1, 1);
 			//glBoxWire(standard_box);
       glBoxWire(dataMgr.whole_space_box);
-
 			CoordinateFrame(dataMgr.whole_space_box.Diag()/2.0).Render(this, NULL);
 
 
