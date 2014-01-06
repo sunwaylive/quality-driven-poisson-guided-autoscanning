@@ -776,10 +776,30 @@ bool GlobalFun::isPointInBoundingBox(Point3f &v0, CMesh *mesh)
 
   Point3f &bmin = mesh->bbox.min;
   Point3f &bmax = mesh->bbox.max;
-  if ( v0 >= bmin && v0 <= bmax)
-    return true;
 
-  return false;
+  if ( v0[0] >= bmin[0] && v0[1] >= bmin[1] && v0[2] >= bmin[2]
+        && v0[0] <= bmax[0] && v0[1] <= bmax[1] && v0[2] <= bmin[2])
+    return true;
+  else
+    return false;
+}
+
+bool GlobalFun::isPointInBoundingBox(Point3f &v0, CMesh *mesh, double delta)
+{
+  if (NULL == mesh)
+  {
+    cout << "Empty Mesh When isPointInBoundingBox" << endl;
+    return false; 
+  }
+
+  Point3f bmin = mesh->bbox.min - Point3f(delta, delta, delta);
+  Point3f bmax = mesh->bbox.max + Point3f(delta, delta, delta);
+
+  if ( v0[0] >= bmin[0] && v0[1] >= bmin[1] && v0[2] >= bmin[2]
+         && v0[0] <= bmax[0] && v0[1] <= bmax[1] && v0[2] <= bmin[2])
+    return true;
+  else
+    return false;
 }
 
 bool GlobalFun::isPointInTriangle_3(Point3f& v0, Point3f& v1, Point3f& v2, Point3f& p)
@@ -1156,6 +1176,7 @@ void GlobalFun::deleteIgnore(CMesh* mesh)
     CVertex& v = temp_vert[i];
     v.m_index = i;
     mesh->vert.push_back(v);
+    mesh->bbox.Add(v.P());
   }
   mesh->vn = mesh->vert.size();
 }

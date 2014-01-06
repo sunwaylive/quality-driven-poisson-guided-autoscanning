@@ -10,7 +10,7 @@ using std::cout;
 using std::endl;
 using vcg::Point3f;
 
-#define  LINKED_WITH_TBB
+#define LINKED_WITH_TBB
 
 class NBV : public PointCloudAlgorithm
 {
@@ -30,7 +30,8 @@ private:
   void buildGrid();
   void propagate();
   void viewExtraction();
-  void viewExtractionIntoBins();
+  void viewExtractionIntoBins(int view_bin_each_axis);
+  void viewPrune();
   void extractViewIntoBinsUsingDist();
   void viewClustering();
   void setIsoBottomConfidence();
@@ -45,7 +46,7 @@ private:
   double computeLocalScores(CVertex& view_t, CVertex& iso_v, 
                           double& optimal_D, double& half_D2, double& sigma_threshold);
   int    getIsoPointsViewBinIndex(Point3f& p, int which_axis);
-  static bool  cmp(const CVertex &v1, const CVertex &v2);
+  static bool cmp(const CVertex &v1, const CVertex &v2);
 
 private:
   int                   view_bin_each_axis;

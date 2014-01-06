@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>3</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -615,7 +615,7 @@
      <property name="geometry">
       <rect>
        <x>40</x>
-       <y>610</y>
+       <y>640</y>
        <width>181</width>
        <height>21</height>
       </rect>
@@ -641,7 +641,7 @@
      <property name="geometry">
       <rect>
        <x>40</x>
-       <y>700</y>
+       <y>730</y>
        <width>181</width>
        <height>21</height>
       </rect>
@@ -654,7 +654,7 @@
      <property name="geometry">
       <rect>
        <x>40</x>
-       <y>670</y>
+       <y>700</y>
        <width>181</width>
        <height>21</height>
       </rect>
@@ -667,7 +667,7 @@
      <property name="geometry">
       <rect>
        <x>150</x>
-       <y>640</y>
+       <y>670</y>
        <width>62</width>
        <height>22</height>
       </rect>
@@ -683,7 +683,7 @@
      <property name="geometry">
       <rect>
        <x>44</x>
-       <y>641</y>
+       <y>671</y>
        <width>101</width>
        <height>16</height>
       </rect>
@@ -848,6 +848,35 @@
      </property>
      <property name="text">
       <string>Ray resolution para :</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_view_prune">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>610</y>
+       <width>91</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>View Prune</string>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="doubleSpinBox_view_prune_confidence_threshold">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>610</y>
+       <width>62</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="maximum">
+      <double>10.000000000000000</double>
+     </property>
+     <property name="singleStep">
+      <double>0.200000000000000</double>
      </property>
     </widget>
    </widget>

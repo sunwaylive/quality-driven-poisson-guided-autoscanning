@@ -22,6 +22,8 @@ void CameraParaDlg::initConnects()
     cout << "can not connect signal" << endl;
   }
 
+  connect(ui->doubleSpinBox_view_prune_confidence_threshold, SIGNAL(valueChanged(double)), this, SLOT(getViewPruneConfidenceThreshold(double)));
+  connect(ui->pushButton_view_prune, SIGNAL(clicked()), this, SLOT(runViewPrune()));
   connect(ui->pushButton_show_candidate_index, SIGNAL(clicked()), this, SLOT(showCandidateIndex()));
   connect(ui->pushButton_load_real_initial_scan, SIGNAL(clicked()), this, SLOT(loadRealInitialScan()));
   connect(ui->pushButton_load_real_scan, SIGNAL(clicked()), this, SLOT(loadRealScan()));
@@ -95,6 +97,7 @@ void CameraParaDlg::initConnects()
 
 bool CameraParaDlg::initWidgets()
 {
+  ui->doubleSpinBox_view_prune_confidence_threshold->setValue(m_paras->nbv.getDouble("View Prune Confidence Threshold"));
   ui->doubleSpinBox_merge_confidence_threshold->setValue(m_paras->camera.getDouble("Merge Confidence Threshold"));
   ui->spinBox_nbv_iteration_count->setValue(m_paras->nbv.getInt("NBV Iteration Count"));
   ui->horizon_dist->setValue(m_paras->camera.getDouble("Camera Horizon Dist"));
@@ -117,20 +120,6 @@ bool CameraParaDlg::initWidgets()
 
   state = m_paras->nbv.getBool("Use Average Confidence") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
   ui->use_average_confidence->setCheckState(state);
-
-  state = m_paras->glarea.getBool("SnapShot Each Iteration") ? (Qt::CheckState::Checked): (Qt::CheckState::Unchecked);
-  ui->wlop_snap_shot_each_iteration->setCheckState(state);
-
-  ui->rotate_center_X->setValue(area->rotate_pos.X());
-  ui->rotate_center_Y->setValue(area->rotate_pos.Y());
-  ui->rotate_center_Z->setValue(area->rotate_pos.Z());
-  ui->rotate_normal_X->setValue(area->rotate_normal.X());
-  ui->rotate_normal_Y->setValue(area->rotate_normal.Y());
-  ui->rotate_normal_Z->setValue(area->rotate_normal.Z());
-  ui->rotate_step->setValue(area->rotate_delta);
-  ui->rotate_angle->setValue(area->rotate_angle);
-
-  ui->wlop_snapshot_index->setValue(m_paras->glarea.getDouble("Snapshot Index"));
 
   //state = m_paras->nbv.getBool("Use NBV Test1") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
   //ui->use_nbv_test1->setCheckState(state);
@@ -740,6 +729,11 @@ void CameraParaDlg::getCameraDistToModel(double _val)
   global_paraMgr.camera.setValue("Camera Dist To Model", DoubleValue(_val));
 }
 
+void CameraParaDlg::getViewPruneConfidenceThreshold(double _val)
+{
+  global_paraMgr.nbv.setValue("View Prune Confidence Threshold", DoubleValue(_val));
+}
+
 void CameraParaDlg::getGridResolution(double _val)
 {
   global_paraMgr.nbv.setValue("View Grid Resolution", DoubleValue(_val));
@@ -845,6 +839,13 @@ void CameraParaDlg::runViewClustering()
   global_paraMgr.nbv.setValue("Run Viewing Clustering", BoolValue(true));
   area->runNBV();
   global_paraMgr.nbv.setValue("Run Viewing Clustering", BoolValue(false));
+}
+
+void CameraParaDlg::runViewPrune()
+{
+  global_paraMgr.nbv.setValue("Run View Prune", BoolValue(true));
+  area->runNBV();
+  global_paraMgr.nbv.setValue("Run View Prune", BoolValue(false));
 }
 
 void CameraParaDlg::runSetIsoBottomConfidence()
@@ -1003,8 +1004,11 @@ CameraParaDlg::runOneKeyNbvIteration()
     area->dataMgr.downSamplesByNum();
     area->initSetting();
 
+    cout<<"begin to run poisson confidence" <<endl;
     runStep2PoissonConfidence();
+    cout<<"end run poisson confidence" <<endl;
     //save poisson surface "copy poisson_out.ply file_location\\%d_poisson_out.ply"
+    cout<<"begin to copy poisson_surface" <<endl;
     QString s_poisson_surface;
     s_poisson_surface.sprintf("\\%d_poisson_out.ply", ic);
     QString s_cmd_copy_poisson = "copy poisson_out.ply ";
@@ -1012,7 +1016,7 @@ CameraParaDlg::runOneKeyNbvIteration()
     s_cmd_copy_poisson += s_poisson_surface;
     cout << s_cmd_copy_poisson.toStdString() <<endl;
     system(s_cmd_copy_poisson.toAscii().data());
-
+    cout<<"end to copy poisson_surface" <<endl;
     //save iso-skel and view
     QString s_iso;
     s_iso.sprintf("\\%d_iso.skel", ic);

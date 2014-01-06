@@ -51,6 +51,12 @@ void
     return;
   }
 
+  if (para->getBool("Run View Prune"))
+  {
+    viewPrune();
+    return;
+  }
+
   if (para->getBool("Run Viewing Extract"))
   {
     viewExtraction();
@@ -59,7 +65,7 @@ void
 
   if (para->getBool("Run Extract Views Into Bins"))
   {
-    viewExtractionIntoBins();
+    viewExtractionIntoBins(view_bin_each_axis);
     return;
   }
 
@@ -109,10 +115,17 @@ NBV::runOneKeyNBV()
   //timer.end();
 
   timer.start("view bin selection");
-  viewExtractionIntoBins();
+  viewExtractionIntoBins(view_bin_each_axis);
   timer.end();
 
-
+  //save nbv confidence
+  ofstream out;
+  out.open("nbv_candidates_confidence.txt");
+  for (int i = 0; i < nbv_candidates->vert.size(); ++i)
+  {
+    out << nbv_candidates->vert[i].eigen_confidence <<endl;
+  }
+  out.close();
 
   timer.start("optimize view direction");
   for (int i = 0; i < 5; i++)
@@ -401,7 +414,7 @@ void
   int iso_points_size = iso_points->vert.size();
   double optimal_D = (n_dist + f_dist) / 2.0f;
   double half_D = n_dist;
-  double half_D2 = half_D * half_D; //
+  double half_D2 = half_D * half_D;
   double gaussian_term = - gaussian_para / half_D2; 
   double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
   double sigma_threshold = pow(max(1e-8, 1-cos(sigma / 180.0 * 3.1415926)), 2);
@@ -720,7 +733,7 @@ void
 }
 
 void
-  NBV::viewExtractionIntoBins()
+  NBV::viewExtractionIntoBins(int view_bin_each_axis)
 {
   nbv_candidates->vert.clear();
   
@@ -741,7 +754,7 @@ void
     view_bins[i] = new int *[view_bin_each_axis];
     for (int j = 0; j < view_bin_each_axis; ++j)
     {
-      view_bins[i][j] = new int[view_bin_each_axis];
+      view_bins[i][j] = new int[view_bin_each_axis]();
     }
   }
 
@@ -750,11 +763,6 @@ void
   for (int i = 0; i < view_grid_points->vert.size(); ++i)
   {
     CVertex &v = view_grid_points->vert[i];
-
-    //get the x,y,z index of each iso_points
-    /*int t_indexX = getIsoPointsViewBinIndex(v.P(), 1);
-    int t_indexY = getIsoPointsViewBinIndex(v.P(), 2);
-    int t_indexZ = getIsoPointsViewBinIndex(v.P(), 3);*/
 
     int t_indexX = static_cast<int>( floor((v.P()[0] - whole_space_box_min.X()) / bin_length_x ));
     int t_indexY = static_cast<int>( floor((v.P()[1] - whole_space_box_min.Y()) / bin_length_y ));
@@ -770,7 +778,7 @@ void
     if (v.eigen_confidence > bin_confidence[idx])
     {
       bin_confidence[idx] = v.eigen_confidence;
-      view_bins[t_indexX][t_indexZ][t_indexY] = v.m_index;
+      view_bins[t_indexX][t_indexY][t_indexZ] = v.m_index;
     }
   }
 
@@ -790,6 +798,7 @@ void
     }
   }
   nbv_candidates->vn = nbv_candidates->vert.size();
+  cout<< "candidate num: " << nbv_candidates->vn <<endl;
 
   //delete unqualified candidates
   double confidence_threshold = para->getDouble("Confidence Filter Threshold");
@@ -797,49 +806,21 @@ void
                              / global_paraMgr.camera.getDouble("Predicted Model Size");
   double camera_near_dist = global_paraMgr.camera.getDouble("Camera Near Distance") 
                              / global_paraMgr.camera.getDouble("Predicted Model Size");
-
+  
   int nbv_candidate_num = 0;
   for (int i = 0; i < nbv_candidates->vert.size(); i++)
   {
     CVertex& v = nbv_candidates->vert[i];
-    double dist_to_correspondese = GlobalFun::computeEulerDistSquare(v.P(), iso_points->vert[v.remember_iso_index].P());
-    
-    if ( /*dist_to_correspondese <= camera_near_dist
-         || dist_to_correspondese >= camera_far_dist
-         || */v.eigen_confidence < confidence_threshold
-      || GlobalFun::isPointInBoundingBox(v.P(), model))
-    {
+     
+    if (GlobalFun::isPointInBoundingBox(v.P(), model, bin_length_x))
       v.is_ignore = true;
-    }
     else
-    {
       nbv_candidate_num++;
-      cout << "nbv_candidate " <<nbv_candidate_num << " confidence: " << v.eigen_confidence <<endl;
-    }
-    nbv_candidates->vert[i].m_index = i;
   }
 
-  //GlobalFun::deleteIgnore(nbv_candidates);
-  cout << "candidate number: " << nbv_candidate_num << endl;
+  GlobalFun::deleteIgnore(nbv_candidates);
+  cout << "candidate number: " << nbv_candidates->vert.size() << endl;
 
-
-  //for debug
-  //for (int i = 0; i < nbv_candidates->vert.size(); ++i)
-  //{
-  //  CVertex &t = nbv_candidates->vert[i];
-  //  //get the x,y,z index of each iso_points
-  //  int t_indexX = static_cast<int>( floor((t.P()[0] - whole_space_box_min.X()) / bin_length_x ));
-  //  int t_indexY = static_cast<int>( floor((t.P()[1] - whole_space_box_min.Y()) / bin_length_y ));
-  //  int t_indexZ = static_cast<int>( floor((t.P()[2] - whole_space_box_min.Z()) / bin_length_z ));
-
-  //  t_indexX = (t_indexX >= view_bin_each_axis ? (view_bin_each_axis-1) : t_indexX);
-  //  t_indexY = (t_indexY >= view_bin_each_axis ? (view_bin_each_axis-1) : t_indexY);
-  //  t_indexZ = (t_indexZ >= view_bin_each_axis ? (view_bin_each_axis-1) : t_indexZ);
-  //  cout<<"x: "<<t_indexX<<" "<<"y: "<<t_indexY<<" "<<"z: "<<t_indexZ<<" "<<endl;
-  //  cout<<"x: "<<t.P()[0]<<" "<<"y: "<<t.P()[1]<<" "<<"z: "<<t.P()[2]<<" "<<endl;
-  //}
-
-  //release the memory
   delete [] bin_confidence;
 
   for (int i = 0; i < view_bin_each_axis; ++i)
@@ -926,6 +907,15 @@ void NBV::viewClustering()
   //  updateViewDirections();
   //}
   updateViewDirections();
+
+  //save max_scores
+  ofstream out;
+  out.open("nbv_scores.txt");
+  for (vector<double>::iterator it =  nbv_scores.begin(); it != nbv_scores.end(); ++it)
+  {
+    out << *it << endl;
+  }
+  out.close();
 
   //double confidence_threshold = para->getDouble("Confidence Filter Threshold");
   //for (int i = 0; i < nbv_candidates->vert.size(); i++)
@@ -1066,10 +1056,48 @@ void NBV::viewClustering()
       if (i >= 4)
         v.is_ignore = true;
     }
-  }*/
+  }
 
   GlobalFun::deleteIgnore(nbv_candidates);
+  */
+
   return;
+}
+
+void NBV::viewPrune()
+{
+  Point3f diff = whole_space_box_max - whole_space_box_min;
+  double view_prune_radius = diff.X() / 3;
+  double prune_confidence_threshold = global_paraMgr.nbv.getDouble("View Prune Confidence Threshold");
+
+  GlobalFun::computeBallNeighbors(nbv_candidates, NULL, view_prune_radius, nbv_candidates->bbox);
+  sort(nbv_candidates->vert.begin(), nbv_candidates->vert.end(), cmp);
+
+  for (int i = 0; i < nbv_candidates->vert.size(); ++i)
+  {
+    CVertex &v = nbv_candidates->vert[i];
+    //if the point has been ignored, then skip it
+    if (v.is_ignore)
+      continue;
+
+    if (v.eigen_confidence < prune_confidence_threshold)
+    {
+      v.is_ignore = true;
+      continue;
+    }
+
+    for (int j = 0; j < v.neighbors.size(); ++j)
+    {
+      CVertex &np = nbv_candidates->vert[v.neighbors[j]];
+      if (np.m_index == v.m_index)
+        continue;
+      else
+        np.is_ignore = true;
+    }
+  }
+
+  GlobalFun::deleteIgnore(nbv_candidates);
+  cout << "after View Prune candidate num: " <<nbv_candidates->vert.size() <<endl;
 }
 
 bool NBV::updateViewDirections()
@@ -1091,7 +1119,6 @@ bool NBV::updateViewDirections()
   }
 
   optimal_plane_width /= predicted_model_length;
-
 
   double radius = optimal_plane_width / 3.0;
   cout << "plane radius" << endl;

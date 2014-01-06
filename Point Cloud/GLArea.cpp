@@ -263,7 +263,8 @@ void GLArea::paintGL()
 				if (!dataMgr.isNBVCandidatesEmpty())
 				{
 					glDrawer.draw(GLDrawer::NORMAL, dataMgr.getNbvCandidates());
-          glDrawer.drawCandidatesAxis(dataMgr.getNbvCandidates());
+          //glDrawer.drawCandidatesAxis(dataMgr.getNbvCandidates());
+          //glDrawer.drawMeshLables(dataMgr.getNbvCandidates(), &painter);
           //glDrawer.drawMeshLables(dataMgr.getNbvCandidates(), &painter);
 				}
 			}else if (para->getBool("Show View Grids"))
@@ -434,7 +435,6 @@ void GLArea::paintGL()
 			//standard_box.max = Point3f(1, 1, 1);
 			//glBoxWire(standard_box);
       glBoxWire(dataMgr.whole_space_box);
-
 			//CoordinateFrame(dataMgr.whole_space_box.Diag()/2.0).Render(this, NULL);
 
       CMesh *view_grid_points = dataMgr.getViewGridPoints();

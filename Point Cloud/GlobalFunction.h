@@ -75,6 +75,7 @@ namespace GlobalFun
 	vector<int> GetRandomCards(int Max);
 
   bool isPointInBoundingBox(Point3f &v0, CMesh *mesh);
+  bool isPointInBoundingBox(Point3f &v0, CMesh *mesh, double delta);
 	double computeRealAngleOfTwoVertor(Point3f v0, Point3f v1);
 	bool isTwoPoint3fTheSame(Point3f& v0, Point3f& v1);
 	bool isTwoPoint3fOpposite(Point3f& v0, Point3f& v1);

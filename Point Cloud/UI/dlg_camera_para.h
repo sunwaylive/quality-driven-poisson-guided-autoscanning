@@ -47,6 +47,7 @@ private slots:
   void showSelectedScannedMesh(QModelIndex index);
   void mergeScannedMeshWithOriginal();
   void mergeScannedMeshWithOriginalByHand();
+  void getViewPruneConfidenceThreshold(double _val);
   void getMergeConfidenceThreshold(double _val);
   void getCameraHorizonDist(double _val);
   void getCameraVerticalDist(double _val);
@@ -69,6 +70,7 @@ private slots:
   void extractViewCandidates();
   void extractViewIntoBins();
   void runViewClustering();
+  void runViewPrune();
   void runSetIsoBottomConfidence();
   void runUpdateViewDirections();
 
