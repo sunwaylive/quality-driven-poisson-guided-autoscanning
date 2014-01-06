@@ -1146,10 +1146,10 @@ void CameraParaDlg::sliceAnimation()
   double step_percentage_size =  area->rotate_delta / 360.;
   int step_number = 360. / area->rotate_delta;
 
-  if (m_paras->glarea.getBool("SnapShot Each Iteration"))
-  {
-    area->figureSnapShot();
-  }
+  //if (m_paras->glarea.getBool("SnapShot Each Iteration"))
+  //{
+  //  area->figureSnapShot();
+  //}
 
   if (global_paraMgr.poisson.getBool("Show X Slices"))
   {

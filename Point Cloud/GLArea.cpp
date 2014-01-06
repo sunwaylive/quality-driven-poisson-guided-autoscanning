@@ -425,6 +425,7 @@ void GLArea::paintGL()
 
 		if (para->getBool("Show Bounding Box"))
 		{
+      glColor3f(0, 0, 0);
 			Box3f box = dataMgr.getCurrentSamples()->bbox;
 			glBoxWire(box);
 
@@ -434,16 +435,15 @@ void GLArea::paintGL()
 			//glBoxWire(standard_box);
       glBoxWire(dataMgr.whole_space_box);
 
-			CoordinateFrame(dataMgr.whole_space_box.Diag()/2.0).Render(this, NULL);
-
+			//CoordinateFrame(dataMgr.whole_space_box.Diag()/2.0).Render(this, NULL);
 
       CMesh *view_grid_points = dataMgr.getViewGridPoints();
       if (NULL == view_grid_points) return;
 
-      if(!view_grid_points->vert.empty())
-      {
-        glDrawer.drawGrid(view_grid_points, global_paraMgr.nbv.getInt("View Bin Each Axis"));
-      }
+      //if(!view_grid_points->vert.empty())
+      //{
+      //  glDrawer.drawGrid(view_grid_points, global_paraMgr.nbv.getInt("View Bin Each Axis"));
+      //}
 		}
 
 

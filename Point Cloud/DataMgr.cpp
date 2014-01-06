@@ -799,7 +799,9 @@ void DataMgr::savePR2_orders(QString fileName_commands)
 
   vector<PR2_order> pr2_orders;
   CVertex v_start;
-  v_start.P() = Point3f(131.07, -135.973, -113.974);
+  //v_start.P() = Point3f(131.07, -135.973, -113.974);
+  v_start.P() = Point3f(116.07, 139, 159);
+
   PR2_order order = computePR2orderFromTwoCandidates(v_start, nbv_candidates.vert[0]);
   pr2_orders.push_back(order);
 
