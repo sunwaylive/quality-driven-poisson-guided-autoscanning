@@ -424,12 +424,29 @@ void GLArea::paintGL()
 			}
 		}
 
-		if (para->getBool("Show Bounding Box"))
-		{
+    if (para->getBool("Show Bounding Box") && para->getBool("Show View Grid Slice"))
+    {
       glColor3f(0, 0, 0);
+      glLineWidth(3);
+
+      Box3f box = dataMgr.getCurrentSamples()->bbox;
+      double radius = global_paraMgr.wLop.getDouble("CGrid Radius");
+      Point3f shift_positive(radius, radius, radius);
+      Point3f shift_negtive(-radius, -radius, -radius);
+      Box3f shift_box;
+      shift_box.Add(box.min+shift_negtive);
+      shift_box.Add(box.max+shift_positive);
+
+      glBoxWire(shift_box);
+      glBoxWire(dataMgr.whole_space_box);
+    }
+		else if (para->getBool("Show Bounding Box"))
+		{
+      //glColor3f(0, 0, 0);
+      
 			Box3f box = dataMgr.getCurrentSamples()->bbox;
 			glBoxWire(box);
-
+      
 			//Box3f standard_box;
 			//standard_box.min = Point3f(-1, -1, -1);
 			//standard_box.max = Point3f(1, 1, 1);
@@ -440,10 +457,10 @@ void GLArea::paintGL()
       CMesh *view_grid_points = dataMgr.getViewGridPoints();
       if (NULL == view_grid_points) return;
 
-      //if(!view_grid_points->vert.empty())
-      //{
-      //  glDrawer.drawGrid(view_grid_points, global_paraMgr.nbv.getInt("View Bin Each Axis"));
-      //}
+      if(!view_grid_points->vert.empty())
+      {
+        glDrawer.drawGrid(view_grid_points, global_paraMgr.nbv.getInt("View Bin Each Axis"));
+      }
 		}
 
 
