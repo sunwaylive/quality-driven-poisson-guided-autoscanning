@@ -813,23 +813,42 @@ void DataMgr::savePR2_orders(QString fileName_commands)
     v0.P() = (v0.P() + original_center_point) * max_normalize_length;
     v1.P() = (v1.P() + original_center_point) * max_normalize_length;
 
-    PR2_order order = computePR2orderFromTwoCandidates(v0, v1);
+    //PR2_order order = computePR2orderFromTwoCandidates(v0, v1);
+    PR2_order order = computePR2orderFromTwoCandidates(v_start, v1);    
     pr2_orders.push_back(order);
   }
 
-  outfile << "number_of_candidate " << pr2_orders.size() << endl << endl;
+  //outfile << "number_of_candidate " << pr2_orders.size() << endl << endl;
+  //for (int i = 0; i < pr2_orders.size(); i++)
+  //{
+  //  PR2_order order = pr2_orders[i];
+  //  outfile << "rotation " << order.left_rotation << endl;
+  //  outfile << "position " << order.L_to_R_translation.X() << " "
+  //                         << order.L_to_R_translation.Y() << " "
+  //                         << order.L_to_R_translation.Z() << endl;
+  //  outfile << "orientation  " << order.L_to_R_rotation_Qua.X() << " "
+  //                             << order.L_to_R_rotation_Qua.Y() << " "
+  //                             << order.L_to_R_rotation_Qua.Z() << " "
+  //                             << order.L_to_R_rotation_Qua.W() << endl;
+  //  outfile << endl;
+  //}
+  outfile <<  pr2_orders.size() << endl;
   for (int i = 0; i < pr2_orders.size(); i++)
   {
     PR2_order order = pr2_orders[i];
-    outfile << "rotation " << order.left_rotation << endl;
-    outfile << "position " << order.L_to_R_translation.X() << " "
-                           << order.L_to_R_translation.Y() << " "
-                           << order.L_to_R_translation.Z() << endl;
-    outfile << "orientation  " << order.L_to_R_rotation_Qua.X() << " "
-                               << order.L_to_R_rotation_Qua.Y() << " "
-                               << order.L_to_R_rotation_Qua.Z() << " "
-                               << order.L_to_R_rotation_Qua.W() << endl;
-    outfile << endl;
+    outfile  << order.left_rotation << endl;
+  }
+  for (int i = 0; i < pr2_orders.size(); i++)
+  {
+    PR2_order order = pr2_orders[i];
+
+    outfile  << order.L_to_R_translation.X() << " "
+             << order.L_to_R_translation.Y() << " "
+             << order.L_to_R_translation.Z();
+    outfile << order.L_to_R_rotation_Qua.X() << " "
+            << order.L_to_R_rotation_Qua.Y() << " "
+            << order.L_to_R_rotation_Qua.Z() << " "
+            << order.L_to_R_rotation_Qua.W() << endl;
   }
 
   //outfile.write( strStream.str().c_str(), strStream.str().size() ); 

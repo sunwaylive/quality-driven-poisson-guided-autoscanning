@@ -430,7 +430,7 @@ void GLArea::paintGL()
       glLineWidth(3);
 
       Box3f box = dataMgr.getCurrentSamples()->bbox;
-      double radius = global_paraMgr.wLop.getDouble("CGrid Radius");
+      double radius = global_paraMgr.wLop.getDouble("CGrid Radius") * 2;
       Point3f shift_positive(radius, radius, radius);
       Point3f shift_negtive(-radius, -radius, -radius);
       Box3f shift_box;

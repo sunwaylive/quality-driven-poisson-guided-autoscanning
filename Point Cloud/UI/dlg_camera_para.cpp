@@ -121,6 +121,19 @@ bool CameraParaDlg::initWidgets()
   state = m_paras->nbv.getBool("Use Average Confidence") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
   ui->use_average_confidence->setCheckState(state);
 
+  state = m_paras->glarea.getBool("SnapShot Each Iteration") ? (Qt::CheckState::Checked): (Qt::CheckState::Unchecked);
+  ui->wlop_snap_shot_each_iteration->setCheckState(state);
+
+  ui->rotate_center_X->setValue(area->rotate_pos.X());
+  ui->rotate_center_Y->setValue(area->rotate_pos.Y());
+  ui->rotate_center_Z->setValue(area->rotate_pos.Z());
+  ui->rotate_normal_X->setValue(area->rotate_normal.X());
+  ui->rotate_normal_Y->setValue(area->rotate_normal.Y());
+  ui->rotate_normal_Z->setValue(area->rotate_normal.Z());
+  ui->rotate_step->setValue(area->rotate_delta);
+  ui->rotate_angle->setValue(area->rotate_angle);
+
+  ui->wlop_snapshot_index->setValue(m_paras->glarea.getDouble("Snapshot Index"));
   //state = m_paras->nbv.getBool("Use NBV Test1") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
   //ui->use_nbv_test1->setCheckState(state);
 
