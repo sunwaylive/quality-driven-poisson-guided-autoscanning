@@ -60,7 +60,7 @@ void CameraParaDlg::initConnects()
     
   connect(ui->use_other_inside_segment,SIGNAL(clicked(bool)),this,SLOT(useOtherInsideSegment(bool)));
   connect(ui->use_confidence_Separation,SIGNAL(clicked(bool)),this,SLOT(useConfidenceSeparation(bool)));
-  connect(ui->need_more_overlaps,SIGNAL(clicked(bool)),this,SLOT(useAverageConfidence(bool)));
+  connect(ui->need_more_overlaps,SIGNAL(clicked(bool)),this,SLOT(needMoreOverlaps(bool)));
   //connect(ui->use_nbv_test1, SIGNAL(clicked(bool)), this, SLOT(useNbvTest1(bool)));
   connect(ui->use_max_propagation, SIGNAL(clicked(bool)), this, SLOT(useMaxConfidencePropagation(bool)));
   connect(ui->doubleSpinBox_bottom_delta, SIGNAL(valueChanged(double)), this, SLOT(getIsoBottomDelta(double)));
@@ -118,7 +118,7 @@ bool CameraParaDlg::initWidgets()
   state = m_paras->nbv.getBool("Use Confidence Separation") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
   ui->use_confidence_Separation->setCheckState(state);
 
-  state = m_paras->nbv.getBool("Use Average Confidence") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
+  state = m_paras->nbv.getBool("Need Update Direction With More Overlaps") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
   ui->need_more_overlaps->setCheckState(state);
 
   state = m_paras->glarea.getBool("SnapShot Each Iteration") ? (Qt::CheckState::Checked): (Qt::CheckState::Unchecked);
@@ -404,10 +404,10 @@ void CameraParaDlg::useConfidenceSeparation(bool _val)
   cout << "Use Confidence Separation" << endl;
 }
 
-void CameraParaDlg::useAverageConfidence(bool _val)
+void CameraParaDlg::needMoreOverlaps(bool _val)
 {
-  global_paraMgr.nbv.setValue("Use Average Confidence", BoolValue(_val));
-  cout << "Use Average Confidence" << endl;
+  global_paraMgr.nbv.setValue("Need Update Direction With More Overlaps", BoolValue(_val));
+  cout << "Need Update Direction With More Overlaps" << endl;
 }
 
 void CameraParaDlg::useMaxConfidencePropagation(bool _val)

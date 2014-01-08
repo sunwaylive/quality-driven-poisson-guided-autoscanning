@@ -36,7 +36,7 @@ private slots:
   void showInitCameras(bool is_show);
   void useOtherInsideSegment(bool _val);
   void useConfidenceSeparation(bool _val);
-  void useAverageConfidence(bool _val);
+  void needMoreOverlaps(bool _val);
   void useNbvTest1(bool _val);
   void useMaxConfidencePropagation(bool _val);
   void showCandidateIndex();

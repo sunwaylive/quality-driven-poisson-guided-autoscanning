@@ -262,8 +262,9 @@ void GLArea::paintGL()
 			{
 				if (!dataMgr.isNBVCandidatesEmpty())
 				{
-					glDrawer.draw(GLDrawer::NORMAL, dataMgr.getNbvCandidates());
-          //glDrawer.drawCandidatesAxis(dataMgr.getNbvCandidates());
+					//glDrawer.draw(GLDrawer::NORMAL, dataMgr.getNbvCandidates());
+          glDrawer.drawCandidatesAxis(dataMgr.getNbvCandidates());
+          drawCandidatesConnectISO();
           //glDrawer.drawMeshLables(dataMgr.getNbvCandidates(), &painter);
           //glDrawer.drawMeshLables(dataMgr.getNbvCandidates(), &painter);
 				}
@@ -1406,8 +1407,7 @@ void GLArea::runCamera()
 	emit needUpdateStatus();
 }
 
-void
-	GLArea::runNBV()
+void GLArea::runNBV()
 {
 	//fix: this should be iso_points
 	//if (dataMgr.isModelEmpty()) return;
@@ -1582,49 +1582,49 @@ GLArea::saveNBV(QString fileName)
   //  
   //}
 
-  QString fileName_nbs = fileName;
-  fileName_nbs.replace(".ply", ".nbs");
+  //QString fileName_nbs = fileName;
+  //fileName_nbs.replace(".ply", ".nbs");
 
-  ofstream outfile;
-  outfile.open(fileName_nbs.toStdString().c_str());
+  //ofstream outfile;
+  //outfile.open(fileName_nbs.toStdString().c_str());
 
-  ostringstream strStream; 
-  strStream << nbv_candidates->vert.size() << endl << endl;
-  for (int i = 0; i < nbv_candidates->vert.size(); ++i)
-  {
-    CVertex v = nbv_candidates->vert[i];
+  //ostringstream strStream; 
+  //strStream << nbv_candidates->vert.size() << endl << endl;
+  //for (int i = 0; i < nbv_candidates->vert.size(); ++i)
+  //{
+  //  CVertex v = nbv_candidates->vert[i];
 
-    v.P() = (v.P() + original_center_point) * max_normalize_length;
-    v.N().Normalize();
+  //  v.P() = (v.P() + original_center_point) * max_normalize_length;
+  //  v.N().Normalize();
 
-    Matrix33f T_to_S_Rotation_mat33 = GlobalFun::axisToMatrix33(v);
-    T_to_S_Rotation_mat33 = T_to_S_Rotation_mat33.Transpose();
+  //  Matrix33f T_to_S_Rotation_mat33 = GlobalFun::axisToMatrix33(v);
+  //  T_to_S_Rotation_mat33 = T_to_S_Rotation_mat33.Transpose();
 
-     Matrix44f T_to_S_Rotation_mat44;
-     T_to_S_Rotation_mat44.SetIdentity();
-     for (int i = 0; i < 3; i++)
-     {
-       for (int j = 0; j < 3; j++)
-       {
-         T_to_S_Rotation_mat44[i][j] = T_to_S_Rotation_mat33[i][j];
-       }
-     }
-     T_to_S_Rotation_mat44[0][3] = v.P().X();
-     T_to_S_Rotation_mat44[1][3] = v.P().Y();
-     T_to_S_Rotation_mat44[2][3] = v.P().Z();
+  //   Matrix44f T_to_S_Rotation_mat44;
+  //   T_to_S_Rotation_mat44.SetIdentity();
+  //   for (int i = 0; i < 3; i++)
+  //   {
+  //     for (int j = 0; j < 3; j++)
+  //     {
+  //       T_to_S_Rotation_mat44[i][j] = T_to_S_Rotation_mat33[i][j];
+  //     }
+  //   }
+  //   T_to_S_Rotation_mat44[0][3] = v.P().X();
+  //   T_to_S_Rotation_mat44[1][3] = v.P().Y();
+  //   T_to_S_Rotation_mat44[2][3] = v.P().Z();
 
-     strStream << i << endl;
-     for (int i = 0; i < 4; i++)
-     {
-       for (int j = 0; j < 4; j++)
-       {
-         strStream << T_to_S_Rotation_mat44[i][j] << "\t\t ";
-       }
-       strStream << endl;
-     }
-     strStream << endl;
+  //   strStream << i << endl;
+  //   for (int i = 0; i < 4; i++)
+  //   {
+  //     for (int j = 0; j < 4; j++)
+  //     {
+  //       strStream << T_to_S_Rotation_mat44[i][j] << "\t\t ";
+  //     }
+  //     strStream << endl;
+  //   }
+  //   strStream << endl;
  
-  }
+  //}
 
   //for (int i = 0; i < nbv_candidates->vert.size(); ++i)
   //{
@@ -1660,8 +1660,8 @@ GLArea::saveNBV(QString fileName)
   //  strStream << angle.X() << "   " << angle.Y() << "   " << angle.Z() << endl << endl;
 
   //}
-  outfile.write( strStream.str().c_str(), strStream.str().size() ); 
-  outfile.close();
+  //outfile.write( strStream.str().c_str(), strStream.str().size() ); 
+  //outfile.close();
 }
 
 void GLArea::loadView(QString fileName)
@@ -2040,11 +2040,23 @@ void GLArea::wheelEvent(QWheelEvent *e)
 	}
 	else if((e->modifiers() & Qt::ShiftModifier) && (e->modifiers() & Qt::AltModifier))
 	{
-		size_temp = global_paraMgr.glarea.getDouble("ISO Interval Size");
-		size_temp *= change;
-		size_temp = (std::max)(size_temp, 1e-6);
-		global_paraMgr.glarea.setValue("ISO Interval Size", DoubleValue(size_temp));
-		cout << "ISO scale step = " << size_temp << endl;
+    if (para->getBool("Show Normal") && para->getBool("Show NBV Candidates"))
+    {
+      size_temp = global_paraMgr.drawer.getDouble("Normal Line Width");
+      size_temp *= change;
+      size_temp = (std::max)(size_temp, 1e-6);
+      global_paraMgr.drawer.setValue("Normal Line Width", DoubleValue(size_temp));
+      cout << "Normal Line Width = " << size_temp << endl;
+    }
+    else
+    {
+      size_temp = global_paraMgr.glarea.getDouble("ISO Interval Size");
+      size_temp *= change;
+      size_temp = (std::max)(size_temp, 1e-6);
+      global_paraMgr.glarea.setValue("ISO Interval Size", DoubleValue(size_temp));
+      cout << "ISO scale step = " << size_temp << endl;
+    }
+
 	}
 	else
 	{
@@ -2589,6 +2601,40 @@ void GLArea::figureSnapShot()
     //quickSaveSkeleton();
     saveSnapshot();
     is_figure_shot = false;
+  }
+
+}
+
+void GLArea::drawCandidatesConnectISO()
+{
+  double width = global_paraMgr.drawer.getDouble("Normal Line Width");
+  double length = global_paraMgr.drawer.getDouble("Normal Line Length");
+  //double half_length = normal_length / 2.0;
+  QColor qcolor = global_paraMgr.drawer.getDouble("Normal Line Color");
+
+  CMesh* candidates = dataMgr.getNbvCandidates();
+  CMesh* iso_points = dataMgr.getCurrentIsoPoints();
+
+  for (int i = 0; i < candidates->vert.size(); i++)
+  {
+    CVertex& v = candidates->vert[i];
+
+    glLineWidth(width); 
+    GLColor color(qcolor);
+    glColor4f(color.r, color.g, color.b, 1);  
+
+    Point3f p = v.P(); 
+    Point3f m0 = v.N();
+    Point3f m1 = v.eigen_vector0;
+    Point3f m2 = v.eigen_vector1;
+
+    int remember_index = v.remember_iso_index;
+    CVertex tp = iso_points->vert.at(remember_index);
+    // Z
+    glBegin(GL_LINES);	
+    glVertex3d(p[0], p[1], p[2]);
+    glVertex3f(tp[0], tp[1], tp[2]);
+    glEnd(); 
   }
 
 }

@@ -432,7 +432,7 @@ void ParameterMgr::initNBVParameter()
   nbv.addParam(new RichBool("Test Other Inside Segment", false));
 
   nbv.addParam(new RichBool("Use Confidence Separation", false));
-  nbv.addParam(new RichBool("Use Average Confidence", false));
+  //nbv.addParam(new RichBool("Use Average Confidence", false));
   nbv.addParam(new RichBool("Use NBV Test1", false));
   nbv.addParam(new RichBool("Use Max Propagation", true));
 
