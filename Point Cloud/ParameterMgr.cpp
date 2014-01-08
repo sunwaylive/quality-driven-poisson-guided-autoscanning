@@ -394,6 +394,7 @@ void ParameterMgr::initCameraParameter()
 	camera.addParam(new RichBool("Run Virtual Scan", false));
 	camera.addParam(new RichBool("Is Init Camera Show", false));
 
+
   //camera.addParam(new RichDouble("Camera Far Distance", 30.0f));   //cm
   //camera.addParam(new RichDouble("Camera Near Distance", 17.0f));  //cm
   camera.addParam(new RichDouble("Camera Far Distance", 22.2f));   //cm
@@ -446,4 +447,7 @@ void ParameterMgr::initNBVParameter()
   nbv.addParam(new RichDouble("Propagate One Point Index", 0));
   nbv.addParam(new RichInt("View Bin Each Axis", 10));
   nbv.addParam(new RichDouble("View Prune Confidence Threshold", 0.8));
+
+  nbv.addParam(new RichBool("Need Update Direction With More Overlaps", false));
+
 }

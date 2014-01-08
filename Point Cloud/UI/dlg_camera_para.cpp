@@ -60,7 +60,7 @@ void CameraParaDlg::initConnects()
     
   connect(ui->use_other_inside_segment,SIGNAL(clicked(bool)),this,SLOT(useOtherInsideSegment(bool)));
   connect(ui->use_confidence_Separation,SIGNAL(clicked(bool)),this,SLOT(useConfidenceSeparation(bool)));
-  connect(ui->use_average_confidence,SIGNAL(clicked(bool)),this,SLOT(useAverageConfidence(bool)));
+  connect(ui->need_more_overlaps,SIGNAL(clicked(bool)),this,SLOT(useAverageConfidence(bool)));
   //connect(ui->use_nbv_test1, SIGNAL(clicked(bool)), this, SLOT(useNbvTest1(bool)));
   connect(ui->use_max_propagation, SIGNAL(clicked(bool)), this, SLOT(useMaxConfidencePropagation(bool)));
   connect(ui->doubleSpinBox_bottom_delta, SIGNAL(valueChanged(double)), this, SLOT(getIsoBottomDelta(double)));
@@ -119,7 +119,7 @@ bool CameraParaDlg::initWidgets()
   ui->use_confidence_Separation->setCheckState(state);
 
   state = m_paras->nbv.getBool("Use Average Confidence") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
-  ui->use_average_confidence->setCheckState(state);
+  ui->need_more_overlaps->setCheckState(state);
 
   state = m_paras->glarea.getBool("SnapShot Each Iteration") ? (Qt::CheckState::Checked): (Qt::CheckState::Unchecked);
   ui->wlop_snap_shot_each_iteration->setCheckState(state);

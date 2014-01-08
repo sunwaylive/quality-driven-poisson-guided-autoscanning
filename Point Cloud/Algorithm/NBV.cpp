@@ -359,7 +359,7 @@ NBV::buildGrid()
 void
   NBV::propagate()
 {
-  bool use_average_confidence = para->getBool("Use Average Confidence");
+  bool need_more_overlaps = para->getBool("Use Average Confidence");
   bool use_propagate_one_point = para->getBool("Run Propagate One Point");
   bool use_max_propagation = para->getBool("Use Max Propagation");
 
@@ -383,7 +383,7 @@ void
   if (nbv_candidates) 
     nbv_candidates->vert.clear();
 
-  if (use_average_confidence)
+  if (need_more_overlaps)
     confidence_weight_sum.assign(view_grid_points->vert.size(), 0.0);
   //normalizeConfidence(iso_points->vert, 0);
 
@@ -513,7 +513,7 @@ void
             }
             
             //_mutex.unlock();
-            if (use_average_confidence)
+            if (need_more_overlaps)
             {
               confidence_weight_sum[index] += 1.;
             }
@@ -1285,13 +1285,14 @@ double NBV::computeLocalScores(CVertex& view_t, CVertex& iso_v,
     }
   }
 
-  //return sum_weight * max_confidence;
-
-  return sum_weight;
-
-  //return sum_weight / iso_v.neighbors.size();
-  //return max_weight;
-
+  if (para->getBool("Need Update Direction With More Overlaps"))
+  {
+    return sum_weight * max_confidence;
+  }
+  else
+  {
+    return sum_weight;
+  }
 }
 
 void NBV::setIsoBottomConfidence()

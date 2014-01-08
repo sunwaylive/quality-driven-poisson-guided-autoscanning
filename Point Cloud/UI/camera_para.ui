@@ -572,7 +572,7 @@
       <string>Max ray steps para :</string>
      </property>
     </widget>
-    <widget class="QCheckBox" name="use_average_confidence">
+    <widget class="QCheckBox" name="need_more_overlaps">
      <property name="geometry">
       <rect>
        <x>30</x>
@@ -582,7 +582,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>use_average_propagation</string>
+      <string>Need More Overlaps</string>
      </property>
     </widget>
     <widget class="QCheckBox" name="use_max_propagation">
