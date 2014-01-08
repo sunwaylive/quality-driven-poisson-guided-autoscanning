@@ -36,7 +36,7 @@ private slots:
   void showInitCameras(bool is_show);
   void useOtherInsideSegment(bool _val);
   void useConfidenceSeparation(bool _val);
-  void useAverageConfidence(bool _val);
+  void needMoreOverlaps(bool _val);
   void useNbvTest1(bool _val);
   void useMaxConfidencePropagation(bool _val);
   void showCandidateIndex();
@@ -83,6 +83,22 @@ private slots:
   void runICP();
   void runStep4NewScans();
   void runOneKeyNbvIteration();
+
+  void getRotateCenterX(double _val);
+  void getRotateCenterY(double _val);
+  void getRotateCenterZ(double _val);
+  void getRotateNormalX(double _val);
+  void getRotateNormalY(double _val);
+  void getRotateNormalZ(double _val);
+  void getRotateStep(double _val);
+  void getRotateAngle(double _val);
+  void needSnapShotEachIteration(bool _val);
+  void getSnapShotIndex(double _val);
+
+  void rotateStep();
+  void rotateAnimation();
+  void sliceAnimation();
+
 
 private:
 	Ui::camera_paras * ui;

@@ -156,6 +156,8 @@ private: // For snapshot
 	//Point3f rotate_normal;
 	//Point3f rotate_pos;
 
+  void drawCandidatesConnectISO();
+
 	vcg::GlTrimesh<CMesh> glw; //绘制网格的对象
 
 public:

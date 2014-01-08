@@ -359,7 +359,7 @@ NBV::buildGrid()
 void
   NBV::propagate()
 {
-  bool use_average_confidence = para->getBool("Use Average Confidence");
+
   bool use_propagate_one_point = para->getBool("Run Propagate One Point");
   bool use_max_propagation = para->getBool("Use Max Propagation");
 
@@ -383,9 +383,6 @@ void
   if (nbv_candidates) 
     nbv_candidates->vert.clear();
 
-  if (use_average_confidence)
-    confidence_weight_sum.assign(view_grid_points->vert.size(), 0.0);
-  //normalizeConfidence(iso_points->vert, 0);
 
   double camera_max_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
     global_paraMgr.camera.getDouble("Predicted Model Size");
@@ -512,11 +509,6 @@ void
               t.eigen_confidence += coefficient1 * iso_confidence;      
             }
             
-            //_mutex.unlock();
-            if (use_average_confidence)
-            {
-              confidence_weight_sum[index] += 1.;
-            }
             // record hit_grid center index
             hit_grid_indexes.push_back(index);                        
           }//end for k
@@ -1278,19 +1270,20 @@ double NBV::computeLocalScores(CVertex& view_t, CVertex& iso_v,
     //double w2 = 1.0;
     double weight = w1 * w2 * (1.0-t.eigen_confidence); 
     sum_weight += weight;
-    if (t.eigen_confidence < max_confidence)
+    if (t.eigen_confidence > max_confidence)
     {
       max_confidence = t.eigen_confidence;
     }
   }
 
-  //return sum_weight * max_confidence;
-
-  return sum_weight;
-
-  //return sum_weight / iso_v.neighbors.size();
-  //return max_weight;
-
+  if (para->getBool("Need Update Direction With More Overlaps"))
+  {
+    return sum_weight * max_confidence;
+  }
+  else
+  {
+    return sum_weight;
+  }
 }
 
 void NBV::setIsoBottomConfidence()
