@@ -139,7 +139,7 @@ NBV::runOneKeyNBV()
   timer.end();
 
   timer.start("view optimize");
-  viewClustering();
+  viewPrune();
   timer.end();
 
   scan_candidates->clear();
@@ -1060,7 +1060,6 @@ void NBV::viewClustering()
 
   GlobalFun::deleteIgnore(nbv_candidates);
   */
-
   return;
 }
 
@@ -1173,7 +1172,7 @@ bool NBV::updateViewDirections()
       }
     }
 
-    if (best_iso_index != nbvc.remember_iso_index)//以后应该加上碰撞检测
+    if (best_iso_index != nbvc.remember_iso_index)//fixme: add collision detection
     {
       have_direction_move = true;
       cout << "Max scores:  " << max_score << endl;
