@@ -34,6 +34,7 @@ private slots:
   void loadRealScan();
   void loadRealInitialScan();
   void showInitCameras(bool is_show);
+  void showCameraBorder(bool is_show);
   void useOtherInsideSegment(bool _val);
   void useConfidenceSeparation(bool _val);
   void needMoreOverlaps(bool _val);
@@ -62,6 +63,7 @@ private slots:
   void getPropagateIndex(double _val);
   void getRayResolutionPara(double _val);
   void getNbvIterationCount(int _val);
+  void getNBVTopN(int _val);
 
   void buildGrid();
   void propagate();

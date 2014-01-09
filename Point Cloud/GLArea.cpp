@@ -402,7 +402,7 @@ void GLArea::paintGL()
 					CVertex v;
           v.P() = current_camera.pos;
 					glDrawer.drawSphere(v);
-					glDrawer.drawCamera(current_camera);
+					glDrawer.drawCamera(current_camera, global_paraMgr.camera.getBool("Show Camera Border"));
 				}
 			}
 		}

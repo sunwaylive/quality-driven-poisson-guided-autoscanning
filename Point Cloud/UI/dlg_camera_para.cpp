@@ -28,8 +28,10 @@ void CameraParaDlg::initConnects()
   connect(ui->pushButton_load_real_initial_scan, SIGNAL(clicked()), this, SLOT(loadRealInitialScan()));
   connect(ui->pushButton_load_real_scan, SIGNAL(clicked()), this, SLOT(loadRealScan()));
   connect(ui->spinBox_nbv_iteration_count, SIGNAL(valueChanged(int)), this, SLOT(getNbvIterationCount(int)));
+  connect(ui->spinBox_nbv_top_n, SIGNAL(valueChanged(int)), this, SLOT(getNBVTopN(int)));
   connect(ui->pushButton_one_key_nbv_iteration, SIGNAL(clicked()), this, SLOT(runOneKeyNbvIteration()));
   connect(ui->checkBox_show_init_cameras,SIGNAL(clicked(bool)),this,SLOT(showInitCameras(bool)));
+  connect(ui->checkBox_show_camera_border, SIGNAL(clicked(bool)), this, SLOT(showCameraBorder(bool)));
   connect(ui->pushButton_scan, SIGNAL(clicked()), this, SLOT(NBVCandidatesScanByHand()));
   connect(ui->pushButton_initial_scan, SIGNAL(clicked()), this, SLOT(initialScan()));
   connect(ui->horizon_dist, SIGNAL(valueChanged(double)), this, SLOT(getCameraHorizonDist(double)));
@@ -97,6 +99,7 @@ void CameraParaDlg::initConnects()
 
 bool CameraParaDlg::initWidgets()
 {
+  ui->checkBox_show_camera_border->setChecked(m_paras->camera.getBool("Show Camera Border"));
   ui->doubleSpinBox_view_prune_confidence_threshold->setValue(m_paras->nbv.getDouble("View Prune Confidence Threshold"));
   ui->doubleSpinBox_merge_confidence_threshold->setValue(m_paras->camera.getDouble("Merge Confidence Threshold"));
   ui->spinBox_nbv_iteration_count->setValue(m_paras->nbv.getInt("NBV Iteration Count"));
@@ -104,7 +107,7 @@ bool CameraParaDlg::initWidgets()
   ui->vertical_dist->setValue(m_paras->camera.getDouble("Camera Vertical Dist"));
   ui->view_grid_resolution->setValue(m_paras->nbv.getDouble("View Grid Resolution"));
   ui->max_ray_steps->setValue(m_paras->nbv.getDouble("Max Ray Steps Para"));
-  
+  ui->spinBox_nbv_top_n->setValue(m_paras->nbv.getInt("NBV Top N"));
   ui->doubleSpinBox_far_distance->setValue(m_paras->camera.getDouble("Camera Far Distance"));
   ui->doubleSpinBox_near_distance->setValue(m_paras->camera.getDouble("Camera Near Distance"));
   ui->doubleSpinBox_predicted_model_size->setValue(m_paras->camera.getDouble("Predicted Model Size"));
@@ -393,6 +396,17 @@ void CameraParaDlg::showInitCameras(bool is_show)
   }
 }
 
+void CameraParaDlg::showCameraBorder(bool is_show)
+{
+  if (is_show)
+  {
+    global_paraMgr.camera.setValue("Show Camera Border", BoolValue(true));
+  }else
+  {
+    global_paraMgr.camera.setValue("Show Camera Border", BoolValue(false));
+  }
+}
+
 void CameraParaDlg::useOtherInsideSegment(bool _val)
 {
   global_paraMgr.nbv.setValue("Test Other Inside Segment", BoolValue(_val));
@@ -570,7 +584,7 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
         cout<<"sum_confidence: " << v_confidence[k] <<endl;
 
       if (v_confidence[k] > merge_confidence_threshold 
-      || (1.0f * rand() / (RAND_MAX+1.0) > pow((1 - v_confidence[k]), merge_pow)))
+      || (1.0f * rand() / (RAND_MAX+1.0) > pow((1 - v_confidence[k]), merge_pow))) //pow((1 - v_confidence[k]), merge_pow),(1 - pow(v_confidence[k], merge_pow))
       {
       v.is_ignore = true;
       skip_num++; 
@@ -725,6 +739,11 @@ void CameraParaDlg::mergeScannedMeshWithOriginalByHand()
 void CameraParaDlg::getNbvIterationCount(int _val)
 {
   global_paraMgr.nbv.setValue("NBV Iteration Count", IntValue(_val));
+}
+
+void CameraParaDlg::getNBVTopN(int _val)
+{
+  global_paraMgr.nbv.setValue("NBV Top N", IntValue(_val));
 }
 
 void CameraParaDlg::getCameraHorizonDist(double _val)
@@ -1072,8 +1091,8 @@ CameraParaDlg::runOneKeyNbvIteration()
   last_original = file_location + last_original;
   area->dataMgr.savePly(last_original, *area->dataMgr.getCurrentOriginal());
 
-  log.close();
   cout << "All is done!" <<endl;
+  log.close();
 }
 
 

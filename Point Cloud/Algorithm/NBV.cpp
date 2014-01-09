@@ -1058,7 +1058,7 @@ void NBV::viewClustering()
 void NBV::viewPrune()
 {
   Point3f diff = whole_space_box_max - whole_space_box_min;
-  double view_prune_radius = diff.X() / 3;
+  double view_prune_radius = diff.X() / 3;  //can not be too large, or some good view will always be ignored
   double prune_confidence_threshold = global_paraMgr.nbv.getDouble("View Prune Confidence Threshold");
 
   GlobalFun::computeBallNeighbors(nbv_candidates, NULL, view_prune_radius, nbv_candidates->bbox);
@@ -1088,7 +1088,23 @@ void NBV::viewPrune()
   }
 
   GlobalFun::deleteIgnore(nbv_candidates);
-  cout << "after View Prune candidate num: " <<nbv_candidates->vert.size() <<endl;
+   cout << "after View Prune candidate num: " <<nbv_candidates->vert.size() <<endl;
+
+  //get the top n = 4
+  int topn = global_paraMgr.nbv.getInt("NBV Top N");
+
+  sort(nbv_candidates->vert.begin(), nbv_candidates->vert.end(), cmp);
+  if (nbv_candidates->vert.size() > topn)
+  {
+    for (int i = 0; i < nbv_candidates->vn; i++)
+    {
+      CVertex& v = nbv_candidates->vert[i];
+      if (i >= topn)
+        v.is_ignore = true;
+    }
+  }
+
+  GlobalFun::deleteIgnore(nbv_candidates);
 }
 
 bool NBV::updateViewDirections()
@@ -1167,7 +1183,7 @@ bool NBV::updateViewDirections()
     if (best_iso_index != nbvc.remember_iso_index)//fixme: add collision detection
     {
       have_direction_move = true;
-      cout << "Max scores:  " << max_score << endl;
+      //cout << "Max scores:  " << max_score << endl;
       Point3f best_direction_pos = iso_points->vert[best_iso_index].P();
       nbvc.N() = (best_direction_pos - nbvc.P()).Normalize();
       nbvc.remember_iso_index = best_iso_index;

@@ -481,7 +481,7 @@ void GLDrawer::drawNormal(const CVertex& v)
 	//glEnable(GL_LIGHTING);
 }
 
-void GLDrawer::drawCamera(vcc::Camera& camera)
+void GLDrawer::drawCamera(vcc::Camera& camera, bool is_draw_border)
 {
 	//get the five control points of the cone
 	Point3f far_end = camera.pos + camera.direction * camera.far_distance;
@@ -509,22 +509,24 @@ void GLDrawer::drawCamera(vcc::Camera& camera)
   glColor3f(0.0, 1.0f, 0.0f);
   glVertex(camera.pos); glVertex(far_end);
 
-	//glColor3f(1.0, 0.0, 0.0);
-	//glVertex(camera.pos); glVertex(far_top_left);
-	//glVertex(camera.pos); glVertex(far_top_right);
-	//glVertex(camera.pos); glVertex(far_bottom_left);
-	//glVertex(camera.pos); glVertex(far_bottom_right);
- // //draw far face
-	//glVertex(far_top_right); glVertex(far_top_left);
-	//glVertex(far_top_left); glVertex(far_bottom_left);
-	//glVertex(far_bottom_left); glVertex(far_bottom_right);
-	//glVertex(far_bottom_right); glVertex(far_top_right);
- // //draw near face
- // glVertex(near_top_right); glVertex(near_top_left);
- // glVertex(near_top_left); glVertex(near_bottom_left);
- // glVertex(near_bottom_left); glVertex(near_bottom_right);
- // glVertex(near_bottom_right); glVertex(near_top_right);
-
+  if (is_draw_border)
+  {
+    glColor3f(1.0, 0.0, 0.0);
+    glVertex(camera.pos); glVertex(far_top_left);
+    glVertex(camera.pos); glVertex(far_top_right);
+    glVertex(camera.pos); glVertex(far_bottom_left);
+    glVertex(camera.pos); glVertex(far_bottom_right);
+     //draw far face
+    glVertex(far_top_right); glVertex(far_top_left);
+    glVertex(far_top_left); glVertex(far_bottom_left);
+    glVertex(far_bottom_left); glVertex(far_bottom_right);
+    glVertex(far_bottom_right); glVertex(far_top_right);
+     //draw near face
+    glVertex(near_top_right); glVertex(near_top_left);
+    glVertex(near_top_left); glVertex(near_bottom_left);
+    glVertex(near_bottom_left); glVertex(near_bottom_right);
+    glVertex(near_bottom_right); glVertex(near_top_right);
+  }
 	glEnd();
 }
 

@@ -393,19 +393,19 @@ void ParameterMgr::initCameraParameter()
 	camera.addParam(new RichBool("Run NBV Scan", false));
 	camera.addParam(new RichBool("Run Virtual Scan", false));
 	camera.addParam(new RichBool("Is Init Camera Show", false));
-
+  camera.addParam(new RichBool("Show Camera Border", true));
 
   //camera.addParam(new RichDouble("Camera Far Distance", 30.0f));   //cm
   //camera.addParam(new RichDouble("Camera Near Distance", 17.0f));  //cm
   camera.addParam(new RichDouble("Camera Far Distance", 22.2f));   //cm
   camera.addParam(new RichDouble("Camera Near Distance", 19.6f));  //cm
-  camera.addParam(new RichDouble("Optimal Plane Width", 4.0f));    //cm
+  camera.addParam(new RichDouble("Optimal Plane Width", 1.0f));    //cm
   camera.addParam(new RichDouble("Predicted Model Size", 20.0f));  //cm lion:20
   camera.addParam(new RichDouble("Camera Horizon Dist", 14.0f));   //cm
   camera.addParam(new RichDouble("Camera Vertical Dist", 18.0f));  //cm
   camera.addParam(new RichDouble("Camera Dist To Model", ((30.0f + 17.0f)/2 + 0.6 * 20.0f))); //cm
 
-  camera.addParam(new RichDouble("Camera Resolution",1.0f / 100.0f));
+  camera.addParam(new RichDouble("Camera Resolution",1.0f / 50.0f));
   camera.addParam(new RichDouble("Merge Confidence Threshold", 0.9f));
   camera.addParam(new RichDouble("Grid Step Size", -1));
 }
@@ -428,7 +428,7 @@ void ParameterMgr::initNBVParameter()
   nbv.addParam(new RichBool("Run Set Iso Bottom Confidence", false));
   nbv.addParam(new RichBool("Run Update View Directions", false));
   nbv.addParam(new RichBool("Run Compute View Candidate Index", false));
-  nbv.addParam(new RichDouble("View Grid Resolution", 100.2f));
+  nbv.addParam(new RichDouble("View Grid Resolution", 100.8f));
   nbv.addParam(new RichBool("Test Other Inside Segment", false));
 
   nbv.addParam(new RichBool("Use Confidence Separation", false));
@@ -447,7 +447,6 @@ void ParameterMgr::initNBVParameter()
   nbv.addParam(new RichDouble("Propagate One Point Index", 0));
   nbv.addParam(new RichInt("View Bin Each Axis", 10));
   nbv.addParam(new RichDouble("View Prune Confidence Threshold", 0.8));
-
+  nbv.addParam(new RichInt("NBV Top N", 10));
   nbv.addParam(new RichBool("Need Update Direction With More Overlaps", false));
-
-}
+}  

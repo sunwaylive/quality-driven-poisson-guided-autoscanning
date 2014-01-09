@@ -57,7 +57,7 @@ public:
 	void setViewPoint(const Point3f& view){ view_point = view; }
 	void draw(DrawType type, CMesh* mesh);
 	void drawCurveSkeleton(Skeleton& skeleton);
-  void drawCamera(vcc::Camera& camera);
+  void drawCamera(vcc::Camera& camera, bool is_draw_border = true);
   void drawSlice(Slice& slice, double trans_value);
   void drawGrid(const CMesh *cube_mesh, const int grid_num_each_edge);
 

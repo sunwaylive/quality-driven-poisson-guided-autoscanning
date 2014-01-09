@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -71,8 +71,8 @@
     <widget class="QCheckBox" name="checkBox_show_init_cameras">
      <property name="geometry">
       <rect>
-       <x>131</x>
-       <y>125</y>
+       <x>120</x>
+       <y>110</y>
        <width>91</width>
        <height>21</height>
       </rect>
@@ -264,7 +264,7 @@
     <widget class="QPushButton" name="pushButton_initial_scan">
      <property name="geometry">
       <rect>
-       <x>28</x>
+       <x>0</x>
        <y>120</y>
        <width>101</width>
        <height>31</height>
@@ -384,6 +384,19 @@
       <string>Show Index</string>
      </property>
     </widget>
+    <widget class="QCheckBox" name="checkBox_show_camera_border">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>140</y>
+       <width>181</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>show camera border</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="tab_2">
     <attribute name="title">
@@ -457,7 +470,7 @@
       <property name="geometry">
        <rect>
         <x>150</x>
-        <y>140</y>
+        <y>134</y>
         <width>71</width>
         <height>22</height>
        </rect>
@@ -991,8 +1004,8 @@
     <widget class="QPushButton" name="pushButton_one_key_nbv_iteration">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>360</y>
+       <x>20</x>
+       <y>380</y>
        <width>191</width>
        <height>31</height>
       </rect>
@@ -1004,7 +1017,7 @@
     <widget class="QSpinBox" name="spinBox_nbv_iteration_count">
      <property name="geometry">
       <rect>
-       <x>40</x>
+       <x>80</x>
        <y>330</y>
        <width>42</width>
        <height>22</height>
@@ -1048,6 +1061,42 @@
      </property>
      <property name="text">
       <string>Load Real Initial Scan</string>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="spinBox_nbv_top_n">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>330</y>
+       <width>42</width>
+       <height>22</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_16">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>330</y>
+       <width>51</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>top n ：</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_17">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>330</y>
+       <width>71</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>iter num ：</string>
      </property>
     </widget>
    </widget>
