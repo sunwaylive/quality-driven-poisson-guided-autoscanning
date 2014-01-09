@@ -100,7 +100,7 @@ private slots:
   void rotateStep();
   void rotateAnimation();
   void sliceAnimation();
-
+  void loadPoissonSurface();
 
 private:
 	Ui::camera_paras * ui;

@@ -425,6 +425,17 @@ void GLArea::paintGL()
 			}
 		}
 
+    if (para->getBool("Show Poisson Surface"))
+    {
+      if (!dataMgr.isPoissonSurfaceEmpty())
+      {
+        cout << "draw poisson surface!" <<endl;
+        glw.m = dataMgr.getCurrentPoissonSurface();
+        //glw.Draw(GLW::DMWire, GLW::CMPerMesh, GLW::TMNone);
+        glw.Draw(GLW::DMSmooth, GLW::CMPerMesh, GLW::TMNone);
+      }
+    }
+
     if (para->getBool("Show Bounding Box") && para->getBool("Show View Grid Slice"))
     {
       glColor3f(0, 0, 0);

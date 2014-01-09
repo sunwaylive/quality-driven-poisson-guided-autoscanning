@@ -110,6 +110,7 @@ private slots:
   void showNBVCandidates(bool _val);
   void showScanCandidates(bool _val);
   void showScannedMesh(bool _val);
+  void showPoissonSurface(bool _val);
 
 	void setSmapleType(QAction * action);
 	void setOriginalType(QAction * action);

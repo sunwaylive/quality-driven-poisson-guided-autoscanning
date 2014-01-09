@@ -60,6 +60,7 @@ public:
   bool      isViewCandidatesEmpty();
   bool      isScannedMeshEmpty();
   bool      isScannedResultsEmpty();
+  bool      isPoissonSurfaceEmpty();
   bool      isViewGridsEmpty();
   bool      isNBVCandidatesEmpty();
 
@@ -67,6 +68,7 @@ public:
   CMesh*                  getCurrentSamples();
   CMesh*                  getCurrentTemperalSamples();
   CMesh*                  getCurrentModel();
+  CMesh*                  getCurrentPoissonSurface();
   CMesh*                  getCurrentOriginal();
   CMesh*                  getCurrentTemperalOriginal();
   CMesh*                  getCurrentIsoPoints();
@@ -138,6 +140,7 @@ private:
 public:
   CMesh                  model;
   CMesh                  original;
+  CMesh                  poisson_surface;
   CMesh                 *temperal_original;
   Point3f                original_center_point;
   CMesh                  samples;

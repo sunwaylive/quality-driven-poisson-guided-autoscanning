@@ -1455,18 +1455,26 @@ void Poisson::runSlice()
     }
     else
     {
-      int slice_k_num = res * slice_i_position;
+      //int slice_k_num = res * slice_i_position;
+      int slice_j_num = res * slice_i_position;
 
       (*slices)[0].slice_nodes.clear();
       for (int i = begin; i < end; i++)
       {
-        for (int j = begin; j < end; j++)
+        for (int j = slice_j_num; j < slice_j_num+1; j++)
         {
-          for (int k = slice_k_num; k < slice_k_num+1; k++)
+          for (int k = begin; k < end; k++)
           {      
             (*slices)[0].slice_nodes.push_back(field_points->vert[i * res2 + j * res + k]);
           }
         }
+        /*for (int j = begin; j < end; j++)
+        {
+        for (int k = slice_k_num; k < slice_k_num+1; k++)
+        {      
+        (*slices)[0].slice_nodes.push_back(field_points->vert[i * res2 + j * res + k]);
+        }
+        }*/
       }
       (*slices)[0].res = end - begin;
     }
@@ -1495,40 +1503,78 @@ void Poisson::runSlice()
     }
     else
     {
-      int slice_k_num = res * slice_j_position;
+      //int slice_k_num = res * slice_j_position;
+      int slice_j_num = res * slice_j_position;
+
       (*slices)[1].slice_nodes.clear();
+      for (int i = begin; i < end; i++)
+      {
+        for (int j = slice_j_num; j < slice_j_num+1; j++)
+        {
+          for (int k = begin; k < end; k++)
+          {      
+            (*slices)[1].slice_nodes.push_back(field_points->vert[i * res2 + j * res + k]);
+          }
+        }
+        /*for (int j = begin; j < end; j++)
+        {
+        for (int k = slice_k_num; k < slice_k_num+1; k++)
+        {      
+        (*slices)[1].slice_nodes.push_back(field_points->vert[i * res2 + j * res + k]);
+        }
+        }*/
+      }
+      (*slices)[1].res = end - begin;
+    }
+  }
+
+  if (para->getBool("Show Z Slices"))
+  {
+    double slice_k_position = para->getDouble("Current Z Slice Position");
+    if(!paraller_slice_mode)
+    {
+      int slice_k_num = res * slice_k_position;
+
+      (*slices)[2].slice_nodes.clear();
+
       for (int i = begin; i < end; i++)
       {
         for (int j = begin; j < end; j++)
         {
           for (int k = slice_k_num; k < slice_k_num+1; k++)
           {      
-            (*slices)[1].slice_nodes.push_back(field_points->vert[i * res2 + j * res + k]);
+            (*slices)[2].slice_nodes.push_back(field_points->vert[i * res2 + j * res + k]);
           }
         }
       }
-      (*slices)[1].res = end - begin;
+      (*slices)[2].res = end - begin;
     }
-
-  }
-
-  if (para->getBool("Show Z Slices"))
-  {
-    double slice_k_position = para->getDouble("Current Z Slice Position");
-    int slice_k_num = res * slice_k_position;
-
-    (*slices)[2].slice_nodes.clear();
-    for (int i = begin; i < end; i++)
+    else
     {
-      for (int j = begin; j < end; j++)
+      //int slice_k_num = res * slice_k_position;
+      int slice_j_num = res * slice_k_position;
+
+      (*slices)[2].slice_nodes.clear();
+
+      for (int i = begin; i < end; i++)
       {
+        for (int j = slice_j_num; j < slice_j_num+1; j++)
+        {
+          for (int k = begin; k < end; k++)
+          {      
+            (*slices)[2].slice_nodes.push_back(field_points->vert[i * res2 + j * res + k]);
+          }
+        }
+        /*for (int j = begin; j < end; j++)
+        {
         for (int k = slice_k_num; k < slice_k_num+1; k++)
         {      
-          (*slices)[2].slice_nodes.push_back(field_points->vert[i * res2 + j * res + k]);
+        (*slices)[2].slice_nodes.push_back(field_points->vert[i * res2 + j * res + k]);
         }
+        }*/
       }
+      (*slices)[2].res = end - begin;
     }
-    (*slices)[2].res = end - begin;
   }
 }
 

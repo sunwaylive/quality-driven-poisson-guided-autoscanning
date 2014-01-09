@@ -93,8 +93,7 @@ void CameraParaDlg::initConnects()
   connect(ui->wlop_snap_shot_each_iteration,SIGNAL(clicked(bool)),this,SLOT(needSnapShotEachIteration(bool)));
   connect(ui->wlop_snapshot_index,SIGNAL(valueChanged(double)),this,SLOT(getSnapShotIndex(double)));
   connect(ui->pushButton_slice_animation, SIGNAL(clicked()), this, SLOT(sliceAnimation()));
-
-
+  connect(ui->pushButton_load_poisson_surface, SIGNAL(clicked()), this, SLOT(loadPoissonSurface()));
 }
 
 bool CameraParaDlg::initWidgets()
@@ -1250,6 +1249,42 @@ void CameraParaDlg::sliceAnimation()
       }
       update(); area->update(); area->updateGL();
     }
+  }
+}
+
+void CameraParaDlg::loadPoissonSurface()
+{
+  QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
+  if (!file_location.size()) 
+    return;
+
+  QDir dir(file_location);
+  if (!dir.exists()) 
+    return;
+
+  dir.setFilter(QDir::Files);
+  dir.setSorting(QDir::Name);
+
+  CMesh *poisson_surface = area->dataMgr.getCurrentPoissonSurface();
+
+  QFileInfoList list = dir.entryInfoList();
+  for (int i = 0; i < list.size(); ++i)
+  {
+    QFileInfo fileInfo = list.at(i);
+    QString f_name = fileInfo.fileName();
+
+    if (!f_name.endsWith(".ply"))
+      continue;
+
+    f_name = file_location + "\\" + f_name;
+
+    int mask = tri::io::Mask::IOM_ALL;
+    tri::io::ImporterPLY<CMesh>::Open(*poisson_surface, f_name.toAscii().data(), mask);
+    
+    //do something, like snapshot
+    global_paraMgr.glarea.setValue("Show Poisson Surface", BoolValue(true));
+    area->updateGL();
+    cout << i <<"th poisson surface vertices num: " << poisson_surface->vert.size() <<endl;
   }
 }
 

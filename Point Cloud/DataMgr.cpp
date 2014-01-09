@@ -36,12 +36,12 @@ void DataMgr::initDefaultScanCamera()
   //x axis
   init_scan_candidates.push_back(make_pair(Point3f(1.0f, 0.0f, 0.0f), Point3f(-1.0f, 0.0f, 0.0f)));
   init_scan_candidates.push_back(make_pair(Point3f(-1.0f, 0.0f, 0.0f), Point3f(1.0f, 0.0f, 0.0f)));
-  //y axis
+  //z axis
   init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f), Point3f(0.0f, 0.0f, -1.0f)));
   init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, -1.0f), Point3f(0.0f, 0.0f, 1.0f)));
-  //z axis
-  /*init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f), Point3f(0.0f, 0.0f, -1.0f)));
-  init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, -1.0f), Point3f(0.0f, 0.0f, 1.0f)));*/
+  //y axis
+  /*init_scan_candidates.push_back(make_pair(Point3f(0.0f, 1.0f, 0.0f), Point3f(0.0f, -1.0f, 0.0f)));
+  init_scan_candidates.push_back(make_pair(Point3f(0.0f, -1.0f, 0.0f), Point3f(0.0f, 1.0f, 0.0f)));*/
 
   //this should be deleted, for UI debug
   //for test
@@ -95,6 +95,11 @@ bool DataMgr::isScannedMeshEmpty()
 bool DataMgr::isScannedResultsEmpty()
 {
   return scanned_results.empty();
+}
+
+bool DataMgr::isPoissonSurfaceEmpty()
+{
+  return poisson_surface.vert.empty();
 }
 
 bool DataMgr::isViewGridsEmpty()
@@ -372,6 +377,11 @@ CMesh* DataMgr::getCurrentTemperalSamples()
 CMesh* DataMgr::getCurrentModel()
 {
   return &model;
+}
+
+CMesh* DataMgr::getCurrentPoissonSurface()
+{
+  return &poisson_surface;
 }
 
 CMesh* DataMgr::getCurrentOriginal()

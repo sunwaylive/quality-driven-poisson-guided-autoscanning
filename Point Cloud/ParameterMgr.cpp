@@ -130,7 +130,7 @@ void ParameterMgr::initGlareaParameter()
 	glarea.addParam(new RichBool("SnapShot Each Iteration", false));
 	glarea.addParam(new RichBool("No Snap Radius", false));
 	glarea.addParam(new RichBool("All Octree Nodes", false));
-
+  glarea.addParam(new RichBool("Show Poisson Surface", false));
 }
 
 

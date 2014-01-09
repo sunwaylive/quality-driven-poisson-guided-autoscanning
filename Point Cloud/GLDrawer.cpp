@@ -873,12 +873,7 @@ void GLDrawer::drawSlice(Slice& slice, double trans_val)
 			CVertex v1 = slice.slice_nodes[i * slice.res + j + 1];
 			CVertex v2 = slice.slice_nodes[(i+1) * slice.res + j + 1];
 			CVertex v3 = slice.slice_nodes[(i+1) * slice.res + j];
-
-			//GLColor c0 = getColorByType(v0);
-			//GLColor c1 = getColorByType(v1);
-			//GLColor c2 = getColorByType(v2);
-			//GLColor c3 = getColorByType(v3);
-
+      
       if (show_view_grid_slice)
       {
         GLColor c0 = isoValue2color(v0.eigen_confidence, grid_color_scale, grid_value_shift, true);

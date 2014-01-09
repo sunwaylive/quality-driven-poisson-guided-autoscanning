@@ -59,6 +59,7 @@ void MainWindow::initWidgets()
   ui.actionShow_NBV_Candidates->setChecked(paras->glarea.getBool("Show NBV Candidates"));
   ui.actionShow_Scan_Candidates->setChecked(paras->glarea.getBool("Show Scan Candidates"));
   ui.actionShow_Current_Scanned_Mesh->setChecked(paras->glarea.getBool("Show Scanned Mesh"));
+  ui.actionShow_Poisson_Surface->setChecked(paras->glarea.getBool("Show Poisson Surface"));
 }
 
 void MainWindow::initConnect()
@@ -129,6 +130,7 @@ void MainWindow::initConnect()
   connect(ui.actionShow_NBV_Candidates, SIGNAL(toggled(bool)), this, SLOT(showNBVCandidates(bool)));
   connect(ui.actionShow_Scan_Candidates, SIGNAL(toggled(bool)), this, SLOT(showScanCandidates(bool)));
   connect(ui.actionShow_Current_Scanned_Mesh, SIGNAL(toggled(bool)), this, SLOT(showScannedMesh(bool)));
+  connect(ui.actionShow_Poisson_Surface, SIGNAL(bool), this, SLOT(showPoissonSurface(bool)));
 
 	connect(sample_draw_type,SIGNAL(triggered(QAction *)),this,SLOT(setSmapleType(QAction *)));
 	connect(original_draw_type,SIGNAL(triggered(QAction *)),this,SLOT(setOriginalType(QAction *)));
@@ -731,6 +733,12 @@ void MainWindow::showScanCandidates(bool _val)
 void MainWindow::showScannedMesh(bool _val)
 {
   paras->glarea.setValue("Show Scanned Mesh", BoolValue(_val));
+  area->updateGL();
+}
+
+void MainWindow::showPoissonSurface(bool _val)
+{
+  paras->glarea.setValue("Show Poisson Surface", BoolValue(_val));
   area->updateGL();
 }
 
