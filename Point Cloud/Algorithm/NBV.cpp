@@ -493,7 +493,6 @@ void
             float iso_confidence = 1 - v.eigen_confidence;     
             float confidence_weight = coefficient1 * coefficient2;
 
-            
             if (use_max_propagation)
             {
               //t.eigen_confidence = (std::max)(float(t.eigen_confidence), float(confidence_weight * iso_confidence));          
@@ -533,8 +532,6 @@ void
     CVertex &v = iso_points->vert[i];
     //t is the ray_start_point
     v.is_ray_hit = true;
-
-
     //ray_hit_nbv_grids->vert.push_back(v);
 
     //get the x,y,z index of each iso_points
@@ -627,7 +624,6 @@ void
               t.eigen_confidence = confidence_weight * iso_confidence;
               t.N() = (v.P()-t.P()).Normalize();
               t.remember_iso_index = v.m_index;
-
             }
           }
           else
@@ -635,9 +631,6 @@ void
             //t.eigen_confidence += coefficient1 * iso_confidence;
             t.eigen_confidence += coefficient1 * 1.0;
           }
-
-
-
           // record hit_grid center index
           hit_grid_indexes.push_back(index);
         }//end for k
@@ -803,11 +796,18 @@ void
   for (int i = 0; i < nbv_candidates->vert.size(); i++)
   {
     CVertex& v = nbv_candidates->vert[i];
-     
-    if (GlobalFun::isPointInBoundingBox(v.P(), model, bin_length_x))
+    double dist_to_correspondese = GlobalFun::computeEulerDistSquare(v.P(), iso_points->vert[v.remember_iso_index].P());
+
+    if ( dist_to_correspondese <= camera_near_dist
+         || dist_to_correspondese >= camera_far_dist
+         || GlobalFun::isPointInBoundingBox(v.P(), model, bin_length_x))
+    {
       v.is_ignore = true;
+    }
     else
+    {
       nbv_candidate_num++;
+    }
   }
 
   GlobalFun::deleteIgnore(nbv_candidates);
@@ -1088,7 +1088,7 @@ void NBV::viewPrune()
   }
 
   GlobalFun::deleteIgnore(nbv_candidates);
-   cout << "after View Prune candidate num: " <<nbv_candidates->vert.size() <<endl;
+  cout << "after View Prune candidate num: " <<nbv_candidates->vert.size() <<endl;
 
   //get the top n = 4
   int topn = global_paraMgr.nbv.getInt("NBV Top N");

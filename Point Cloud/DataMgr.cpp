@@ -642,7 +642,7 @@ void DataMgr::savePly(QString fileName, CMesh& mesh)
   //mask += tri::io::Mask::IOM_FACEINDEX;
 
 	if (fileName.endsWith("ply"))
-		tri::io::ExporterPLY<CMesh>::Save(mesh, fileName.toAscii().data(), mask, false);
+	tri::io::ExporterPLY<CMesh>::Save(mesh, fileName.toAscii().data(), mask, false);
 }
 
 void DataMgr::normalizeROSA_Mesh(CMesh& mesh, bool is_original)

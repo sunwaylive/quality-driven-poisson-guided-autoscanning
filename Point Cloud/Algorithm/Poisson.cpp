@@ -1014,8 +1014,6 @@ void Poisson::runPoissonFieldAndExtractIsoPoints_ByEXE()
       }
     }
 
-
-
     field_points->vn = field_points->vert.size();
     cout << "field point size:  " << field_points->vn << endl;
     cout << "resolution:  " << res << endl;

@@ -119,6 +119,7 @@
     <addaction name="menuPoisson"/>
     <addaction name="actionSave_Parameter"/>
     <addaction name="actionConvert_ply_to_obj"/>
+    <addaction name="actionCompute_Normal_For_Poisson_Surface"/>
    </widget>
    <widget class="QMenu" name="menuRender">
     <property name="title">
@@ -937,6 +938,11 @@
    </property>
    <property name="text">
     <string>Show Poisson Surface</string>
+   </property>
+  </action>
+  <action name="actionCompute_Normal_For_Poisson_Surface">
+   <property name="text">
+    <string>Compute Normal For Poisson Surface</string>
    </property>
   </action>
  </widget>

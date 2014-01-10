@@ -68,7 +68,7 @@ void MainWindow::initConnect()
 	{
 		cout << "can not connect signal" << endl;
 	}
-
+  connect(ui.actionCompute_Normal_For_Poisson_Surface, SIGNAL(triggered()), this, SLOT(computeNormalForPoissonSurface()));
   connect(ui.actionConvert_ply_to_obj, SIGNAL(triggered()), this, SLOT(convertPlyToObj()));
   connect(ui.actionSave_Parameter, SIGNAL(triggered()), this, SLOT(savePara()));
 	connect(ui.actionImport_Ply, SIGNAL(triggered()), this, SLOT(openFile()));
@@ -130,7 +130,7 @@ void MainWindow::initConnect()
   connect(ui.actionShow_NBV_Candidates, SIGNAL(toggled(bool)), this, SLOT(showNBVCandidates(bool)));
   connect(ui.actionShow_Scan_Candidates, SIGNAL(toggled(bool)), this, SLOT(showScanCandidates(bool)));
   connect(ui.actionShow_Current_Scanned_Mesh, SIGNAL(toggled(bool)), this, SLOT(showScannedMesh(bool)));
-  connect(ui.actionShow_Poisson_Surface, SIGNAL(bool), this, SLOT(showPoissonSurface(bool)));
+  connect(ui.actionShow_Poisson_Surface, SIGNAL(toggled(bool)), this, SLOT(showPoissonSurface(bool)));
 
 	connect(sample_draw_type,SIGNAL(triggered(QAction *)),this,SLOT(setSmapleType(QAction *)));
 	connect(original_draw_type,SIGNAL(triggered(QAction *)),this,SLOT(setOriginalType(QAction *)));
@@ -505,6 +505,14 @@ void MainWindow::saveFile()
     if (file.endsWith("ply") && !area->dataMgr.isSamplesEmpty())
     {
       area->dataMgr.savePly(file, *area->dataMgr.getCurrentSamples());
+    }
+  }
+
+  if (global_paraMgr.glarea.getBool("Show Poisson Surface"))
+  {
+    if (file.endsWith("ply") && !area->dataMgr.isPoissonSurfaceEmpty())
+    {
+      area->dataMgr.savePly(file, *area->dataMgr.getCurrentPoissonSurface());
     }
   }
 }
@@ -1149,5 +1157,38 @@ void MainWindow::convertPlyToObj()
     int mask = tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL;
     tri::io::ImporterPLY<CMesh>::Open(ply, f_name.toAscii().data(), mask);
     tri::io::ExporterOBJ<CMesh>::Save(ply, out.toAscii().data(), mask);
+  }
+}
+
+void MainWindow::computeNormalForPoissonSurface()
+{
+  QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
+  if (!file_location.size()) 
+    return;
+
+  QDir dir(file_location);
+  if (!dir.exists()) 
+    return;
+
+  dir.setFilter(QDir::Files);
+  dir.setSorting(QDir::Name);
+  
+  QFileInfoList list = dir.entryInfoList();
+
+  for (int i = 0; i < list.size(); ++i)
+  {
+    QFileInfo fileInfo = list.at(i);
+    QString f_name = fileInfo.fileName();
+
+    if (!f_name.endsWith(".ply"))
+      continue;
+
+    QString in_ply = file_location + "\\" + f_name;
+    QString out_ply = file_location + "\\add_surface_normal_" + f_name;
+    CMesh ply_mesh;
+    int mask = tri::io::Mask::IOM_ALL;
+    tri::io::ImporterPLY<CMesh>::Open(ply_mesh, in_ply.toAscii().data(), mask);
+    //tri::UpdateNormals<CMesh>::PerFace(ply);
+    //tri::io::ExporterPLY<CMesh>::Save(ply_mesh, out_ply.toAscii().data(), mask);
   }
 }

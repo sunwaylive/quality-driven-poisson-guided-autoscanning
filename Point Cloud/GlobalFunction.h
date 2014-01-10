@@ -37,7 +37,6 @@ using namespace vcg;
 #define MyMax(a,b) (((a) > (b)) ? (a) : (b))  
 #define MyMin(a,b) (((a) < (b)) ? (a) : (b))  
 
-
 namespace GlobalFun
 {
   struct DesityAndIndex{

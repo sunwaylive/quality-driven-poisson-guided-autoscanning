@@ -494,6 +494,7 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
   vector<CMesh* > *scanned_results = area->dataMgr.getScannedResults();
   double merge_confidence_threshold = global_paraMgr.camera.getDouble("Merge Confidence Threshold");
   int merge_pow = static_cast<int>(global_paraMgr.nbv.getDouble("Merge Probability Pow"));
+  double probability_add_by_user = 0.0;
 
   //wsh added 12-24
   double radius_threshold = global_paraMgr.wLop.getDouble("CGrid Radius");
@@ -583,7 +584,7 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
         cout<<"sum_confidence: " << v_confidence[k] <<endl;
 
       if (v_confidence[k] > merge_confidence_threshold 
-      || (1.0f * rand() / (RAND_MAX+1.0) > pow((1 - v_confidence[k]), merge_pow))) //pow((1 - v_confidence[k]), merge_pow),(1 - pow(v_confidence[k], merge_pow))
+      || (1.0f * rand() / (RAND_MAX+1.0) > (pow((1 - v_confidence[k]), merge_pow) + probability_add_by_user))) //pow((1 - v_confidence[k]), merge_pow),(1 - pow(v_confidence[k], merge_pow))
       {
       v.is_ignore = true;
       skip_num++; 
@@ -1266,6 +1267,8 @@ void CameraParaDlg::loadPoissonSurface()
   dir.setSorting(QDir::Name);
 
   CMesh *poisson_surface = area->dataMgr.getCurrentPoissonSurface();
+  global_paraMgr.glarea.setValue("Show Poisson Surface", BoolValue(true));
+  initWidgets();
 
   QFileInfoList list = dir.entryInfoList();
   for (int i = 0; i < list.size(); ++i)
@@ -1278,12 +1281,11 @@ void CameraParaDlg::loadPoissonSurface()
 
     f_name = file_location + "\\" + f_name;
 
-    int mask = tri::io::Mask::IOM_ALL;
+    int mask = tri::io::Mask::IOM_FACENORMAL + tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL;
     tri::io::ImporterPLY<CMesh>::Open(*poisson_surface, f_name.toAscii().data(), mask);
-    
+    tri::UpdateNormals<CMesh>::PerVertexPerFace(*poisson_surface);
+    tri::io::ExporterPLY<CMesh>::Save(*poisson_surface, f_name.toAscii().data(), mask, false);
     //do something, like snapshot
-    global_paraMgr.glarea.setValue("Show Poisson Surface", BoolValue(true));
-    area->updateGL();
     cout << i <<"th poisson surface vertices num: " << poisson_surface->vert.size() <<endl;
   }
 }
@@ -1292,7 +1294,6 @@ void CameraParaDlg::needSnapShotEachIteration(bool _val)
 {
   global_paraMgr.glarea.setValue("SnapShot Each Iteration",BoolValue(_val));
 }
-
 
 void CameraParaDlg::getSnapShotIndex(double _val)
 {

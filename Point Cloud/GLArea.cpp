@@ -407,6 +407,19 @@ void GLArea::paintGL()
 			}
 		}
 
+    /*
+    if(para->getBool("Show Samples"))  
+    {
+    if(para->getBool("Show Samples Quad"))
+    glDrawer.draw(GLDrawer::QUADE, dataMgr.getCurrentSamples());
+    if(para->getBool("Show Samples Dot"))
+    glDrawer.draw(GLDrawer::DOT, dataMgr.getCurrentSamples());
+    if(para->getBool("Show Samples Circle"))
+    glDrawer.draw(GLDrawer::CIRCLE, dataMgr.getCurrentSamples());	
+    if (para->getBool("Show Samples Sphere"))
+    glDrawer.draw(GLDrawer::SPHERE, dataMgr.getCurrentSamples());	
+    }
+    */
 		if (para->getBool("Show Scanned Mesh"))
 		{
 			//draw scanned mesh
@@ -420,7 +433,16 @@ void GLArea::paintGL()
 					//if the scanned mesh is invisible, then continue
 					if (!((*it)->vert[0].is_scanned_visible)) continue;
 
-					glDrawer.draw(GLDrawer::DOT, *it);
+          //glDrawer.draw(GLDrawer::DOT, *it);
+          
+          if(para->getBool("Show Samples Quad"))
+            glDrawer.draw(GLDrawer::QUADE, *it);
+          if(para->getBool("Show Samples Dot"))
+            glDrawer.draw(GLDrawer::DOT, *it);
+          if(para->getBool("Show Samples Circle"))
+            glDrawer.draw(GLDrawer::CIRCLE, *it);	
+          if (para->getBool("Show Samples Sphere"))
+            glDrawer.draw(GLDrawer::SPHERE, *it);	
 				}
 			}
 		}
@@ -429,7 +451,6 @@ void GLArea::paintGL()
     {
       if (!dataMgr.isPoissonSurfaceEmpty())
       {
-        cout << "draw poisson surface!" <<endl;
         glw.m = dataMgr.getCurrentPoissonSurface();
         //glw.Draw(GLW::DMWire, GLW::CMPerMesh, GLW::TMNone);
         glw.Draw(GLW::DMSmooth, GLW::CMPerMesh, GLW::TMNone);
