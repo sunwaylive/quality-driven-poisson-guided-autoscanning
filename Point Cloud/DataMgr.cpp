@@ -1293,7 +1293,7 @@ void DataMgr::saveSkeletonAsSkel(QString fileName)
   strStream << "Scanned_Candidates " << scan_candidates.size() << " " << endl;
   for (int i = 0; i < scan_candidates.size(); ++i)
   {
-    strStream << scan_candidates[i].first.X() << " " << scan_candidates[i].first.Y() << " " << scan_candidates[i].first.Z()
+    strStream << scan_candidates[i].first.X() << " " << scan_candidates[i].first.Y() << " " << scan_candidates[i].first.Z() <<" "
               << scan_candidates[i].second.X() << " " << scan_candidates[i].second.Y() << " "<< scan_candidates[i].second.Z() <<endl;
   }
   strStream << endl;
