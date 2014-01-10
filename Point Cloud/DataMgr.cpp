@@ -773,7 +773,7 @@ void DataMgr::recomputeQuad()
     original.vert[i].recompute_m_render();
   }
 
-  recomputeCandidatesAxis();
+  
 }
 
 bool cmp_angle(const CVertex &v1, const CVertex &v2)
@@ -801,6 +801,7 @@ void DataMgr::savePR2_orders(QString fileName_commands)
   CVertex v_start;
   //v_start.P() = Point3f(131.07, -135.973, -113.974);
   v_start.P() = Point3f(116.07, 139, 159);
+  //v_start.P() = Point3f(0, 0, 0);
 
   PR2_order order = computePR2orderFromTwoCandidates(v_start, nbv_candidates.vert[0]);
   pr2_orders.push_back(order);
@@ -844,8 +845,8 @@ void DataMgr::savePR2_orders(QString fileName_commands)
 
     outfile  << order.L_to_R_translation.X() << " "
              << order.L_to_R_translation.Y() << " "
-             << order.L_to_R_translation.Z();
-    outfile << order.L_to_R_rotation_Qua.X() << " "
+             << order.L_to_R_translation.Z() << " "
+    /*outfile */<< order.L_to_R_rotation_Qua.X() << " "
             << order.L_to_R_rotation_Qua.Y() << " "
             << order.L_to_R_rotation_Qua.Z() << " "
             << order.L_to_R_rotation_Qua.W() << endl;
@@ -861,6 +862,11 @@ PR2_order DataMgr::computePR2orderFromTwoCandidates(CVertex v0, CVertex v1)
   Point3f dir0 = Point3f(0, v0.P().Y(), v0.P().Z());
   Point3f dir1 = Point3f(0, v1.P().Y(), v1.P().Z());
   double angle = GlobalFun::computeRealAngleOfTwoVertor(dir0, dir1) * 3.1415926 / 180.;
+  Point3f up_direction = dir0 ^ dir1;
+  if (up_direction.X() > 0)
+  {
+    angle = 3.1415926*2 - angle;
+  }
   order.left_rotation = angle;
 
   //cout << "2 to 3" << endl;
@@ -911,6 +917,8 @@ PR2_order DataMgr::computePR2orderFromTwoCandidates(CVertex v0, CVertex v1)
 
 void DataMgr::nbvReoders()
 {
+  recomputeCandidatesAxis();
+
   for (int i = 0; i < nbv_candidates.vert.size(); i++)
   {
     CVertex& v = nbv_candidates.vert[i];
@@ -923,7 +931,7 @@ void DataMgr::nbvReoders()
     Point3f X_axis(1, 0, 0);
     double angle = GlobalFun::computeRealAngleOfTwoVertor(direction, Z_axis);
     Point3f up_direction = Z_axis ^ direction;
-    if (up_direction.X() < 0)
+    if (up_direction.X() > 0)
     {
       angle = 360 - angle;
     }
@@ -2382,18 +2390,17 @@ void DataMgr::coordinateTransform()
 
 //void DataMgr::coordinateTransform()
 //{
-//  //int index = rand() % samples.vert.size();
-//  //CVertex v = samples.vert[index];
-//  //Point3f anchor(0, 0, 0);
-//  //Point3f direction(0, 1, 0);
+//  int index = rand() % samples.vert.size();
+//  CVertex v = samples.vert[index];
+//  Point3f anchor(0, 0, 0);
+//  Point3f direction(0, 1, 0);
 //
-//  //v.P()[0] = 0.0;
-//  //Point3f direction2 = v.P().Normalize();
-//  //cout << "Angle" << GlobalFun::computeRealAngleOfTwoVertor(direction, direction2) << endl;
+//  v.P()[0] = 0.0;
+//  Point3f direction2 = v.P().Normalize();
+//  cout << "Angle " << GlobalFun::computeRealAngleOfTwoVertor(direction, direction2) << endl;
 //
 //  ifstream infile_new("transform.txt");
 //  std::string temp_str;
-//
 //
 //
 //  vcg::Quaternionf L_to_R_rotation_Qua;

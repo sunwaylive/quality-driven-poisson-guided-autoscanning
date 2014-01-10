@@ -128,7 +128,7 @@ NBV::runOneKeyNBV()
   out.close();
 
   timer.start("optimize view direction");
-  for (int i = 0; i < 5; i++)
+  for (int i = 0; i < 1; i++)
   {
     bool have_direction_move = updateViewDirections();
     if (!have_direction_move)

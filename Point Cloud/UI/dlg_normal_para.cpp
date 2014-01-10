@@ -88,10 +88,10 @@ void NormalParaDlg::isAPCA(bool _val)
 
 void NormalParaDlg::reorientateNormal()
 {
-	if (area->dataMgr.isSamplesEmpty())
-	{
-		return;
-	}
+	//if (area->dataMgr.isSamplesEmpty())
+	//{
+	//	return;
+	//}
 
   CMesh* samples;
   

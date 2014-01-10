@@ -1359,6 +1359,7 @@ void Poisson::runPoissonFieldAndExtractIsoPoints()
     tentative_mesh.vn = tentative_mesh.vert.size();
     tentative_mesh.fn = tentative_mesh.face.size();
     vcg::tri::UpdateNormals<CMesh>::PerVertex(tentative_mesh);
+    //vcg::tri::UpdateNormals<CMesh>::PerFace(tentative_mesh);
 
     float radius = 0;
     int sampleNum = para->getDouble("Poisson Disk Sample Number");

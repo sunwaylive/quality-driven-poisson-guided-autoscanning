@@ -262,11 +262,12 @@ void GLArea::paintGL()
 			{
 				if (!dataMgr.isNBVCandidatesEmpty())
 				{
-					//glDrawer.draw(GLDrawer::NORMAL, dataMgr.getNbvCandidates());
+					glDrawer.draw(GLDrawer::NORMAL, dataMgr.getNbvCandidates());
           glDrawer.drawCandidatesAxis(dataMgr.getNbvCandidates());
-          drawCandidatesConnectISO();
+          //drawCandidatesConnectISO();
+
           //glDrawer.drawMeshLables(dataMgr.getNbvCandidates(), &painter);
-          //glDrawer.drawMeshLables(dataMgr.getNbvCandidates(), &painter);
+    
 				}
 			}else if (para->getBool("Show View Grids"))
 			{
@@ -680,8 +681,16 @@ void GLArea::openByDrop(QString fileName)
   }
 
   emit needUpdateStatus();
-	initAfterOpenFile();
-	updateGL();
+	
+  //initAfterOpenFile();
+  dataMgr.getInitRadiuse();
+  //dataMgr.recomputeQuad();
+  initView();
+  wlop.setFirstIterate();
+  skeletonization.setFirstIterate();
+  emit needUpdateStatus();
+
+  updateGL();
 }
 
 void GLArea::loadDefaultModel()
@@ -1569,7 +1578,7 @@ GLArea::saveNBV(QString fileName)
   dataMgr.savePly(fileName_nbvply, nbv);
 
   QString fileName_commands = fileName;
-  fileName_commands.replace(".ply", ".PR2_commands");
+  fileName_commands.replace(".ply", ".txt");
 
   dataMgr.savePR2_orders(fileName_commands);
 
@@ -2621,7 +2630,9 @@ void GLArea::drawCandidatesConnectISO()
 
     glLineWidth(width); 
     GLColor color(qcolor);
+
     glColor4f(color.r, color.g, color.b, 1);  
+    glColor3f(0, 0, 1);
 
     Point3f p = v.P(); 
     Point3f m0 = v.N();

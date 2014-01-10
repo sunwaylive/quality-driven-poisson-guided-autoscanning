@@ -649,7 +649,7 @@ MainWindow::savePara()
 void MainWindow::nbvReOrders()
 {
   area->dataMgr.nbvReoders();
-
+  area->updateGL();
 }
 
 void MainWindow::saveViewGridsForVoreen()
