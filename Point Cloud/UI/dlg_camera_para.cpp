@@ -76,6 +76,9 @@ void CameraParaDlg::initConnects()
   connect(ui->step4_run_New_Scan, SIGNAL(clicked()), this, SLOT(runStep4NewScans()));
   connect(ui->pushButton_wlop_on_scanned_mesh, SIGNAL(clicked()), this, SLOT(runWlopOnScannedMesh()));
   connect(ui->pushButton_ICP, SIGNAL(clicked()), this, SLOT(runICP()));
+  connect(ui->pushButton_remove_sample_outliers, SIGNAL(clicked()), this, SLOT(runRemoveSampleOutliers()));
+  connect(ui->pushButton_remove_low_confidence_samples, SIGNAL(clicked()), this, SLOT(runRemoveSamplesWithLowConfidence()));
+  connect(ui->pushButton_add_samples_to_original, SIGNAL(clicked()), this, SLOT(runAddSamplesToOiriginal()));
 
   connect(ui->rotate_center_X,SIGNAL(valueChanged(double)),this,SLOT(getRotateCenterX(double)));
   connect(ui->rotate_center_Y,SIGNAL(valueChanged(double)),this,SLOT(getRotateCenterY(double)));
@@ -958,11 +961,7 @@ void CameraParaDlg::runWlopOnScannedMesh()
   }
 }
 
-void CameraParaDlg::runICP()
-{
-  //GlobalFun::computeICP(area->dataMgr.getCurrentSamples(), area->dataMgr.temperal_sample);
-  GlobalFun::computeICP(area->dataMgr.getCurrentSamples(), area->dataMgr.getCurrentOriginal());
-}
+
 
 void
 CameraParaDlg::runOneKeyNbvIteration()
@@ -1245,3 +1244,120 @@ void CameraParaDlg::getSnapShotIndex(double _val)
   m_paras->glarea.setValue("Snapshot Index", DoubleValue(_val));
   area->updateGL();
 }
+
+
+void CameraParaDlg::runRemoveSampleOutliers()
+{
+	//area->removeOutliers();
+	
+	double outlier_percentage = global_paraMgr.wLop.getDouble("Outlier Percentage");
+	GlobalFun::removeOutliers(area->dataMgr.getCurrentSamples(), global_paraMgr.data.getDouble("CGrid Radius"), outlier_percentage);
+	cout<<"has removed samples outliers"<<endl;
+
+	area->initView();
+	area->updateGL();
+}
+
+void CameraParaDlg::runRemoveSamplesWithLowConfidence()
+{
+  if (area->dataMgr.isIsoPointsEmpty() || area->dataMgr.isSamplesEmpty())
+  {
+    cout << "it required Sample and ISO points!" << endl;
+    return;
+  }
+
+  vector<CMesh* > *scanned_results = area->dataMgr.getScannedResults();
+  double merge_confidence_threshold = global_paraMgr.camera.getDouble("Merge Confidence Threshold");
+  int merge_pow = static_cast<int>(global_paraMgr.nbv.getDouble("Merge Probability Pow"));
+
+  double radius_threshold = global_paraMgr.wLop.getDouble("CGrid Radius");
+  double radius2 = radius_threshold * radius_threshold;
+  double iradius16 = -4/radius2;
+
+  double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
+  double sigma_threshold = pow(max(1e-8,1-cos(sigma/180.0*3.1415926)), 2);
+  CMesh* iso_points = area->dataMgr.getCurrentIsoPoints();
+
+  CMesh* samples = area->dataMgr.getCurrentSamples();
+  //CMesh* iso_points = area->dataMgr.getCurrentIsoPoints();
+
+  Timer time;
+  time.start("Sample ISOpoints Neighbor Tree!!");
+  GlobalFun::computeBallNeighbors(samples, iso_points, 
+                                  radius_threshold, samples->bbox);
+  time.end();
+
+  double max_confidence = 0.0f;
+  double min_confidence = BIG;
+
+  for (int i = 0; i < samples->vert.size(); i++)
+  {
+    CVertex& v = samples->vert[i];
+
+    double sum_confidence = 0.0;
+    double sum_w = 0.0;
+
+    for (int j = 0; j < v.original_neighbors.size(); j++)
+    {
+      int iso_index = v.original_neighbors[j];
+      CVertex& t = iso_points->vert[iso_index];
+
+      double dist2 = GlobalFun::computeEulerDistSquare(v.P(), t.P());
+      double dist_diff = exp(dist2 * iradius16);
+
+      sum_confidence += dist_diff * t.eigen_confidence;
+      sum_w += 1;
+    }
+
+    if (v.original_neighbors.size() > 0 )
+      sum_confidence /= sum_w;
+
+    v.eigen_confidence = sum_confidence;
+
+    max_confidence = sum_confidence > max_confidence ? sum_confidence : max_confidence;
+    min_confidence = sum_confidence < min_confidence ? sum_confidence : min_confidence;
+  }
+  
+
+
+  for (int i = 0; i < samples->vert.size(); i++)
+  {
+    CVertex& v = samples->vert[i];
+
+    v.eigen_confidence = (v.eigen_confidence - min_confidence) / (max_confidence - min_confidence);
+
+    if (v.eigen_confidence > merge_confidence_threshold 
+      || (1.0f * rand() / (RAND_MAX+1.0) > pow((1 - v.eigen_confidence), merge_pow)))
+    {
+      v.is_ignore = true;
+      continue;
+    }
+  }
+
+  GlobalFun::deleteIgnore(samples);
+
+  area->updateUI();
+
+
+}
+
+void CameraParaDlg::runAddSamplesToOiriginal()
+{
+	CMesh* samples = area->dataMgr.getCurrentSamples();
+	CMesh* original = area->dataMgr.getCurrentOriginal();
+	
+	for (int i = 0; i < samples->vert.size(); i++)
+	{
+		CVertex t = samples->vert[i];
+		t.is_original = true;
+		t.m_index = original->vert.size() + i;
+
+		original->vert.push_back(t);
+	}
+}
+
+void CameraParaDlg::runICP()
+{
+	GlobalFun::computeICP(area->dataMgr.getCurrentSamples(), area->dataMgr.getCurrentOriginal());
+}
+

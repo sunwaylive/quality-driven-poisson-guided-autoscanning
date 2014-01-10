@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -321,19 +321,6 @@
      </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_ICP">
-     <property name="geometry">
-      <rect>
-       <x>36</x>
-       <y>791</y>
-       <width>191</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>ICP On Original、Samples</string>
      </property>
     </widget>
     <widget class="QDoubleSpinBox" name="doubleSpinBox_merge_confidence_threshold">
@@ -1048,6 +1035,58 @@
      </property>
      <property name="text">
       <string>Load Real Initial Scan</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_remove_low_confidence_samples">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>600</y>
+       <width>201</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Remove samples with low confidence</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_add_samples_to_original">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>640</y>
+       <width>201</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Add samples to Original</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_ICP">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>560</y>
+       <width>191</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>ICP On Original、Samples</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_remove_sample_outliers">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>520</y>
+       <width>201</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Remove samples outliers</string>
      </property>
     </widget>
    </widget>

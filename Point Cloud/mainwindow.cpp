@@ -1067,6 +1067,8 @@ void MainWindow::addSamplesToOriginal()
     original->vert.push_back(t);
   }
 
+
+
 }
 
 void MainWindow::deleteIgnore()
