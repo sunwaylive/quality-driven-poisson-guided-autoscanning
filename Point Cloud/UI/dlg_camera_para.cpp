@@ -1337,8 +1337,6 @@ void CameraParaDlg::runRemoveSamplesWithLowConfidence()
   GlobalFun::deleteIgnore(samples);
 
   area->updateUI();
-
-
 }
 
 void CameraParaDlg::runAddSamplesToOiriginal()
@@ -1358,6 +1356,6 @@ void CameraParaDlg::runAddSamplesToOiriginal()
 
 void CameraParaDlg::runICP()
 {
-	GlobalFun::computeICP(area->dataMgr.getCurrentSamples(), area->dataMgr.getCurrentOriginal());
+	GlobalFun::computeICP(area->dataMgr.getCurrentOriginal(), area->dataMgr.getCurrentSamples());
 }
 
