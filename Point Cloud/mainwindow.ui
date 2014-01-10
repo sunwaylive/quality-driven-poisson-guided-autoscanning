@@ -247,6 +247,8 @@
    <addaction name="actionClear_Data"/>
    <addaction name="actionNormalize"/>
    <addaction name="actionRemove_Outlier"/>
+   <addaction name="actionSave_NBV"/>
+   <addaction name="actionNBV_ReOrders"/>
    <addaction name="separator"/>
    <addaction name="actionDownSample"/>
    <addaction name="actionSkeleton_Setting"/>

@@ -104,6 +104,8 @@ private slots:
   void rotateAnimation();
   void sliceAnimation();
 
+  void moveTranslation();
+
 
 private:
 	Ui::camera_paras * ui;

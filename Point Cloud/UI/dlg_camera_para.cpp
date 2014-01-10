@@ -95,7 +95,9 @@ void CameraParaDlg::initConnects()
   connect(ui->wlop_snapshot_index,SIGNAL(valueChanged(double)),this,SLOT(getSnapShotIndex(double)));
   connect(ui->pushButton_slice_animation, SIGNAL(clicked()), this, SLOT(sliceAnimation()));
 
+  connect(ui->pushButton_pick_center, SIGNAL(clicked()), this, SLOT(moveTranslation()));
 
+  
 }
 
 bool CameraParaDlg::initWidgets()
@@ -1359,3 +1361,20 @@ void CameraParaDlg::runICP()
 	GlobalFun::computeICP(area->dataMgr.getCurrentOriginal(), area->dataMgr.getCurrentSamples());
 }
 
+void CameraParaDlg::moveTranslation()
+{
+  ifstream infile("artect_movement.txt");
+  CMesh* samples = area->dataMgr.getCurrentSamples();
+  Point3f movement;
+  infile >> movement.X() >> movement.Y() >> movement.Z();
+  cout << "movement " << endl;
+  GlobalFun::printPoint3(cout, movement);
+  for (int i = 0; i < samples->vert.size(); i++)
+  {
+    CVertex& v = samples->vert[i];
+
+    v.P() -= movement;
+  }
+
+  return;
+}

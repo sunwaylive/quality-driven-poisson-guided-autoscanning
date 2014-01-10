@@ -152,7 +152,7 @@ void ParameterMgr::initDrawerParameter()
 	drawer.addParam(new RichDouble("Sample Dot Size", 6));
 	drawer.addParam(new RichDouble("ISO Dot Size", 4));
 	drawer.addParam(new RichDouble("Original Dot Size", 1));
-	drawer.addParam(new RichDouble("Normal Line Width", 3));
+	drawer.addParam(new RichDouble("Normal Line Width", 2));
 	drawer.addParam(new RichDouble("Normal Line Length", 0.25f));
 
 	drawer.addParam(new RichColor("Background Color", QColor(255, 255, 255) ));
@@ -398,8 +398,8 @@ void ParameterMgr::initCameraParameter()
 
   //camera.addParam(new RichDouble("Camera Far Distance", 30.0f));   //cm
   //camera.addParam(new RichDouble("Camera Near Distance", 17.0f));  //cm
-  camera.addParam(new RichDouble("Camera Far Distance", 22.2f));   //cm
-  camera.addParam(new RichDouble("Camera Near Distance", 19.6f));  //cm
+  camera.addParam(new RichDouble("Camera Far Distance", 24.f));   //cm
+  camera.addParam(new RichDouble("Camera Near Distance", 20.f));  //cm
   camera.addParam(new RichDouble("Optimal Plane Width", 4.0f));    //cm
   camera.addParam(new RichDouble("Predicted Model Size", 20.0f));  //cm lion:20
   camera.addParam(new RichDouble("Camera Horizon Dist", 14.0f));   //cm
