@@ -104,8 +104,9 @@ void ParameterMgr::initGlareaParameter()
 
 	glarea.addParam(new RichPoint3f("Light Position", vcg::Point3f(-4.0, -4.0, -4.0)));
 	glarea.addParam(new RichColor("Light Ambient Color", QColor(55, 55, 55)));
-	glarea.addParam(new RichColor("Light Diffuse Color", QColor(164, 241, 101)));
-	glarea.addParam(new RichColor("Light Specular Color", QColor(255, 255, 255)));
+	//glarea.addParam(new RichColor("Light Diffuse Color", QColor(164, 241, 101)));
+  glarea.addParam(new RichColor("Light Diffuse Color", QColor(160, 160, 164)));	
+  glarea.addParam(new RichColor("Light Specular Color", QColor(255, 255, 255)));
 
 	//glarea.addParam(new RichPoint3f("Light Position", vcg::Point3f(4.0, 4.0, 4.0)));
 	//glarea.addParam(new RichColor("Light Ambient Color", QColor(0.0, 0.0, 0.0)));

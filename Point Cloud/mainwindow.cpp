@@ -988,10 +988,10 @@ void MainWindow::featureColor()
 void MainWindow::recomputeQuad()
 {
 	//cout << "recompute quad" << endl;
-	if (area->dataMgr.isSamplesEmpty())
-	{
-		return;
-	}
+	//if (area->dataMgr.isSamplesEmpty())
+	//{
+	//	return;
+	//}
 
 	area->dataMgr.recomputeQuad();
 	area->updateGL();
