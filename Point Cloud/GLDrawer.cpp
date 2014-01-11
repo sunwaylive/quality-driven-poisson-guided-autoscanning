@@ -917,7 +917,7 @@ void GLDrawer::drawMeshLables(CMesh *mesh, QPainter *painter)
     CVertex& v = mesh->vert[i];
 
 
-    glPushAttrib(GL_LIGHTING_BIT | GL_CURRENT_BIT | GL_DEPTH_BUFFER_BIT );
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
     glDepthFunc(GL_ALWAYS);
     glDisable(GL_LIGHTING);
 

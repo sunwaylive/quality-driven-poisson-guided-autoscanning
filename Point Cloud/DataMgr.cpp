@@ -811,7 +811,7 @@ void DataMgr::savePR2_orders(QString fileName_commands)
   //v_start.P() = scanner_position;
   v_start.P() = Point3f(164, -7, -254);
   
-  cout << "!!!scanner_position after normalize" << endl;
+  cout << "!!!scanner_position before normalize" << endl;
   GlobalFun::printPoint3(cout, v_start.P());
   
   CVertex first_v = nbv_candidates.vert[0];
@@ -905,7 +905,7 @@ void DataMgr::nbvReoders()
   {
     CVertex& v = nbv_candidates.vert[i];
 
-    if (v.P().X() < -0.3)
+    if (v.P().X() < -0.4)
     {
       cout << "rotate Y axis" << endl;
 

@@ -217,6 +217,8 @@
     <addaction name="actionCamera"/>
     <addaction name="actionShow_View_Grids"/>
     <addaction name="actionShow_NBV_Candidates"/>
+    <addaction name="actionShow_NBV_Label"/>
+    <addaction name="actionShow_NBV_Ball"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuAlgorithom"/>
@@ -930,6 +932,22 @@
   <action name="actionNBV_ReOrders">
    <property name="text">
     <string>NBV ReOrders</string>
+   </property>
+  </action>
+  <action name="actionShow_NBV_Label">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show NBV Label</string>
+   </property>
+  </action>
+  <action name="actionShow_NBV_Ball">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show NBV Ball</string>
    </property>
   </action>
  </widget>

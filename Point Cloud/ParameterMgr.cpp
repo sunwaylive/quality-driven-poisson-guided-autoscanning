@@ -96,6 +96,8 @@ void ParameterMgr::initGlareaParameter()
 	glarea.addParam(new RichBool("Multiply Pick Point", true) );
 
 	glarea.addParam(new RichBool("Show Bounding Box", true));
+  glarea.addParam(new RichBool("Show NBV Label", false));
+  glarea.addParam(new RichBool("Show NBV Ball", true));
 
 
 	glarea.addParam(new RichBool("GLarea Busying", false) );

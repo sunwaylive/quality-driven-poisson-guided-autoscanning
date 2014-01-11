@@ -146,8 +146,16 @@ void GLArea::resizeGL(int w, int h)
 
 void GLArea::paintGL() 
 {
-  QPainter painter(this);
   
+  if (para->getBool("Show NBV Label"))
+  {
+    QPainter painter(this);
+
+    //painter.begin(this);
+    glDrawer.drawMeshLables(dataMgr.getNbvCandidates(), &painter);
+    //painter.end();
+  }
+
 	paintMutex.lock();{
 
 		if (is_paintGL_locked)
@@ -266,9 +274,6 @@ void GLArea::paintGL()
 					glDrawer.draw(GLDrawer::NORMAL, dataMgr.getNbvCandidates());
           glDrawer.drawCandidatesAxis(dataMgr.getNbvCandidates());
           //drawCandidatesConnectISO();
-
-          glDrawer.drawMeshLables(dataMgr.getNbvCandidates(), &painter);
-    
 				}
 			}else if (para->getBool("Show View Grids"))
 			{
@@ -510,12 +515,10 @@ void GLArea::paintGL()
 
 
 
-    if (para->getBool("Show Normal")) 
+    if (para->getBool("Show NBV Candidates")
+       && para->getBool("Show NBV Ball")) 
     {
-      if (para->getBool("Show NBV Candidates"))
-      {
-        drawNBVBall();
-      }
+       drawNBVBall();
     }
     else
       if (para->getBool("Show Radius")&& !(takeSnapTile && para->getBool("No Snap Radius"))) 
@@ -545,6 +548,9 @@ void GLArea::paintGL()
 		}
 
 	}
+
+
+
 PAINT_RETURN:
 	paintMutex.unlock();
 }
@@ -787,7 +793,7 @@ void GLArea::drawNBVBall()
   glPushMatrix();
   glTranslatef(center[0], center[1], center[2]);
   //glutSolidSphere(radius, 40, 40);
-  glutWireSphere(radius, 140, 140);
+  glutWireSphere(radius, 90, 90);
   
   glPopMatrix();
   

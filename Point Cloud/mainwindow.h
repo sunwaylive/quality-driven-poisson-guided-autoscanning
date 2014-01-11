@@ -103,6 +103,9 @@ private slots:
   void showColorfulBranches(bool _val);
   void showBox(bool _val);
   void showConfidenceColor(bool _val);
+  void showNBVLables(bool _val);
+  void showNBVBall(bool _val);
+
 
   void showIsoPoints(bool _val);
   void useIsoInterval(bool _val);
