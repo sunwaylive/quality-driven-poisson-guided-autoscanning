@@ -815,7 +815,7 @@ void GLArea::removeBadCandidates()
 
   double save_radius = GlobalFun::computeEulerDist(scanner_position_normalize, center);
 
-  double radius_threshold = global_paraMgr.data.getDouble("CGrid Radius") * 2;
+  double radius_threshold = global_paraMgr.data.getDouble("CGrid Radius") * 4.1;
 
   CMesh* nbv_candidates = dataMgr.getNbvCandidates();
   for (int i = 0; i < nbv_candidates->vert.size(); i++)
@@ -2706,37 +2706,37 @@ void GLArea::figureSnapShot()
 
 void GLArea::drawCandidatesConnectISO()
 {
-  double width = global_paraMgr.drawer.getDouble("Normal Line Width");
-  double length = global_paraMgr.drawer.getDouble("Normal Line Length");
-  //double half_length = normal_length / 2.0;
-  QColor qcolor = global_paraMgr.drawer.getDouble("Normal Line Color");
+  //double width = global_paraMgr.drawer.getDouble("Normal Line Width");
+  //double length = global_paraMgr.drawer.getDouble("Normal Line Length");
+  ////double half_length = normal_length / 2.0;
+  //QColor qcolor = global_paraMgr.drawer.getDouble("Normal Line Color");
 
-  CMesh* candidates = dataMgr.getNbvCandidates();
-  CMesh* iso_points = dataMgr.getCurrentIsoPoints();
+  //CMesh* candidates = dataMgr.getNbvCandidates();
+  //CMesh* iso_points = dataMgr.getCurrentIsoPoints();
 
-  for (int i = 0; i < candidates->vert.size(); i++)
-  {
-    CVertex& v = candidates->vert[i];
+  //for (int i = 0; i < candidates->vert.size(); i++)
+  //{
+  //  CVertex& v = candidates->vert[i];
 
-    glLineWidth(width); 
-    GLColor color(qcolor);
+  //  glLineWidth(width); 
+  //  GLColor color(qcolor);
 
-    glColor4f(color.r, color.g, color.b, 1);  
-    glColor3f(0, 0, 1);
+  //  glColor4f(color.r, color.g, color.b, 1);  
+  //  glColor3f(0, 0, 1);
 
-    Point3f p = v.P(); 
-    Point3f m0 = v.N();
-    Point3f m1 = v.eigen_vector0;
-    Point3f m2 = v.eigen_vector1;
+  //  Point3f p = v.P(); 
+  //  Point3f m0 = v.N();
+  //  Point3f m1 = v.eigen_vector0;
+  //  Point3f m2 = v.eigen_vector1;
 
-    int remember_index = v.remember_iso_index;
-    CVertex tp = iso_points->vert.at(remember_index);
-    // Z
-    glBegin(GL_LINES);	
-    glVertex3d(p[0], p[1], p[2]);
-    glVertex3f(tp[0], tp[1], tp[2]);
-    glEnd(); 
-  }
+  //  int remember_index = v.remember_iso_index;
+  //  CVertex tp = iso_points->vert.at(remember_index);
+  //  // Z
+  //  glBegin(GL_LINES);	
+  //  glVertex3d(p[0], p[1], p[2]);
+  //  glVertex3f(tp[0], tp[1], tp[2]);
+  //  glEnd(); 
+  //}
 
 }
 

@@ -874,7 +874,10 @@ void DataMgr::savePR2_orders(QString fileName_commands)
 
 void DataMgr::nbvReoders()
 {
+  Timer timer;
+  timer.start("1");
   recomputeCandidatesAxis();
+  timer.insert("2");
 
   for (int i = 0; i < nbv_candidates.vert.size(); i++)
   {
@@ -895,9 +898,9 @@ void DataMgr::nbvReoders()
 
     v.ground_angle = 360 - angle;
   }
-
+  timer.insert("3");
   sort(nbv_candidates.vert.begin(), nbv_candidates.vert.end(), cmp_angle);
-
+  timer.insert("4");
   vector<CVertex> up_candidates;
   vector<CVertex> down_candidates;
 
@@ -933,7 +936,7 @@ void DataMgr::nbvReoders()
       up_candidates.push_back(v);
     }
   }
-
+  timer.insert("5");
   nbv_candidates.vert.clear();
   for (int i = 0; i < up_candidates.size(); i++)
   {
@@ -944,7 +947,7 @@ void DataMgr::nbvReoders()
     nbv_candidates.vert.push_back(down_candidates[i]);
   }
 
-
+  timer.insert("6");
   for (int i = 0; i < nbv_candidates.vert.size(); i++)
   {
     CVertex& v = nbv_candidates.vert[i];
