@@ -249,6 +249,7 @@
    <addaction name="actionRemove_Outlier"/>
    <addaction name="actionSave_NBV"/>
    <addaction name="actionNBV_ReOrders"/>
+   <addaction name="actionSwitch_Sample_NBV"/>
    <addaction name="separator"/>
    <addaction name="actionDownSample"/>
    <addaction name="actionSkeleton_Setting"/>
@@ -923,7 +924,7 @@
   </action>
   <action name="actionSwitch_Sample_NBV">
    <property name="text">
-    <string>Switch Sample NBV</string>
+    <string>Switch S_N</string>
    </property>
   </action>
   <action name="actionNBV_ReOrders">

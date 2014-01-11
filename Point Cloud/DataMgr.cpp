@@ -805,17 +805,27 @@ void DataMgr::savePR2_orders(QString fileName_commands)
   CVertex v_start = nbv_candidates.vert[0];
   //v_start.P() = Point3f(131.07, -135.973, -113.974);
   //v_start.P() = Point3f(116.07, 139, 159);
-  v_start.P() = Point3f(135, -7, -213);
+  //v_start.P() = Point3f(135, -7, -223);
+  v_start.P() = Point3f(135, -7, -223);
+  
   CVertex first_v = nbv_candidates.vert[0];
-  //v_start.P() = (v_start.P() + original_center_point) * max_normalize_length;
+
+  cout << "origin after normalize" << endl;
+  GlobalFun::printPoint3(cout, first_v.P());
+
   first_v.P() = (first_v.P() + original_center_point) * max_normalize_length;
+
+  cout << "origin before normalize" << endl;
+  GlobalFun::printPoint3(cout, first_v.P());
+
+
+  //v_start.P() = (v_start.P() + original_center_point) * max_normalize_length;
+  
   PR2_order order = computePR2orderFromTwoCandidates(v_start, first_v);
   pr2_orders.push_back(order);
 
   for (int i = 0; i < nbv_candidates.vert.size()-1; i++)
   {
-
-
     CVertex v0 = nbv_candidates.vert[i];
     CVertex v1 = nbv_candidates.vert[i+1];
 
@@ -854,6 +864,125 @@ void DataMgr::savePR2_orders(QString fileName_commands)
 
   //outfile.write( strStream.str().c_str(), strStream.str().size() ); 
   outfile.close();
+}
+
+void DataMgr::nbvReoders()
+{
+  recomputeCandidatesAxis();
+
+  for (int i = 0; i < nbv_candidates.vert.size(); i++)
+  {
+    CVertex& v = nbv_candidates.vert[i];
+
+    Point3f direction = v.N();
+    direction.X() = 0;
+    direction = direction.Normalize();
+
+    Point3f Z_axis = Point3f(0, 0, -1);
+    Point3f X_axis(1, 0, 0);
+    double angle = GlobalFun::computeRealAngleOfTwoVertor(direction, Z_axis);
+    Point3f up_direction = Z_axis ^ direction;
+    if (up_direction.X() > 0)
+    {
+      angle = 360 - angle;
+    }
+
+    v.ground_angle = 360 - angle;
+  }
+
+  sort(nbv_candidates.vert.begin(), nbv_candidates.vert.end(), cmp_angle);
+
+  vector<CVertex> up_candidates;
+  vector<CVertex> down_candidates;
+
+  for (int i = 0; i < nbv_candidates.vert.size(); i++)
+  {
+    CVertex& v = nbv_candidates.vert[i];
+
+    if (v.P().X() < -0.2)
+    {
+      cout << "rotate Y axis" << endl;
+
+      //v.eigen_vector1 = v.eigen_vector0;  //Y-yellow-axis
+      //v.eigen_vector0 = v.eigen_vector1 ^ v.N(); // X-red-axis
+
+      //double step = 0.1;
+      //Point3f y_step = v.P() + v.eigen_vector1 * step;
+      //Point3f X_step = v.P() + v.eigen_vector0 * step;
+
+
+
+      //Point3f X_Y_middle = (v.eigen_vector1 + v.eigen_vector0).Normalize();
+      //Point3f X_Y_middle2 = (X_Y_middle + v.eigen_vector0).Normalize();
+      //v.eigen_vector1 = X_Y_middle2;
+      //v.eigen_vector0 = v.eigen_vector1 ^ v.N();
+
+      v.eigen_vector1 *= -1;
+      v.eigen_vector0 *= -1;
+
+      down_candidates.push_back(v);
+    }
+    else
+    {
+      up_candidates.push_back(v);
+    }
+  }
+
+  nbv_candidates.vert.clear();
+  for (int i = 0; i < down_candidates.size(); i++)
+  {
+    nbv_candidates.vert.push_back(down_candidates[i]);
+  }
+
+  for (int i = 0; i < up_candidates.size(); i++)
+  {
+    nbv_candidates.vert.push_back(up_candidates[i]);
+  }
+
+
+
+  for (int i = 0; i < nbv_candidates.vert.size(); i++)
+  {
+    CVertex& v = nbv_candidates.vert[i];
+
+    v.m_index = i;
+  }
+  //double max_normalize_length = global_paraMgr.data.getDouble("Max Normalize Length");
+
+  //CVertex v_start = nbv_candidates.vert[0];
+
+  //v_start.P() = Point3f(135, -7, -223);
+
+  //cout << "origin before normalize" << endl;
+  //GlobalFun::printPoint3(cout, v_start.P());
+  //v_start.P() = v_start.P() / max_normalize_length - original_center_point;
+  //cout << "origin after normalize" << endl;  
+  //GlobalFun::printPoint3(cout, v_start.P());
+
+  //cout << "trans trans: ";
+  //GlobalFun::printPoint3(cout, original_center_point);
+  //cout << max_normalize_length << endl;
+
+  //v_start.N() = v_start.P();
+  //v_start.N().Normalize();
+
+  //Point3f X_axis(1, 0, 0);;
+
+  //Point3f directionX = v_start.N() ^ X_axis;
+  //Point3f directionY = directionX ^ v_start.N();
+
+  //v_start.eigen_vector0 = directionX.Normalize();
+  //v_start.eigen_vector1 = directionY.Normalize();
+
+  //nbv_candidates.vert.insert(nbv_candidates.vert.begin(), v_start);
+
+  //for (int i = 0; i < nbv_candidates.vert.size(); i++)
+  //{
+  //  nbv_candidates.vert[i].m_index = i;
+  //  GlobalFun::printPoint3(cout, nbv_candidates.vert[i].P());
+  //}
+  //nbv_candidates.vn = nbv_candidates.vert.size();
+  //cout << "NBV size:  " << nbv_candidates.vn << endl;
 }
 
 PR2_order DataMgr::computePR2orderFromTwoCandidates(CVertex v0, CVertex v1)
@@ -917,65 +1046,7 @@ PR2_order DataMgr::computePR2orderFromTwoCandidates(CVertex v0, CVertex v1)
   return order;
 }
 
-void DataMgr::nbvReoders()
-{
-  recomputeCandidatesAxis();
 
-  for (int i = 0; i < nbv_candidates.vert.size(); i++)
-  {
-    CVertex& v = nbv_candidates.vert[i];
-
-    Point3f direction = v.N();
-    direction.X() = 0;
-    direction = direction.Normalize();
-
-    Point3f Z_axis = Point3f(0, 0, -1);
-    Point3f X_axis(1, 0, 0);
-    double angle = GlobalFun::computeRealAngleOfTwoVertor(direction, Z_axis);
-    Point3f up_direction = Z_axis ^ direction;
-    if (up_direction.X() > 0)
-    {
-      angle = 360 - angle;
-    }
-
-    v.ground_angle = 360 - angle;
-  }
-
-  sort(nbv_candidates.vert.begin(), nbv_candidates.vert.end(), cmp_angle);
-
-
-  //double max_normalize_length = global_paraMgr.data.getDouble("Max Normalize Length");
-
-  //CVertex v_start = nbv_candidates.vert[0];
-  //v_start.P() = Point3f(135, -7, -213);
-  //GlobalFun::printPoint3(cout, v_start.P());
-  //v_start.P() = v_start.P() / max_normalize_length - original_center_point;
-  //GlobalFun::printPoint3(cout, v_start.P());
-
-  //cout << "trans trans: ";
-  //GlobalFun::printPoint3(cout, original_center_point); cout << endl;
-  //cout << max_normalize_length << endl;
-
-  //v_start.N() = -v_start.P().Normalize();
-
-  //Point3f X_axis(1, 0, 0);;
-
-  //Point3f directionX = v_start.N() ^ X_axis;
-  //Point3f directionY = directionX ^ v_start.N();
-
-  //v_start.eigen_vector0 = -directionX.Normalize();
-  //v_start.eigen_vector1 = -directionY.Normalize();
-
-  //nbv_candidates.vert.insert(nbv_candidates.vert.begin(), v_start);
-
-  //for (int i = 0; i < nbv_candidates.vert.size(); i++)
-  //{
-  //  nbv_candidates.vert[i].m_index = i;
-  //  GlobalFun::printPoint3(cout, nbv_candidates.vert[i].P());
-  //}
-  //nbv_candidates.vn = nbv_candidates.vert.size();
-  //cout << "NBV size:  " << nbv_candidates.vn << endl;
-}
 
 void DataMgr::recomputeCandidatesAxis()
 {
