@@ -508,10 +508,20 @@ void GLArea::paintGL()
 			//glEnable(GL_CULL_FACE);
 		}
 
-		if (para->getBool("Show Radius")&& !(takeSnapTile && para->getBool("No Snap Radius"))) 
-		{
-			drawNeighborhoodRadius();
-		}
+
+
+    if (para->getBool("Show Normal")) 
+    {
+      if (para->getBool("Show NBV Candidates"))
+      {
+        drawNBVBall();
+      }
+    }
+    else
+      if (para->getBool("Show Radius")&& !(takeSnapTile && para->getBool("No Snap Radius"))) 
+      {
+        drawNeighborhoodRadius();
+      }
 
 		glDepthMask(GL_TRUE);
 
@@ -755,6 +765,36 @@ void GLArea::drawPickRect()
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
+}
+
+void GLArea::drawNBVBall()
+{
+  glMatrixMode(GL_MODELVIEW_MATRIX);
+
+  glColorMaterial(GL_FRONT,GL_AMBIENT_AND_DIFFUSE);
+  double trans_value = para->getDouble("Radius Ball Transparency");
+  glColor4f(0,0,1,trans_value);
+  glShadeModel(GL_SMOOTH);
+
+  Box3f box = dataMgr.getCurrentOriginal()->bbox;
+  Point3f center = (box.min + box.max) / 2.0;
+
+  double max_normalize_length = global_paraMgr.data.getDouble("Max Normalize Length");
+  Point3f scanner_position_normalize = dataMgr.scanner_position / max_normalize_length - dataMgr.original_center_point;
+    
+  double radius = GlobalFun::computeEulerDist(scanner_position_normalize, center);
+
+  glPushMatrix();
+  glTranslatef(center[0], center[1], center[2]);
+  //glutSolidSphere(radius, 40, 40);
+  glutWireSphere(radius, 140, 140);
+  
+  glPopMatrix();
+  
+  glDisable(GL_LIGHTING);
+  glDisable(GL_LIGHT0);
+  glDisable(GL_BLEND);
+  glDisable(GL_CULL_FACE);
 }
 
 

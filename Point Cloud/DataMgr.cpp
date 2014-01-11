@@ -806,17 +806,23 @@ void DataMgr::savePR2_orders(QString fileName_commands)
   //v_start.P() = Point3f(131.07, -135.973, -113.974);
   //v_start.P() = Point3f(116.07, 139, 159);
   //v_start.P() = Point3f(135, -7, -223);
-  v_start.P() = Point3f(135, -7, -223);
+
+  //v_start.P() = Point3f(135, -7, -223);
+  //v_start.P() = scanner_position;
+  v_start.P() = Point3f(164, -7, -254);
+  
+  cout << "!!!scanner_position after normalize" << endl;
+  GlobalFun::printPoint3(cout, v_start.P());
   
   CVertex first_v = nbv_candidates.vert[0];
 
-  cout << "origin after normalize" << endl;
-  GlobalFun::printPoint3(cout, first_v.P());
+  //cout << "scanner_position after normalize" << endl;
+  //GlobalFun::printPoint3(cout, first_v.P());
 
   first_v.P() = (first_v.P() + original_center_point) * max_normalize_length;
 
-  cout << "origin before normalize" << endl;
-  GlobalFun::printPoint3(cout, first_v.P());
+  //cout << "scanner_position before normalize" << endl;
+  //GlobalFun::printPoint3(cout, first_v.P());
 
 
   //v_start.P() = (v_start.P() + original_center_point) * max_normalize_length;
@@ -829,14 +835,14 @@ void DataMgr::savePR2_orders(QString fileName_commands)
     CVertex v0 = nbv_candidates.vert[i];
     CVertex v1 = nbv_candidates.vert[i+1];
 
-    cout << "before transform: " << endl;
-    GlobalFun::printPoint3(cout, v0.P());
+    //cout << "before transform: " << endl;
+    //GlobalFun::printPoint3(cout, v0.P());
 
     v0.P() = (v0.P() + original_center_point) * max_normalize_length;
     v1.P() = (v1.P() + original_center_point) * max_normalize_length;
 
-    cout << "after transform: " << endl;
-    GlobalFun::printPoint3(cout, v1.P());
+    //cout << "after transform: " << endl;
+    //GlobalFun::printPoint3(cout, v1.P());
 
     PR2_order order = computePR2orderFromTwoCandidates(v0, v1);
     //PR2_order order = computePR2orderFromTwoCandidates(v_start, v1);    
@@ -899,7 +905,7 @@ void DataMgr::nbvReoders()
   {
     CVertex& v = nbv_candidates.vert[i];
 
-    if (v.P().X() < -0.2)
+    if (v.P().X() < -0.3)
     {
       cout << "rotate Y axis" << endl;
 
@@ -912,13 +918,13 @@ void DataMgr::nbvReoders()
 
 
 
-      //Point3f X_Y_middle = (v.eigen_vector1 + v.eigen_vector0).Normalize();
-      //Point3f X_Y_middle2 = (X_Y_middle + v.eigen_vector0).Normalize();
-      //v.eigen_vector1 = X_Y_middle2;
-      //v.eigen_vector0 = v.eigen_vector1 ^ v.N();
+      Point3f X_Y_middle = (v.eigen_vector1 + v.eigen_vector0).Normalize();
+      Point3f X_Y_middle2 = (X_Y_middle + v.eigen_vector0).Normalize();
+      v.eigen_vector1 = X_Y_middle2;
+      v.eigen_vector0 = v.eigen_vector1 ^ v.N();
 
-      v.eigen_vector1 *= -1;
-      v.eigen_vector0 *= -1;
+      //v.eigen_vector1 *= -1;
+      //v.eigen_vector0 *= -1;
 
       down_candidates.push_back(v);
     }
@@ -944,9 +950,16 @@ void DataMgr::nbvReoders()
   for (int i = 0; i < nbv_candidates.vert.size(); i++)
   {
     CVertex& v = nbv_candidates.vert[i];
-
     v.m_index = i;
   }
+
+
+  for (int i = 0; i < nbv_candidates.vert.size(); i++)
+  {
+    CVertex& v = nbv_candidates.vert[i];
+    //v.P() -= v.N() * 0.
+  }
+
   //double max_normalize_length = global_paraMgr.data.getDouble("Max Normalize Length");
 
   //CVertex v_start = nbv_candidates.vert[0];
@@ -2332,6 +2345,16 @@ void DataMgr::loadCommonTransform()
       T_to_L_Matrix44[i][j] = temp_f;
     }
   }
+
+  infile >> temp_str;
+  infile >> scanner_position[0] >> scanner_position[1] >> scanner_position[2];
+
+  cout << "Scanner Position: ";
+  GlobalFun::printPoint3(cout, scanner_position);
+
+  double max_normalize_length = global_paraMgr.data.getDouble("Max Normalize Length");
+  Point3f s_norm = scanner_position / max_normalize_length - original_center_point;
+  GlobalFun::printPoint3(cout, s_norm);
 }
 
 void DataMgr::coordinateTransform()

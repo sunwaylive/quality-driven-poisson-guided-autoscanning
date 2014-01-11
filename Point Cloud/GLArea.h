@@ -101,6 +101,7 @@ private:
 
 private:
 	void drawNeighborhoodRadius();
+  void drawNBVBall();
 	void initLight();
 	void lightOnOff(bool _val);
 
