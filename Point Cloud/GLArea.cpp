@@ -147,14 +147,7 @@ void GLArea::resizeGL(int w, int h)
 void GLArea::paintGL() 
 {
   
-  if (para->getBool("Show NBV Label"))
-  {
-    QPainter painter(this);
 
-    //painter.begin(this);
-    glDrawer.drawMeshLables(dataMgr.getNbvCandidates(), &painter);
-    //painter.end();
-  }
 
 	paintMutex.lock();{
 
@@ -274,6 +267,15 @@ void GLArea::paintGL()
 					glDrawer.draw(GLDrawer::NORMAL, dataMgr.getNbvCandidates());
           glDrawer.drawCandidatesAxis(dataMgr.getNbvCandidates());
           //drawCandidatesConnectISO();
+
+          if (para->getBool("Show NBV Label"))
+          {
+            QPainter painter(this);
+
+            //painter.begin(this);
+            glDrawer.drawMeshLables(dataMgr.getNbvCandidates(), &painter);
+            //painter.end();
+          }
 				}
 			}else if (para->getBool("Show View Grids"))
 			{
@@ -2071,7 +2073,19 @@ void GLArea::wheelEvent(QWheelEvent *e)
 	}
 	else if( (e->modifiers() & Qt::ShiftModifier) && (e->modifiers() & Qt::ControlModifier) )
 	{
-		if (para->getBool("Show Skeleton") /*&& !dataMgr.isSkeletonEmpty()*/)
+    if (para->getBool("Show NBV Candidates") && para->getBool("Show NBV Ball"))
+    {
+      if (e->delta() < 0)
+      {
+        moveAllCandidates(true);
+      }
+      else
+      {
+        moveAllCandidates(false);
+      }
+
+    }
+		else if (para->getBool("Show Skeleton") /*&& !dataMgr.isSkeletonEmpty()*/)
 		{
 			size_temp = global_paraMgr.skeleton.getDouble("Branches Merge Max Dist");
 			global_paraMgr.skeleton.setValue("Branches Merge Max Dist", DoubleValue(size_temp * change));
@@ -2695,4 +2709,23 @@ void GLArea::drawCandidatesConnectISO()
     glEnd(); 
   }
 
+}
+
+
+void GLArea::moveAllCandidates(bool is_forward)
+{
+  CMesh* nbv_candidates = dataMgr.getNbvCandidates();
+  double step = 0.01;
+  for (int i = 0; i < nbv_candidates->vert.size(); i++)
+  {
+    CVertex& v = nbv_candidates->vert[i];
+    if (is_forward)
+    {
+      v.P() += v.N() * step;
+    }
+    else
+    {
+      v.P() -= v.N() * step;
+    }
+  }
 }

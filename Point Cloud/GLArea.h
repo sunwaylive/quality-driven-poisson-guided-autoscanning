@@ -91,6 +91,7 @@ public:
 
 	void removePickPoint();
   void removeOutliers();
+  void moveAllCandidates(bool is_forward);
 
 signals:
 	void needUpdateStatus();
