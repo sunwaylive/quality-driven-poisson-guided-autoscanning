@@ -266,7 +266,7 @@ void GLArea::paintGL()
 				{
 					glDrawer.draw(GLDrawer::NORMAL, dataMgr.getNbvCandidates());
           glDrawer.drawCandidatesAxis(dataMgr.getNbvCandidates());
-          //drawCandidatesConnectISO();
+          drawCandidatesConnectISO();
 
           if (para->getBool("Show NBV Label"))
           {
@@ -522,8 +522,8 @@ void GLArea::paintGL()
     {
        drawNBVBall();
     }
-    else
-      if (para->getBool("Show Radius")&& !(takeSnapTile && para->getBool("No Snap Radius"))) 
+    
+      else if (para->getBool("Show Radius")&& !(takeSnapTile && para->getBool("No Snap Radius"))) 
       {
         drawNeighborhoodRadius();
       }
@@ -803,6 +803,35 @@ void GLArea::drawNBVBall()
   glDisable(GL_LIGHT0);
   glDisable(GL_BLEND);
   glDisable(GL_CULL_FACE);
+}
+
+void GLArea::removeBadCandidates()
+{
+  Box3f box = dataMgr.getCurrentOriginal()->bbox;
+  Point3f center = (box.min + box.max) / 2.0;
+
+  double max_normalize_length = global_paraMgr.data.getDouble("Max Normalize Length");
+  Point3f scanner_position_normalize = dataMgr.scanner_position / max_normalize_length - dataMgr.original_center_point;
+
+  double save_radius = GlobalFun::computeEulerDist(scanner_position_normalize, center);
+
+  double radius_threshold = global_paraMgr.data.getDouble("CGrid Radius") * 2;
+
+  CMesh* nbv_candidates = dataMgr.getNbvCandidates();
+  for (int i = 0; i < nbv_candidates->vert.size(); i++)
+  {
+    CVertex& v = nbv_candidates->vert[i];
+
+    double nbv_dist = GlobalFun::computeEulerDist(v.P(), center);
+    double dist_diff = abs(nbv_dist - save_radius);
+
+    if (dist_diff > radius_threshold)
+    {
+      v.is_ignore = true;
+    }
+  }
+
+  GlobalFun::deleteIgnore(nbv_candidates);
 }
 
 

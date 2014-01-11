@@ -935,16 +935,14 @@ void DataMgr::nbvReoders()
   }
 
   nbv_candidates.vert.clear();
-  for (int i = 0; i < down_candidates.size(); i++)
-  {
-    nbv_candidates.vert.push_back(down_candidates[i]);
-  }
-
   for (int i = 0; i < up_candidates.size(); i++)
   {
     nbv_candidates.vert.push_back(up_candidates[i]);
   }
-
+  for (int i = 0; i < down_candidates.size(); i++)
+  {
+    nbv_candidates.vert.push_back(down_candidates[i]);
+  }
 
 
   for (int i = 0; i < nbv_candidates.vert.size(); i++)

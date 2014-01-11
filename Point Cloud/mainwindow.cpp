@@ -516,7 +516,14 @@ void MainWindow::saveFile()
 void
 MainWindow::removeOutliers()
 {
-  area->removeOutliers();
+  if (global_paraMgr.glarea.getBool("Show NBV Ball") && global_paraMgr.glarea.getBool("Show NBV Candidates"))
+  {
+    area->removeBadCandidates();
+  }
+  else
+  {
+    area->removeOutliers();
+  }
   area->initView();
   area->updateGL();
 }
