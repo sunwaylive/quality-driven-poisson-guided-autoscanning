@@ -144,7 +144,7 @@ void ParameterMgr::initDrawerParameter()
 	drawer.addParam(new RichBool("Show Individual Color", true));
 	drawer.addParam(new RichBool("Use Color From Normal", false));
 	drawer.addParam(new RichBool("Use Differ Branch Color", false));
-	drawer.addParam(new RichBool("Show Confidence Color", true));
+	drawer.addParam(new RichBool("Show Confidence Color", false));
 
 	drawer.addParam(new RichDouble("Original Draw Width", 0.0015));
 	drawer.addParam(new RichDouble("Sample Draw Width", 0.005));

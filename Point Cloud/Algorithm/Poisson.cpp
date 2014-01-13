@@ -188,7 +188,7 @@ void Poisson::run()
 
   if (para->getBool("Run Normalize Field Confidence"))
   {
-    normalizeConfidence(field_points->vert, 0);
+    GlobalFun::normalizeConfidence(field_points->vert, 0);
     return;
   }
 
@@ -356,7 +356,6 @@ void Poisson::runLabelISO()
       {
         v.eigen_confidence = (sum_confidence / sum_w);
       }
-      
     }
   }
 }
@@ -466,7 +465,7 @@ void Poisson::runIsoSmooth()
     v.eigen_confidence = sum_confidence / weight_sum;
   }
 
-  normalizeConfidence(iso_points->vert, 0);
+  GlobalFun::normalizeConfidence(iso_points->vert, 0);
 }
 
 void Poisson::runLabelBoundaryPoints()
@@ -1018,7 +1017,7 @@ void Poisson::runPoissonFieldAndExtractIsoPoints_ByEXE()
     cout << "field point size:  " << field_points->vn << endl;
     cout << "resolution:  " << res << endl;
     para->setValue("Field Points Resolution", IntValue(res));
-    normalizeConfidence(field_points->vert, 0);
+    GlobalFun::normalizeConfidence(field_points->vert, 0);
 
     delete buf;
     timer.end();
@@ -1253,7 +1252,7 @@ void Poisson::runPoissonFieldAndExtractIsoPoints()
     cout << "field point size:  " << field_points->vn << endl;
     cout << "resolution:  " << res << endl;
     para->setValue("Field Points Resolution", IntValue(res));
-    normalizeConfidence(field_points->vert, 0);
+    GlobalFun::normalizeConfidence(field_points->vert, 0);
 
     time.end();
     if (para->getBool("Run Generate Poisson Field")) return;
@@ -1945,7 +1944,7 @@ void Poisson::runComputeSampleConfidence()
     }
 
     //normalizeConfidence(samples->vert, -0.5);
-    normalizeConfidence(samples->vert, 0);
+    GlobalFun::normalizeConfidence(samples->vert, 0);
 
     for (int i = 0; i < samples->vn; i++)
     {
@@ -1967,7 +1966,7 @@ void Poisson::runComputeSampleConfidence()
       v.eigen_confidence = multiply_confidence;
     }
 
-    normalizeConfidence(samples->vert, 0);
+    GlobalFun::normalizeConfidence(samples->vert, 0);
 
     for (int i = 0; i < samples->vn; i++)
     {
@@ -2206,7 +2205,7 @@ void Poisson::runComputeIsoSmoothnessConfidence()
 
  
   time.start("ending");
-  normalizeConfidence(iso_points->vert, 0);
+  GlobalFun::normalizeConfidence(iso_points->vert, 0);
 
   //if (para->getBool("Use Confidence 1"))
   //{
@@ -2250,7 +2249,7 @@ void Poisson::runComputeIsoGradientConfidence()
   if (para->getBool("Use Confidence 4"))
   {
     //runLabelISO();
-    normalizeConfidence(iso_points->vert, 0);
+    GlobalFun::normalizeConfidence(iso_points->vert, 0);
   }
   vector<float> confidences_temp;
   iso_points->vn = iso_points->vert.size();
@@ -2339,7 +2338,7 @@ void Poisson::runComputeIsoGradientConfidence()
       v.eigen_confidence = 1e-6;
     }
   }
-  normalizeConfidence(iso_points->vert, 0);
+  GlobalFun::normalizeConfidence(iso_points->vert, 0);
 
   if (para->getBool("Use Confidence 4"))
   {
@@ -2351,7 +2350,7 @@ void Poisson::runComputeIsoGradientConfidence()
       v.eigen_confidence *= temp_confidence;
     }
 
-    normalizeConfidence(iso_points->vert, 0);
+    GlobalFun::normalizeConfidence(iso_points->vert, 0);
   }
   //if (para->getBool("Use Confidence 4"))
   //{
@@ -2390,35 +2389,6 @@ void Poisson::runComputeIsoGradientConfidence()
   //    //file3 << v.eigen_confidence << endl;
   //  }
   //}
-
-}
-
-void Poisson::normalizeConfidence(vector<CVertex>& vertexes, float delta)
-{
-  float min_confidence = GlobalFun::getDoubleMAXIMUM();
-  float max_confidence = 0;
-  for (int i = 0; i < vertexes.size(); i++)
-  {
-    CVertex& v = vertexes[i];
-    min_confidence = (std::min)(min_confidence, v.eigen_confidence);
-    max_confidence = (std::max)(max_confidence, v.eigen_confidence);
-  }
-  float space = max_confidence - min_confidence;
-
-  for (int i = 0; i < vertexes.size(); i++)
-  {
-    CVertex& v = vertexes[i];
-    v.eigen_confidence = (v.eigen_confidence - min_confidence) / space;
-
-    v.eigen_confidence += delta;
-
-    if (!(v.eigen_confidence > 0 || v.eigen_confidence <= 1.0))
-    {
-      v.eigen_confidence = 0.0;
-    }
-  }
-
-
 }
 
 void Poisson::runAddWLOPtoISO()

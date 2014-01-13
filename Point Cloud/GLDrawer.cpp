@@ -210,7 +210,7 @@ GLColor GLDrawer::isoValue2color(double iso_value,
 		             mixed_color.Z() / float(step_size));
 }
 
-GLColor GLDrawer::getColorByType(const CVertex& v)
+GLColor GLDrawer::getColorByType(CVertex& v)
 {
 	if (v.is_model)
 	{
@@ -269,8 +269,22 @@ GLColor GLDrawer::getColorByType(const CVertex& v)
     }
     else
       return cGreen;
-		
 	}
+
+  if (v.is_poisson)
+  {
+    if (bUseConfidenceColor)
+    {
+      GLColor c = isoValue2color(1 - v.eigen_confidence, iso_color_scale, iso_value_shift, true);
+      unsigned int r = 255 * c.r;
+      unsigned int g = 255 * c.g;
+      unsigned int b = 255 * c.b;
+      v.C().SetRGB(r, g, b);
+      return isoValue2color(1 - v.eigen_confidence, iso_color_scale, iso_value_shift, true);
+    }
+    else
+      return cGreen;
+  }
 
   if (v.is_fixed_sample)
 	{
@@ -295,7 +309,7 @@ GLColor GLDrawer::getColorByType(const CVertex& v)
 	  return sample_color;
 }
 
-void GLDrawer::drawDot(const CVertex& v)
+void GLDrawer::drawDot(CVertex& v)
 {
 	//if (bShowGridCenters && v.is_view_grid && !v.is_ray_stop)
 	//{
@@ -337,7 +351,7 @@ void GLDrawer::drawDot(const CVertex& v)
 	glEnd(); 
 }
 
-void GLDrawer::drawSphere(const CVertex& v)
+void GLDrawer::drawSphere(CVertex& v)
 {
 	double radius;
 	if (v.is_original)
@@ -357,7 +371,7 @@ void GLDrawer::drawSphere(const CVertex& v)
 	glDrawSphere(p, color, radius, 20);
 }
 
-void GLDrawer::drawCircle(const CVertex& v)
+void GLDrawer::drawCircle(CVertex& v)
 {
 	double radius = sample_draw_width;
 	GLColor color = getColorByType(v);
@@ -402,7 +416,7 @@ void GLDrawer::drawCircle(const CVertex& v)
 	glEnd();
 }
 
-void GLDrawer::drawQuade(const CVertex& v)
+void GLDrawer::drawQuade(CVertex& v)
 {
 	double h = sample_draw_width;
 
@@ -451,7 +465,7 @@ void GLDrawer::drawQuade(const CVertex& v)
 	glEnd();  
 }
 
-void GLDrawer::drawNormal(const CVertex& v)
+void GLDrawer::drawNormal(CVertex& v)
 {
 
 	double width = normal_width;

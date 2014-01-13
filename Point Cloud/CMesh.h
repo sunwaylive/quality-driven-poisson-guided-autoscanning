@@ -53,6 +53,7 @@ public:
 	bool is_original;
   bool is_iso;
   bool is_hole;
+  bool is_poisson;
 
 	int m_index;
 
@@ -104,6 +105,7 @@ public:
 		is_original(false),
     is_iso(false),
     is_hole(false),
+    is_poisson(false),
 		is_fixed_sample(false),
 		eigen_confidence(-1),
 		is_skel_branch(false),

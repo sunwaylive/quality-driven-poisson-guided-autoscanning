@@ -218,6 +218,32 @@ void DataMgr::loadPlyToISO(QString fileName)
   iso_points.vn = iso_points.vert.size();
 }
 
+void DataMgr::loadPlyToPoisson(QString fileName)
+{
+  clearCMesh(poisson_surface);
+  curr_file_name = fileName;
+
+  int mask= tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL ;
+
+  int err = tri::io::Importer<CMesh>::Open(poisson_surface, curr_file_name.toAscii().data(), mask);  
+  if(err) 
+  {
+    cout << "Failed reading mesh: " << err << "\n";
+    return;
+  }  
+  cout << "points loaded\n";
+
+  CMesh::VertexIterator vi;
+  int idx = 0;
+  for(vi = poisson_surface.vert.begin(); vi != poisson_surface.vert.end(); ++vi)
+  {
+    vi->is_poisson = true;
+    vi->m_index = idx++;
+    poisson_surface.bbox.Add(vi->P());
+  }
+  poisson_surface.vn = poisson_surface.vert.size();
+}
+
 void DataMgr::loadXYZN(QString fileName)
 {
   clearCMesh(samples);

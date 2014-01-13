@@ -68,6 +68,7 @@ void MainWindow::initConnect()
 	{
 		cout << "can not connect signal" << endl;
 	}
+  connect(ui.actionEvaluation, SIGNAL(triggered()), this, SLOT(evaluation()));
   connect(ui.actionCompute_Normal_For_Poisson_Surface, SIGNAL(triggered()), this, SLOT(computeNormalForPoissonSurface()));
   connect(ui.actionConvert_ply_to_obj, SIGNAL(triggered()), this, SLOT(convertPlyToObj()));
   connect(ui.actionSave_Parameter, SIGNAL(triggered()), this, SLOT(savePara()));
@@ -1191,4 +1192,34 @@ void MainWindow::computeNormalForPoissonSurface()
     //tri::UpdateNormals<CMesh>::PerFace(ply);
     //tri::io::ExporterPLY<CMesh>::Save(ply_mesh, out_ply.toAscii().data(), mask);
   }
+}
+
+void MainWindow::evaluation()
+{
+  QString file_name = QFileDialog::getOpenFileName(this, "choose a file to evaluate...", "", "*.ply");
+  if (file_name.size() == 0)
+  {
+    cout<<"can't open file" <<endl;
+    return;
+  }
+  
+  area->dataMgr.loadPlyToPoisson(file_name);
+  CMesh *target = area->dataMgr.getCurrentPoissonSurface();
+  CMesh *model = area->dataMgr.getCurrentModel();
+
+  GlobalFun::computeAnnNeigbhors(model->vert, target->vert, 1, false, "runEvaluation");
+
+  for (int i = 0; i < target->vert.size(); ++i)
+  {
+    CVertex &v = target->vert[i];
+    if (!v.neighbors.empty())
+    {
+      CVertex &nearest = model->vert[target->vert[i].neighbors[0]];
+      double dist = GlobalFun::computeEulerDist(v.P(), nearest.P());
+      v.eigen_confidence = dist;
+     /*Point3f c = GlobalFun::scalar2color(dist);
+      v.C().SetRGB(255 * c[0], 255 * c[1], 255 * c[2]);*/
+    }
+  }
+  GlobalFun::normalizeConfidence(target->vert, 0.f);
 }

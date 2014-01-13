@@ -1004,8 +1004,8 @@
     <widget class="QPushButton" name="pushButton_one_key_nbv_iteration">
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>380</y>
+       <x>30</x>
+       <y>420</y>
        <width>191</width>
        <height>31</height>
       </rect>
@@ -1027,8 +1027,8 @@
     <widget class="Line" name="line_6">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>410</y>
+       <x>20</x>
+       <y>450</y>
        <width>221</width>
        <height>16</height>
       </rect>
@@ -1040,8 +1040,8 @@
     <widget class="QPushButton" name="pushButton_load_real_scan">
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>470</y>
+       <x>30</x>
+       <y>510</y>
        <width>171</width>
        <height>31</height>
       </rect>
@@ -1053,8 +1053,8 @@
     <widget class="QPushButton" name="pushButton_load_real_initial_scan">
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>430</y>
+       <x>30</x>
+       <y>470</y>
        <width>181</width>
        <height>31</height>
       </rect>
@@ -1097,6 +1097,41 @@
      </property>
      <property name="text">
       <string>iter num ：</string>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="nbv_confidence_threshold">
+     <property name="geometry">
+      <rect>
+       <x>180</x>
+       <y>360</y>
+       <width>62</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="decimals">
+      <number>10</number>
+     </property>
+     <property name="maximum">
+      <double>100.000000000000000</double>
+     </property>
+     <property name="singleStep">
+      <double>0.500000000000000</double>
+     </property>
+     <property name="value">
+      <double>35.500000000000000</double>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_18">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>360</y>
+       <width>161</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>nbv confidence threshold</string>
      </property>
     </widget>
    </widget>

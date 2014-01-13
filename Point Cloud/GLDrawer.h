@@ -70,20 +70,20 @@ public:
   GLColor isoValue2color(double value, double scale_threshold, double shift, bool need_negative);
   //cut from private
   void glDrawLine(Point3f& p0, Point3f& p1, GLColor color, double width);
-  void drawSphere(const CVertex& v);
+  void drawSphere(CVertex& v);
 
   void drawCandidatesAxis(CMesh *mesh);
   void drawMeshLables(CMesh *mesh, QPainter *painter);
 
 private:
-	GLColor getColorByType(const CVertex& v);
+	GLColor getColorByType(CVertex& v);
 	void draw(DrawType type);
 	bool isCanSee(const Point3f& pos,  const Point3f& normal);
 
-	void drawDot(const CVertex& v);
-	void drawCircle(const CVertex& v);
-	void drawQuade(const CVertex& v);
-	void drawNormal(const CVertex& v);
+	void drawDot(CVertex& v);
+	void drawCircle(CVertex& v);
+	void drawQuade(CVertex& v);
+	void drawNormal(CVertex& v);
 
 	void glDrawPoint(Point3f& p, GLColor color, double size);
 	void glDrawSphere(Point3f& p, GLColor color, double radius, int slide);

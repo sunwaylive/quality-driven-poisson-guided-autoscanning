@@ -52,6 +52,7 @@ private slots:
   void convertPlyToObj();
   void computeNormalForPoissonSurface();
   void nbvReOrders();
+  void evaluation();
 
 	void showWLopDlg();
 	void showNormalDlg();

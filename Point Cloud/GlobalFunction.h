@@ -72,15 +72,15 @@ namespace GlobalFun
 	double getDoubleMAXIMUM();
 	vector<int> GetRandomCards(int Max);
 
-  bool isPointInBoundingBox(Point3f &v0, CMesh *mesh);
-  bool isPointInBoundingBox(Point3f &v0, CMesh *mesh, double delta);
+  bool isPointInBoundingBox(Point3f &v0, CMesh *mesh, double delta = 0.0f);
 	double computeRealAngleOfTwoVertor(Point3f v0, Point3f v1);
 	bool isTwoPoint3fTheSame(Point3f& v0, Point3f& v1);
 	bool isTwoPoint3fOpposite(Point3f& v0, Point3f& v1);
-
   double computeTriangleArea_3(Point3f& v0, Point3f& v1, Point3f& v2);
   bool isPointInTriangle_3(Point3f& v0, Point3f& v1, Point3f& v2, Point3f& p);
   double computeMeshLineIntersectPoint(CMesh *target, Point3f& p, Point3f& line_dir, Point3f& result);
+  Point3f scalar2color(double scalar);
+  void normalizeConfidence(vector<CVertex>& vertexes, float delta);
 
   void removeOutliers(CMesh *mesh, double radius, double remove_percent);
   void removeOutliers(CMesh *mesh, double radius, int remove_num);
@@ -98,8 +98,6 @@ namespace GlobalFun
   void printPoint3(ostream& out, vcg::Point3f p);
   void printQuaternionf(ostream& out, vcg::Quaternionf qua);
 
-
-
   vcg::Matrix33f myQuaternionToMatrix33(Quaternionf qua_in);
   vcg::Matrix33f directionToMatrix33(Point3f direction);
   vcg::Matrix33f axisToMatrix33(CVertex v);
@@ -107,8 +105,6 @@ namespace GlobalFun
   vcg::Matrix33f getMat33FromMat44(vcg::Matrix44f mat44);
   Point3f getVectorFromMat44(vcg::Matrix44f mat44);
   vcg::Matrix44f getMat44FromMat33AndVector(vcg::Matrix33f mat33, Point3f vec);
-
-  
 }
 
 

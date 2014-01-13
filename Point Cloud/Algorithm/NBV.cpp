@@ -650,28 +650,9 @@ void
   }//end for iso_points
 #endif
 
-  normalizeConfidence(view_grid_points->vert, 0.);
+  GlobalFun::normalizeConfidence(view_grid_points->vert, 0.);
 }
 
-void NBV::normalizeConfidence(vector<CVertex>& vertexes, float delta)
-{  
-  float min_confidence = GlobalFun::getDoubleMAXIMUM();
-  float max_confidence = 0;
-  for (int i = 0; i < vertexes.size(); i++)
-  {
-    CVertex& v = vertexes[i];
-    min_confidence = (std::min)(min_confidence, v.eigen_confidence);
-    max_confidence = (std::max)(max_confidence, v.eigen_confidence);
-  }
-  float space = max_confidence - min_confidence;
-
-  for (int i = 0; i < vertexes.size(); i++)
-  {
-    CVertex& v = vertexes[i];
-    v.eigen_confidence = (v.eigen_confidence - min_confidence) / space;
-    v.eigen_confidence += delta;
-  }
-}
 double
   NBV::getAbsMax(double x, double y, double z)
 {
@@ -798,9 +779,9 @@ void
     CVertex& v = nbv_candidates->vert[i];
     double dist_to_correspondese = GlobalFun::computeEulerDistSquare(v.P(), iso_points->vert[v.remember_iso_index].P());
 
-    if ( dist_to_correspondese <= camera_near_dist
+    if ( /*dist_to_correspondese <= camera_near_dist
          || dist_to_correspondese >= camera_far_dist
-         || GlobalFun::isPointInBoundingBox(v.P(), model, bin_length_x))
+         || */GlobalFun::isPointInBoundingBox(v.P(), model, bin_length_x))
     {
       v.is_ignore = true;
     }
@@ -1038,20 +1019,6 @@ void NBV::viewClustering()
   }
 
   GlobalFun::deleteIgnore(nbv_candidates);
-/*
-  sort(nbv_candidates->vert.begin(), nbv_candidates->vert.end(), cmp);
-  if (nbv_candidates->vert.size() > 4)
-  {
-    for (int i = 0; i < nbv_candidates->vn; i++)
-    {
-      CVertex& v = nbv_candidates->vert[i];
-      if (i >= 4)
-        v.is_ignore = true;
-    }
-  }
-
-  GlobalFun::deleteIgnore(nbv_candidates);
-  */
   return;
 }
 
@@ -1088,7 +1055,7 @@ void NBV::viewPrune()
   }
 
   GlobalFun::deleteIgnore(nbv_candidates);
-  cout << "after View Prune candidate num: " <<nbv_candidates->vert.size() <<endl;
+  cout << "after View Prune candidates num: " <<nbv_candidates->vert.size() <<endl;
 
   //get the top n = 4
   int topn = global_paraMgr.nbv.getInt("NBV Top N");
@@ -1105,6 +1072,13 @@ void NBV::viewPrune()
   }
 
   GlobalFun::deleteIgnore(nbv_candidates);
+  ofstream out;
+  out.open("confidence.txt");
+  for (int i = 0; i < nbv_candidates->vert.size(); ++i)
+  {
+    out << nbv_candidates->vert[i].eigen_confidence <<endl;
+  }
+  out.close();
 }
 
 bool NBV::updateViewDirections()
@@ -1112,7 +1086,7 @@ bool NBV::updateViewDirections()
   bool have_direction_move = false;
 
   cout << "NBV::updateViewDirections" << endl;
-  normalizeConfidence(iso_points->vert, 0.0);
+  GlobalFun::normalizeConfidence(iso_points->vert, 0.0);
 
   nbv_scores.assign(nbv_candidates->vert.size(), 0.0);
 

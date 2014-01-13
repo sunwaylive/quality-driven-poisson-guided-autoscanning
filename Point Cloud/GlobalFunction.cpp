@@ -766,24 +766,6 @@ double GlobalFun::computeTriangleArea_3(Point3f& v0, Point3f& v1, Point3f& v2)
   return AP.Norm() / 2.0f;
 }
 
-bool GlobalFun::isPointInBoundingBox(Point3f &v0, CMesh *mesh)
-{
-  if (NULL == mesh)
-  {
-    cout << "Empty Mesh When isPointInBoundingBox" << endl;
-    return false; 
-  }
-
-  Point3f &bmin = mesh->bbox.min;
-  Point3f &bmax = mesh->bbox.max;
-
-  if ( v0[0] >= bmin[0] && v0[1] >= bmin[1] && v0[2] >= bmin[2]
-        && v0[0] <= bmax[0] && v0[1] <= bmax[1] && v0[2] <= bmin[2])
-    return true;
-  else
-    return false;
-}
-
 bool GlobalFun::isPointInBoundingBox(Point3f &v0, CMesh *mesh, double delta)
 {
   if (NULL == mesh)
@@ -1373,3 +1355,51 @@ vcg::Matrix44f GlobalFun::getMat44FromMat33AndVector(vcg::Matrix33f mat33, Point
 //    }
 //  }
 //}
+
+Point3f GlobalFun::scalar2color( double scalar ) 
+{
+  double dis = scalar ;
+  dis = (std::min)( (std::max)(dis, 0.0 ), 1.0 ) ;
+  dis = dis ;
+  Point3f baseColor[9];
+  baseColor[0] = Point3f(1.0, 0.0, 0.0) ;
+  baseColor[1] = Point3f(1.0, 0.7, 0.0) ;
+  baseColor[2] = Point3f(1.0, 1.0, 0.0) ;
+  baseColor[3] = Point3f(0.7, 1.0, 0.0) ;
+  baseColor[4] = Point3f(0.0, 1.0, 0.0) ;
+  baseColor[5] = Point3f(0.0, 1.0, 0.7) ;
+  baseColor[6] = Point3f(0.0, 1.0, 1.0) ;
+  baseColor[7] = Point3f(0.0, 0.7, 1.0) ;
+  baseColor[8] = Point3f(0.0, 0.0, 1.0) ;
+
+
+  double step = 1.0 / 8.0 ;
+
+  int baseID = dis/step;
+  if( baseID == 8 )
+    baseID = 7 ;
+
+  Point3f mixedColor =  baseColor[baseID] * (baseID*step+step- dis)  + baseColor[baseID+1] * (dis-baseID*step) ;
+  mixedColor = (mixedColor/step);
+  return mixedColor ;
+}
+
+void GlobalFun::normalizeConfidence(vector<CVertex>& vertexes, float delta)
+{  
+  float min_confidence = GlobalFun::getDoubleMAXIMUM();
+  float max_confidence = 0;
+  for (int i = 0; i < vertexes.size(); i++)
+  {
+    CVertex& v = vertexes[i];
+    min_confidence = (std::min)(min_confidence, v.eigen_confidence);
+    max_confidence = (std::max)(max_confidence, v.eigen_confidence);
+  }
+  float space = max_confidence - min_confidence;
+
+  for (int i = 0; i < vertexes.size(); i++)
+  {
+    CVertex& v = vertexes[i];
+    v.eigen_confidence = (v.eigen_confidence - min_confidence) / space;
+    v.eigen_confidence += delta;
+  }
+}

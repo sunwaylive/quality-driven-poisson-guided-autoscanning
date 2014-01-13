@@ -64,6 +64,7 @@ private slots:
   void getRayResolutionPara(double _val);
   void getNbvIterationCount(int _val);
   void getNBVTopN(int _val);
+  void getNBVConfidenceThreshold(double _val);
 
   void buildGrid();
   void propagate();

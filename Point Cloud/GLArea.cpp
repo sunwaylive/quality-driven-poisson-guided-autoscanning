@@ -451,9 +451,18 @@ void GLArea::paintGL()
     {
       if (!dataMgr.isPoissonSurfaceEmpty())
       {
-        glw.m = dataMgr.getCurrentPoissonSurface();
-        //glw.Draw(GLW::DMWire, GLW::CMPerMesh, GLW::TMNone);
-        glw.Draw(GLW::DMSmooth, GLW::CMPerMesh, GLW::TMNone);
+        //glw.m = dataMgr.getCurrentPoissonSurface();
+        ////glw.Draw(GLW::DMWire, GLW::CMPerMesh, GLW::TMNone);
+        //glw.Draw(GLW::DMSmooth, GLW::CMPerMesh, GLW::TMNone);
+
+        if(para->getBool("Show Samples Quad"))
+          glDrawer.draw(GLDrawer::QUADE, dataMgr.getCurrentPoissonSurface());
+        if(para->getBool("Show Samples Dot"))
+          glDrawer.draw(GLDrawer::DOT, dataMgr.getCurrentPoissonSurface());
+        if(para->getBool("Show Samples Circle"))
+          glDrawer.draw(GLDrawer::CIRCLE, dataMgr.getCurrentPoissonSurface());	
+        if (para->getBool("Show Samples Sphere"))
+          glDrawer.draw(GLDrawer::SPHERE, dataMgr.getCurrentPoissonSurface());	
       }
     }
 

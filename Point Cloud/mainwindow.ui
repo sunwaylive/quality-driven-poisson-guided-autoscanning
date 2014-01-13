@@ -120,6 +120,7 @@
     <addaction name="actionSave_Parameter"/>
     <addaction name="actionConvert_ply_to_obj"/>
     <addaction name="actionCompute_Normal_For_Poisson_Surface"/>
+    <addaction name="actionEvaluation"/>
    </widget>
    <widget class="QMenu" name="menuRender">
     <property name="title">
@@ -943,6 +944,11 @@
   <action name="actionCompute_Normal_For_Poisson_Surface">
    <property name="text">
     <string>Compute Normal For Poisson Surface</string>
+   </property>
+  </action>
+  <action name="actionEvaluation">
+   <property name="text">
+    <string>Evaluation</string>
    </property>
   </action>
  </widget>

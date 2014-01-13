@@ -21,7 +21,7 @@ void CameraParaDlg::initConnects()
   {
     cout << "can not connect signal" << endl;
   }
-
+  connect(ui->nbv_confidence_threshold, SIGNAL(valueChanged(double)), this, SLOT(getNBVConfidenceThreshold(double)));
   connect(ui->doubleSpinBox_view_prune_confidence_threshold, SIGNAL(valueChanged(double)), this, SLOT(getViewPruneConfidenceThreshold(double)));
   connect(ui->pushButton_view_prune, SIGNAL(clicked()), this, SLOT(runViewPrune()));
   connect(ui->pushButton_show_candidate_index, SIGNAL(clicked()), this, SLOT(showCandidateIndex()));
@@ -98,6 +98,7 @@ void CameraParaDlg::initConnects()
 
 bool CameraParaDlg::initWidgets()
 {
+  ui->nbv_confidence_threshold->setValue(m_paras->nbv.getDouble("View Prune Confidence Threshold"));
   ui->checkBox_show_camera_border->setChecked(m_paras->camera.getBool("Show Camera Border"));
   ui->doubleSpinBox_view_prune_confidence_threshold->setValue(m_paras->nbv.getDouble("View Prune Confidence Threshold"));
   ui->doubleSpinBox_merge_confidence_threshold->setValue(m_paras->camera.getDouble("Merge Confidence Threshold"));
@@ -744,6 +745,11 @@ void CameraParaDlg::getNbvIterationCount(int _val)
 void CameraParaDlg::getNBVTopN(int _val)
 {
   global_paraMgr.nbv.setValue("NBV Top N", IntValue(_val));
+}
+
+void CameraParaDlg::getNBVConfidenceThreshold(double _val)
+{
+  global_paraMgr.nbv.setValue("View Prune Confidence Threshold", DoubleValue(_val));
 }
 
 void CameraParaDlg::getCameraHorizonDist(double _val)
