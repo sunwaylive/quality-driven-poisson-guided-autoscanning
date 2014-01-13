@@ -881,15 +881,6 @@ void NBV::viewClustering()
   //}
   updateViewDirections();
 
-  //save max_scores
-  ofstream out;
-  out.open("nbv_scores.txt");
-  for (vector<double>::iterator it =  nbv_scores.begin(); it != nbv_scores.end(); ++it)
-  {
-    out << *it << endl;
-  }
-  out.close();
-
   //double confidence_threshold = para->getDouble("Confidence Filter Threshold");
   //for (int i = 0; i < nbv_candidates->vert.size(); i++)
   //{
@@ -1054,26 +1045,27 @@ void NBV::viewPrune()
     }
   }
 
-  GlobalFun::deleteIgnore(nbv_candidates);
-  cout << "after View Prune candidates num: " <<nbv_candidates->vert.size() <<endl;
+  //GlobalFun::deleteIgnore(nbv_candidates);
+  //cout << "after View Prune candidates num: " <<nbv_candidates->vert.size() <<endl;
 
-  //get the top n = 4
-  int topn = global_paraMgr.nbv.getInt("NBV Top N");
+  ////get the top n = 4
+  //int topn = global_paraMgr.nbv.getInt("NBV Top N");
 
-  sort(nbv_candidates->vert.begin(), nbv_candidates->vert.end(), cmp);
-  if (nbv_candidates->vert.size() > topn)
-  {
-    for (int i = 0; i < nbv_candidates->vn; i++)
-    {
-      CVertex& v = nbv_candidates->vert[i];
-      if (i >= topn)
-        v.is_ignore = true;
-    }
-  }
+  //sort(nbv_candidates->vert.begin(), nbv_candidates->vert.end(), cmp);
+  //if (nbv_candidates->vert.size() > topn)
+  //{
+  //  for (int i = 0; i < nbv_candidates->vn; i++)
+  //  {
+  //    CVertex& v = nbv_candidates->vert[i];
+  //    if (i >= topn)
+  //      v.is_ignore = true;
+  //  }
+  //}
 
-  GlobalFun::deleteIgnore(nbv_candidates);
+  //GlobalFun::deleteIgnore(nbv_candidates);
+
   ofstream out;
-  out.open("confidence.txt");
+  out.open("aftere_prune_confidence.txt");
   for (int i = 0; i < nbv_candidates->vert.size(); ++i)
   {
     out << nbv_candidates->vert[i].eigen_confidence <<endl;

@@ -145,6 +145,8 @@ GLColor GLDrawer::isoValue2color(double iso_value,
 	                               double shift,
 	                               bool need_negative)
 {
+  return cGreen;//wei added 2014-1-13
+ 
 	iso_value += shift;
 	//if (!bShowSlice)
 	//{

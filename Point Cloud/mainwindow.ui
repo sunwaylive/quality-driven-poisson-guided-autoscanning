@@ -219,9 +219,9 @@
     <addaction name="actionCamera"/>
     <addaction name="actionShow_View_Grids"/>
     <addaction name="actionShow_NBV_Candidates"/>
-    <addaction name="actionShow_Poisson_Surface"/>
     <addaction name="actionShow_NBV_Label"/>
     <addaction name="actionShow_NBV_Ball"/>
+    <addaction name="actionShow_Poisson_Surface"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuAlgorithom"/>
@@ -952,6 +952,21 @@
    </property>
    <property name="text">
     <string>Show NBV Ball</string>
+   </property>
+  </action>
+  <action name="actionShow_Poisson_Surface">
+   <property name="text">
+    <string>Show Poisson Surface</string>
+   </property>
+  </action>
+  <action name="actionCompute_Normal_For_Poisson_Surface">
+   <property name="text">
+    <string>Compute Normal For Poisson Surface</string>
+   </property>
+  </action>
+  <action name="actionEvaluation">
+   <property name="text">
+    <string>Evaluation</string>
    </property>
   </action>
  </widget>
