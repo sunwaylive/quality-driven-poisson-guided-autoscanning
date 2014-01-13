@@ -146,7 +146,9 @@ void GLArea::resizeGL(int w, int h)
 
 void GLArea::paintGL() 
 {
-  //QPainter painter(this);
+  
+
+
 	paintMutex.lock();{
 
 		if (is_paintGL_locked)
@@ -262,11 +264,18 @@ void GLArea::paintGL()
 			{
 				if (!dataMgr.isNBVCandidatesEmpty())
 				{
-					//glDrawer.draw(GLDrawer::NORMAL, dataMgr.getNbvCandidates());
+					glDrawer.draw(GLDrawer::NORMAL, dataMgr.getNbvCandidates());
           glDrawer.drawCandidatesAxis(dataMgr.getNbvCandidates());
           drawCandidatesConnectISO();
-          //glDrawer.drawMeshLables(dataMgr.getNbvCandidates(), &painter);
-          //glDrawer.drawMeshLables(dataMgr.getNbvCandidates(), &painter);
+
+          if (para->getBool("Show NBV Label"))
+          {
+            QPainter painter(this);
+
+            //painter.begin(this);
+            glDrawer.drawMeshLables(dataMgr.getNbvCandidates(), &painter);
+            //painter.end();
+          }
 				}
 			}else if (para->getBool("Show View Grids"))
 			{
@@ -494,7 +503,7 @@ void GLArea::paintGL()
 			//standard_box.max = Point3f(1, 1, 1);
 			//glBoxWire(standard_box);
       glBoxWire(dataMgr.whole_space_box);
-			//CoordinateFrame(dataMgr.whole_space_box.Diag()/2.0).Render(this, NULL);
+			CoordinateFrame(dataMgr.whole_space_box.Diag()/2.0).Render(this, NULL);
 
       CMesh *view_grid_points = dataMgr.getViewGridPoints();
       if (NULL == view_grid_points) return;
@@ -547,10 +556,18 @@ void GLArea::paintGL()
 			//glEnable(GL_CULL_FACE);
 		}
 
-		if (para->getBool("Show Radius")&& !(takeSnapTile && para->getBool("No Snap Radius"))) 
-		{
-			drawNeighborhoodRadius();
-		}
+
+
+    if (para->getBool("Show NBV Candidates")
+       && para->getBool("Show NBV Ball")) 
+    {
+       drawNBVBall();
+    }
+    
+      else if (para->getBool("Show Radius")&& !(takeSnapTile && para->getBool("No Snap Radius"))) 
+      {
+        drawNeighborhoodRadius();
+      }
 
 		glDepthMask(GL_TRUE);
 
@@ -574,6 +591,9 @@ void GLArea::paintGL()
 		}
 
 	}
+
+
+
 PAINT_RETURN:
 	paintMutex.unlock();
 }
@@ -721,8 +741,16 @@ void GLArea::openByDrop(QString fileName)
   }
 
   emit needUpdateStatus();
-	initAfterOpenFile();
-	updateGL();
+	
+  //initAfterOpenFile();
+  dataMgr.getInitRadiuse();
+  //dataMgr.recomputeQuad();
+  initView();
+  wlop.setFirstIterate();
+  skeletonization.setFirstIterate();
+  emit needUpdateStatus();
+
+  updateGL();
 }
 
 void GLArea::loadDefaultModel()
@@ -786,6 +814,65 @@ void GLArea::drawPickRect()
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
+}
+
+void GLArea::drawNBVBall()
+{
+  glMatrixMode(GL_MODELVIEW_MATRIX);
+
+  glColorMaterial(GL_FRONT,GL_AMBIENT_AND_DIFFUSE);
+  double trans_value = para->getDouble("Radius Ball Transparency");
+  glColor4f(0,0,1,trans_value);
+  glShadeModel(GL_SMOOTH);
+
+  Box3f box = dataMgr.getCurrentOriginal()->bbox;
+  Point3f center = (box.min + box.max) / 2.0;
+
+  double max_normalize_length = global_paraMgr.data.getDouble("Max Normalize Length");
+  Point3f scanner_position_normalize = dataMgr.scanner_position / max_normalize_length - dataMgr.original_center_point;
+    
+  double radius = GlobalFun::computeEulerDist(scanner_position_normalize, center);
+
+  glPushMatrix();
+  glTranslatef(center[0], center[1], center[2]);
+  //glutSolidSphere(radius, 40, 40);
+  glutWireSphere(radius, 90, 90);
+  
+  glPopMatrix();
+  
+  glDisable(GL_LIGHTING);
+  glDisable(GL_LIGHT0);
+  glDisable(GL_BLEND);
+  glDisable(GL_CULL_FACE);
+}
+
+void GLArea::removeBadCandidates()
+{
+  Box3f box = dataMgr.getCurrentOriginal()->bbox;
+  Point3f center = (box.min + box.max) / 2.0;
+
+  double max_normalize_length = global_paraMgr.data.getDouble("Max Normalize Length");
+  Point3f scanner_position_normalize = dataMgr.scanner_position / max_normalize_length - dataMgr.original_center_point;
+
+  double save_radius = GlobalFun::computeEulerDist(scanner_position_normalize, center);
+
+  double radius_threshold = global_paraMgr.data.getDouble("CGrid Radius") * 4.1;
+
+  CMesh* nbv_candidates = dataMgr.getNbvCandidates();
+  for (int i = 0; i < nbv_candidates->vert.size(); i++)
+  {
+    CVertex& v = nbv_candidates->vert[i];
+
+    double nbv_dist = GlobalFun::computeEulerDist(v.P(), center);
+    double dist_diff = abs(nbv_dist - save_radius);
+
+    if (dist_diff > radius_threshold)
+    {
+      v.is_ignore = true;
+    }
+  }
+
+  GlobalFun::deleteIgnore(nbv_candidates);
 }
 
 
@@ -1610,7 +1697,7 @@ GLArea::saveNBV(QString fileName)
   dataMgr.savePly(fileName_nbvply, nbv);
 
   QString fileName_commands = fileName;
-  fileName_commands.replace(".ply", ".PR2_commands");
+  fileName_commands.replace(".ply", ".txt");
 
   dataMgr.savePR2_orders(fileName_commands);
 
@@ -2056,7 +2143,19 @@ void GLArea::wheelEvent(QWheelEvent *e)
 	}
 	else if( (e->modifiers() & Qt::ShiftModifier) && (e->modifiers() & Qt::ControlModifier) )
 	{
-		if (para->getBool("Show Skeleton") /*&& !dataMgr.isSkeletonEmpty()*/)
+    if (para->getBool("Show NBV Candidates") && para->getBool("Show NBV Ball"))
+    {
+      if (e->delta() < 0)
+      {
+        moveAllCandidates(true);
+      }
+      else
+      {
+        moveAllCandidates(false);
+      }
+
+    }
+		else if (para->getBool("Show Skeleton") /*&& !dataMgr.isSkeletonEmpty()*/)
 		{
 			size_temp = global_paraMgr.skeleton.getDouble("Branches Merge Max Dist");
 			global_paraMgr.skeleton.setValue("Branches Merge Max Dist", DoubleValue(size_temp * change));
@@ -2648,34 +2747,55 @@ void GLArea::figureSnapShot()
 
 void GLArea::drawCandidatesConnectISO()
 {
-  double width = global_paraMgr.drawer.getDouble("Normal Line Width");
-  double length = global_paraMgr.drawer.getDouble("Normal Line Length");
-  //double half_length = normal_length / 2.0;
-  QColor qcolor = global_paraMgr.drawer.getDouble("Normal Line Color");
+  //double width = global_paraMgr.drawer.getDouble("Normal Line Width");
+  //double length = global_paraMgr.drawer.getDouble("Normal Line Length");
+  ////double half_length = normal_length / 2.0;
+  //QColor qcolor = global_paraMgr.drawer.getDouble("Normal Line Color");
 
-  CMesh* candidates = dataMgr.getNbvCandidates();
-  CMesh* iso_points = dataMgr.getCurrentIsoPoints();
+  //CMesh* candidates = dataMgr.getNbvCandidates();
+  //CMesh* iso_points = dataMgr.getCurrentIsoPoints();
 
-  for (int i = 0; i < candidates->vert.size(); i++)
+  //for (int i = 0; i < candidates->vert.size(); i++)
+  //{
+  //  CVertex& v = candidates->vert[i];
+
+  //  glLineWidth(width); 
+  //  GLColor color(qcolor);
+
+  //  glColor4f(color.r, color.g, color.b, 1);  
+  //  glColor3f(0, 0, 1);
+
+  //  Point3f p = v.P(); 
+  //  Point3f m0 = v.N();
+  //  Point3f m1 = v.eigen_vector0;
+  //  Point3f m2 = v.eigen_vector1;
+
+  //  int remember_index = v.remember_iso_index;
+  //  CVertex tp = iso_points->vert.at(remember_index);
+  //  // Z
+  //  glBegin(GL_LINES);	
+  //  glVertex3d(p[0], p[1], p[2]);
+  //  glVertex3f(tp[0], tp[1], tp[2]);
+  //  glEnd(); 
+  //}
+
+}
+
+
+void GLArea::moveAllCandidates(bool is_forward)
+{
+  CMesh* nbv_candidates = dataMgr.getNbvCandidates();
+  double step = 0.01;
+  for (int i = 0; i < nbv_candidates->vert.size(); i++)
   {
-    CVertex& v = candidates->vert[i];
-
-    glLineWidth(width); 
-    GLColor color(qcolor);
-    glColor4f(color.r, color.g, color.b, 1);  
-
-    Point3f p = v.P(); 
-    Point3f m0 = v.N();
-    Point3f m1 = v.eigen_vector0;
-    Point3f m2 = v.eigen_vector1;
-
-    int remember_index = v.remember_iso_index;
-    CVertex tp = iso_points->vert.at(remember_index);
-    // Z
-    glBegin(GL_LINES);	
-    glVertex3d(p[0], p[1], p[2]);
-    glVertex3f(tp[0], tp[1], tp[2]);
-    glEnd(); 
+    CVertex& v = nbv_candidates->vert[i];
+    if (is_forward)
+    {
+      v.P() += v.N() * step;
+    }
+    else
+    {
+      v.P() -= v.N() * step;
+    }
   }
-
 }

@@ -4,4 +4,5 @@ T_to_L_Matrix:   1  0 0 -229.2
 				 0	1 0 0
 				 0	0 1 0
 				 0	0 0	1
+Scanner_Position: 164 -7 -254
 			 

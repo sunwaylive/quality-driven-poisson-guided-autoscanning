@@ -1087,13 +1087,18 @@ GlobalFun::computeICP(CMesh *dst, CMesh *src)
   for (int i = 0; i < mesh2->vertices.size(); ++i)
   {
     point p = xf2 * mesh2->vertices[i];
-    CVertex t;
-    t.m_index = ++index;
+    CVertex& t = src->vert[i];
+
     t.P()[0] = p[0];
     t.P()[1] = p[1];
     t.P()[2] = p[2];
-    dst->vert.push_back(t);
-    dst->bbox.Add(t.P());
+    //CVertex t;
+    //t.m_index = ++index;
+    //t.P()[0] = p[0];
+    //t.P()[1] = p[1];
+    //t.P()[2] = p[2];
+    //dst->vert.push_back(t);
+    //dst->bbox.Add(t.P());
   }
   dst->vn = dst->vert.size();
 }

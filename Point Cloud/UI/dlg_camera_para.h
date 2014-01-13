@@ -83,9 +83,14 @@ private slots:
   void runStep2PoissonConfidenceViaOiginal();
   void runStep3NBVcandidates();
   void runWlopOnScannedMesh();
-  void runICP();
   void runStep4NewScans();
   void runOneKeyNbvIteration();
+
+  //add samples
+  void runRemoveSampleOutliers();
+  void runICP();
+  void runRemoveSamplesWithLowConfidence();
+  void runAddSamplesToOiriginal();
 
   void getRotateCenterX(double _val);
   void getRotateCenterY(double _val);
@@ -102,6 +107,9 @@ private slots:
   void rotateAnimation();
   void sliceAnimation();
   void loadPoissonSurface();
+
+  void moveTranslation();
+
 
 private:
 	Ui::camera_paras * ui;

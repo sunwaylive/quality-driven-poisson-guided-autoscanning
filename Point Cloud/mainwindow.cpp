@@ -60,6 +60,9 @@ void MainWindow::initWidgets()
   ui.actionShow_Scan_Candidates->setChecked(paras->glarea.getBool("Show Scan Candidates"));
   ui.actionShow_Current_Scanned_Mesh->setChecked(paras->glarea.getBool("Show Scanned Mesh"));
   ui.actionShow_Poisson_Surface->setChecked(paras->glarea.getBool("Show Poisson Surface"));
+  ui.actionShow_NBV_Label->setChecked(paras->glarea.getBool("Show NBV Label"));
+  ui.actionShow_NBV_Ball->setChecked(paras->glarea.getBool("Show NBV Ball"));
+
 }
 
 void MainWindow::initConnect()
@@ -122,6 +125,8 @@ void MainWindow::initConnect()
   connect(ui.actionShow_colorful_branches,SIGNAL(toggled(bool)),this,SLOT(showColorfulBranches(bool)));
   connect(ui.actionShow_Box,SIGNAL(toggled(bool)),this,SLOT(showBox(bool)));  
   connect(ui.actionShow_Confidence_Color, SIGNAL(toggled(bool)), this, SLOT(showConfidenceColor(bool)));
+  connect(ui.actionShow_NBV_Label, SIGNAL(toggled(bool)), this, SLOT(showNBVLables(bool)));
+  connect(ui.actionShow_NBV_Ball, SIGNAL(toggled(bool)), this, SLOT(showNBVBall(bool)));
   
 
   connect(ui.actionShow_ISO,SIGNAL(toggled(bool)),this,SLOT(showIsoPoints(bool)));
@@ -521,7 +526,14 @@ void MainWindow::saveFile()
 void
 MainWindow::removeOutliers()
 {
-  area->removeOutliers();
+  if (global_paraMgr.glarea.getBool("Show NBV Ball") && global_paraMgr.glarea.getBool("Show NBV Candidates"))
+  {
+    area->removeBadCandidates();
+  }
+  else
+  {
+    area->removeOutliers();
+  }
   area->initView();
   area->updateGL();
 }
@@ -660,7 +672,7 @@ MainWindow::savePara()
 void MainWindow::nbvReOrders()
 {
   area->dataMgr.nbvReoders();
-
+  area->updateGL();
 }
 
 void MainWindow::saveViewGridsForVoreen()
@@ -838,6 +850,20 @@ void MainWindow::showConfidenceColor(bool _val)
   global_paraMgr.drawer.setValue("Show Confidence Color", BoolValue(_val));
   area->updateGL();
 }
+
+void MainWindow::showNBVLables(bool _val)
+{
+  global_paraMgr.glarea.setValue("Show NBV Label", BoolValue(_val));
+  area->updateGL();
+}
+
+void MainWindow::showNBVBall(bool _val)
+{
+  global_paraMgr.glarea.setValue("Show NBV Ball", BoolValue(_val));
+  area->updateGL();
+}
+
+
 void MainWindow::setSmapleType(QAction * action)
 {
 	if(action == ui.actionShow_Sample_Quads)
@@ -1005,10 +1031,10 @@ void MainWindow::featureColor()
 void MainWindow::recomputeQuad()
 {
 	//cout << "recompute quad" << endl;
-	if (area->dataMgr.isSamplesEmpty())
-	{
-		return;
-	}
+	//if (area->dataMgr.isSamplesEmpty())
+	//{
+	//	return;
+	//}
 
 	area->dataMgr.recomputeQuad();
 	area->updateGL();
@@ -1083,6 +1109,8 @@ void MainWindow::addSamplesToOriginal()
 
     original->vert.push_back(t);
   }
+
+
 
 }
 

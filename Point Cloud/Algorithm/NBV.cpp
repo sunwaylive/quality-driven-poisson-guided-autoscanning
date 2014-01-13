@@ -128,7 +128,7 @@ NBV::runOneKeyNBV()
   out.close();
 
   timer.start("optimize view direction");
-  for (int i = 0; i < 5; i++)
+  for (int i = 0; i < 1; i++)
   {
     bool have_direction_move = updateViewDirections();
     if (!have_direction_move)
@@ -407,7 +407,7 @@ void
   }
 
   //parallel
-  double gaussian_para = 4.0;//control steepness
+  double gaussian_para = 4;//control steepness
   int iso_points_size = iso_points->vert.size();
   double optimal_D = (n_dist + f_dist) / 2.0f;
   double half_D = n_dist;
@@ -1284,12 +1284,22 @@ void NBV::setIsoBottomConfidence()
     return;
   }
 
-  Point3f bbox_min = iso_points->bbox.min;
-  double bottom_delta = global_paraMgr.nbv.getDouble("Iso Bottom Delta");
+  iso_points->bbox.SetNull();
   for (int i = 0; i < iso_points->vert.size(); ++i)
   {
     CVertex &v = iso_points->vert[i];
-    if (v.P().Z() < bbox_min.Z() + bottom_delta)
+    iso_points->bbox.Add(v.P());
+  }
+
+  Point3f bbox_min = iso_points->bbox.min;
+  double bottom_delta = global_paraMgr.nbv.getDouble("Iso Bottom Delta");
+
+  cout << "bottom min = " << bbox_min.X() << endl;
+
+  for (int i = 0; i < iso_points->vert.size(); ++i)
+  {
+    CVertex &v = iso_points->vert[i];
+    if (v.P().X() < bbox_min.X() + bottom_delta)
     {
       v.eigen_confidence = 1.0f;
     }

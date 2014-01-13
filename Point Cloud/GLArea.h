@@ -91,6 +91,8 @@ public:
 
 	void removePickPoint();
   void removeOutliers();
+  void moveAllCandidates(bool is_forward);
+  void removeBadCandidates();
 
 signals:
 	void needUpdateStatus();
@@ -101,6 +103,7 @@ private:
 
 private:
 	void drawNeighborhoodRadius();
+  void drawNBVBall();
 	void initLight();
 	void lightOnOff(bool _val);
 

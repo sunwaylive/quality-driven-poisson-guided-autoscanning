@@ -180,6 +180,8 @@ public:
   Matrix44f R_to_S_Matrix44;
   Matrix44f T_to_L_Matrix44;
 
+  Point3f scanner_position;
+  
 
 };
 

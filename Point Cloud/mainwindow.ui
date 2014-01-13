@@ -220,6 +220,8 @@
     <addaction name="actionShow_View_Grids"/>
     <addaction name="actionShow_NBV_Candidates"/>
     <addaction name="actionShow_Poisson_Surface"/>
+    <addaction name="actionShow_NBV_Label"/>
+    <addaction name="actionShow_NBV_Ball"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuAlgorithom"/>
@@ -250,6 +252,9 @@
    <addaction name="actionClear_Data"/>
    <addaction name="actionNormalize"/>
    <addaction name="actionRemove_Outlier"/>
+   <addaction name="actionSave_NBV"/>
+   <addaction name="actionNBV_ReOrders"/>
+   <addaction name="actionSwitch_Sample_NBV"/>
    <addaction name="separator"/>
    <addaction name="actionDownSample"/>
    <addaction name="actionSkeleton_Setting"/>
@@ -925,7 +930,7 @@
   </action>
   <action name="actionSwitch_Sample_NBV">
    <property name="text">
-    <string>Switch Sample NBV</string>
+    <string>Switch S_N</string>
    </property>
   </action>
   <action name="actionNBV_ReOrders">
@@ -933,22 +938,20 @@
     <string>NBV ReOrders</string>
    </property>
   </action>
-  <action name="actionShow_Poisson_Surface">
+  <action name="actionShow_NBV_Label">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Show Poisson Surface</string>
+    <string>Show NBV Label</string>
    </property>
   </action>
-  <action name="actionCompute_Normal_For_Poisson_Surface">
-   <property name="text">
-    <string>Compute Normal For Poisson Surface</string>
+  <action name="actionShow_NBV_Ball">
+   <property name="checkable">
+    <bool>true</bool>
    </property>
-  </action>
-  <action name="actionEvaluation">
    <property name="text">
-    <string>Evaluation</string>
+    <string>Show NBV Ball</string>
    </property>
   </action>
  </widget>
