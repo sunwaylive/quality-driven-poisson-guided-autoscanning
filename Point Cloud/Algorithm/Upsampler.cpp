@@ -66,7 +66,6 @@ void Upsampler::run()
 		radius = para->getDouble("CGrid Radius");
 	}
 
-
 	doUpsampling();	
 }
 
@@ -74,7 +73,6 @@ void Upsampler::run()
 void Upsampler::doUpsampling()
 {
 	radius = para->getDouble("CGrid Radius");
-
 
 	// insert new points by dist threshold
 	if(para->getBool("Using Threshold Process"))
@@ -89,12 +87,6 @@ void Upsampler::doUpsampling()
 		insertPointsByThreshold();
 		return;
 	}
-	else
-	{
-
-	}
-
-
 }
 
 void Upsampler::clearAllThresholdFlag()
@@ -135,7 +127,6 @@ void Upsampler::initVertexes()
 		vi->neighbors.clear();
 		is_abandon_by_threshold[vi->m_index] = false;
 	}
-
 }
 
 
@@ -144,7 +135,7 @@ void Upsampler::initVertexes()
 void Upsampler::getNewPointNeighbors(CVertex & newv, set<int> & set_nbs, bool isBoth)
 {
 	double radius2 = radius * radius;
-	// 
+	
 	set<int>::iterator setIter,setEndIter;
 	setEndIter = set_nbs.end();
 	for (setIter = set_nbs.begin(); setIter != setEndIter; ++setIter)
@@ -156,7 +147,6 @@ void Upsampler::getNewPointNeighbors(CVertex & newv, set<int> & set_nbs, bool is
 		if (dist2 < radius2)
 		{
 			newv.neighbors.push_back(t.m_index);
-
 			// add it in its neighbor, this is for re-using this function to another purpose
 			if(isBoth)
 				t.neighbors.push_back(newv.m_index);
@@ -189,7 +179,6 @@ void Upsampler::getLineVertNeighorsIndex(set<int> & neighbors, int firstV, int s
 	// line's vertex
 	neighbors.insert(firstV);
 	neighbors.insert(secV);
-
 } // end
 
 
@@ -254,15 +243,10 @@ double Upsampler::findMaxMidpoint(CVertex & v, int & neighbor_index)
 			bestDist = minDist;
 			neighbor_index = v.neighbors[i];
 		}
-
 	}// for
 
 	return bestDist;// for dist threshold
 } // end
-
-
-
-
 
 double Upsampler::getPredictThreshold()
 {
@@ -280,7 +264,6 @@ double Upsampler::getPredictThreshold()
 
 double Upsampler::getPredictThresholdFirstTime()
 {
-
 	if(samples == NULL )
 	{
 		cout << "ERROR: Upsampler::run() mesh == NULL || original == NULL";
@@ -298,7 +281,6 @@ double Upsampler::getPredictThresholdFirstTime()
 
 	radius = para->getDouble("CGrid Radius");
 
-
 	double current_radius = para->getDouble("CGrid Radius");
 	if( abs( old_radius - current_radius) > 1e-10 || b_first)
 	{
@@ -306,7 +288,6 @@ double Upsampler::getPredictThresholdFirstTime()
 		old_radius = current_radius;	
 	}
 	clearAllThresholdFlag();
-
 
 	int testNumber = 50;
 	double sumDist = 0.0;
@@ -400,10 +381,8 @@ void Upsampler::insertPointsByThreshold()
 			// compute new vertex's temporary neighbors, its will update until project it
 			getNewPointNeighbors(pv, setNewVertexNeighors, false);
 
-      
 			//computeNewVertexNormAvgMethod(pv, firstVertInex, secondVertIndx);// 7-11 not sure
 			computeNewVertexProjDist_Sigma(pv, firstVertInex, secondVertIndx);
-
 
 			if(wd != 0.0)
 				pv.P() = pv.P() + pv.N() * (d / wd);
@@ -442,11 +421,6 @@ void Upsampler::insertPointsByThreshold()
 	computeEigenVerctorForRendering();
 }
 
-
-
-
-
-
 void Upsampler::recomputeAllNeighbors()
 {
 	double grid_radius = para->getDouble("CGrid Radius");
@@ -463,7 +437,6 @@ void Upsampler::recomputeAllNeighbors()
 
 	cout << "recomputeAllNeighbors end "<< endl;
 }
-
 
 
 void Upsampler::computeNewVertexNormAvgMethod(CVertex & v, int firstV, int secV)// add by wsh 1-5
@@ -502,7 +475,6 @@ void Upsampler::computeNewVertexProjDist_Sigma(CVertex & v, int firstV, int secV
 	double radius16 =   -4 / (radius2);
 	Point3f & p = v.P();
 	//Point3f vm(v.N());
-
 
 	// 0:first, 1:second
 	vector<double> projDist(NORMAL_NUM, 0.0);
@@ -552,10 +524,6 @@ void Upsampler::computeNewVertexProjDist_Sigma(CVertex & v, int firstV, int secV
 
 	v.N() = (grad_f[min_index] / sumW[min_index]).Normalize();
 }
-
-
-
-
 
 void Upsampler::optimizeProjection()
 {
@@ -660,7 +628,6 @@ void Upsampler::updateVT_proj(CVertex& v, CVertex& t, double weight)
 	proj_weight[v.m_index] += weight;
 }
 
-
 void Upsampler::self_optimize_normals(CGrid::iterator start, CGrid::iterator end, double radius)
 {
 	double radius2 = radius*radius;
@@ -694,6 +661,7 @@ void Upsampler::self_optimize_normals(CGrid::iterator start, CGrid::iterator end
 		}
 	}
 }
+
 void Upsampler::other_optimize_normals(CGrid::iterator starta, CGrid::iterator enda, 
 	CGrid::iterator startb, CGrid::iterator endb, double radius)
 {
@@ -740,6 +708,4 @@ void Upsampler::updateVT_proj_normal(CVertex& v, CVertex& t, double weight, doub
 	sum_Gw[v.m_index] += grad_w;
 	sum_Gf[v.m_index] += grad_w * diff_proj_vt;
 	sum_N[v.m_index] += t.N() * weight;
-
-
 }

@@ -3,14 +3,13 @@
 #include "PointCloudAlgorithm.h"
 #include "Skeleton.h"
 
-
 class Skeletonization : public PointCloudAlgorithm
 {
 public:
 	Skeletonization(RichParameterSet* para);
 	~Skeletonization(void);
-public:
 
+public:
 	void run();
 	void setInput(DataMgr* pData);
 	RichParameterSet* getParameterSet(){ return para; }
@@ -39,7 +38,6 @@ private:
   void dealWithVirtualsForOneBranch(Branch& branch);
   void dealWithVirtualsForAllBranch();
   bool isVirtualTailHealthy(Branch& branch);
-
 
 	/* for step 1 */
 	void removeTooClosePoints();
@@ -76,20 +74,14 @@ private:
   void cleanPointsNearBranches();
   void labelFixOriginal();
   void rememberVirtualEnds();
-
   // increase radius
   void increaseRadius();
-
   // if only a few moving point left, stop the process
   int getMovingPointsNum();
-
-
   // final process
   void finalProcess();
-
   // reconnect before refinement
   void reconnectSkeleton();
-
   // Segment-Refinement
   void runAllSegment();
   void segmentOneCurve(Curve& c);
@@ -112,7 +104,6 @@ private:
 	void computeAverageTerm(CMesh* samples, CMesh* original);
 	void computeRepulsionTerm(CMesh* samples);
 	void computeDensity(bool isOriginal, double radius);
-
 
 private:
 	RichParameterSet* para;

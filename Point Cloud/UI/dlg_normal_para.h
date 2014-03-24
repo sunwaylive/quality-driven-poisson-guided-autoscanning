@@ -17,29 +17,28 @@ using namespace std;
 
 class NormalParaDlg : public QFrame
 {
-	Q_OBJECT
+  Q_OBJECT
 public:
-	NormalParaDlg(QWidget *p, ParameterMgr * _paras, GLArea * _area);
-	~NormalParaDlg();
-	void initConnects();
+  NormalParaDlg(QWidget *p, ParameterMgr * _paras, GLArea * _area);
+  ~NormalParaDlg();
+  void initConnects();
 
-private slots:
-	bool initWidgets();
-	void getRadiusValues(double _val);
-	void getPcaThreshold(double _val);
-	void getIterateNum(int _val);
-	void getSigma(double _val);
-	void getKNN(int _val);
+  private slots:
+    bool initWidgets();
+    void getRadiusValues(double _val);
+    void getPcaThreshold(double _val);
+    void getIterateNum(int _val);
+    void getSigma(double _val);
+    void getKNN(int _val);
 
-	void isAPCA(bool _val);
-	void reorientateNormal();
-	void applyNormalSmoothing();
-	void applyPCANormal();
-  void applyPCANormalUsingDirection();
-	
-		
+    void isAPCA(bool _val);
+    void reorientateNormal();
+    void applyNormalSmoothing();
+    void applyPCANormal();
+    void applyPCANormalUsingDirection();
+
 private:
-	Ui::normal_paras * ui;
-	ParameterMgr * m_paras;
-	GLArea * area;
+  Ui::normal_paras * ui;
+  ParameterMgr * m_paras;
+  GLArea * area;
 };

@@ -45,8 +45,6 @@ static GLColor cOrange(1, 0.55, 0);
 static GLColor cSnow(0.5, 0.5, 0.5);
 static GLColor cPink(0.8, 0.1, 0.5);
 
-
-
 class GLDrawer
 {
 public:
@@ -102,7 +100,6 @@ public:
   void generateRandomColorList(int num = 1000);
 
 private:
-
 	bool bCullFace;
 	bool useNormalColor;
   bool useDifferBranchColor;
@@ -141,7 +138,6 @@ private:
 	double skel_bone_width;
 	double skel_node_size;
 	double skel_branch_size;
-
 
 	int prevPickIndex;
 	Point3f curr_pick;

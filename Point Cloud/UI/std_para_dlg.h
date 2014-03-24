@@ -8,7 +8,6 @@
 #include <QtGui/QDockWidget>
 #include <QtGui/QGridLayout>
 
-
 #include "ParameterMgr.h"
 #include "UI/dlg_wlop_para.h"
 #include "UI/dlg_normal_para.h"
@@ -23,41 +22,41 @@ using namespace std;
 
 class StdParaDlg : public QDockWidget
 {
-	Q_OBJECT
-	public:
-		StdParaDlg(ParameterMgr* _paras, GLArea * _area, QWidget* parent = 0);
-		~StdParaDlg();
+  Q_OBJECT
+public:
+  StdParaDlg(ParameterMgr* _paras, GLArea * _area, QWidget* parent = 0);
+  ~StdParaDlg();
 
-		bool showWlopParaDialog();
-		bool showNormalParaDlg();
-		bool showSkeletonParaDlg();
-		bool showUpsamplingParaDlg();
-    bool showPoissonParaDlg();
-    bool showCameraParaDlg();
+  bool showWlopParaDialog();
+  bool showNormalParaDlg();
+  bool showSkeletonParaDlg();
+  bool showUpsamplingParaDlg();
+  bool showPoissonParaDlg();
+  bool showCameraParaDlg();
 
-	private:
-		void init();
-		void createFrame();
-		void loadWlopFrame();
-		void loadNormalFrame();
-		void loadSkeletonFrame();
-		void loadUpsamplingFrame();
-    void loadPoissonFrame();
-    void loadCameraFrame();
+private:
+  void init();
+  void createFrame();
+  void loadWlopFrame();
+  void loadNormalFrame();
+  void loadSkeletonFrame();
+  void loadUpsamplingFrame();
+  void loadPoissonFrame();
+  void loadCameraFrame();
 
-	private slots:
-		 void closeClick();
-		 
-	private:
-		WlopParaDlg          * para_wlop;
-		NormalParaDlg        * para_normal;
-		SkeletonParaDlg      * para_skeleton;
-		UpsamplingParaDlg    * para_upsampling;
-    PoissonParaDlg       * para_poisson;
-		CameraParaDlg        * para_camera; 
+  private slots:
+    void closeClick();
 
-		ParameterMgr * paras;
+private:
+  WlopParaDlg          * para_wlop;
+  NormalParaDlg        * para_normal;
+  SkeletonParaDlg      * para_skeleton;
+  UpsamplingParaDlg    * para_upsampling;
+  PoissonParaDlg       * para_poisson;
+  CameraParaDlg        * para_camera; 
 
-		QFrame * mainFrame;
-		GLArea * gla;
+  ParameterMgr * paras;
+
+  QFrame * mainFrame;
+  GLArea * gla;
 };

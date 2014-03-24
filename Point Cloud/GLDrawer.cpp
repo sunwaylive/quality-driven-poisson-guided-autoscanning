@@ -38,8 +38,7 @@ void GLDrawer::updateDrawer(vector<int>& pickList)
 	skel_branch_color = para->getColor("Skeleton Branch Color");
 	skel_bone_width = para->getDouble("Skeleton Bone Width") / 10000.;
 	skel_node_size = para->getDouble("Skeleton Node Size") / 10000.;
-
-	
+  	
 	iso_step_size = global_paraMgr.glarea.getDouble("ISO Interval Size");
 	bUseIsoInteral = global_paraMgr.glarea.getBool("Use ISO Interval");
 	bUseConfidenceColor = global_paraMgr.drawer.getBool("Show Confidence Color");
@@ -56,16 +55,12 @@ void GLDrawer::updateDrawer(vector<int>& pickList)
   iso_color_scale = global_paraMgr.glarea.getDouble("Point ISO Color Scale");
   iso_value_shift = global_paraMgr.glarea.getDouble("Point ISO Value Shift");
 
- 
-  
-
 	if (!pickList.empty())
 	{
 		curr_pick_indx = pickList[0];
 	}
 
 }
-
 
 
 void GLDrawer::draw(DrawType type, CMesh* _mesh)
@@ -467,7 +462,6 @@ void GLDrawer::drawQuade(CVertex& v)
 
 void GLDrawer::drawNormal(CVertex& v)
 {
-
 	double width = normal_width;
 	double length = normal_length;
 	QColor qcolor = normal_color;
@@ -485,7 +479,6 @@ void GLDrawer::drawNormal(CVertex& v)
 	glVertex3d(p[0], p[1], p[2]);
 	glVertex3f(p[0] + m[0]*length, p[1]+m[1]*length, p[2]+m[2]*length);
 	glEnd(); 
-
 
 	//glBegin(GL_LINES);	
 	//glVertex3d(p[0], p[1], p[2]);
@@ -918,7 +911,6 @@ void GLDrawer::drawSlice(Slice& slice, double trans_val)
 		}
 	}
 }
-
 
 
 void GLDrawer::drawMeshLables(CMesh *mesh, QPainter *painter)

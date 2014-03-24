@@ -10,8 +10,6 @@
 #include "ParameterMgr.h"
 #include "calculationthread.h"
 
-
-
 //MainWindow类主要用来消息响应
 class MainWindow : public QMainWindow
 {
@@ -26,7 +24,6 @@ private:
 	void initConnect();
 	void iniStatusBar();
 	void createActionGroups();
-
 
 private slots:
 	void updateStatusBar();
@@ -74,9 +71,7 @@ private slots:
   
   void coordinateTransform();
   void addSamplesToOriginal();
-
   void saveGridAsPoints();
-
   void deleteIgnore();
   void recoverIgnore();
 
@@ -108,7 +103,6 @@ private slots:
   void showNBVLables(bool _val);
   void showNBVBall(bool _val);
 
-
   void showIsoPoints(bool _val);
   void useIsoInterval(bool _val);
   void showViewGrids(bool _val);
@@ -119,7 +113,6 @@ private slots:
 
 	void setSmapleType(QAction * action);
 	void setOriginalType(QAction * action);
-
 
 private slots:
 	void sampleColor();

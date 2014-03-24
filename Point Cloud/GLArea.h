@@ -1,9 +1,6 @@
 #pragma once
 #include "gl/glew.h"
-
 //切换32-64位，只需要更换dll，以及选择正确的QT版本并重新编译，这两个步骤
-
-
 #include <QWidget>
 #include <QColor>
 #include <QImage>
@@ -42,14 +39,11 @@
 //#include "Poisson/FunctionData.h"
 //#include "Poisson/PPolynomial.h"
 
-
-
 using std::cout;
 using std::endl;
 using vcg::Point3f;
 using namespace vcg;
 using std::vector;
-
 
 class GLArea : public QGLWidget
 {

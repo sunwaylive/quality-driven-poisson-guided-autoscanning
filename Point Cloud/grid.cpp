@@ -100,8 +100,6 @@ void CGrid::init(std::vector<CVertex> &vert, Box3f &box, double _radius) {
 //   {
 // 	  samples[i]->m_index = i;
 //   }
-  
-
 }
 
 void CGrid::iterate(void (*self)(iterator starta, iterator enda, double radius),
@@ -111,7 +109,6 @@ void CGrid::iterate(void (*self)(iterator starta, iterator enda, double radius),
   static int corner[8*3] = { 0, 0, 0,  1, 0, 0,  0, 1, 0,  0, 0, 1,
                              0, 1, 1,  1, 0, 1,  1, 1, 0,  1, 1, 1 };
   
-  // 
   static int diagonals[14*2] = { 0, 0, //remove this line to avoid self intesextion
                                  0, 1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7,
                                  2, 3, 1, 3, 1, 2,                       
@@ -157,13 +154,11 @@ void CGrid::sample(CGrid &points,
     for(int y = 0; y < yside; y++) {
       for(int x = 0; x < xside; x++) {     
         int origin = cell(x, y, z);  
-
          
         if(!isEmpty(origin) && !points.isEmpty(origin)) 
           sample(startV(origin), endV(origin), 
                  points.startV(origin),   points.endV(origin), radius);  
                         
-
         for(int d = 2; d < 28; d += 2) { //skipping self
           int *cs = corner + 3*diagonals[d];
           int *ce = corner + 3*diagonals[d+1];
@@ -187,5 +182,3 @@ void CGrid::sample(CGrid &points,
     }
   }
 }
-
-

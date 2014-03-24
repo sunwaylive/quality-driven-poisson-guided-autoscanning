@@ -9,10 +9,10 @@ CameraParaDlg::CameraParaDlg(QWidget *p, ParameterMgr * _paras, GLArea * _area) 
 
   if(!initWidgets())
   {
-  cerr << " PoissonParaDlg::initWidgets failed." << endl;
-  return;
+    cerr << " PoissonParaDlg::initWidgets failed." << endl;
+    return;
   }
-	initConnects();
+  initConnects();
 }
 
 void CameraParaDlg::initConnects()
@@ -46,12 +46,12 @@ void CameraParaDlg::initConnects()
   connect(ui->doubleSpinBox_predicted_model_size, SIGNAL(valueChanged(double)), this, SLOT(getPredictedModelSize(double)));
   connect(ui->doubleSpinBox_optimal_plane_width, SIGNAL(valueChanged(double)), this, SLOT(getOptimalPlaneWidth(double)));
   connect(ui->ray_resolution_para, SIGNAL(valueChanged(double)), this, SLOT(getRayResolutionPara(double)));
-  
+
   connect(ui->pushButton_build_grid, SIGNAL(clicked()), this, SLOT(buildGrid()));
   connect(ui->pushButton_propagate, SIGNAL(clicked()), this, SLOT(propagate()));
   connect(ui->pushButton_propagate_one, SIGNAL(clicked()), this, SLOT(propagateOnePoint()));
   connect(ui->pushButton_grid_segment, SIGNAL(clicked()), this, SLOT(gridSegment()));
- 
+
   connect(ui->extract_view_candidates, SIGNAL(clicked()), this, SLOT(extractViewCandidates()));
   connect(ui->pushButton_extract_views_into_bins, SIGNAL(clicked()), this, SLOT(extractViewIntoBins()));
   connect(ui->cluster_view_candidates, SIGNAL(clicked()), this, SLOT(runViewClustering()));
@@ -59,7 +59,7 @@ void CameraParaDlg::initConnects()
   connect(ui->max_ray_steps, SIGNAL(valueChanged(double)), this, SLOT(getMaxRaySteps(double)));
   connect(ui->view_grid_resolution, SIGNAL(valueChanged(double)), this, SLOT(getGridResolution(double)));
   connect(ui->propagate_one_point_index, SIGNAL(valueChanged(double)), this, SLOT(getPropagateIndex(double)));
-    
+
   connect(ui->use_other_inside_segment,SIGNAL(clicked(bool)),this,SLOT(useOtherInsideSegment(bool)));
   connect(ui->use_confidence_Separation,SIGNAL(clicked(bool)),this,SLOT(useConfidenceSeparation(bool)));
   connect(ui->need_more_overlaps,SIGNAL(clicked(bool)),this,SLOT(needMoreOverlaps(bool)));
@@ -68,7 +68,6 @@ void CameraParaDlg::initConnects()
   connect(ui->doubleSpinBox_bottom_delta, SIGNAL(valueChanged(double)), this, SLOT(getIsoBottomDelta(double)));
   connect(ui->pushButton_set_iso_bottom_confidence, SIGNAL(clicked()), this, SLOT(runSetIsoBottomConfidence()));
   connect(ui->update_view_directions, SIGNAL(clicked()), this, SLOT(runUpdateViewDirections()));
-  
 
   connect(ui->pushButton_setup_initial_scans, SIGNAL(clicked()), this, SLOT(runSetupInitialScanns()));
   connect(ui->step1_run_WLOP, SIGNAL(clicked()), this, SLOT(runStep1WLOP()));
@@ -99,8 +98,6 @@ void CameraParaDlg::initConnects()
   connect(ui->pushButton_load_poisson_surface, SIGNAL(clicked()), this, SLOT(loadPoissonSurface()));
 
   connect(ui->pushButton_pick_center, SIGNAL(clicked()), this, SLOT(moveTranslation()));
-
-  
 }
 
 bool CameraParaDlg::initWidgets()
@@ -154,15 +151,15 @@ bool CameraParaDlg::initWidgets()
   updateTabelViewScanResults();
   update();
   repaint();
-	return true;
+  return true;
 }
 
 CameraParaDlg::~CameraParaDlg()
 {
-	delete ui;
-	ui = NULL;
-	area = NULL;
-	m_paras = NULL;
+  delete ui;
+  ui = NULL;
+  area = NULL;
+  m_paras = NULL;
 }
 
 void CameraParaDlg::setFrameConent()
@@ -259,7 +256,7 @@ void CameraParaDlg::NBVCandidatesScan()
   }
   sc->clear();
   std::copy(select_scan_candidates.begin(), select_scan_candidates.end(), std::back_inserter(*sc));*/
-  
+
   global_paraMgr.camera.setValue("Run NBV Scan", BoolValue(true));
   area->runCamera();
   global_paraMgr.camera.setValue("Run NBV Scan", BoolValue(false));
@@ -277,12 +274,12 @@ void CameraParaDlg::NBVCandidatesScanByHand()
   QModelIndexList sil = ui->tableView_scan_candidates->selectionModel()->selectedRows();
   for (int i = 0; i < sil.size(); ++i)
   {
-  int row = sil[i].row();
-  select_scan_candidates.push_back((*sc)[row]);
+    int row = sil[i].row();
+    select_scan_candidates.push_back((*sc)[row]);
   }
   sc->clear();
   std::copy(select_scan_candidates.begin(), select_scan_candidates.end(), std::back_inserter(*sc));
-  
+
   global_paraMgr.camera.setValue("Run NBV Scan", BoolValue(true));
   area->runCamera();
   global_paraMgr.camera.setValue("Run NBV Scan", BoolValue(false));
@@ -316,7 +313,7 @@ void CameraParaDlg::loadRealScan()
 
     if (!f_name.endsWith(".ply"))
       continue;
-  
+
     f_name = file_location + "\\" + f_name;
     CMesh *real_scan = new CMesh;
     int mask = tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL;
@@ -466,7 +463,7 @@ void CameraParaDlg::showSelectedScannedMesh(QModelIndex index)
   //get selected rows
   QModelIndexList sil = ui->tableView_scan_results->selectionModel()->selectedRows();
   vector<CMesh* > *scanned_results = area->dataMgr.getScannedResults();
- 
+
   int row_of_mesh = 0;
   vector<ScanCandidate> *seletedViewCameras  = area->dataMgr.getSelectedScanCandidates();
   vector<ScanCandidate> *allScanCandidates = area->dataMgr.getScanCandidates();
@@ -484,9 +481,9 @@ void CameraParaDlg::showSelectedScannedMesh(QModelIndex index)
       int row = sil[i].row();
       //if the mesh is chosen, change to visible
       if (row == row_of_mesh) 
-       {
-          (*it)->vert[0].is_scanned_visible = true;
-          seletedViewCameras->push_back((*allScanCandidates)[row]);
+      {
+        (*it)->vert[0].is_scanned_visible = true;
+        seletedViewCameras->push_back((*allScanCandidates)[row]);
       }
     }
   }
@@ -592,11 +589,11 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
         cout<<"sum_confidence: " << v_confidence[k] <<endl;
 
       if (v_confidence[k] > merge_confidence_threshold 
-      || (1.0f * rand() / (RAND_MAX+1.0) > (pow((1 - v_confidence[k]), merge_pow) + probability_add_by_user))) //pow((1 - v_confidence[k]), merge_pow),(1 - pow(v_confidence[k], merge_pow))
+        || (1.0f * rand() / (RAND_MAX+1.0) > (pow((1 - v_confidence[k]), merge_pow) + probability_add_by_user))) //pow((1 - v_confidence[k]), merge_pow),(1 - pow(v_confidence[k], merge_pow))
       {
-      v.is_ignore = true;
-      skip_num++; 
-      continue;
+        v.is_ignore = true;
+        skip_num++; 
+        continue;
       }
 
       CVertex new_v;
@@ -610,13 +607,14 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
     original->vn = original->vert.size();
     cout<<"skip points num:" <<skip_num <<endl;
     cout<<"After merge with original: " << original->vert.size() <<endl <<endl;
-        //set combined row unable to be chosen
-        //ui->tableView_scan_candidates->setRowHidden(row, true);
-        //ui->tableView_scan_results->setRowHidden(row, true);
-      //}
-   // }//end for sil
+    //set combined row unable to be chosen
+    //ui->tableView_scan_candidates->setRowHidden(row, true);
+    //ui->tableView_scan_results->setRowHidden(row, true);
+    //}
+    // }//end for sil
   }
 }
+
 
 void CameraParaDlg::mergeScannedMeshWithOriginalByHand()
 {
@@ -665,7 +663,7 @@ void CameraParaDlg::mergeScannedMeshWithOriginalByHand()
 
         cout<<"Before merge with original: " << original->vert.size() <<endl;
         cout<<"scanned mesh num: "<<(*it)->vert.size() <<endl;
-                
+
         int skip_num = 0;
 
         vector<double> v_confidence;
@@ -717,11 +715,11 @@ void CameraParaDlg::mergeScannedMeshWithOriginalByHand()
             cout<<"sum_confidence: " << v_confidence[k] <<endl;
 
           if (v_confidence[k] > merge_confidence_threshold 
-          || (1.0f * rand() / (RAND_MAX+1.0) > pow((1 - v_confidence[k]), merge_pow)))
+            || (1.0f * rand() / (RAND_MAX+1.0) > pow((1 - v_confidence[k]), merge_pow)))
           {
-          v.is_ignore = true;
-          skip_num++; 
-          continue;
+            v.is_ignore = true;
+            skip_num++; 
+            continue;
           }
 
           CVertex new_v;
@@ -830,7 +828,7 @@ void CameraParaDlg::getRayResolutionPara(double _val)
 
 
 void
-CameraParaDlg::buildGrid()
+  CameraParaDlg::buildGrid()
 {
   global_paraMgr.nbv.setValue("Run Build Grid", BoolValue(true));
   area->runNBV();
@@ -838,7 +836,7 @@ CameraParaDlg::buildGrid()
 }
 
 void
-CameraParaDlg::propagate()
+  CameraParaDlg::propagate()
 {
   global_paraMgr.nbv.setValue("Run Propagate", BoolValue(true));
   area->runNBV();
@@ -909,10 +907,10 @@ void CameraParaDlg::runUpdateViewDirections()
 
 void CameraParaDlg::runSetupInitialScanns()
 {
-	global_paraMgr.camera.setValue("Run Initial Scan", BoolValue(true));
-	area->runCamera();
-	global_paraMgr.camera.setValue("Run Initial Scan", BoolValue(false));
-	updateTableViewNBVCandidate();
+  global_paraMgr.camera.setValue("Run Initial Scan", BoolValue(true));
+  area->runCamera();
+  global_paraMgr.camera.setValue("Run Initial Scan", BoolValue(false));
+  updateTableViewNBVCandidate();
 }
 
 void CameraParaDlg::runStep1WLOP()
@@ -985,19 +983,17 @@ void CameraParaDlg::runWlopOnScannedMesh()
     global_paraMgr.wLop.setValue("Run Wlop On Scanned Mesh", BoolValue(false));
     //we should deal with wlop result, ICP with 
     GlobalFun::computeICP(area->dataMgr.getCurrentSamples(), area->dataMgr.getCurrentTemperalSamples());
-   
+
     delete temperal_sample;
   }
 }
 
 
-
-void
-CameraParaDlg::runOneKeyNbvIteration()
+void CameraParaDlg::runOneKeyNbvIteration()
 {
   QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
   if (!file_location.size()) return;
-  
+
   QString s_log = "\\log.txt";
   s_log = file_location + s_log;
   ofstream log;
@@ -1182,8 +1178,6 @@ void CameraParaDlg::rotateAnimation()
     rotateStep();
   }
   update(); area->update(); area->updateGL();
-
-
 }
 
 void CameraParaDlg::sliceAnimation()
@@ -1216,7 +1210,6 @@ void CameraParaDlg::sliceAnimation()
       }
       update(); area->update(); area->updateGL();
     }
-
   }
   else if (global_paraMgr.poisson.getBool("Show Y Slices"))
   {
@@ -1313,14 +1306,13 @@ void CameraParaDlg::getSnapShotIndex(double _val)
 
 void CameraParaDlg::runRemoveSampleOutliers()
 {
-	//area->removeOutliers();
-	
-	double outlier_percentage = global_paraMgr.wLop.getDouble("Outlier Percentage");
-	GlobalFun::removeOutliers(area->dataMgr.getCurrentSamples(), global_paraMgr.data.getDouble("CGrid Radius"), outlier_percentage);
-	cout<<"has removed samples outliers"<<endl;
+  //area->removeOutliers();
+  double outlier_percentage = global_paraMgr.wLop.getDouble("Outlier Percentage");
+  GlobalFun::removeOutliers(area->dataMgr.getCurrentSamples(), global_paraMgr.data.getDouble("CGrid Radius"), outlier_percentage);
+  cout<<"has removed samples outliers"<<endl;
 
-	area->initView();
-	area->updateGL();
+  area->initView();
+  area->updateGL();
 }
 
 void CameraParaDlg::runRemoveSamplesWithLowConfidence()
@@ -1349,7 +1341,7 @@ void CameraParaDlg::runRemoveSamplesWithLowConfidence()
   Timer time;
   time.start("Sample ISOpoints Neighbor Tree!!");
   GlobalFun::computeBallNeighbors(samples, iso_points, 
-                                  radius_threshold, samples->bbox);
+    radius_threshold, samples->bbox);
   time.end();
 
   double max_confidence = 0.0f;
@@ -1382,8 +1374,6 @@ void CameraParaDlg::runRemoveSamplesWithLowConfidence()
     max_confidence = sum_confidence > max_confidence ? sum_confidence : max_confidence;
     min_confidence = sum_confidence < min_confidence ? sum_confidence : min_confidence;
   }
-  
-
 
   for (int i = 0; i < samples->vert.size(); i++)
   {
@@ -1406,22 +1396,22 @@ void CameraParaDlg::runRemoveSamplesWithLowConfidence()
 
 void CameraParaDlg::runAddSamplesToOiriginal()
 {
-	CMesh* samples = area->dataMgr.getCurrentSamples();
-	CMesh* original = area->dataMgr.getCurrentOriginal();
-	
-	for (int i = 0; i < samples->vert.size(); i++)
-	{
-		CVertex t = samples->vert[i];
-		t.is_original = true;
-		t.m_index = original->vert.size() + i;
+  CMesh* samples = area->dataMgr.getCurrentSamples();
+  CMesh* original = area->dataMgr.getCurrentOriginal();
 
-		original->vert.push_back(t);
-	}
+  for (int i = 0; i < samples->vert.size(); i++)
+  {
+    CVertex t = samples->vert[i];
+    t.is_original = true;
+    t.m_index = original->vert.size() + i;
+
+    original->vert.push_back(t);
+  }
 }
 
 void CameraParaDlg::runICP()
 {
-	GlobalFun::computeICP(area->dataMgr.getCurrentOriginal(), area->dataMgr.getCurrentSamples());
+  GlobalFun::computeICP(area->dataMgr.getCurrentOriginal(), area->dataMgr.getCurrentSamples());
 }
 
 void CameraParaDlg::moveTranslation()
@@ -1438,6 +1428,5 @@ void CameraParaDlg::moveTranslation()
 
     v.P() -= movement;
   }
-
   return;
 }

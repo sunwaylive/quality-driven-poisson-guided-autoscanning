@@ -1,7 +1,5 @@
 #pragma once
 
-
-
 #include <QtGui>
 #include <QtGui/QFrame>
 #include <QtGui/QWidget>
@@ -17,33 +15,34 @@ using namespace std;
 
 class WlopParaDlg : public QFrame
 {
-	Q_OBJECT
-	public:
-		WlopParaDlg(QWidget *p, ParameterMgr * _paras, GLArea * _area);
-		~WlopParaDlg();
-		void initConnects();
-		void setFrameConent();
-	signals:
-		void parameterChanged();
+  Q_OBJECT
 
-	private slots:
-		bool initWidgets();
+public:
+  WlopParaDlg(QWidget *p, ParameterMgr * _paras, GLArea * _area);
+  ~WlopParaDlg();
+  void initConnects();
+  void setFrameConent();
+
+signals:
+  void parameterChanged();
+
+  private slots:
+    bool initWidgets();
     void getOutlierPercentage(double _val);
-		void getRadiusValues(double _val);
-		void getRepPow(double _val);
-		void getFitPow(double _val);
-		void getIter(int _val);
-		void getMu(double _val);
-		void isDensity(bool _val);
-		void isPca(bool _val);
-		//
-		void applyWlop();
-		void applyAnisotropicLop();
-	private:
-		Ui::para_wlop * ui;
-		ParameterMgr * m_paras;
-		GLArea * area;
+    void getRadiusValues(double _val);
+    void getRepPow(double _val);
+    void getFitPow(double _val);
+    void getIter(int _val);
+    void getMu(double _val);
+    void isDensity(bool _val);
+    void isPca(bool _val);
 
-		CalculationThread calculation_thread;
+    void applyWlop();
+    void applyAnisotropicLop();
+private:
+  Ui::para_wlop * ui;
+  ParameterMgr * m_paras;
+  GLArea * area;
 
+  CalculationThread calculation_thread;
 };

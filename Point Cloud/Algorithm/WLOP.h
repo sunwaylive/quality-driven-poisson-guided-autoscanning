@@ -51,7 +51,6 @@ private:
 	void computeDensity(bool isOriginal, double radius);
 	void recomputePCA_Normal();
 
-
 private:
 	RichParameterSet* para;
 

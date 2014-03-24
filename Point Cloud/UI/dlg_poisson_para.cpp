@@ -15,7 +15,7 @@ PoissonParaDlg::PoissonParaDlg(QWidget *p, ParameterMgr * _paras, GLArea * _area
 	initConnects();
 }
 
-// 
+
 void PoissonParaDlg::initConnects()
 {
   if (!connect(area,SIGNAL(needUpdateStatus()),this,SLOT(initWidgets())))
@@ -69,10 +69,9 @@ void PoissonParaDlg::initConnects()
   connect(ui->pushButton_smooth_grid_confidence,SIGNAL(clicked()),this,SLOT(runSmoothGridConfidence()));
 
   connect(ui->pushButton_slice_points,SIGNAL(clicked()),this,SLOT(runCutPointSlice()));
-
 }
 
-// 
+ 
 bool PoissonParaDlg::initWidgets()
 {
 	ui->radius->setValue(m_paras->poisson.getDouble("CGrid Radius"));
@@ -143,7 +142,6 @@ void PoissonParaDlg::runPoissonFieldOriginal()
 	area->runPoisson();
   global_paraMgr.poisson.setValue("Run Generate Poisson Field", BoolValue(false));
   global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(false));
-
 
 	area->updateGL();
 }
@@ -218,7 +216,6 @@ void PoissonParaDlg::runEstimateOriginalSize()
   global_paraMgr.poisson.setValue("Original KNN", DoubleValue(estimate_knn));
 
   initWidgets();
-
 }
 
  void PoissonParaDlg::runSmoothGridConfidence()
@@ -378,8 +375,6 @@ void PoissonParaDlg::computeNewIsoConfidence()
 }
 
 
-
-
 PoissonParaDlg::~PoissonParaDlg()
 {
 	delete ui;
@@ -387,7 +382,6 @@ PoissonParaDlg::~PoissonParaDlg()
 
 	area = NULL;
 	m_paras = NULL;
-
 }
 
 void PoissonParaDlg::setFrameConent()
@@ -400,4 +394,3 @@ void PoissonParaDlg::setFrameConent()
   showNormal();
   adjustSize();
 }
-

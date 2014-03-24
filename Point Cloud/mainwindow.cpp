@@ -21,7 +21,6 @@ MainWindow::~MainWindow()
 {
 	if(area) delete area;
 	area = NULL;
-
 }
 
 void MainWindow::initWidgets()
@@ -62,7 +61,6 @@ void MainWindow::initWidgets()
   ui.actionShow_Poisson_Surface->setChecked(paras->glarea.getBool("Show Poisson Surface"));
   ui.actionShow_NBV_Label->setChecked(paras->glarea.getBool("Show NBV Label"));
   ui.actionShow_NBV_Ball->setChecked(paras->glarea.getBool("Show NBV Ball"));
-
 }
 
 void MainWindow::initConnect()
@@ -128,7 +126,6 @@ void MainWindow::initConnect()
   connect(ui.actionShow_NBV_Label, SIGNAL(toggled(bool)), this, SLOT(showNBVLables(bool)));
   connect(ui.actionShow_NBV_Ball, SIGNAL(toggled(bool)), this, SLOT(showNBVBall(bool)));
   
-
   connect(ui.actionShow_ISO,SIGNAL(toggled(bool)),this,SLOT(showIsoPoints(bool)));
   connect(ui.actionUse_ISO_Interval,SIGNAL(toggled(bool)),this,SLOT(useIsoInterval(bool)));
 
@@ -220,12 +217,10 @@ void MainWindow::iniStatusBar()
 	status_bar->addWidget(original_size_label);
 	status_bar->addWidget(sample_size_lable);
   status_bar->addWidget(iso_size_lable);
-
 }
 
 void MainWindow::updateStatusBar()
 {
- 
 	QString title = strTitle +  " -- " + area->dataMgr.curr_file_name;
 	setWindowTitle(title);
 
@@ -269,7 +264,6 @@ void MainWindow::updateStatusBar()
   QString iterateNum= "Iterate: " + QString::number(iteration_unm);
   iteration_label->setText(iterateNum);
 
-
 	double error = 0;
 	//QString running_name = global_paraMgr.glarea.getString("Running Algorithm Name");
 	if (running_name == QString("WLOP"))
@@ -287,6 +281,7 @@ void MainWindow::updateStatusBar()
 	update();
 	repaint();
 }
+
 
 void MainWindow::createActionGroups()
 {
@@ -368,7 +363,6 @@ void MainWindow::showUpsampleDlg()
 	paraDlg_Upsample->setFloating(false);
 	paraDlg_Upsample->hide();
 	paraDlg_Upsample->showUpsamplingParaDlg();
-
 }
 
 void MainWindow::showPoissonParaDlg()
@@ -523,8 +517,7 @@ void MainWindow::saveFile()
   }
 }
 
-void
-MainWindow::removeOutliers()
+void MainWindow::removeOutliers()
 {
   if (global_paraMgr.glarea.getBool("Show NBV Ball") && global_paraMgr.glarea.getBool("Show NBV Candidates"))
   {
@@ -574,7 +567,6 @@ void MainWindow::getQianSample()
   area->initAfterOpenFile();
   //area->initSetting();
   area->updateGL();
-
 }
 
 void MainWindow::subSample()
@@ -663,8 +655,7 @@ void MainWindow::saveFieldPoints()
   //area->dataMgr.saveSkeletonAsSkel(file);
 }
 
-void 
-MainWindow::savePara()
+void MainWindow::savePara()
 {
   area->dataMgr.saveParameters("parameter.para");
 }
@@ -721,8 +712,7 @@ void MainWindow::showIsoPoints(bool _val)
   area->updateGL();
 }
 
-void
-MainWindow::showViewGrids(bool _val)
+void MainWindow::showViewGrids(bool _val)
 {
   paras->glarea.setValue("Show View Grids", BoolValue(_val));
 
@@ -738,8 +728,7 @@ MainWindow::showViewGrids(bool _val)
   area->updateGL();
 }
 
-void
-MainWindow::showNBVCandidates(bool _val)
+void MainWindow::showNBVCandidates(bool _val)
 {
   paras->glarea.setValue("Show NBV Candidates", BoolValue(_val));
   area->updateGL();
@@ -1109,9 +1098,6 @@ void MainWindow::addSamplesToOriginal()
 
     original->vert.push_back(t);
   }
-
-
-
 }
 
 void MainWindow::deleteIgnore()

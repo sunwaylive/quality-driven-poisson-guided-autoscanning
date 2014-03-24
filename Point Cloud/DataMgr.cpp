@@ -1,9 +1,8 @@
 #include "DataMgr.h"
 
-
 DataMgr::DataMgr(RichParameterSet* _para)
 {
-	para = _para;
+  para = _para;
   camera_pos = Point3f(0.0f, 0.0f, 1.0f);
   camera_direction = Point3f(0.0f, 0.0f, -1.0f);
 
@@ -23,11 +22,11 @@ DataMgr::~DataMgr(void)
 
 void DataMgr::clearCMesh(CMesh& mesh)
 {
-	mesh.face.clear();
-	mesh.fn = 0;
-	mesh.vert.clear();
-	mesh.vn = 0;
-	mesh.bbox = Box3f();
+  mesh.face.clear();
+  mesh.fn = 0;
+  mesh.vert.clear();
+  mesh.vn = 0;
+  mesh.bbox = Box3f();
 }
 
 void DataMgr::initDefaultScanCamera()
@@ -59,7 +58,7 @@ void DataMgr::initDefaultScanCamera()
 
 bool DataMgr::isSamplesEmpty()
 {
-	return samples.vert.empty();
+  return samples.vert.empty();
 }
 
 bool DataMgr::isModelEmpty()
@@ -69,7 +68,7 @@ bool DataMgr::isModelEmpty()
 
 bool DataMgr::isOriginalEmpty()
 {
-	return original.vert.empty();
+  return original.vert.empty();
 }
 
 bool DataMgr::isSkeletonEmpty()
@@ -139,60 +138,60 @@ void DataMgr::loadPlyToModel(QString fileName)
 
 void DataMgr::loadPlyToOriginal(QString fileName)
 {
-	clearCMesh(original);
-	curr_file_name = fileName;
+  clearCMesh(original);
+  curr_file_name = fileName;
 
-	int mask= tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL 
-            + tri::io::Mask::IOM_ALL + tri::io::Mask::IOM_FACEINDEX;
+  int mask= tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL 
+    + tri::io::Mask::IOM_ALL + tri::io::Mask::IOM_FACEINDEX;
 
-	int err = tri::io::Importer<CMesh>::Open(original, curr_file_name.toAscii().data(), mask);  
-	if(err) 
-	{
-		cout << "Failed reading mesh: " << err << "\n";
-		return;
-	}  
-	cout << "points loaded\n";
+  int err = tri::io::Importer<CMesh>::Open(original, curr_file_name.toAscii().data(), mask);  
+  if(err) 
+  {
+    cout << "Failed reading mesh: " << err << "\n";
+    return;
+  }  
+  cout << "points loaded\n";
 
   vcg::tri::UpdateNormals<CMesh>::PerVertex(original);
 
-	CMesh::VertexIterator vi;
-	int idx = 0;
-	for(vi = original.vert.begin(); vi != original.vert.end(); ++vi)
-	{
-		vi->is_original = true;
-		vi->m_index = idx++;
+  CMesh::VertexIterator vi;
+  int idx = 0;
+  for(vi = original.vert.begin(); vi != original.vert.end(); ++vi)
+  {
+    vi->is_original = true;
+    vi->m_index = idx++;
     vi->N().Normalize();
-		//vi->N() = Point3f(0, 0, 0);
-		original.bbox.Add(vi->P());
-	}
-	original.vn = original.vert.size();
+    //vi->N() = Point3f(0, 0, 0);
+    original.bbox.Add(vi->P());
+  }
+  original.vn = original.vert.size();
 }
 
 void DataMgr::loadPlyToSample(QString fileName)
 {
-	clearCMesh(samples);
-	curr_file_name = fileName;
+  clearCMesh(samples);
+  curr_file_name = fileName;
 
-	int mask= tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL ;
-	mask += tri::io::Mask::IOM_VERTCOLOR;
-	mask += tri::io::Mask::IOM_BITPOLYGONAL;
+  int mask= tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL ;
+  mask += tri::io::Mask::IOM_VERTCOLOR;
+  mask += tri::io::Mask::IOM_BITPOLYGONAL;
 
-	int err = tri::io::Importer<CMesh>::Open(samples, curr_file_name.toAscii().data(), mask);  
-	if(err) 
-	{
-		cout << "Failed reading mesh: " << err << "\n";
-		return;
-	}  
+  int err = tri::io::Importer<CMesh>::Open(samples, curr_file_name.toAscii().data(), mask);  
+  if(err) 
+  {
+    cout << "Failed reading mesh: " << err << "\n";
+    return;
+  }  
 
-	CMesh::VertexIterator vi;
-	int idx = 0;
-	for(vi = samples.vert.begin(); vi != samples.vert.end(); ++vi)
-	{
-		vi->is_original = false;
-		vi->m_index = idx++;
-		samples.bbox.Add(vi->P());
-	}
-	samples.vn = samples.vert.size();
+  CMesh::VertexIterator vi;
+  int idx = 0;
+  for(vi = samples.vert.begin(); vi != samples.vert.end(); ++vi)
+  {
+    vi->is_original = false;
+    vi->m_index = idx++;
+    samples.bbox.Add(vi->P());
+  }
+  samples.vn = samples.vert.size();
 }
 
 void DataMgr::loadPlyToISO(QString fileName)
@@ -277,7 +276,7 @@ void DataMgr::loadXYZN(QString fileName)
     samples.bbox.Add(v.P());
   }
 
- // mesh.vert.erase(mesh.vert.end()-1);
+  // mesh.vert.erase(mesh.vert.end()-1);
   samples.vert.pop_back();
   samples.vn = samples.vert.size();
 
@@ -290,42 +289,42 @@ void DataMgr::loadXYZN(QString fileName)
 void DataMgr::loadImage(QString fileName)
 {
 
-	//image = cv::imread(fileName.toAscii().data());
+  //image = cv::imread(fileName.toAscii().data());
 
-	////cv::namedWindow("image", CV_WINDOW_AUTOSIZE);
-	////cv::imshow("image", image);
+  ////cv::namedWindow("image", CV_WINDOW_AUTOSIZE);
+  ////cv::imshow("image", image);
 
-	//clearCMesh(samples);
-	//clearCMesh(original);
-	//int cnt = 0;
-	//for (int i = 0; i < image.rows; i++)
-	//{
-	//	for (int j = 0; j < image.cols; j++)
-	//	{
-	//		cv::Vec3b intensity = image.at<cv::Vec3b>(i, j);
-	//		Point3f p;
-	//		Color4b c;
-	//		c.Z() = 1;
-	//		p.X() = c.X() = intensity.val[0];
-	//		p.Y() = c.Y() = intensity.val[1];
-	//		p.Z() = c.Z() = intensity.val[2];
-	//		CVertex new_v;
-	//		new_v.P() = p;
-	//		new_v.C() = c;
-	//		new_v.m_index = cnt++;
+  //clearCMesh(samples);
+  //clearCMesh(original);
+  //int cnt = 0;
+  //for (int i = 0; i < image.rows; i++)
+  //{
+  //	for (int j = 0; j < image.cols; j++)
+  //	{
+  //		cv::Vec3b intensity = image.at<cv::Vec3b>(i, j);
+  //		Point3f p;
+  //		Color4b c;
+  //		c.Z() = 1;
+  //		p.X() = c.X() = intensity.val[0];
+  //		p.Y() = c.Y() = intensity.val[1];
+  //		p.Z() = c.Z() = intensity.val[2];
+  //		CVertex new_v;
+  //		new_v.P() = p;
+  //		new_v.C() = c;
+  //		new_v.m_index = cnt++;
 
-	//		samples.vert.push_back(new_v);
-	//		samples.bbox.Add(p);
+  //		samples.vert.push_back(new_v);
+  //		samples.bbox.Add(p);
 
-	//		new_v.is_original = true;
-	//		original.vert.push_back(new_v);
-	//		original.bbox.Add(p);
-	//	}
-	//}
-	//samples.vn = samples.vert.size();
-	//original.vn = samples.vn;
+  //		new_v.is_original = true;
+  //		original.vert.push_back(new_v);
+  //		original.bbox.Add(p);
+  //	}
+  //}
+  //samples.vn = samples.vert.size();
+  //original.vn = samples.vn;
 
-	//cv::waitKey();
+  //cv::waitKey();
 
 }
 
@@ -389,14 +388,14 @@ CMesh* DataMgr::getCurrentSamples()
     return NULL;
   }
 
-	if(samples.vert.empty())
-	{
-		//cout << "DataMgr::getCurrentSamples samples.vert.empty()!!" <<endl;
-		//return NULL;
+  if(samples.vert.empty())
+  {
+    //cout << "DataMgr::getCurrentSamples samples.vert.empty()!!" <<endl;
+    //return NULL;
     return & samples;
-	}
+  }
 
-	return & samples;
+  return & samples;
 }
 
 CMesh* DataMgr::getCurrentTemperalSamples()
@@ -422,13 +421,13 @@ CMesh* DataMgr::getCurrentOriginal()
     return NULL;
   }
 
-	if(original.vert.empty())
-	{
-		//cout << "DataMgr::getCurrentOriginal() original.vert.empty()!!" <<endl;
-		return & original;
-	}
+  if(original.vert.empty())
+  {
+    //cout << "DataMgr::getCurrentOriginal() original.vert.empty()!!" <<endl;
+    return & original;
+  }
 
-	return & original;
+  return & original;
 }
 
 CMesh* DataMgr::getCurrentTemperalOriginal()
@@ -438,7 +437,7 @@ CMesh* DataMgr::getCurrentTemperalOriginal()
 
 Skeleton* DataMgr::getCurrentSkeleton()
 {
-	return &skeleton;
+  return &skeleton;
 }
 
 CMesh* DataMgr::getCameraModel()
@@ -482,13 +481,13 @@ double DataMgr::getCameraMaxAngle()
 }
 
 CMesh*
-DataMgr::getViewGridPoints()
+  DataMgr::getViewGridPoints()
 {
   return &view_grid_points;
 }
 
 CMesh*
-DataMgr::getNbvCandidates()
+  DataMgr::getNbvCandidates()
 {
   return &nbv_candidates;
 }
@@ -526,28 +525,28 @@ Slices* DataMgr::getCurrentSlices()
 void DataMgr::recomputeBox()
 {
   model.bbox.SetNull();
-	samples.bbox.SetNull();
-	original.bbox.SetNull();
+  samples.bbox.SetNull();
+  original.bbox.SetNull();
 
-	CMesh::VertexIterator vi;
+  CMesh::VertexIterator vi;
   for (vi = model.vert.begin(); vi != model.vert.end(); ++vi)
   {
     model.bbox.Add(vi->P());
   }
 
-	for(vi = samples.vert.begin(); vi != samples.vert.end(); ++vi) 
-	{
-		if (vi->is_ignore)
-		{
-			continue;
-		}
-		samples.bbox.Add(vi->P());
-	}
+  for(vi = samples.vert.begin(); vi != samples.vert.end(); ++vi) 
+  {
+    if (vi->is_ignore)
+    {
+      continue;
+    }
+    samples.bbox.Add(vi->P());
+  }
 
-	for(vi = original.vert.begin(); vi != original.vert.end(); ++vi) 
-	{
-		original.bbox.Add(vi->P());
-	}
+  for(vi = original.vert.begin(); vi != original.vert.end(); ++vi) 
+  {
+    original.bbox.Add(vi->P());
+  }
 
   double camera_max_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
     global_paraMgr.camera.getDouble("Predicted Model Size"); 
@@ -563,7 +562,7 @@ void DataMgr::recomputeBox()
 
 double DataMgr::getInitRadiuse()
 {
-	double init_para = para->getDouble("Init Radius Para");
+  double init_para = para->getDouble("Init Radius Para");
   if (isOriginalEmpty() && isModelEmpty())
   {
     global_paraMgr.setGlobalParameter("CGrid Radius", DoubleValue(init_radius));
@@ -572,8 +571,8 @@ double DataMgr::getInitRadiuse()
   }
 
   Box3f box;
-	if (!isOriginalEmpty())   box = original.bbox;
-	else if (!isModelEmpty()) box = model.bbox;
+  if (!isOriginalEmpty())   box = original.bbox;
+  else if (!isModelEmpty()) box = model.bbox;
 
   if ( abs(box.min.X() - box.max.X()) < 1e-5 ||   
     abs(box.min.Y() - box.max.Y()) < 1e-5 ||   
@@ -589,90 +588,90 @@ double DataMgr::getInitRadiuse()
     double original_size = pow(double(original.vn), 0.333);
     init_radius = init_para * diagonal_length / original_size;
   }
- 
+
   global_paraMgr.setGlobalParameter("CGrid Radius", DoubleValue(init_radius));
   global_paraMgr.setGlobalParameter("Initial Radius", DoubleValue(init_radius));
 
-	return init_radius;
+  return init_radius;
 }
 
 void DataMgr::downSamplesByNum(bool use_random_downsample)
 {
-	if (isOriginalEmpty() && !isSamplesEmpty())
-	{
-		subSamples();
-		return;
-	}
+  if (isOriginalEmpty() && !isSamplesEmpty())
+  {
+    subSamples();
+    return;
+  }
 
-	if (isOriginalEmpty())
-	{
-		return;
-	}
+  if (isOriginalEmpty())
+  {
+    return;
+  }
 
-	int want_sample_num = para->getDouble("Down Sample Num");
+  int want_sample_num = para->getDouble("Down Sample Num");
 
-	if (want_sample_num > original.vn)
-	{
-		want_sample_num = original.vn;
-	}
+  if (want_sample_num > original.vn)
+  {
+    want_sample_num = original.vn;
+  }
 
-	clearCMesh(samples);
-	samples.vn = want_sample_num;
+  clearCMesh(samples);
+  samples.vn = want_sample_num;
 
-	vector<int> nCard = GlobalFun::GetRandomCards(original.vert.size());
-	for(int i = 0; i < samples.vn; i++) 
-	{
-		int index = nCard[i]; //could be not random!
+  vector<int> nCard = GlobalFun::GetRandomCards(original.vert.size());
+  for(int i = 0; i < samples.vn; i++) 
+  {
+    int index = nCard[i]; //could be not random!
 
     if (!use_random_downsample)
     {
       index = i;
     }
 
-		CVertex& v = original.vert[index];
-		samples.vert.push_back(v);
-		samples.bbox.Add(v.P());
-	}
+    CVertex& v = original.vert[index];
+    samples.vert.push_back(v);
+    samples.bbox.Add(v.P());
+  }
 
-	CMesh::VertexIterator vi;
-	for(vi = samples.vert.begin(); vi != samples.vert.end(); ++vi)
-	{
-		vi->is_original = false;
-	}
+  CMesh::VertexIterator vi;
+  for(vi = samples.vert.begin(); vi != samples.vert.end(); ++vi)
+  {
+    vi->is_original = false;
+  }
 
   getInitRadiuse();
 }
 
 void DataMgr::subSamples()
 {
-	clearCMesh(original);
+  clearCMesh(original);
 
-	CMesh::VertexIterator vi;
-	original.vn = samples.vert.size();
-	original.bbox.SetNull();
-	for(vi = samples.vert.begin(); vi != samples.vert.end(); ++vi)
-	{
-		CVertex v = (*vi);
-		v.is_original = true;
-		original.vert.push_back(v);
-		original.bbox.Add(v.P());
-	}
+  CMesh::VertexIterator vi;
+  original.vn = samples.vert.size();
+  original.bbox.SetNull();
+  for(vi = samples.vert.begin(); vi != samples.vert.end(); ++vi)
+  {
+    CVertex v = (*vi);
+    v.is_original = true;
+    original.vert.push_back(v);
+    original.bbox.Add(v.P());
+  }
 
-	downSamplesByNum();
+  downSamplesByNum();
   getInitRadiuse();
 }
 
 
 void DataMgr::savePly(QString fileName, CMesh& mesh)
 {
-	int mask= tri::io::Mask::IOM_VERTNORMAL ;
-	mask += tri::io::Mask::IOM_VERTCOLOR;
+  int mask= tri::io::Mask::IOM_VERTNORMAL ;
+  mask += tri::io::Mask::IOM_VERTCOLOR;
   //mask += tri::io::Mask::IOM_ALL;
-	//mask += tri::io::Mask::IOM_BITPOLYGONAL;
+  //mask += tri::io::Mask::IOM_BITPOLYGONAL;
   //mask += tri::io::Mask::IOM_FACEINDEX;
 
-	if (fileName.endsWith("ply"))
-	tri::io::ExporterPLY<CMesh>::Save(mesh, fileName.toAscii().data(), mask, false);
+  if (fileName.endsWith("ply"))
+    tri::io::ExporterPLY<CMesh>::Save(mesh, fileName.toAscii().data(), mask, false);
 }
 
 void DataMgr::normalizeROSA_Mesh(CMesh& mesh, bool is_original)
@@ -681,9 +680,9 @@ void DataMgr::normalizeROSA_Mesh(CMesh& mesh, bool is_original)
 
   mesh.bbox.SetNull();
   Box3f box = mesh.bbox;
-  
+
   float max_length = global_paraMgr.data.getDouble("Max Normalize Length");
-  
+
   Box3f box_temp;
   for(int i = 0; i < mesh.vert.size(); i++)
   {
@@ -703,12 +702,11 @@ void DataMgr::normalizeROSA_Mesh(CMesh& mesh, bool is_original)
     p -= mid_point;
     mesh.bbox.Add(p);
   }
-  
+
   if (is_original)
   {
     this->original_center_point = mid_point;
   }
-  
 }
 
 
@@ -757,31 +755,30 @@ Box3f DataMgr::normalizeAllMesh()
 
 void DataMgr::eraseRemovedSamples()
 {
-	int cnt = 0;
-	vector<CVertex> temp_mesh;
-	for (int i = 0; i < samples.vert.size(); i++)
-	{
-		CVertex& v = samples.vert[i];
-		if (!v.is_ignore)
-		{
-			temp_mesh.push_back(v);
-		}
-	}
+  int cnt = 0;
+  vector<CVertex> temp_mesh;
+  for (int i = 0; i < samples.vert.size(); i++)
+  {
+    CVertex& v = samples.vert[i];
+    if (!v.is_ignore)
+    {
+      temp_mesh.push_back(v);
+    }
+  }
 
-	samples.vert.clear();
-	samples.vn = temp_mesh.size();
-	for (int i = 0; i < temp_mesh.size(); i++)
-	{
-		temp_mesh[i].m_index = i;
-		samples.vert.push_back(temp_mesh[i]);
-	}
-
+  samples.vert.clear();
+  samples.vn = temp_mesh.size();
+  for (int i = 0; i < temp_mesh.size(); i++)
+  {
+    temp_mesh[i].m_index = i;
+    samples.vert.push_back(temp_mesh[i]);
+  }
 }
 
 void DataMgr::clearData()
 {
-	clearCMesh(original);
-	clearCMesh(samples);
+  clearCMesh(original);
+  clearCMesh(samples);
   clearCMesh(iso_points);
   clearCMesh(field_points);
 
@@ -792,18 +789,16 @@ void DataMgr::clearData()
   clearCMesh(nbv_candidates);
   clearCMesh(current_scanned_mesh);
 
-
-
-	skeleton.clear();
+  skeleton.clear();
   slices.clear();
 }
 
 void DataMgr::recomputeQuad()
 {
-	for (int i = 0; i < samples.vert.size(); i++)
-	{
-		samples.vert[i].recompute_m_render();
-	}
+  for (int i = 0; i < samples.vert.size(); i++)
+  {
+    samples.vert[i].recompute_m_render();
+  }
   for (int i = 0; i < iso_points.vert.size(); i++)
   {
     iso_points.vert[i].recompute_m_render();
@@ -812,8 +807,6 @@ void DataMgr::recomputeQuad()
   {
     original.vert[i].recompute_m_render();
   }
-
-  
 }
 
 bool cmp_angle(const CVertex &v1, const CVertex &v2)
@@ -846,10 +839,10 @@ void DataMgr::savePR2_orders(QString fileName_commands)
   //v_start.P() = Point3f(135, -7, -223);
   //v_start.P() = scanner_position;
   v_start.P() = Point3f(164, -7, -254);
-  
+
   cout << "!!!scanner_position before normalize" << endl;
   GlobalFun::printPoint3(cout, v_start.P());
-  
+
   CVertex first_v = nbv_candidates.vert[0];
 
   //cout << "scanner_position after normalize" << endl;
@@ -862,7 +855,7 @@ void DataMgr::savePR2_orders(QString fileName_commands)
 
 
   //v_start.P() = (v_start.P() + original_center_point) * max_normalize_length;
-  
+
   PR2_order order = computePR2orderFromTwoCandidates(v_start, first_v);
   pr2_orders.push_back(order);
 
@@ -896,12 +889,12 @@ void DataMgr::savePR2_orders(QString fileName_commands)
     PR2_order order = pr2_orders[i];
 
     outfile  << order.L_to_R_translation.X() << " "
-             << order.L_to_R_translation.Y() << " "
-             << order.L_to_R_translation.Z() << " "
-    /*outfile */<< order.L_to_R_rotation_Qua.X() << " "
-            << order.L_to_R_rotation_Qua.Y() << " "
-            << order.L_to_R_rotation_Qua.Z() << " "
-            << order.L_to_R_rotation_Qua.W() << endl;
+      << order.L_to_R_translation.Y() << " "
+      << order.L_to_R_translation.Z() << " "
+      /*outfile */<< order.L_to_R_rotation_Qua.X() << " "
+      << order.L_to_R_rotation_Qua.Y() << " "
+      << order.L_to_R_rotation_Qua.Z() << " "
+      << order.L_to_R_rotation_Qua.W() << endl;
   }
 
   //outfile.write( strStream.str().c_str(), strStream.str().size() ); 
@@ -990,7 +983,6 @@ void DataMgr::nbvReoders()
     v.m_index = i;
   }
 
-
   for (int i = 0; i < nbv_candidates.vert.size(); i++)
   {
     CVertex& v = nbv_candidates.vert[i];
@@ -1048,8 +1040,6 @@ PR2_order DataMgr::computePR2orderFromTwoCandidates(CVertex v0, CVertex v1)
   //}
   order.left_rotation = angle;
 
-
-
   //cout << "2 to 3" << endl;
   //GlobalFun::printPoint3(cout, v0.P());
   //GlobalFun::printPoint3(cout, v1.P());
@@ -1061,16 +1051,16 @@ PR2_order DataMgr::computePR2orderFromTwoCandidates(CVertex v0, CVertex v1)
   //GlobalFun::printMatrix44(cout, T_to_S_Matirx44);
 
   Matrix44f S_to_R_Matrix44 =  vcg::Inverse(R_to_S_Matrix44);
-//   cout << "S_to_R_Matrix44" << endl;
-//   GlobalFun::printMatrix44(cout, S_to_R_Matrix44);
+  //   cout << "S_to_R_Matrix44" << endl;
+  //   GlobalFun::printMatrix44(cout, S_to_R_Matrix44);
 
   Matrix44f T_to_R_Matrix44 = T_to_S_Matirx44 * S_to_R_Matrix44;
-//   cout << "T_to_R_Matrix44" << endl;
-//   GlobalFun::printMatrix44(cout, T_to_R_Matrix44);
+  //   cout << "T_to_R_Matrix44" << endl;
+  //   GlobalFun::printMatrix44(cout, T_to_R_Matrix44);
 
   Matrix44f L_to_R_Matrix44 = vcg::Inverse(T_to_L_Matrix44) * T_to_R_Matrix44;
-//   cout << "L_to_R_Matrix44" << endl;
-//   GlobalFun::printMatrix44(cout, L_to_R_Matrix44);
+  //   cout << "L_to_R_Matrix44" << endl;
+  //   GlobalFun::printMatrix44(cout, L_to_R_Matrix44);
 
   Matrix33f L_to_R_Matrix33 = GlobalFun::getMat33FromMat44(L_to_R_Matrix44);
   Quaternionf L_to_R_Qua;
@@ -1097,7 +1087,6 @@ PR2_order DataMgr::computePR2orderFromTwoCandidates(CVertex v0, CVertex v1)
 }
 
 
-
 void DataMgr::recomputeCandidatesAxis()
 {
   for (int i = 0; i < nbv_candidates.vert.size(); i++)
@@ -1115,7 +1104,7 @@ void DataMgr::recomputeCandidatesAxis()
     v.eigen_vector1 = -directionY.Normalize();
   }
 
- for (int i = 0; i < nbv_candidates.vert.size(); i++)
+  for (int i = 0; i < nbv_candidates.vert.size(); i++)
   {
     CVertex& v = nbv_candidates.vert[i];
 
@@ -1123,10 +1112,6 @@ void DataMgr::recomputeCandidatesAxis()
     v.eigen_vector0 *= -1;
     v.eigen_vector1 *= -1;
   }
-  /*
-*/
-
-
 
   //for (int i = 0; i < nbv_candidates.vert.size(); i++)
   //{
@@ -1255,74 +1240,71 @@ void DataMgr::LoadGridPoints(QString fileName, bool is_poisson_field)
       grid_points->vert[i].eigen_confidence = temp;
     }
   }
-
 }
 
 
 void DataMgr::saveSkeletonAsSkel(QString fileName)
 {
-	ofstream outfile;
-	outfile.open(fileName.toStdString().c_str());
+  ofstream outfile;
+  outfile.open(fileName.toStdString().c_str());
 
-	ostringstream strStream; 
+  ostringstream strStream; 
 
-	strStream << "ON " << original.vert.size() << endl;
-	for(int i = 0; i < original.vert.size(); i++)
-	{
-		CVertex& v = original.vert[i];
-		strStream << v.P()[0] << "	" << v.P()[1] << "	" << v.P()[2] << "	";
-		strStream << v.N()[0] << "	" << v.N()[1] << "	" << v.N()[2] << "	" << endl;
-	}
-	strStream << endl;
+  strStream << "ON " << original.vert.size() << endl;
+  for(int i = 0; i < original.vert.size(); i++)
+  {
+    CVertex& v = original.vert[i];
+    strStream << v.P()[0] << "	" << v.P()[1] << "	" << v.P()[2] << "	";
+    strStream << v.N()[0] << "	" << v.N()[1] << "	" << v.N()[2] << "	" << endl;
+  }
+  strStream << endl;
 
-	strStream << "SN " << samples.vert.size() << endl;
-	for(int i = 0; i < samples.vert.size(); i++)
-	{
-		CVertex& v = samples.vert[i];
-		strStream << v.P()[0] << "	" << v.P()[1] << "	" << v.P()[2] << "	";
-		strStream << v.N()[0] << "	" << v.N()[1] << "	" << v.N()[2] << "	" << endl;
-	}
-	strStream << endl;
+  strStream << "SN " << samples.vert.size() << endl;
+  for(int i = 0; i < samples.vert.size(); i++)
+  {
+    CVertex& v = samples.vert[i];
+    strStream << v.P()[0] << "	" << v.P()[1] << "	" << v.P()[2] << "	";
+    strStream << v.N()[0] << "	" << v.N()[1] << "	" << v.N()[2] << "	" << endl;
+  }
+  strStream << endl;
 
-	strStream << "CN " << skeleton.branches.size() << endl;
-	for (int i = 0; i < skeleton.branches.size(); i++)
-	{
-		Branch& branch = skeleton.branches[i];
-		strStream << "CNN " << branch.curve.size() << endl;
-		for (int j = 0; j < branch.curve.size(); j++)
-		{
-			strStream << branch.curve[j][0] << "	" << branch.curve[j][1] << "	" << branch.curve[j][2] << "	" << endl;
-		}
-	}
-	strStream << endl;
+  strStream << "CN " << skeleton.branches.size() << endl;
+  for (int i = 0; i < skeleton.branches.size(); i++)
+  {
+    Branch& branch = skeleton.branches[i];
+    strStream << "CNN " << branch.curve.size() << endl;
+    for (int j = 0; j < branch.curve.size(); j++)
+    {
+      strStream << branch.curve[j][0] << "	" << branch.curve[j][1] << "	" << branch.curve[j][2] << "	" << endl;
+    }
+  }
+  strStream << endl;
 
-	strStream << "EN " << 0 << endl;
-	strStream << endl;
+  strStream << "EN " << 0 << endl;
+  strStream << endl;
 
+  strStream << "BN " << 0 << endl;
+  strStream << endl;
 
-	strStream << "BN " << 0 << endl;
-	strStream << endl;
+  strStream << "S_onedge " << samples.vert.size() << endl;
+  for(int i = 0; i < samples.vert.size(); i++)
+  {
+    CVertex& v = samples.vert[i];
+    strStream << v.is_fixed_sample << "	"; 
+  }
+  strStream << endl;
 
+  strStream << "GroupID " << samples.vert.size() << endl;
+  for(int i = 0; i < samples.vert.size(); i++)
+  {
+    int id = samples.vert[i].m_index;//group_id no use now
+    strStream << id << "	"; 
+  }
+  strStream << endl;
 
-	strStream << "S_onedge " << samples.vert.size() << endl;
-	for(int i = 0; i < samples.vert.size(); i++)
-	{
-		CVertex& v = samples.vert[i];
-		strStream << v.is_fixed_sample << "	"; 
-	}
-	strStream << endl;
+  //strStream << "SkelRadius " << 0 << endl;
+  //strStream << endl;
 
-	strStream << "GroupID " << samples.vert.size() << endl;
-	for(int i = 0; i < samples.vert.size(); i++)
-	{
-		int id = samples.vert[i].m_index;//group_id no use now
-		strStream << id << "	"; 
-	}
-	strStream << endl;
-
-	//strStream << "SkelRadius " << 0 << endl;
-	//strStream << endl;
-  
   strStream << "SkelRadius " << skeleton.size << endl;
   for (int i = 0; i < skeleton.branches.size(); i++)
   {
@@ -1334,35 +1316,35 @@ void DataMgr::saveSkeletonAsSkel(QString fileName)
   }
   strStream << endl;
 
-	strStream << "Confidence_Sigma	" << samples.vert.size() << endl;
-	for(int i = 0; i < samples.vert.size(); i++)
-	{
-		double sigma = samples.vert[i].eigen_confidence;
-		strStream << sigma << "	"; 
-	}
-	strStream << endl;
+  strStream << "Confidence_Sigma	" << samples.vert.size() << endl;
+  for(int i = 0; i < samples.vert.size(); i++)
+  {
+    double sigma = samples.vert[i].eigen_confidence;
+    strStream << sigma << "	"; 
+  }
+  strStream << endl;
 
-	strStream << "SkelRadius2 " << 0 << endl;
-	strStream << endl;
+  strStream << "SkelRadius2 " << 0 << endl;
+  strStream << endl;
 
-	strStream << "Alpha " << 0 << endl;
-	strStream << endl;
+  strStream << "Alpha " << 0 << endl;
+  strStream << endl;
 
-	strStream << "Sample_isVirtual " << samples.vert.size() << endl;
-	for(int i = 0; i < samples.vert.size(); i++)
-	{
-		CVertex& v = samples.vert[i];
-		strStream << v.is_skel_virtual << "	"; 
-	}
-	strStream << endl;
+  strStream << "Sample_isVirtual " << samples.vert.size() << endl;
+  for(int i = 0; i < samples.vert.size(); i++)
+  {
+    CVertex& v = samples.vert[i];
+    strStream << v.is_skel_virtual << "	"; 
+  }
+  strStream << endl;
 
-	strStream << "Sample_isBranch " << samples.vert.size() << endl;
-	for(int i = 0; i < samples.vert.size(); i++)
-	{
-		CVertex& v = samples.vert[i];
-		strStream << v.is_skel_branch << "	"; 
-	}
-	strStream << endl;
+  strStream << "Sample_isBranch " << samples.vert.size() << endl;
+  for(int i = 0; i < samples.vert.size(); i++)
+  {
+    CVertex& v = samples.vert[i];
+    strStream << v.is_skel_branch << "	"; 
+  }
+  strStream << endl;
 
   strStream << "Sample_radius " << samples.vert.size() << endl;
   for(int i = 0; i < samples.vert.size(); i++)
@@ -1372,17 +1354,16 @@ void DataMgr::saveSkeletonAsSkel(QString fileName)
   }
   strStream << endl;
 
-	strStream << "Skel_isVirtual " << skeleton.size << endl;
-	for (int i = 0; i < skeleton.branches.size(); i++)
-	{
-		for (int j = 0; j < skeleton.branches[i].curve.size(); j++)
-		{
-			bool is_virtual = skeleton.branches[i].curve[j].is_skel_virtual;
-			strStream << is_virtual << "	"; 
-		}
-	}
-	strStream << endl;
-
+  strStream << "Skel_isVirtual " << skeleton.size << endl;
+  for (int i = 0; i < skeleton.branches.size(); i++)
+  {
+    for (int j = 0; j < skeleton.branches[i].curve.size(); j++)
+    {
+      bool is_virtual = skeleton.branches[i].curve[j].is_skel_virtual;
+      strStream << is_virtual << "	"; 
+    }
+  }
+  strStream << endl;
 
   strStream << "Corresponding_sample_index " << skeleton.size << endl;
   for (int i = 0; i < skeleton.branches.size(); i++)
@@ -1429,7 +1410,6 @@ void DataMgr::saveSkeletonAsSkel(QString fileName)
   }
   strStream << endl;
 
-
   strStream << "Candidate_Confidence	" << nbv_candidates.vert.size() << endl;
   for(int i = 0; i < nbv_candidates.vert.size(); i++)
   {
@@ -1450,7 +1430,7 @@ void DataMgr::saveSkeletonAsSkel(QString fileName)
   for (int i = 0; i < scan_candidates.size(); ++i)
   {
     strStream << scan_candidates[i].first.X() << " " << scan_candidates[i].first.Y() << " " << scan_candidates[i].first.Z() <<" "
-              << scan_candidates[i].second.X() << " " << scan_candidates[i].second.Y() << " "<< scan_candidates[i].second.Z() <<endl;
+      << scan_candidates[i].second.X() << " " << scan_candidates[i].second.Y() << " "<< scan_candidates[i].second.Z() <<endl;
   }
   strStream << endl;
 
@@ -1466,10 +1446,9 @@ void DataMgr::saveSkeletonAsSkel(QString fileName)
   }
   strStream << endl;
 
-	outfile.write( strStream.str().c_str(), strStream.str().size() ); 
-	outfile.close();
+  outfile.write( strStream.str().c_str(), strStream.str().size() ); 
+  outfile.close();
 }
-
 
 void DataMgr::loadSkeletonFromSkel(QString fileName)
 {
@@ -1488,104 +1467,103 @@ void DataMgr::loadSkeletonFromSkel(QString fileName)
   scanned_results.clear();
   scan_candidates.clear();
   slices.clear();
-	skeleton.clear();
+  skeleton.clear();
 
-	ifstream infile;
-	infile.open(fileName.toStdString().c_str());
+  ifstream infile;
+  infile.open(fileName.toStdString().c_str());
 
-	stringstream sem; 
-	sem << infile.rdbuf(); 
+  stringstream sem; 
+  sem << infile.rdbuf(); 
 
-	string str;
-	int num;
-	int num2;
+  string str;
+  int num;
+  int num2;
 
-	sem >> str;
-	if (str == "ON")
-	{
-		sem >> num;
-		bool is_same_original = false;
-		if (num == original.vn)
-		{
-			is_same_original = true;
-		}
-		if (is_same_original)
-		{
-			double temp;
-			for (int i = 0; i < num * 6; i++)
-			{
-				sem >> temp;
-			}
-		}
-		else
-		{
-			for (int i = 0; i < num; i++)
-			{
-				CVertex v;
-				v.is_original = true;
-				v.m_index = i;
-				sem >> v.P()[0] >> v.P()[1] >> v.P()[2];
-				sem >> v.N()[0] >> v.N()[1] >> v.N()[2];
-				original.vert.push_back(v);
-				original.bbox.Add(v.P());
-			}
-			original.vn = original.vert.size();
-		}
-	}
+  sem >> str;
+  if (str == "ON")
+  {
+    sem >> num;
+    bool is_same_original = false;
+    if (num == original.vn)
+    {
+      is_same_original = true;
+    }
+    if (is_same_original)
+    {
+      double temp;
+      for (int i = 0; i < num * 6; i++)
+      {
+        sem >> temp;
+      }
+    }
+    else
+    {
+      for (int i = 0; i < num; i++)
+      {
+        CVertex v;
+        v.is_original = true;
+        v.m_index = i;
+        sem >> v.P()[0] >> v.P()[1] >> v.P()[2];
+        sem >> v.N()[0] >> v.N()[1] >> v.N()[2];
+        original.vert.push_back(v);
+        original.bbox.Add(v.P());
+      }
+      original.vn = original.vert.size();
+    }
+  }
 
-	sem >> str;
-	if (str == "SN")
-	{
-		sem >> num;
-		for (int i = 0; i < num; i++)
-		{
-			CVertex v;
-			v.is_original = false;
-			v.m_index = i;
-			sem >> v.P()[0] >> v.P()[1] >> v.P()[2];
-			sem >> v.N()[0] >> v.N()[1] >> v.N()[2];
-			samples.vert.push_back(v);
-			samples.bbox.Add(v.P());
-		}
-		samples.vn = samples.vert.size();
-	}
+  sem >> str;
+  if (str == "SN")
+  {
+    sem >> num;
+    for (int i = 0; i < num; i++)
+    {
+      CVertex v;
+      v.is_original = false;
+      v.m_index = i;
+      sem >> v.P()[0] >> v.P()[1] >> v.P()[2];
+      sem >> v.N()[0] >> v.N()[1] >> v.N()[2];
+      samples.vert.push_back(v);
+      samples.bbox.Add(v.P());
+    }
+    samples.vn = samples.vert.size();
+  }
 
+  sem >> str;
+  if (str == "CN")
+  {
+    sem >> num;
+    for (int i = 0; i < num; i++)
+    {
+      Branch branch;
+      sem >> str;
+      sem >> num2;
+      for(int j = 0; j < num2; j++)
+      {
+        Point3f p;
+        CVertex v;
+        sem >> p[0] >> p[1] >> p[2];
+        v.P() = p;
+        branch.curve.push_back(v);
+      }
+      skeleton.branches.push_back(branch);
+    }
+  }
 
-	sem >> str;
-	if (str == "CN")
-	{
-		sem >> num;
-		for (int i = 0; i < num; i++)
-		{
-			Branch branch;
-			sem >> str;
-			sem >> num2;
-			for(int j = 0; j < num2; j++)
-			{
-				Point3f p;
-				CVertex v;
-				sem >> p[0] >> p[1] >> p[2];
-				v.P() = p;
-				branch.curve.push_back(v);
-			}
-			skeleton.branches.push_back(branch);
-		}
-	}
-
-	sem >> str;
-	if (str == "EN")
-	{
+  sem >> str;
+  if (str == "EN")
+  {
     sem >> num;
     for (int i = 0; i < num; i++)
     {
       int a, b;
       sem >> a >> b;
     }
-	}
+  }
 
-	sem >> str;
-	if (str == "BN")
-	{
+  sem >> str;
+  if (str == "BN")
+  {
     sem >> num;
     for (int i = 0; i < num; i++)
     {
@@ -1596,41 +1574,40 @@ void DataMgr::loadSkeletonFromSkel(QString fileName)
       {
         int id;
         sem >> id;
-    }
-	}
-
-	if (!sem.eof())
-	{
-		sem >> str;
-		if (str == "S_onedge")
-		{
-			sem >> num;
-			for (int i = 0; i < num; i++)
-			{
-				bool b;
-				sem >> b;
-				samples.vert[i].is_fixed_sample = b;
-			}
-		}
-	}
-
-	sem >> str;
-	if (str == "GroupID")
-	{
-		sem >> num;
-		for (int i = 0; i < num; i++)
-		{
-			int id;
-			sem >> id;
-
       }
-		}
-	}
+    }
 
-	sem >> str;
-	if (str == "SkelRadius")
-	{
-		sem >> num;
+    if (!sem.eof())
+    {
+      sem >> str;
+      if (str == "S_onedge")
+      {
+        sem >> num;
+        for (int i = 0; i < num; i++)
+        {
+          bool b;
+          sem >> b;
+          samples.vert[i].is_fixed_sample = b;
+        }
+      }
+    }
+
+    sem >> str;
+    if (str == "GroupID")
+    {
+      sem >> num;
+      for (int i = 0; i < num; i++)
+      {
+        int id;
+        sem >> id;
+      }
+    }
+  }
+
+  sem >> str;
+  if (str == "SkelRadius")
+  {
+    sem >> num;
 
     if (num > 1)
     {
@@ -1644,25 +1621,24 @@ void DataMgr::loadSkeletonFromSkel(QString fileName)
         }
       }
     }
+  }
 
-	}
+  sem >> str;
+  if (str == "Confidence_Sigma")
+  {
+    sem >> num;
+    for (int i = 0; i < num; i++)
+    {
+      double sigma;
+      sem >> sigma;
+      samples.vert[i].eigen_confidence = sigma;
+    }
+  }
 
-	sem >> str;
-	if (str == "Confidence_Sigma")
-	{
-		sem >> num;
-		for (int i = 0; i < num; i++)
-		{
-			double sigma;
-			sem >> sigma;
-			samples.vert[i].eigen_confidence = sigma;
-		}
-	}
-
-	sem >> str;
-	if (str == "SkelRadius2")
-	{
-		sem >> num;
+  sem >> str;
+  if (str == "SkelRadius2")
+  {
+    sem >> num;
 
     if (num > 1)
     {
@@ -1676,13 +1652,12 @@ void DataMgr::loadSkeletonFromSkel(QString fileName)
         }
       }
     }
+  }
 
-	}
-
-	sem >> str;
-	if (str == "Alpha")
-	{
-		sem >> num;
+  sem >> str;
+  if (str == "Alpha")
+  {
+    sem >> num;
     double Alpha;
     if (num > 1)
     {
@@ -1695,64 +1670,63 @@ void DataMgr::loadSkeletonFromSkel(QString fileName)
         }
       }
     }
+  }
 
-	}
+  if (!sem.eof())
+  {
+    sem >> str;
+    if (str == "Sample_isVirtual")
+    {
+      sem >> num;
+      for (int i = 0; i < num; i++)
+      {
+        bool b;
+        sem >> b;
+        samples.vert[i].is_skel_virtual = b;
+      }
+    }
+  }
 
-	if (!sem.eof())
-	{
-		sem >> str;
-		if (str == "Sample_isVirtual")
-		{
-			sem >> num;
-			for (int i = 0; i < num; i++)
-			{
-				bool b;
-				sem >> b;
-				samples.vert[i].is_skel_virtual = b;
-			}
-		}
-	}
+  if (!sem.eof())
+  {
+    sem >> str;
+    if (str == "Sample_isBranch")
+    {
+      sem >> num;
+      for (int i = 0; i < num; i++)
+      {
+        bool b;
+        sem >> b;
+        samples.vert[i].is_skel_branch = b;
+      }
+    }
+  }
 
-	if (!sem.eof())
-	{
-		sem >> str;
-		if (str == "Sample_isBranch")
-		{
-			sem >> num;
-			for (int i = 0; i < num; i++)
-			{
-				bool b;
-				sem >> b;
-				samples.vert[i].is_skel_branch = b;
-			}
-		}
-	}
-
-	sem >> str;
-	if (str == "Sample_radius")
-	{
+  sem >> str;
+  if (str == "Sample_radius")
+  {
     sem >> num;
     for (int i = 0; i < num; i++)
     {
       double temp;
       sem >> temp;
     }
-	}
+  }
 
-	sem >> str;
-	if (str == "Skel_isVirtual")
-	{
-		sem >> num;
-		bool temp;
-		for (int i = 0; i < skeleton.branches.size(); i++)
-		{
-			for (int j = 0; j < skeleton.branches[i].curve.size(); j++)
-			{
-				sem >> temp;
-				skeleton.branches[i].curve[j].is_skel_virtual = temp;
-			}
-		}
-	}
+  sem >> str;
+  if (str == "Skel_isVirtual")
+  {
+    sem >> num;
+    bool temp;
+    for (int i = 0; i < skeleton.branches.size(); i++)
+    {
+      for (int j = 0; j < skeleton.branches[i].curve.size(); j++)
+      {
+        sem >> temp;
+        skeleton.branches[i].curve[j].is_skel_virtual = temp;
+      }
+    }
+  }
 
   sem >> str;
   if (str == "Corresponding_sample_index")
@@ -1768,7 +1742,7 @@ void DataMgr::loadSkeletonFromSkel(QString fileName)
       }
     }
   }
-	skeleton.generateBranchSampleMap();
+  skeleton.generateBranchSampleMap();
 
   sem >> str;
   if (str == "IN")
@@ -1787,7 +1761,6 @@ void DataMgr::loadSkeletonFromSkel(QString fileName)
     }
     iso_points.vn = iso_points.vert.size();
   }
-
 
   sem >> str;
   if (str == "ISO_Value")
@@ -1946,7 +1919,6 @@ void DataMgr::saveFieldPoints(QString fileName)
     return;
   }
 
-
   //for (int i = 0; i < field_points.vert.size(); i++)
   cout << field_points.vert.size() << " grids" << endl;
   for (int i = 0; i < field_points.vert.size(); i++)  
@@ -1978,11 +1950,10 @@ void DataMgr::saveFieldPoints(QString fileName)
   fout_dat << "Modality:	    CT" << endl;
   fout_dat << "Checksum:	    7b197a4391516321308b81101d6f09e8" << endl;
   fout_dat.close();
-
 }
 
 void
-DataMgr::saveViewGrids(QString fileName)
+  DataMgr::saveViewGrids(QString fileName)
 {
   if (view_grid_points.vert.empty()) return;
 
@@ -1990,8 +1961,8 @@ DataMgr::saveViewGrids(QString fileName)
   out.open(fileName.toAscii(), std::ios::out | std::ios::binary);
   if (NULL == out) 
   {
-      cout<<"open file Error!" <<endl;
-      return;
+    cout<<"open file Error!" <<endl;
+    return;
   }
 
   for (int i = 0; i < view_grid_points.vert.size(); ++i)
@@ -2023,7 +1994,7 @@ DataMgr::saveViewGrids(QString fileName)
 }
 
 void
-DataMgr::saveMergedMesh(QString fileName)
+  DataMgr::saveMergedMesh(QString fileName)
 {
   for(int i = 0; i < scanned_results.size(); ++i)
   {
@@ -2035,7 +2006,7 @@ DataMgr::saveMergedMesh(QString fileName)
 }
 
 void 
-DataMgr::saveParameters(QString fileName)
+  DataMgr::saveParameters(QString fileName)
 {
   ofstream out_para;
   out_para.open(fileName.toAscii().data(), std::ios::out);
@@ -2076,13 +2047,13 @@ DataMgr::saveParameters(QString fileName)
 }
 
 void
-DataMgr::loadParameters(QString fileName)
+  DataMgr::loadParameters(QString fileName)
 {
   ifstream in_para;
   in_para.open(fileName.toAscii().data());
   if (in_para == NULL)
     return;
-  
+
   string value;
 
   in_para.ignore(1000, '\n');
@@ -2132,7 +2103,6 @@ DataMgr::loadParameters(QString fileName)
   getline(in_para, value);
   merge_pow = atof(value.c_str());
   global_paraMgr.nbv.setValue("Merge Probability Pow", DoubleValue(merge_pow));
-
 
   in_para.ignore(1000, '\n');
   in_para.ignore(1000, '\n');
@@ -2266,9 +2236,9 @@ void DataMgr::loadCurrentTF(QString fileName)
 {
   //ifstream infile;
   //infile.open(fileName.toStdString().c_str());
-  
+
   QFile file(fileName);
-  
+
   if(!file.open( QIODevice::ReadOnly ))
   {
     return;
@@ -2300,7 +2270,6 @@ void DataMgr::loadCurrentTF(QString fileName)
     current_L_to_R_Translation[i] = f_value * 1000.;
   }
 
-
   line = infile.readLine();
   cout << line.toStdString() << endl;
 
@@ -2320,7 +2289,6 @@ void DataMgr::loadCurrentTF(QString fileName)
     current_L_to_R_Rotation_Qua[i] = f_value;
   }
 
-
   line = infile.readLine();
   cout << line.toStdString() << endl;
   line.replace("in RPY [", "");
@@ -2338,7 +2306,6 @@ void DataMgr::loadCurrentTF(QString fileName)
     float f_value = qstr.toFloat();
     current_L_to_R_Angle[i] = f_value;
   }
- 
 }
 
 void DataMgr::loadCommonTransform()
@@ -2352,10 +2319,10 @@ void DataMgr::loadCommonTransform()
   infile >> temp_str;
   Point3f R_to_S_translation;
   infile >> R_to_S_translation[0] >> R_to_S_translation[1] >> R_to_S_translation[2];
-  
+
   Quaternionf R_to_S__Qua;
   R_to_S__Qua.FromEulerAngles(R_to_S_angle[0], R_to_S_angle[1], R_to_S_angle[2]);  
-  
+
   vcg::Matrix33f R_to_S_Matrix33;
   R_to_S__Qua.ToMatrix(R_to_S_Matrix33);
 
@@ -2370,7 +2337,6 @@ void DataMgr::loadCommonTransform()
   R_to_S_Matrix44[0][3] = R_to_S_translation[0];
   R_to_S_Matrix44[1][3] = R_to_S_translation[1];
   R_to_S_Matrix44[2][3] = R_to_S_translation[2];
-
 
   infile >> temp_str;
   float temp_f = 0.0;
@@ -2396,7 +2362,6 @@ void DataMgr::loadCommonTransform()
 
 void DataMgr::coordinateTransform()
 {
-
   Matrix44f L_to_R_Matrix44;
   L_to_R_Matrix44.SetIdentity();
   Matrix33f L_to_R_Matrix33;
@@ -2428,10 +2393,8 @@ void DataMgr::coordinateTransform()
   out << "T_to_S_Matrix44" << endl;
   GlobalFun::printMatrix44(out, T_to_S_Matrix44);
 
-
   for (int i = 0; i < samples.vert.size(); i++)
   {
-
     CVertex& v = samples.vert[i];
     if (i < 10)
     {
@@ -2446,12 +2409,8 @@ void DataMgr::coordinateTransform()
       out << "after trans: ";
       GlobalFun::printPoint3(out, v.P());
     }
-
   }
 }
-
-
-
 
 //void DataMgr::coordinateTransform()
 //{

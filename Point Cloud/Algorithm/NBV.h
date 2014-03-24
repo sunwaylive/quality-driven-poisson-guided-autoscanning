@@ -26,7 +26,6 @@ public:
 
 private:
   void runOneKeyNBV();
-
   void buildGrid();
   void propagate();
   void viewExtraction();
@@ -38,12 +37,12 @@ private:
   bool updateViewDirections();
   void runSmoothGridConfidence();
   void runComputeViewCandidateIndex();
-  
+
   double getAbsMax(double x, double y, double z);
   int    round(double x);
   void   setGridUnHit(vector<int>& hit_grids_idx);
   double computeLocalScores(CVertex& view_t, CVertex& iso_v, 
-                          double& optimal_D, double& half_D2, double& sigma_threshold);
+    double& optimal_D, double& half_D2, double& sigma_threshold);
   int    getIsoPointsViewBinIndex(Point3f& p, int which_axis);
   static bool cmp(const CVertex &v1, const CVertex &v2);
 

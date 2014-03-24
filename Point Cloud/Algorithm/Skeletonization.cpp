@@ -4,26 +4,26 @@ void Skeletonization::run()
 {
   is_skeleton_locked = false;
 
-	if (para->getBool("Run Auto Wlop One Step"))
-	{
-		runAutoWlopOneStep();
-		cout << "**************iterate Number: " << nTimeIterated << endl;
-	}
+  if (para->getBool("Run Auto Wlop One Step"))
+  {
+    runAutoWlopOneStep();
+    cout << "**************iterate Number: " << nTimeIterated << endl;
+  }
 
-	if (para->getBool("Step1 Detect Skeleton Feature"))
-	{
-		runStep1_DetectFeaturePoints();
-	}
+  if (para->getBool("Step1 Detect Skeleton Feature"))
+  {
+    runStep1_DetectFeaturePoints();
+  }
 
-	if (para->getBool("Step2 Run Search New Branchs"))
-	{
-		runStep2_SearchNewBranches();
-	}
+  if (para->getBool("Step2 Run Search New Branchs"))
+  {
+    runStep2_SearchNewBranches();
+  }
 
-	if (para->getBool("Step3 Clean And Update Radius"))
-	{
-		runStep3_UpdateRadius();
-	}
+  if (para->getBool("Step3 Clean And Update Radius"))
+  {
+    runStep3_UpdateRadius();
+  }
 
   if (para->getBool("Run ALL Segment"))
   {
@@ -33,37 +33,37 @@ void Skeletonization::run()
 
 void Skeletonization::runAutoWlopOneStep()
 {
-	runStep0_WLOPIterationAndBranchGrowing();
+  runStep0_WLOPIterationAndBranchGrowing();
 
-	if (iterate_error < para->getDouble("Stop And Grow Error") || 
-	   	iterate_time_in_one_stage > para->getDouble("Max Iterate Time"))
-	{
-		cout << "!!!!!!!!!!!!!! Increase Radius Begin !!!!!!!!!!!!!!" << endl;
+  if (iterate_error < para->getDouble("Stop And Grow Error") || 
+    iterate_time_in_one_stage > para->getDouble("Max Iterate Time"))
+  {
+    cout << "!!!!!!!!!!!!!! Increase Radius Begin !!!!!!!!!!!!!!" << endl;
 
-		runStep1_DetectFeaturePoints();
-		runStep2_SearchNewBranches();
-		runStep3_UpdateRadius();
+    runStep1_DetectFeaturePoints();
+    runStep2_SearchNewBranches();
+    runStep3_UpdateRadius();
 
     // test if the whole process should stop
     int left_moving_num = getMovingPointsNum();
     double stop_radius = para->getDouble("Max Stop Radius");
     double current_radius = para->getDouble("CGrid Radius");
     if (left_moving_num <= para->getDouble("Accept Branch Size") ||
-          current_radius > stop_radius)
+      current_radius > stop_radius)
     {
       finalProcess();
     }
 
 
-		if (para->getBool("Run Auto Wlop One Stage"))
-		{
-			para->setValue("The Skeletonlization Process Should Stop", BoolValue(true));
-		}
+    if (para->getBool("Run Auto Wlop One Stage"))
+    {
+      para->setValue("The Skeletonlization Process Should Stop", BoolValue(true));
+    }
 
 
-		cout << "!!!!!!!!!!!!!! Increase Radius End !!!!!!!!!!!!!!" << endl;
+    cout << "!!!!!!!!!!!!!! Increase Radius End !!!!!!!!!!!!!!" << endl;
     iterate_time_in_one_stage = 0;
-	}
+  }
 }
 
 
@@ -116,7 +116,7 @@ void Skeletonization::runStep0_WLOPIterationAndBranchGrowing()
     para->setValue("Initial Radius", DoubleValue(init_radius));
     iterate_time_in_one_stage = 0;
   }
-	
+
   time.start("updateAllCurvesFollowSamples()");
   updateAllBranchesFollowSamples();
   time.end();
@@ -138,33 +138,33 @@ void Skeletonization::runStep0_WLOPIterationAndBranchGrowing()
 
   iterate_error = wlopIterate();
   para->setValue("Current Movement Error", DoubleValue(iterate_error));
-  
-	iterate_time_in_one_stage++;
-	nTimeIterated ++;
-	cout << "&&&&&&Iterated: " << nTimeIterated << endl;
+
+  iterate_time_in_one_stage++;
+  nTimeIterated ++;
+  cout << "&&&&&&Iterated: " << nTimeIterated << endl;
 }
 
 void Skeletonization::runStep1_DetectFeaturePoints()
 {
-	cout << "runStep1_DetectFeaturePoints" << endl;
+  cout << "runStep1_DetectFeaturePoints" << endl;
 
-	removeTooClosePoints();
+  removeTooClosePoints();
 
-	eigenThresholdIdentification();
+  eigenThresholdIdentification();
 }
 
 void Skeletonization::runStep2_SearchNewBranches()
 {
-	cout << "runStep2_SearchNewBranches" << endl;
+  cout << "runStep2_SearchNewBranches" << endl;
 
-	searchNewBranches();
+  searchNewBranches();
 
-	growAllBranches();
+  growAllBranches();
 }
 
 void Skeletonization::runStep3_UpdateRadius()
 {
-	cout << "runStep3_UpdateRadius" << endl;
+  cout << "runStep3_UpdateRadius" << endl;
 
   mergeNearEndsGroup();
   cleanPointsNearBranches();
@@ -175,99 +175,99 @@ void Skeletonization::runStep3_UpdateRadius()
 
 Skeletonization::Skeletonization(RichParameterSet* _para)
 {
-	cout << "WLP constructed!!" << endl;
-	para = _para;
-	samples = NULL;
-	original = NULL;
-	skeleton = NULL;
-	nTimeIterated = 0;
-	error_x = 0.0;
-	iterate_time_in_one_stage = 0;
+  cout << "WLP constructed!!" << endl;
+  para = _para;
+  samples = NULL;
+  original = NULL;
+  skeleton = NULL;
+  nTimeIterated = 0;
+  error_x = 0.0;
+  iterate_time_in_one_stage = 0;
 }
 
 Skeletonization::~Skeletonization(void)
 {
-	cout << "Skeletonization destroy!! " << endl; 
+  cout << "Skeletonization destroy!! " << endl; 
 }
 
 void Skeletonization::clear()
 {
-	samples = NULL;
-	original = NULL;
-	skeleton = NULL;
+  samples = NULL;
+  original = NULL;
+  skeleton = NULL;
 }
 
 void Skeletonization::setFirstIterate()
 {
-	nTimeIterated = 0;
+  nTimeIterated = 0;
 }
 
 void Skeletonization::setInput(DataMgr* pData)
 {
-	if(!pData->isSamplesEmpty() && !pData->isOriginalEmpty())
-	{
-		CMesh* _samples = pData->getCurrentSamples();
-		CMesh* _original = pData->getCurrentOriginal();
-		Skeleton* _skeleton = pData->getCurrentSkeleton();
+  if(!pData->isSamplesEmpty() && !pData->isOriginalEmpty())
+  {
+    CMesh* _samples = pData->getCurrentSamples();
+    CMesh* _original = pData->getCurrentOriginal();
+    Skeleton* _skeleton = pData->getCurrentSkeleton();
 
-		if(_samples == NULL || _original == NULL)
-		{
-			cout << "ERROR: Skeletonization::setInput == NULL!!" << endl;
-			return;
-		}
+    if(_samples == NULL || _original == NULL)
+    {
+      cout << "ERROR: Skeletonization::setInput == NULL!!" << endl;
+      return;
+    }
 
-		error_x = 0.0;
-		samples = _samples;
-		original = _original;
-		skeleton = _skeleton;
+    error_x = 0.0;
+    samples = _samples;
+    original = _original;
+    skeleton = _skeleton;
 
-		samples_density.assign(samples->vn, 1);
-	}
-	else
-	{
-		cout << "ERROR: Skeletonization::setInput: empty!!" << endl;
-		return;
-	}
+    samples_density.assign(samples->vn, 1);
+  }
+  else
+  {
+    cout << "ERROR: Skeletonization::setInput: empty!!" << endl;
+    return;
+  }
 }
 
 
 void Skeletonization::initVertexes()
 {
-	box.SetNull();
-	CMesh::VertexIterator vi, vi_end;
+  box.SetNull();
+  CMesh::VertexIterator vi, vi_end;
 
-	int i = 0;
-	vi_end = samples->vert.end();
-	for(vi = samples->vert.begin(); vi != vi_end; ++vi) 
-	{
-		vi->m_index = i++;
-		vi->neighbors.clear();
-		vi->original_neighbors.clear();
+  int i = 0;
+  vi_end = samples->vert.end();
+  for(vi = samples->vert.begin(); vi != vi_end; ++vi) 
+  {
+    vi->m_index = i++;
+    vi->neighbors.clear();
+    vi->original_neighbors.clear();
 
-		if (vi->is_ignore)
-		{
-			continue;
-		}
-		box.Add(vi->P());
-	}
-	samples->bbox = box;
-
-
-	vi_end = original->vert.end();
-	i = 0;
-	for(vi = original->vert.begin(); vi != vi_end; ++vi) 
-	{
-		vi->m_index = i++;
-		box.Add(vi->P());
-	}
-	original->bbox = box;
+    if (vi->is_ignore)
+    {
+      continue;
+    }
+    box.Add(vi->P());
+  }
+  samples->bbox = box;
 
 
-	repulsion.assign(samples->vn, vcg::Point3f(0, 0, 0));
-	average.assign(samples->vn, vcg::Point3f(0, 0, 0));
+  vi_end = original->vert.end();
+  i = 0;
+  for(vi = original->vert.begin(); vi != vi_end; ++vi) 
+  {
+    vi->m_index = i++;
+    box.Add(vi->P());
+  }
+  original->bbox = box;
 
-	repulsion_weight_sum.assign(samples->vn, 0);
-	average_weight_sum.assign(samples->vn, 0);
+
+  repulsion.assign(samples->vn, vcg::Point3f(0, 0, 0));
+  average.assign(samples->vn, vcg::Point3f(0, 0, 0));
+
+  repulsion_weight_sum.assign(samples->vn, 0);
+  average_weight_sum.assign(samples->vn, 0);
 }
 
 
@@ -275,411 +275,411 @@ void Skeletonization::initVertexes()
 
 void Skeletonization::computeAverageTerm(CMesh* samples, CMesh* original)
 {
-	double average_power = para->getDouble("Average Power");
-	bool need_density = para->getBool("Need Compute Density");
-	double radius = para->getDouble("CGrid Radius"); 
+  double average_power = para->getDouble("Average Power");
+  bool need_density = para->getBool("Need Compute Density");
+  double radius = para->getDouble("CGrid Radius"); 
   double fix_original_weight = para->getDouble("Fix Original Weight");
 
-	double radius2 = radius * radius;
-	double iradius16 = -para->getDouble("H Gaussian Para")/radius2;
+  double radius2 = radius * radius;
+  double iradius16 = -para->getDouble("H Gaussian Para")/radius2;
 
-	cout << "Original Size:" << samples->vert[0].original_neighbors.size() << endl;
-	for(int i = 0; i < samples->vert.size(); i++)
-	{
-		CVertex& v = samples->vert[i];
+  cout << "Original Size:" << samples->vert[0].original_neighbors.size() << endl;
+  for(int i = 0; i < samples->vert.size(); i++)
+  {
+    CVertex& v = samples->vert[i];
 
-		if (v.is_fixed_sample) //Here is different from WLOP
-		{
-			average_weight_sum[i] = 0.;
-			continue;
-		}
+    if (v.is_fixed_sample) //Here is different from WLOP
+    {
+      average_weight_sum[i] = 0.;
+      continue;
+    }
 
-		for (int j = 0; j < v.original_neighbors.size(); j++)
-		{
-			CVertex& t = original->vert[v.original_neighbors[j]];
+    for (int j = 0; j < v.original_neighbors.size(); j++)
+    {
+      CVertex& t = original->vert[v.original_neighbors[j]];
 
-			Point3f diff = v.P() - t.P();
-			double dist2  = diff.SquaredNorm();
+      Point3f diff = v.P() - t.P();
+      double dist2  = diff.SquaredNorm();
 
-			double w = 1;
-			if (average_power < 2)
-			{
-				double len = sqrt(dist2);
-				if(len <= 0.001 * radius) len = radius*0.001;
-				w = exp(dist2 * iradius16) / pow(len, 2 - average_power);
-			}
-			else
-			{
-				w = exp(dist2 * iradius16);
-			}
+      double w = 1;
+      if (average_power < 2)
+      {
+        double len = sqrt(dist2);
+        if(len <= 0.001 * radius) len = radius*0.001;
+        w = exp(dist2 * iradius16) / pow(len, 2 - average_power);
+      }
+      else
+      {
+        w = exp(dist2 * iradius16);
+      }
 
-			if (need_density)
-			{
-				w *= original_density[t.m_index];
-			}
+      if (need_density)
+      {
+        w *= original_density[t.m_index];
+      }
 
       if (t.is_fixed_original)
       {
         w *= fix_original_weight;
       }
 
-			average[i] += t.P() * w;  
-			average_weight_sum[i] += w;  
-		}
-	}
+      average[i] += t.P() * w;  
+      average_weight_sum[i] += w;  
+    }
+  }
 }
 
 
 void Skeletonization::computeRepulsionTerm(CMesh* samples)
 {
-	double repulsion_power = para->getDouble("Repulsion Power");
-	double radius = para->getDouble("CGrid Radius"); 
+  double repulsion_power = para->getDouble("Repulsion Power");
+  double radius = para->getDouble("CGrid Radius"); 
 
-	double radius2 = radius * radius;
-	double iradius16 = -para->getDouble("H Gaussian Para")/radius2;
+  double radius2 = radius * radius;
+  double iradius16 = -para->getDouble("H Gaussian Para")/radius2;
 
-	for(int i = 0; i < samples->vert.size(); i++)
-	{
-		CVertex& v = samples->vert[i];
+  for(int i = 0; i < samples->vert.size(); i++)
+  {
+    CVertex& v = samples->vert[i];
 
-		if (v.is_fixed_sample || v.is_ignore)//Here is different from WLOP
-		{
-			repulsion_weight_sum[i] = 0.;
-			continue;
-		}
+    if (v.is_fixed_sample || v.is_ignore)//Here is different from WLOP
+    {
+      repulsion_weight_sum[i] = 0.;
+      continue;
+    }
 
-		for (int j = 0; j < v.neighbors.size(); j++)
-		{
-			CVertex& t = samples->vert[v.neighbors[j]];
-			Point3f diff = v.P() - t.P();
+    for (int j = 0; j < v.neighbors.size(); j++)
+    {
+      CVertex& t = samples->vert[v.neighbors[j]];
+      Point3f diff = v.P() - t.P();
 
-			double dist2  = diff.SquaredNorm();
-			double len = sqrt(dist2);
-			if(len <= 0.001 * radius) len = radius*0.001;
+      double dist2  = diff.SquaredNorm();
+      double len = sqrt(dist2);
+      if(len <= 0.001 * radius) len = radius*0.001;
 
-			double w = exp(dist2*iradius16);
-			double rep = w * pow(1.0 / len, repulsion_power);
+      double w = exp(dist2*iradius16);
+      double rep = w * pow(1.0 / len, repulsion_power);
 
-			repulsion[i] += diff * rep;  
-			repulsion_weight_sum[i] += rep;
-		}
-	}
+      repulsion[i] += diff * rep;  
+      repulsion_weight_sum[i] += rep;
+    }
+  }
 }
 
 
 void Skeletonization::computeDensity(bool isOriginal, double radius)
 {
-	CMesh* mesh;
-	if (isOriginal)
-	{
-		mesh = original;
-	}
-	else
-	{
-		mesh = samples;
-	}
+  CMesh* mesh;
+  if (isOriginal)
+  {
+    mesh = original;
+  }
+  else
+  {
+    mesh = samples;
+  }
 
-	double radius2 = radius * radius;
-	double iradius16 = -para->getDouble("H Gaussian Para") / radius2;
+  double radius2 = radius * radius;
+  double iradius16 = -para->getDouble("H Gaussian Para") / radius2;
 
-	for(int i = 0; i < mesh->vert.size(); i++)
-	{
-		CVertex& v = mesh->vert[i];
+  for(int i = 0; i < mesh->vert.size(); i++)
+  {
+    CVertex& v = mesh->vert[i];
 
-		if (isOriginal)
-		{
-			original_density[i] = 1.;
-		}
-		else
-		{
-			samples_density[i] = 1.;
-		}
+    if (isOriginal)
+    {
+      original_density[i] = 1.;
+    }
+    else
+    {
+      samples_density[i] = 1.;
+    }
 
-		vector<int>* neighbors = &v.neighbors;
+    vector<int>* neighbors = &v.neighbors;
 
-		for (int j = 0; j < neighbors->size(); j++)
-		{
-			CVertex& t = mesh->vert[(*neighbors)[j]];
-			double dist2  = (v.P() - t.P()).SquaredNorm();
-			double den = exp(dist2*iradius16);
+    for (int j = 0; j < neighbors->size(); j++)
+    {
+      CVertex& t = mesh->vert[(*neighbors)[j]];
+      double dist2  = (v.P() - t.P()).SquaredNorm();
+      double den = exp(dist2*iradius16);
 
-			if (isOriginal)
-			{
-				original_density[i] += den;
-			}
-			else
-			{
-				samples_density[i] += den;
-			}
-		}
-	}
+      if (isOriginal)
+      {
+        original_density[i] += den;
+      }
+      else
+      {
+        samples_density[i] += den;
+      }
+    }
+  }
 
-	for(int i = 0; i < mesh->vert.size(); i++)
-	{
-		if (isOriginal)
-		{
-			CVertex& v = mesh->vert[i];
-			original_density[i] = 1. / original_density[i];
-		}
-		else
-		{
-			samples_density[i] = sqrt(samples_density[i]);
-		}
-	}
+  for(int i = 0; i < mesh->vert.size(); i++)
+  {
+    if (isOriginal)
+    {
+      CVertex& v = mesh->vert[i];
+      original_density[i] = 1. / original_density[i];
+    }
+    else
+    {
+      samples_density[i] = sqrt(samples_density[i]);
+    }
+  }
 
 }
 
 
 double Skeletonization::wlopIterate()
 {
-	Timer time;
+  Timer time;
 
-	initVertexes();
+  initVertexes();
 
-	time.start("Samples Initial");
-	GlobalFun::computeBallNeighbors(samples, NULL, 
-		para->getDouble("CGrid Radius"), samples->bbox);
-	GlobalFun::computeEigenWithTheta(samples, para->getDouble("CGrid Radius") / sqrt(para->getDouble("H Gaussian Para")));
-	time.end();
+  time.start("Samples Initial");
+  GlobalFun::computeBallNeighbors(samples, NULL, 
+    para->getDouble("CGrid Radius"), samples->bbox);
+  GlobalFun::computeEigenWithTheta(samples, para->getDouble("CGrid Radius") / sqrt(para->getDouble("H Gaussian Para")));
+  time.end();
 
-	if (nTimeIterated == 0) 
-	{
-		time.start("Original Initial");
-		GlobalFun::computeBallNeighbors(original, NULL, 
-			para->getDouble("CGrid Radius"), original->bbox);
+  if (nTimeIterated == 0) 
+  {
+    time.start("Original Initial");
+    GlobalFun::computeBallNeighbors(original, NULL, 
+      para->getDouble("CGrid Radius"), original->bbox);
 
-		original_density.assign(original->vn, 0);
-		if (para->getBool("Need Compute Density"))
-		{
-			computeDensity(true, para->getDouble("CGrid Radius"));
-		}
-		time.end();
-	}
+    original_density.assign(original->vn, 0);
+    if (para->getBool("Need Compute Density"))
+    {
+      computeDensity(true, para->getDouble("CGrid Radius"));
+    }
+    time.end();
+  }
 
-	time.start("Sample Original neighbor");
-	GlobalFun::computeBallNeighbors(samples, original, 
-		para->getDouble("CGrid Radius"), box);
-	time.end();
+  time.start("Sample Original neighbor");
+  GlobalFun::computeBallNeighbors(samples, original, 
+    para->getDouble("CGrid Radius"), box);
+  time.end();
 
-	time.start("computeAverageTerm");
-	computeAverageTerm(samples, original);
-	time.end();
+  time.start("computeAverageTerm");
+  computeAverageTerm(samples, original);
+  time.end();
 
-	time.start("computeRepulsionTerm");
-	computeRepulsionTerm(samples);
-	time.end();
+  time.start("computeRepulsionTerm");
+  computeRepulsionTerm(samples);
+  time.end();
 
-	double min_sigma = GlobalFun::getDoubleMAXIMUM();
-	double max_sigma = -1;
-	for (int i = 0; i < samples->vn; i++)
-	{
-		CVertex& v = samples->vert[i];
-		if (v.eigen_confidence < min_sigma)
-		{
-			min_sigma = v.eigen_confidence;
-		}
-		if (v.eigen_confidence > max_sigma)
-		{
-			max_sigma = v.eigen_confidence;
-		}
-	}
+  double min_sigma = GlobalFun::getDoubleMAXIMUM();
+  double max_sigma = -1;
+  for (int i = 0; i < samples->vn; i++)
+  {
+    CVertex& v = samples->vert[i];
+    if (v.eigen_confidence < min_sigma)
+    {
+      min_sigma = v.eigen_confidence;
+    }
+    if (v.eigen_confidence > max_sigma)
+    {
+      max_sigma = v.eigen_confidence;
+    }
+  }
 
-	double mu_max = para->getDouble("Repulsion Mu");
-	double mu_min = para->getDouble("Repulsion Mu2");
-	double mu_length = abs(mu_max - mu_min);
-	double sigma_length = abs(max_sigma - min_sigma);
-	Point3f c;
-	int moving_num = 0;
-	double max_error = 0;
+  double mu_max = para->getDouble("Repulsion Mu");
+  double mu_min = para->getDouble("Repulsion Mu2");
+  double mu_length = abs(mu_max - mu_min);
+  double sigma_length = abs(max_sigma - min_sigma);
+  Point3f c;
+  int moving_num = 0;
+  double max_error = 0;
 
-	for(int i = 0; i < samples->vert.size(); i++)
-	{
-		CVertex& v = samples->vert[i];
-		if (v.is_fixed_sample || v.is_ignore)
-		{
-			continue;
-		}
-		c = v.P();
+  for(int i = 0; i < samples->vert.size(); i++)
+  {
+    CVertex& v = samples->vert[i];
+    if (v.is_fixed_sample || v.is_ignore)
+    {
+      continue;
+    }
+    c = v.P();
 
-		double mu = (mu_length / sigma_length) * (v.eigen_confidence - min_sigma) + mu_min;
+    double mu = (mu_length / sigma_length) * (v.eigen_confidence - min_sigma) + mu_min;
 
-		if (average_weight_sum[i] > 1e-20)
-		{
-			v.P() = average[i] / average_weight_sum[i];
+    if (average_weight_sum[i] > 1e-20)
+    {
+      v.P() = average[i] / average_weight_sum[i];
 
-		}
-		if (repulsion_weight_sum[i] > 1e-20 && mu >= 0)
-		{
-			v.P() +=  repulsion[i] * (mu / repulsion_weight_sum[i]);
-		}
+    }
+    if (repulsion_weight_sum[i] > 1e-20 && mu >= 0)
+    {
+      v.P() +=  repulsion[i] * (mu / repulsion_weight_sum[i]);
+    }
 
-		if (average_weight_sum[i] > 1e-20 && repulsion_weight_sum[i] > 1e-20 )
-		{
-			moving_num++;
-			Point3f diff = v.P() - c; 
-			double move_error = sqrt(diff.SquaredNorm());
+    if (average_weight_sum[i] > 1e-20 && repulsion_weight_sum[i] > 1e-20 )
+    {
+      moving_num++;
+      Point3f diff = v.P() - c; 
+      double move_error = sqrt(diff.SquaredNorm());
 
-			error_x += move_error; 
-		}
-	}
-	error_x = error_x / moving_num;
+      error_x += move_error; 
+    }
+  }
+  error_x = error_x / moving_num;
 
-	para->setValue("Current Movement Error", DoubleValue(error_x));
-	cout << "****finished compute Skeletonization error:	" << error_x << endl;
-	return error_x;
+  para->setValue("Current Movement Error", DoubleValue(error_x));
+  cout << "****finished compute Skeletonization error:	" << error_x << endl;
+  return error_x;
 }
 
 
 void Skeletonization::removeTooClosePoints()
 {
-	double near_threshold = para->getDouble("Combine Too Close Threshold");
-	double near_threshold2 = near_threshold * near_threshold;
+  double near_threshold = para->getDouble("Combine Too Close Threshold");
+  double near_threshold2 = near_threshold * near_threshold;
 
-	for (int i = 0; i < samples->vn; i++)
-	{
-		CVertex& v = samples->vert[i];
-		for (int j = 0; j < v.neighbors.size(); j++)
-		{
-			CVertex& t = samples->vert[v.neighbors[j]];
+  for (int i = 0; i < samples->vn; i++)
+  {
+    CVertex& v = samples->vert[i];
+    for (int j = 0; j < v.neighbors.size(); j++)
+    {
+      CVertex& t = samples->vert[v.neighbors[j]];
 
-			if (!t.isSample_JustMoving())
-			{
-				continue;
-			}
+      if (!t.isSample_JustMoving())
+      {
+        continue;
+      }
 
-			double dist2 = GlobalFun::computeEulerDistSquare(v.P(), t.P());
-			if (dist2 < near_threshold2)
-			{
-				t.remove();
-			}
-		}
-	}
+      double dist2 = GlobalFun::computeEulerDistSquare(v.P(), t.P());
+      if (dist2 < near_threshold2)
+      {
+        t.remove();
+      }
+    }
+  }
 }
 
 void Skeletonization::eigenThresholdIdentification()
 {
-	int sigma_KNN = para->getDouble("Sigma KNN");
+  int sigma_KNN = para->getDouble("Sigma KNN");
 
-	GlobalFun::computeAnnNeigbhors(samples->vert, samples->vert, sigma_KNN, false, "void Skeletonization::eigenThresholdClassification()");
+  GlobalFun::computeAnnNeigbhors(samples->vert, samples->vert, sigma_KNN, false, "void Skeletonization::eigenThresholdClassification()");
 
-	if (para->getBool("Use Compute Eigen Ignore Branch Strategy"))
-	{
-		GlobalFun::computeEigenIgnoreBranchedPoints(samples);
-	}
-	else
-	{
-		GlobalFun::computeEigen(samples);
-	}
+  if (para->getBool("Use Compute Eigen Ignore Branch Strategy"))
+  {
+    GlobalFun::computeEigenIgnoreBranchedPoints(samples);
+  }
+  else
+  {
+    GlobalFun::computeEigen(samples);
+  }
 
-	eigenConfidenceSmoothing();
+  eigenConfidenceSmoothing();
 
-	for(int i = 0; i < samples->vert.size(); i++)
-	{
-		CVertex& v = samples->vert[i];
+  for(int i = 0; i < samples->vert.size(); i++)
+  {
+    CVertex& v = samples->vert[i];
 
-		if (!v.isSample_Moving())
-		{
-			continue;
-		}
+    if (!v.isSample_Moving())
+    {
+      continue;
+    }
 
-		double eigen_psi = v.eigen_confidence;
-		double eigen_threshold = para->getDouble("Eigen Feature Identification Threshold");
+    double eigen_psi = v.eigen_confidence;
+    double eigen_threshold = para->getDouble("Eigen Feature Identification Threshold");
 
-		if (eigen_psi > eigen_threshold)
-		{
-			v.is_fixed_sample = true;
-		}
-		else
-		{
-			v.is_fixed_sample = false;
-		}
-	}
+    if (eigen_psi > eigen_threshold)
+    {
+      v.is_fixed_sample = true;
+    }
+    else
+    {
+      v.is_fixed_sample = false;
+    }
+  }
 }
 
 void Skeletonization::eigenConfidenceSmoothing()
 {
-	for(int i = 0; i < samples->vert.size(); i++)
-	{
-		CVertex& v = samples->vert[i];
-		v.eigen_confidence = 1 - v.eigen_confidence;
-	}
+  for(int i = 0; i < samples->vert.size(); i++)
+  {
+    CVertex& v = samples->vert[i];
+    v.eigen_confidence = 1 - v.eigen_confidence;
+  }
 
-	for(int i = 0; i < samples->vert.size(); i++)
-	{
-		CVertex& v = samples->vert[i];
-		double sum = v.eigen_confidence;
-		for (int j = 0; j < v.neighbors.size(); j++)
-		{
-			sum += samples->vert[v.neighbors[j]].eigen_confidence;
-		}
-		v.eigen_confidence = sum / (v.neighbors.size() + 1);
-	}
+  for(int i = 0; i < samples->vert.size(); i++)
+  {
+    CVertex& v = samples->vert[i];
+    double sum = v.eigen_confidence;
+    for (int j = 0; j < v.neighbors.size(); j++)
+    {
+      sum += samples->vert[v.neighbors[j]].eigen_confidence;
+    }
+    v.eigen_confidence = sum / (v.neighbors.size() + 1);
+  }
 
-	for(int i = 0; i < samples->vert.size(); i++)
-	{
-		CVertex& v = samples->vert[i];
-		v.eigen_confidence = 1 - v.eigen_confidence;
+  for(int i = 0; i < samples->vert.size(); i++)
+  {
+    CVertex& v = samples->vert[i];
+    v.eigen_confidence = 1 - v.eigen_confidence;
 
     if (v.eigen_confidence < 0)
     {
       v.eigen_confidence = 0.5;
     }
-	}
+  }
 }
 
 void Skeletonization::searchNewBranches()
 {
-	int branch_KNN = para->getDouble("Branch Search KNN");
-	GlobalFun::computeAnnNeigbhors(samples->vert, samples->vert, branch_KNN, false, "void Skeletonization::searchNewBranches()");
+  int branch_KNN = para->getDouble("Branch Search KNN");
+  GlobalFun::computeAnnNeigbhors(samples->vert, samples->vert, branch_KNN, false, "void Skeletonization::searchNewBranches()");
 
-	while(1)
-	{
-		int max_confidence_id = -1;
-		double max_eigen_confidence = 0;
-		for (int i = 0; i <samples->vert.size(); i++)
-		{
-			CVertex& v = samples->vert[i];
-			if (!v.isSample_JustFixed())
-			{
-				continue;
-			}
+  while(1)
+  {
+    int max_confidence_id = -1;
+    double max_eigen_confidence = 0;
+    for (int i = 0; i <samples->vert.size(); i++)
+    {
+      CVertex& v = samples->vert[i];
+      if (!v.isSample_JustFixed())
+      {
+        continue;
+      }
 
-			if (v.eigen_confidence > max_eigen_confidence)
-			{
-				max_confidence_id = i;
-				max_eigen_confidence = v.eigen_confidence;
-			}
-		}
+      if (v.eigen_confidence > max_eigen_confidence)
+      {
+        max_confidence_id = i;
+        max_eigen_confidence = v.eigen_confidence;
+      }
+    }
 
-		if (max_confidence_id < 0)
-		{
-			break;
-		}
+    if (max_confidence_id < 0)
+    {
+      break;
+    }
 
-		Branch new_branch = searchOneBranchFromIndex(max_confidence_id);
+    Branch new_branch = searchOneBranchFromIndex(max_confidence_id);
 
-		int accept_branch_size = para->getDouble("Accept Branch Size");
-		int add_size = para->getDouble("Add Accept Branch Size");
-		double current_radius = para->getDouble("CGrid Radius");
-		double init_radius = para->getDouble("Initial Radius");
+    int accept_branch_size = para->getDouble("Accept Branch Size");
+    int add_size = para->getDouble("Add Accept Branch Size");
+    double current_radius = para->getDouble("CGrid Radius");
+    double init_radius = para->getDouble("Initial Radius");
 
-		int rate = current_radius / init_radius;
-		if (rate > 0)
-		{
-			accept_branch_size += add_size * rate;
-		}
+    int rate = current_radius / init_radius;
+    if (rate > 0)
+    {
+      accept_branch_size += add_size * rate;
+    }
 
-		growOneBranchByVirtual(new_branch);
+    growOneBranchByVirtual(new_branch);
 
-		if (new_branch.isEmpty())
-		{
-			if (!samples->vert[max_confidence_id].is_skel_virtual)
-			{
-				samples->vert[max_confidence_id].setSample_JustMoving();
-			}
-		}
-		else if (new_branch.getSize() < accept_branch_size)
-		{
+    if (new_branch.isEmpty())
+    {
+      if (!samples->vert[max_confidence_id].is_skel_virtual)
+      {
+        samples->vert[max_confidence_id].setSample_JustMoving();
+      }
+    }
+    else if (new_branch.getSize() < accept_branch_size)
+    {
       Curve& new_curve = new_branch.curve;
       for (int i = 0; i < new_curve.size(); i++)
       {
@@ -688,35 +688,35 @@ void Skeletonization::searchNewBranches()
           samples->vert[new_curve[i].m_index].setSample_JustMoving(); //carefull 1-12
         }
       }
-		}
-		else
-		{
-			// Virtual Points creat here and remember skel_radius
-			for (int i = 0; i < new_branch.getSize(); i++)
-			{
-				if (new_branch.curve[i].is_skel_virtual) 
-				{
-					samples->vert[new_branch.curve[i].m_index].setSample_MovingAndVirtual();
-					new_branch.branch_id = skeleton->branches.size();
-					if (i==0)
-					{
-						new_branch.rememberVirtualHead();
-					}
-					else if (i == new_branch.getSize()-1)
-					{
-						new_branch.rememberVirtualTail();
-					}
-				}
-				else
-				{
-					samples->vert[new_branch.curve[i].m_index].setSample_FixedAndBranched();
+    }
+    else
+    {
+      // Virtual Points creat here and remember skel_radius
+      for (int i = 0; i < new_branch.getSize(); i++)
+      {
+        if (new_branch.curve[i].is_skel_virtual) 
+        {
+          samples->vert[new_branch.curve[i].m_index].setSample_MovingAndVirtual();
+          new_branch.branch_id = skeleton->branches.size();
+          if (i==0)
+          {
+            new_branch.rememberVirtualHead();
+          }
+          else if (i == new_branch.getSize()-1)
+          {
+            new_branch.rememberVirtualTail();
+          }
+        }
+        else
+        {
+          samples->vert[new_branch.curve[i].m_index].setSample_FixedAndBranched();
           new_branch.curve[i].skel_radius = current_radius; // skel_radius
-				}
-			}
-			skeleton->branches.push_back(new_branch);
-			skeleton->generateBranchSampleMap();
-		}
-	}
+        }
+      }
+      skeleton->branches.push_back(new_branch);
+      skeleton->generateBranchSampleMap();
+    }
+  }
 
   for (int i = 0; i <samples->vert.size(); i++)
   {
@@ -730,287 +730,287 @@ void Skeletonization::searchNewBranches()
 
 Branch Skeletonization::searchOneBranchFromIndex(int begin_idx)
 {
-	Branch new_branch;
-	CVertex begin_v = samples->vert[begin_idx];
-	if (begin_v.is_skel_branch)
-	{
-		cout << "why start from branched points ?!" << endl;
-		return new_branch;
-	}
+  Branch new_branch;
+  CVertex begin_v = samples->vert[begin_idx];
+  if (begin_v.is_skel_branch)
+  {
+    cout << "why start from branched points ?!" << endl;
+    return new_branch;
+  }
 
-	if (begin_v.neighbors.size() < 1)
-	{
-		cout << "empty neighbor of begin_v " << endl;
-		return new_branch;
-	}
+  if (begin_v.neighbors.size() < 1)
+  {
+    cout << "empty neighbor of begin_v " << endl;
+    return new_branch;
+  }
 
-	int nearest_idx = -1;
-	for (int i = 0; i < begin_v.neighbors.size(); i++)
-	{
-		CVertex& t = samples->vert[begin_v.neighbors[i]];
-		if (t.isSample_JustFixed())
-		{
-			nearest_idx = begin_v.neighbors[i];
-			break;
-		}
-	}
-	if (nearest_idx < 0)
-	{
-		return new_branch;
-	}
+  int nearest_idx = -1;
+  for (int i = 0; i < begin_v.neighbors.size(); i++)
+  {
+    CVertex& t = samples->vert[begin_v.neighbors[i]];
+    if (t.isSample_JustFixed())
+    {
+      nearest_idx = begin_v.neighbors[i];
+      break;
+    }
+  }
+  if (nearest_idx < 0)
+  {
+    return new_branch;
+  }
 
 
-	CVertex& t = samples->vert[nearest_idx];
-	Point3f head_direction = (t.P() - begin_v.P()).Normalize();
-	vector<int> indexes0, indexes1;
-	Branch branch0 = searchOneBranchFromDirection(begin_idx, head_direction);
-	Branch branch1 = searchOneBranchFromDirection(begin_idx, -head_direction);
+  CVertex& t = samples->vert[nearest_idx];
+  Point3f head_direction = (t.P() - begin_v.P()).Normalize();
+  vector<int> indexes0, indexes1;
+  Branch branch0 = searchOneBranchFromDirection(begin_idx, head_direction);
+  Branch branch1 = searchOneBranchFromDirection(begin_idx, -head_direction);
 
-	Curve curve0 = branch0.curve;
-	Curve curve1 = branch1.curve;
+  Curve curve0 = branch0.curve;
+  Curve curve1 = branch1.curve;
 
-	Curve::reverse_iterator riter = curve1.rbegin();
-	for(int i = 0; i < curve1.size()-1; i++)
-	{
-		new_branch.pushBackCVertex(*riter);
-		riter++;
-	}
+  Curve::reverse_iterator riter = curve1.rbegin();
+  for(int i = 0; i < curve1.size()-1; i++)
+  {
+    new_branch.pushBackCVertex(*riter);
+    riter++;
+  }
 
-	for (int i = 0; i < curve0.size(); i++)
-	{
-		new_branch.pushBackCVertex(curve0[i]);
-	}
+  for (int i = 0; i < curve0.size(); i++)
+  {
+    new_branch.pushBackCVertex(curve0[i]);
+  }
 
-	return new_branch;
+  return new_branch;
 }
 
 
 Branch Skeletonization::searchOneBranchFromDirection(int begin_idx, Point3f head_direction)
 {
-	double MAX_Euler_dist = para->getDouble("Snake Search Max Dist Blue");
-	double MAX_Perpendicular_dist = para->getDouble("Branch Search Max Dist Yellow");
-	double MAX_Too_Close_dist = para->getDouble("Combine Too Close Threshold");
+  double MAX_Euler_dist = para->getDouble("Snake Search Max Dist Blue");
+  double MAX_Perpendicular_dist = para->getDouble("Branch Search Max Dist Yellow");
+  double MAX_Too_Close_dist = para->getDouble("Combine Too Close Threshold");
 
-	double MAX_Euler_dist2 = MAX_Euler_dist * MAX_Euler_dist;
-	double MAX_Perpendicular_dist2 = MAX_Perpendicular_dist * MAX_Perpendicular_dist;
-	double MAX_Too_Close_dist2 = MAX_Too_Close_dist * MAX_Too_Close_dist;
+  double MAX_Euler_dist2 = MAX_Euler_dist * MAX_Euler_dist;
+  double MAX_Perpendicular_dist2 = MAX_Perpendicular_dist * MAX_Perpendicular_dist;
+  double MAX_Too_Close_dist2 = MAX_Too_Close_dist * MAX_Too_Close_dist;
 
-	Branch new_branch;
-	int curr_idx = begin_idx;
-	do 
-	{
-		CVertex curr_v = samples->vert[curr_idx];
-		new_branch.pushBackCVertex(curr_v);
+  Branch new_branch;
+  int curr_idx = begin_idx;
+  do 
+  {
+    CVertex curr_v = samples->vert[curr_idx];
+    new_branch.pushBackCVertex(curr_v);
 
-		int next_idx = -1;
-		double min_dist = GlobalFun::getDoubleMAXIMUM();
-		for (int i = 0; i < curr_v.neighbors.size(); i++)
-		{
-			CVertex& t = samples->vert[curr_v.neighbors[i]];
-			if (t.is_ignore)
-			{
-				continue;
-			}
+    int next_idx = -1;
+    double min_dist = GlobalFun::getDoubleMAXIMUM();
+    for (int i = 0; i < curr_v.neighbors.size(); i++)
+    {
+      CVertex& t = samples->vert[curr_v.neighbors[i]];
+      if (t.is_ignore)
+      {
+        continue;
+      }
 
-			double euler_dist2 = GlobalFun::computeEulerDistSquare(curr_v.P(), t.P());
-			if (euler_dist2 > MAX_Euler_dist2)
-			{
-				continue;
-			}
+      double euler_dist2 = GlobalFun::computeEulerDistSquare(curr_v.P(), t.P());
+      if (euler_dist2 > MAX_Euler_dist2)
+      {
+        continue;
+      }
 
-			if (euler_dist2 < MAX_Too_Close_dist2)
-			{
-				t.remove();
-				continue;
-			}
+      if (euler_dist2 < MAX_Too_Close_dist2)
+      {
+        t.remove();
+        continue;
+      }
 
-			double proj_dist = GlobalFun::computeProjDist(curr_v.P(), t.P(), head_direction);
-			if (proj_dist < 0)
-			{
-				continue;
-			}
+      double proj_dist = GlobalFun::computeProjDist(curr_v.P(), t.P(), head_direction);
+      if (proj_dist < 0)
+      {
+        continue;
+      }
 
-			next_idx = curr_v.neighbors[i];
-			break;
-		}
+      next_idx = curr_v.neighbors[i];
+      break;
+    }
 
-		if (next_idx < 0) // No virtual head/tail
-		{
-			break;
-		}
+    if (next_idx < 0) // No virtual head/tail
+    {
+      break;
+    }
 
-		CVertex next_v = samples->vert[next_idx]; //2013-7-12
-		Point3f new_direction = (next_v.P() - curr_v.P()).Normalize();
-		
-		double angle = GlobalFun::computeRealAngleOfTwoVertor(head_direction, new_direction);
-		if (angle > para->getDouble("Branches Search Angle") || !next_v.is_fixed_sample || next_v.is_skel_branch || next_v.is_skel_virtual)
-		{
+    CVertex next_v = samples->vert[next_idx]; //2013-7-12
+    Point3f new_direction = (next_v.P() - curr_v.P()).Normalize();
 
-			next_v.is_skel_virtual = true; // the corresponding sample point is not virtual
-			new_branch.pushBackCVertex(next_v);
-			break;
-		}
+    double angle = GlobalFun::computeRealAngleOfTwoVertor(head_direction, new_direction);
+    if (angle > para->getDouble("Branches Search Angle") || !next_v.is_fixed_sample || next_v.is_skel_branch || next_v.is_skel_virtual)
+    {
 
-		head_direction = new_direction;
-		curr_idx = next_idx;
+      next_v.is_skel_virtual = true; // the corresponding sample point is not virtual
+      new_branch.pushBackCVertex(next_v);
+      break;
+    }
 
-	} while (1);
+    head_direction = new_direction;
+    curr_idx = next_idx;
 
-	return new_branch;
+  } while (1);
+
+  return new_branch;
 }
 
 
 void Skeletonization::growVirtualTailUntilStop(Branch& branch)
 {
-	double follow_dist = para->getDouble("Grow Search Radius");
-	double follow_dist2 = follow_dist * follow_dist;
+  double follow_dist = para->getDouble("Grow Search Radius");
+  double follow_dist2 = follow_dist * follow_dist;
 
-	double too_close_dist = para->getDouble("Combine Too Close Threshold");
-	double too_close_dist2 = too_close_dist * too_close_dist;
+  double too_close_dist = para->getDouble("Combine Too Close Threshold");
+  double too_close_dist2 = too_close_dist * too_close_dist;
 
-	double grow_accept_sigma = para->getDouble("Grow Accept Sigma");
-	double angle_threhold = para->getDouble("Virtual Head Accecpt Angle");
-	double save_virtual_angle = para->getDouble("Save Virtual Angle");
+  double grow_accept_sigma = para->getDouble("Grow Accept Sigma");
+  double angle_threhold = para->getDouble("Virtual Head Accept Angle");
+  double save_virtual_angle = para->getDouble("Save Virtual Angle");
 
-	bool is_tail_growing = true;
-	bool is_ignore_something = false;
+  bool is_tail_growing = true;
+  bool is_ignore_something = false;
 
-	Curve& curve = branch.curve;
-	while(is_tail_growing)
-	{
-		if (curve.size() < 3 || !branch.isTailVirtual())
-		{
-			return;
-		}
+  Curve& curve = branch.curve;
+  while(is_tail_growing)
+  {
+    if (curve.size() < 3 || !branch.isTailVirtual())
+    {
+      return;
+    }
 
-		CVertex tail = curve[curve.size()-1];
-		//find nearest red points
-		//if (tail.m_index < 0 || tail.m_index >= samples->vert.size() || 
-		//	GlobalFun::computeEulerDistSquare(tail.P(), samples->vert[tail.m_index].P()) > 1e-6)
-		//{
-		//	cout << "grow out of sample index" << endl;
-		//	reIndexBranchesVirtualHeadTail();
-		//	break;
-		//}
+    CVertex tail = curve[curve.size()-1];
+    //find nearest red points
+    //if (tail.m_index < 0 || tail.m_index >= samples->vert.size() || 
+    //	GlobalFun::computeEulerDistSquare(tail.P(), samples->vert[tail.m_index].P()) > 1e-6)
+    //{
+    //	cout << "grow out of sample index" << endl;
+    //	reIndexBranchesVirtualHeadTail();
+    //	break;
+    //}
 
-		CVertex& v = samples->vert[tail.m_index];
-		if (v.neighbors.empty())
-		{
-			cout << "empty neighbor????" << endl;
-			return;
-		}
+    CVertex& v = samples->vert[tail.m_index];
+    if (v.neighbors.empty())
+    {
+      cout << "empty neighbor????" << endl;
+      return;
+    }
 
-		double min_dist = GlobalFun::getDoubleMAXIMUM();
-		int min_idx = -1;
-		int near_moving_count = 0;
-		Point3f tail_direction = branch.getVirtualTailDirection();
-		double candidate_sigma = 0;
-		for (int j = 0; j < v.neighbors.size(); j++)
-		{
-			CVertex& t = samples->vert[v.neighbors[j]];
-			if (!t.is_ignore)
-			{
-				double dist2 = GlobalFun::computeEulerDistSquare(v.P(), t.P());
-				if (dist2 < too_close_dist2 && !t.is_skel_virtual)
-				{
-					t.remove();
-					continue;
-				}
+    double min_dist = GlobalFun::getDoubleMAXIMUM();
+    int min_idx = -1;
+    int near_moving_count = 0;
+    Point3f tail_direction = branch.getVirtualTailDirection();
+    double candidate_sigma = 0;
+    for (int j = 0; j < v.neighbors.size(); j++)
+    {
+      CVertex& t = samples->vert[v.neighbors[j]];
+      if (!t.is_ignore)
+      {
+        double dist2 = GlobalFun::computeEulerDistSquare(v.P(), t.P());
+        if (dist2 < too_close_dist2 && !t.is_skel_virtual)
+        {
+          t.remove();
+          continue;
+        }
 
-				if ( dist2 < follow_dist2)
-				{
-					if (t.isSample_Moving())
-					{
-						near_moving_count++;
-					}
+        if ( dist2 < follow_dist2)
+        {
+          if (t.isSample_Moving())
+          {
+            near_moving_count++;
+          }
 
-					double proj_dist = GlobalFun::computeProjDist(tail.P(), t.P(), tail_direction);
-					if (proj_dist < 0)
-					{
-						continue;
-					}
+          double proj_dist = GlobalFun::computeProjDist(tail.P(), t.P(), tail_direction);
+          if (proj_dist < 0)
+          {
+            continue;
+          }
 
-					if (dist2 < min_dist)
-					{
-						min_dist = dist2;
-						min_idx = v.neighbors[j];
-						candidate_sigma = t.eigen_confidence;
-					}
+          if (dist2 < min_dist)
+          {
+            min_dist = dist2;
+            min_idx = v.neighbors[j];
+            candidate_sigma = t.eigen_confidence;
+          }
 
-				}
-			}
-		}
+        }
+      }
+    }
 
-		if (min_idx < 0 || candidate_sigma < grow_accept_sigma)
-		{
-			is_tail_growing = false;
-		}
-		else
-		{
-			CVertex& near_v = samples->vert[min_idx];
+    if (min_idx < 0 || candidate_sigma < grow_accept_sigma)
+    {
+      is_tail_growing = false;
+    }
+    else
+    {
+      CVertex& near_v = samples->vert[min_idx];
 
-			CVertex& real_tail = curve[curve.size()-2];
-			CVertex& real_tail_last = curve[curve.size()-3];
+      CVertex& real_tail = curve[curve.size()-2];
+      CVertex& real_tail_last = curve[curve.size()-3];
 
-			Point3f v0 = (real_tail.P() - real_tail_last.P()).Normalize();
-			Point3f v1 = (tail.P() - real_tail.P()).Normalize();
-			Point3f v2 = (near_v.P() - tail.P()).Normalize();
+      Point3f v0 = (real_tail.P() - real_tail_last.P()).Normalize();
+      Point3f v1 = (tail.P() - real_tail.P()).Normalize();
+      Point3f v2 = (near_v.P() - tail.P()).Normalize();
 
-			double angle0 = GlobalFun::computeRealAngleOfTwoVertor(v0, v1);
-			double angle1 = GlobalFun::computeRealAngleOfTwoVertor(v1, v2);
+      double angle0 = GlobalFun::computeRealAngleOfTwoVertor(v0, v1);
+      double angle1 = GlobalFun::computeRealAngleOfTwoVertor(v1, v2);
 
-			if (angle0 >= 0 && angle1 >= 0 &&
-				 angle0  < angle_threhold && angle1 < angle_threhold)
-			{
-				if (near_v.is_skel_branch)
-				{
-					is_tail_growing = false;
-				}
-				else
-				{
-					v.setSample_FixedAndBranched();
-					curve[curve.size()-1].setSample_FixedAndBranched();
+      if (angle0 >= 0 && angle1 >= 0 &&
+        angle0  < angle_threhold && angle1 < angle_threhold)
+      {
+        if (near_v.is_skel_branch)
+        {
+          is_tail_growing = false;
+        }
+        else
+        {
+          v.setSample_FixedAndBranched();
+          curve[curve.size()-1].setSample_FixedAndBranched();
 
-					near_v.setSample_MovingAndVirtual();
-					branch.pushBackCVertex(near_v);
-					is_tail_growing = true;
+          near_v.setSample_MovingAndVirtual();
+          branch.pushBackCVertex(near_v);
+          is_tail_growing = true;
 
-					branch.rememberVirtualTail();
-				}
-			}
-			else
-			{
-				is_tail_growing = false;
-			}
-		}
-	}
+          branch.rememberVirtualTail();
+        }
+      }
+      else
+      {
+        is_tail_growing = false;
+      }
+    }
+  }
 }
 
 void Skeletonization::growOneBranchByVirtual(Branch& branch)
 {
-	if (branch.getSize() < 2)
-	{
-		return;
-	}
+  if (branch.getSize() < 2)
+  {
+    return;
+  }
 
-	if (branch.isTailVirtual())
-	{
-		growVirtualTailUntilStop(branch);
-	}
+  if (branch.isTailVirtual())
+  {
+    growVirtualTailUntilStop(branch);
+  }
 
-	if (branch.isHeadVirtual())
-	{
-		branch.reverseBranch();
-		growVirtualTailUntilStop(branch);
-	}
+  if (branch.isHeadVirtual())
+  {
+    branch.reverseBranch();
+    growVirtualTailUntilStop(branch);
+  }
 }
 
 void Skeletonization::growAllBranches()
 {
-	for(int i = 0; i < skeleton->branches.size(); i++)
-	{
-		growOneBranchByVirtual(skeleton->branches[i]);
-	}
+  for(int i = 0; i < skeleton->branches.size(); i++)
+  {
+    growOneBranchByVirtual(skeleton->branches[i]);
+  }
 
 }
 
@@ -1018,181 +1018,181 @@ void Skeletonization::growAllBranches()
 
 void Skeletonization::mergeNearEndsGroup()
 {
-	vector<Point3f> visited_pts;
+  vector<Point3f> visited_pts;
 
-	for (int i = 0; i < skeleton->branches.size(); i++)
-	{
-		Point3f head = skeleton->branches[i].getHead();
-		Point3f tail = skeleton->branches[i].getTail();
+  for (int i = 0; i < skeleton->branches.size(); i++)
+  {
+    Point3f head = skeleton->branches[i].getHead();
+    Point3f tail = skeleton->branches[i].getTail();
 
-		double dist_between_head_tail_2 = GlobalFun::computeEulerDistSquare(head, tail);
-		double merge_dist = para->getDouble("Branches Merge Max Dist");
-		merge_dist *= 1.1;
-		double merge_dist2 = merge_dist * merge_dist;
+    double dist_between_head_tail_2 = GlobalFun::computeEulerDistSquare(head, tail);
+    double merge_dist = para->getDouble("Branches Merge Max Dist");
+    merge_dist *= 1.1;
+    double merge_dist2 = merge_dist * merge_dist;
 
-		if (dist_between_head_tail_2 > merge_dist2)
-		{
-			if (!isPosVisited(visited_pts, head, merge_dist2 * 0.6))
-			{
-				mergeNearEndsGroupFromP(head);
-				visited_pts.push_back(head);
-			}
+    if (dist_between_head_tail_2 > merge_dist2)
+    {
+      if (!isPosVisited(visited_pts, head, merge_dist2 * 0.6))
+      {
+        mergeNearEndsGroupFromP(head);
+        visited_pts.push_back(head);
+      }
 
-			if (!isPosVisited(visited_pts, tail, merge_dist2 * 0.6))
-			{
-				mergeNearEndsGroupFromP(tail);
-				visited_pts.push_back(tail);
-			}
-		}
-		else
-		{
+      if (!isPosVisited(visited_pts, tail, merge_dist2 * 0.6))
+      {
+        mergeNearEndsGroupFromP(tail);
+        visited_pts.push_back(tail);
+      }
+    }
+    else
+    {
       cout << "have danger" << endl;
-			//visited_pts.push_back(head);
-			//visited_pts.push_back(tail);
-		}
-	}
+      //visited_pts.push_back(head);
+      //visited_pts.push_back(tail);
+    }
+  }
 
 }
 
 bool Skeletonization::isPosVisited(vector<Point3f>& visited_pts, Point3f p, double dist_threshold)
 {
-	for (int i = 0; i < visited_pts.size(); i++)
-	{
-		double dist2 = GlobalFun::computeEulerDistSquare(p, visited_pts[i]);
-		if (dist2 < dist_threshold)
-		{
-			return true;
-		}
-	}
-	return false;
+  for (int i = 0; i < visited_pts.size(); i++)
+  {
+    double dist2 = GlobalFun::computeEulerDistSquare(p, visited_pts[i]);
+    if (dist2 < dist_threshold)
+    {
+      return true;
+    }
+  }
+  return false;
 }
 
 
 bool Skeletonization::mergeNearEndsGroupFromP(Point3f p0)
 {
-	double MAX_Merge_Dist = para->getDouble("Branches Merge Max Dist");
-	double MAX_Merge_Dist2 = MAX_Merge_Dist * MAX_Merge_Dist;
+  double MAX_Merge_Dist = para->getDouble("Branches Merge Max Dist");
+  double MAX_Merge_Dist2 = MAX_Merge_Dist * MAX_Merge_Dist;
 
-	vector<RecordItem> group;
+  vector<RecordItem> group;
 
-	bool meet_short_branch = false;
-	
-	Point3f average_P = Point3f(0, 0, 0);
-	vector<Point3f> dangerous_Pts;
-	vector<Point3f> nearby_Pts;
-	for (int i = 0; i < skeleton->branches.size(); i++)
-	{
-		Curve& curve = skeleton->branches[i].curve;
+  bool meet_short_branch = false;
 
-		double dist_head = GlobalFun::computeEulerDistSquare(curve[0], p0);
-		double dist_tail = GlobalFun::computeEulerDistSquare(curve[curve.size()-1], p0);
+  Point3f average_P = Point3f(0, 0, 0);
+  vector<Point3f> dangerous_Pts;
+  vector<Point3f> nearby_Pts;
+  for (int i = 0; i < skeleton->branches.size(); i++)
+  {
+    Curve& curve = skeleton->branches[i].curve;
 
-		if (dist_head < MAX_Merge_Dist2 && dist_tail < MAX_Merge_Dist2)
-		{
-			meet_short_branch = true;
-			if (dist_head < dist_tail)
-			{
-				group.push_back(RecordItem(i, 0));
-				average_P += curve[0].P();
-				nearby_Pts.push_back(curve[0].P());
-				dangerous_Pts.push_back(curve[curve.size()-1].P());
-			}
-			else
-			{
-				group.push_back(RecordItem(i, curve.size()-1));
-				average_P += curve[curve.size()-1].P();
-				nearby_Pts.push_back(curve[curve.size()-1].P());
-				dangerous_Pts.push_back(curve[0].P());
-			}
-		}
-		else if (dist_head < MAX_Merge_Dist2)
-		{
-			group.push_back(RecordItem(i, 0));
-			average_P += curve[0].P();
-			nearby_Pts.push_back(curve[0].P());
-		}
-		else if (dist_tail < MAX_Merge_Dist2)
-		{
-			group.push_back(RecordItem(i, curve.size()-1));
-			average_P += curve[curve.size()-1].P();
-			nearby_Pts.push_back(curve[curve.size()-1].P());
-		}
-	}
+    double dist_head = GlobalFun::computeEulerDistSquare(curve[0], p0);
+    double dist_tail = GlobalFun::computeEulerDistSquare(curve[curve.size()-1], p0);
 
-	average_P /= group.size();
+    if (dist_head < MAX_Merge_Dist2 && dist_tail < MAX_Merge_Dist2)
+    {
+      meet_short_branch = true;
+      if (dist_head < dist_tail)
+      {
+        group.push_back(RecordItem(i, 0));
+        average_P += curve[0].P();
+        nearby_Pts.push_back(curve[0].P());
+        dangerous_Pts.push_back(curve[curve.size()-1].P());
+      }
+      else
+      {
+        group.push_back(RecordItem(i, curve.size()-1));
+        average_P += curve[curve.size()-1].P();
+        nearby_Pts.push_back(curve[curve.size()-1].P());
+        dangerous_Pts.push_back(curve[0].P());
+      }
+    }
+    else if (dist_head < MAX_Merge_Dist2)
+    {
+      group.push_back(RecordItem(i, 0));
+      average_P += curve[0].P();
+      nearby_Pts.push_back(curve[0].P());
+    }
+    else if (dist_tail < MAX_Merge_Dist2)
+    {
+      group.push_back(RecordItem(i, curve.size()-1));
+      average_P += curve[curve.size()-1].P();
+      nearby_Pts.push_back(curve[curve.size()-1].P());
+    }
+  }
 
-	assert(nearby_Pts.size() == group.size());
-	if (!dangerous_Pts.empty())
-	{
-		vector<int> exclued_ids;
-		for (int i = 0; i < nearby_Pts.size(); i++)
-		{
-			Point3f p = nearby_Pts[i];
-			double dist_to_avg = GlobalFun::computeEulerDistSquare(average_P, p);
+  average_P /= group.size();
 
-			bool neet_to_exclued = false;
-			for (int j = 0; j < dangerous_Pts.size(); j++)
-			{
-				double dist_to_dang = GlobalFun::computeEulerDistSquare(dangerous_Pts[j], p);
-				if (dist_to_dang < dist_to_avg)
-				{
-					neet_to_exclued = true;
-					break;
-				}
-			}
+  assert(nearby_Pts.size() == group.size());
+  if (!dangerous_Pts.empty())
+  {
+    vector<int> exclued_ids;
+    for (int i = 0; i < nearby_Pts.size(); i++)
+    {
+      Point3f p = nearby_Pts[i];
+      double dist_to_avg = GlobalFun::computeEulerDistSquare(average_P, p);
 
-			if (neet_to_exclued)
-			{
-				exclued_ids.push_back(i);
-			}
-		}
+      bool neet_to_exclued = false;
+      for (int j = 0; j < dangerous_Pts.size(); j++)
+      {
+        double dist_to_dang = GlobalFun::computeEulerDistSquare(dangerous_Pts[j], p);
+        if (dist_to_dang < dist_to_avg)
+        {
+          neet_to_exclued = true;
+          break;
+        }
+      }
 
-		if (!exclued_ids.empty())
-		{
-			vector<RecordItem> temp_group;
-			vector<Point3f> temp_nearby_pts;
-			Point3f temp_average = Point3f(0, 0 ,0);
+      if (neet_to_exclued)
+      {
+        exclued_ids.push_back(i);
+      }
+    }
 
-			for (int i = 0; i < group.size(); i++)
-			{
-				if (find(exclued_ids.begin(), exclued_ids.end(), i) == exclued_ids.end())
-				{ 
-					temp_group.push_back(group[i]);
-					temp_nearby_pts.push_back(nearby_Pts[i]);
-					temp_average += nearby_Pts[i];
-				}
-			}
+    if (!exclued_ids.empty())
+    {
+      vector<RecordItem> temp_group;
+      vector<Point3f> temp_nearby_pts;
+      Point3f temp_average = Point3f(0, 0 ,0);
 
-			average_P = temp_average / temp_nearby_pts.size();
-			group = temp_group;
-		}
-	}
+      for (int i = 0; i < group.size(); i++)
+      {
+        if (find(exclued_ids.begin(), exclued_ids.end(), i) == exclued_ids.end())
+        { 
+          temp_group.push_back(group[i]);
+          temp_nearby_pts.push_back(nearby_Pts[i]);
+          temp_average += nearby_Pts[i];
+        }
+      }
 
-	if (group.size() >= 3)
-	{
-		for (int i = 0; i < group.size(); i++)
-		{
-			RecordItem& item = group[i];
-			Branch& branch = skeleton->branches[group[i].branch_i];
-			if (item.node_j == 0)
-			{			
-				//cout << "inactive head because of:	" << "Group Merge" << endl;
-				branch.moveHeadToPt(average_P);
-			}
-			else
-			{
-				//cout << "inactive tail because of:	" << "Group Merge" << endl;
-				branch.moveTailToPt(average_P);
-			}	
-		}
-		return true;
-	}
-	else if (group.size() == 2 && !is_skeleton_locked)
-	{
-		double close_dist = 1e-6;
+      average_P = temp_average / temp_nearby_pts.size();
+      group = temp_group;
+    }
+  }
 
-		RecordItem& item0 = group[0];
-		RecordItem& item1 = group[1];
+  if (group.size() >= 3)
+  {
+    for (int i = 0; i < group.size(); i++)
+    {
+      RecordItem& item = group[i];
+      Branch& branch = skeleton->branches[group[i].branch_i];
+      if (item.node_j == 0)
+      {			
+        //cout << "inactive head because of:	" << "Group Merge" << endl;
+        branch.moveHeadToPt(average_P);
+      }
+      else
+      {
+        //cout << "inactive tail because of:	" << "Group Merge" << endl;
+        branch.moveTailToPt(average_P);
+      }	
+    }
+    return true;
+  }
+  else if (group.size() == 2 && !is_skeleton_locked)
+  {
+    double close_dist = 1e-6;
+
+    RecordItem& item0 = group[0];
+    RecordItem& item1 = group[1];
 
     if (item0.branch_i == item1.branch_i)
     {
@@ -1256,10 +1256,10 @@ bool Skeletonization::mergeNearEndsGroupFromP(Point3f p0)
         branch1.inactiveAndKeepVirtualTail();
       }
     }
-	}
+  }
 
 
-	return false;
+  return false;
 
 }
 
@@ -1472,167 +1472,167 @@ double Skeletonization::getMaxAngleOfTwoPair(vector<Point3f>& dir0, vector<Point
   return max_angle;
 }
 
- bool Skeletonization::isTowCurvesTheSame(Curve& c0, Curve& c1)
- {
-   if (c0.size() != c1.size())
-   {
-     return false;
-   }
+bool Skeletonization::isTowCurvesTheSame(Curve& c0, Curve& c1)
+{
+  if (c0.size() != c1.size())
+  {
+    return false;
+  }
 
-   if (c0.empty() || c1.empty())
-   {
-     return false;
-   }
+  if (c0.empty() || c1.empty())
+  {
+    return false;
+  }
 
-   double dist1 = GlobalFun::computeEulerDistSquare(c0[0].P(), c1[0].P());
-   if (dist1 > 1e-6)
-   {
-     return false;
-   }
+  double dist1 = GlobalFun::computeEulerDistSquare(c0[0].P(), c1[0].P());
+  if (dist1 > 1e-6)
+  {
+    return false;
+  }
 
-   double dist2 = GlobalFun::computeEulerDistSquare(c0[c0.size()-1].P(), c1[c1.size()-1].P());
-   if (dist2 > 1e-6)
-   {
-     return false;
-   }
+  double dist2 = GlobalFun::computeEulerDistSquare(c0[c0.size()-1].P(), c1[c1.size()-1].P());
+  if (dist2 > 1e-6)
+  {
+    return false;
+  }
 
-   return true;
- }
+  return true;
+}
 
- Branch Skeletonization::mergeTowBranches(Branch& branch0, Branch& branch1, CONNECT_TYPE C_Type)
- {
-   Curve& c0 = branch0.curve;
-   Curve& c1 = branch1.curve;
+Branch Skeletonization::mergeTowBranches(Branch& branch0, Branch& branch1, CONNECT_TYPE C_Type)
+{
+  Curve& c0 = branch0.curve;
+  Curve& c1 = branch1.curve;
 
-   if (C_Type == UNKNOWN)
-   {
-     double min_dist, best_angle;
-     compareTwoCurvesEnds(c0, c1, min_dist, best_angle, C_Type);
-   }
+  if (C_Type == UNKNOWN)
+  {
+    double min_dist, best_angle;
+    compareTwoCurvesEnds(c0, c1, min_dist, best_angle, C_Type);
+  }
 
-   bool is_head0_virtual = branch0.isHeadVirtual();
-   bool is_tail0_virtual = branch0.isTailVirtual();
-   bool is_head1_virtual = branch1.isHeadVirtual();
-   bool is_tail1_virtual = branch1.isTailVirtual();
+  bool is_head0_virtual = branch0.isHeadVirtual();
+  bool is_tail0_virtual = branch0.isTailVirtual();
+  bool is_head1_virtual = branch1.isHeadVirtual();
+  bool is_tail1_virtual = branch1.isTailVirtual();
 
-   Branch new_branch;
-   Curve& new_curve = new_branch.curve;
+  Branch new_branch;
+  Curve& new_curve = new_branch.curve;
 
-   switch (C_Type)
-   {
-   case H0_H1:
-     if (is_head0_virtual)
-     {
-       branch0.inactiveAndKeepVirtualHead();
-     }
-     if (is_head1_virtual)
-     {
-       branch1.inactiveAndKeepVirtualHead();
-     }
-     new_curve = combineTwoCurvesInOrder(reverseOneCurve(c0), c1);
-     new_branch.back_up_head = branch0.back_up_tail;
-     new_branch.back_up_tail = branch1.back_up_tail;
-     
-      cout << "H0_T0 H0_T0" << endl << endl;
-     break;
+  switch (C_Type)
+  {
+  case H0_H1:
+    if (is_head0_virtual)
+    {
+      branch0.inactiveAndKeepVirtualHead();
+    }
+    if (is_head1_virtual)
+    {
+      branch1.inactiveAndKeepVirtualHead();
+    }
+    new_curve = combineTwoCurvesInOrder(reverseOneCurve(c0), c1);
+    new_branch.back_up_head = branch0.back_up_tail;
+    new_branch.back_up_tail = branch1.back_up_tail;
 
-   case H0_T1:
+    cout << "H0_T0 H0_T0" << endl << endl;
+    break;
 
-     if (is_head0_virtual)
-     {
-       branch0.inactiveAndKeepVirtualHead();
-     }
-     if (is_tail1_virtual)
-     {
-       branch1.inactiveAndKeepVirtualTail();
-     }
+  case H0_T1:
 
-     new_curve = combineTwoCurvesInOrder(reverseOneCurve(c0), reverseOneCurve(c1));
-     new_branch.back_up_head = branch0.back_up_tail;
-     new_branch.back_up_tail = branch1.back_up_head;
+    if (is_head0_virtual)
+    {
+      branch0.inactiveAndKeepVirtualHead();
+    }
+    if (is_tail1_virtual)
+    {
+      branch1.inactiveAndKeepVirtualTail();
+    }
 
-     cout << "H0_T1 H0_T1" << endl << endl;
-     break;
+    new_curve = combineTwoCurvesInOrder(reverseOneCurve(c0), reverseOneCurve(c1));
+    new_branch.back_up_head = branch0.back_up_tail;
+    new_branch.back_up_tail = branch1.back_up_head;
 
-   case T0_H1:
+    cout << "H0_T1 H0_T1" << endl << endl;
+    break;
 
-     if (is_tail0_virtual)
-     {
-       branch0.inactiveAndKeepVirtualTail();
-     }
-     if (is_head1_virtual)
-     {
-       branch1.inactiveAndKeepVirtualHead();
-     }
-     new_curve = combineTwoCurvesInOrder(c0, c1);
-     new_branch.back_up_head = branch0.back_up_head;
-     new_branch.back_up_tail = branch1.back_up_tail;
+  case T0_H1:
 
-     cout << "T0_H1 T0_H1" << endl << endl;
-     break;
+    if (is_tail0_virtual)
+    {
+      branch0.inactiveAndKeepVirtualTail();
+    }
+    if (is_head1_virtual)
+    {
+      branch1.inactiveAndKeepVirtualHead();
+    }
+    new_curve = combineTwoCurvesInOrder(c0, c1);
+    new_branch.back_up_head = branch0.back_up_head;
+    new_branch.back_up_tail = branch1.back_up_tail;
 
-   case T0_T1:
+    cout << "T0_H1 T0_H1" << endl << endl;
+    break;
 
-     if (is_tail0_virtual)
-     {
-        branch0.inactiveAndKeepVirtualTail();
-     }
-     if (is_tail1_virtual)
-     {
-       branch1.inactiveAndKeepVirtualTail();
-     }
-     new_curve = combineTwoCurvesInOrder(c0, reverseOneCurve(c1));
-     new_branch.back_up_head = branch0.back_up_head;
-     new_branch.back_up_tail = branch1.back_up_head;
+  case T0_T1:
 
-     cout << "T0_T1 T0_T1" << endl << endl;
-     break;
-   }
+    if (is_tail0_virtual)
+    {
+      branch0.inactiveAndKeepVirtualTail();
+    }
+    if (is_tail1_virtual)
+    {
+      branch1.inactiveAndKeepVirtualTail();
+    }
+    new_curve = combineTwoCurvesInOrder(c0, reverseOneCurve(c1));
+    new_branch.back_up_head = branch0.back_up_head;
+    new_branch.back_up_tail = branch1.back_up_head;
 
-   return new_branch;
- }
+    cout << "T0_T1 T0_T1" << endl << endl;
+    break;
+  }
+
+  return new_branch;
+}
 
 
- Curve Skeletonization::combineTwoCurvesInOrder(Curve& c0, Curve& c1)
- {
-   if (isTowCurvesTheSame(c0, c1))
-   {
-     return c0;
-   }
+Curve Skeletonization::combineTwoCurvesInOrder(Curve& c0, Curve& c1)
+{
+  if (isTowCurvesTheSame(c0, c1))
+  {
+    return c0;
+  }
 
-   Curve c;
+  Curve c;
 
-   for (int i = 0; i < c0.size(); i++)
-   {
-     c.push_back(c0[i]);
-   }
+  for (int i = 0; i < c0.size(); i++)
+  {
+    c.push_back(c0[i]);
+  }
 
-   int i = 0;
-   if (GlobalFun::computeEulerDistSquare(c0[c0.size()-1], c1[0]) < 1e-6)
-   {
-     i = 1;
-   }
+  int i = 0;
+  if (GlobalFun::computeEulerDistSquare(c0[c0.size()-1], c1[0]) < 1e-6)
+  {
+    i = 1;
+  }
 
-   for (; i < c1.size(); i++)
-   {
-     c.push_back(c1[i]);
-   }
+  for (; i < c1.size(); i++)
+  {
+    c.push_back(c1[i]);
+  }
 
-   return c;
- }
+  return c;
+}
 
- Curve Skeletonization::reverseOneCurve(Curve c0)
- {
-   Curve c;
+Curve Skeletonization::reverseOneCurve(Curve c0)
+{
+  Curve c;
 
-   Curve::reverse_iterator riter = c0.rbegin();
-   for (; riter != c0.rend(); ++riter)
-   {
-     c.push_back(*riter);
-   }
+  Curve::reverse_iterator riter = c0.rbegin();
+  for (; riter != c0.rend(); ++riter)
+  {
+    c.push_back(*riter);
+  }
 
-   return c;
- }
+  return c;
+}
 
 
 void Skeletonization::cleanPointsNearBranches()
@@ -2124,7 +2124,7 @@ void Skeletonization::dealWithVirtualsForTail(Branch& branch)
   double MAX_Merge_Dist2 = MAX_Merge_Dist * MAX_Merge_Dist;
 
   bool use_virtual_group_strategy = para->getBool("Use Virtual Group Merge Strategy");
- 
+
   // deal with head eat tail problem
   if (branch.isHeadVirtual())
   {
@@ -2214,12 +2214,12 @@ void Skeletonization::dealWithVirtualsForTail(Branch& branch)
   //if (isVirtualTailHealthy(branch))
   if (branch.getTailAngle() < para->getDouble("Bad Virtual Angle"))  
   {
-   vector<Branch>& branches = skeleton->branches;
+    vector<Branch>& branches = skeleton->branches;
     Point3f tail_P = curve0[curve0.size()-1].P();
 
     for (int i = 0; i < branches.size(); i++)
     {
-       Curve& curve1 = branches[i].curve;
+      Curve& curve1 = branches[i].curve;
 
       if (isTowCurvesTheSame(curve0, curve1) || curve1.size() <= 3)
       {
@@ -2321,7 +2321,7 @@ void Skeletonization::dealWithVirtualsForTail(Branch& branch)
 
         if (avaiable_cnt == 0)
         {
-         // cout << "inactive because of:	" << "No follow candidate around!" << endl;
+          // cout << "inactive because of:	" << "No follow candidate around!" << endl;
           is_virtial_tail_bad = true;
         }
       }
@@ -2736,7 +2736,7 @@ void Skeletonization::reconnectSkeleton()
 
       Curve::iterator break_iter = break_curve.begin() + break_node_id;
       Curve::iterator end_iter = break_curve.end();
-      
+
       Branch copy_branch;
       Curve& copy_curve = copy_branch.curve;
       copy_curve.resize(break_curve.size() - break_node_id);

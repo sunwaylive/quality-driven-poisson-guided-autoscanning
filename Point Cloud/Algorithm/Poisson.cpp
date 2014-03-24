@@ -72,8 +72,6 @@ public:
   }
 }; // end class BaseSampler
 
-
-
 Poisson::Poisson(RichParameterSet* _para)
 {
 	samples = NULL; original = NULL; iso_points = NULL; slices = NULL;
@@ -218,6 +216,7 @@ void Poisson::run()
   //runPoisson();
    runPoissonFieldAndExtractIsoPoints_ByEXE();
 }
+
 
 void Poisson::runOneKeyPoissonConfidence()
 {

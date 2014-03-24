@@ -1,4 +1,3 @@
-
 #pragma once
 #include <vcg/simplex/vertex/base.h>
 #include <vcg/simplex/vertex/component_ocf.h>
@@ -154,7 +153,6 @@ public:
 	{
 		return (!is_ignore && is_fixed_sample && !is_skel_virtual && is_skel_branch);
 	}
-
 
 	void setSample_JustMoving()
 	{

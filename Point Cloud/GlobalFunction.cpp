@@ -376,8 +376,6 @@ vector<int> GlobalFun::GetRandomCards(int Max)
 		nCard[i] = i;
 	}
 	random_shuffle(nCard.begin(), nCard.begin() + Max);
-
-
 	return nCard;
 }
 
@@ -496,16 +494,13 @@ void GlobalFun::computeEigen(CMesh* _samples)
 					covariance_matrix[i][j] += diff[i]*diff[j];
 		}
 
-
 		Point3f   eigenvalues;
 		Matrix33d	eigenvectors;
 		int required_rotations;
 		vcg::Jacobi< Matrix33d, Point3f >(covariance_matrix, eigenvalues, eigenvectors, required_rotations);
 		vcg::SortEigenvaluesAndEigenvectors< Matrix33d, Point3f >(eigenvalues, eigenvectors);
 
-
 		double sum_eigen_value = (eigenvalues[0] + eigenvalues[1] + eigenvalues[2]);
-
 
 		iter->eigen_confidence = eigenvalues[0] / sum_eigen_value;
 
@@ -520,10 +515,7 @@ void GlobalFun::computeEigen(CMesh* _samples)
 		iter->eigen_vector1.Normalize();
 		iter->N().Normalize();
 	}
-
 }
-
-
 
 
 void GlobalFun::computeEigenWithTheta(CMesh* _samples, double radius)
@@ -614,7 +606,6 @@ void GlobalFun::computeEigenWithTheta(CMesh* _samples, double radius)
 }
 
 
-
 double GlobalFun::computeEulerDist(Point3f& p1, Point3f& p2)
 {
 	double dist2 = (p1-p2).SquaredNorm();
@@ -635,8 +626,6 @@ double GlobalFun::computeProjDist(Point3f& p1, Point3f& p2, Point3f& normal_of_p
 	return (p2-p1) * normal_of_p1.Normalize();
 }
 
-
-
 double GlobalFun::computeProjDistSquare(Point3f& p1, Point3f& p2, Point3f& normal_of_p1)
 {
 	double proj_dist = computeProjDist(p1, p2, normal_of_p1);
@@ -653,8 +642,6 @@ double GlobalFun::computePerpendicularDistSquare(Point3f& p1, Point3f& p2, Point
 	Point3f proj_p = p1 + normal_of_p1 * proj_dist;
 	return (proj_p - p2).SquaredNorm();
 }
-
-
 
 double GlobalFun::computePerpendicularDist(Point3f& p1, Point3f& p2, Point3f& normal_of_p1)
 {
@@ -679,15 +666,10 @@ double GlobalFun::computeProjPlusPerpenDist(Point3f& p1, Point3f& p2, Point3f& n
 }
 
 
-
 double GlobalFun::getDoubleMAXIMUM()
 {  
 	return (numeric_limits<double>::max)();
 }
-
-
-
-
 
 
 bool GlobalFun::isTwoPoint3fTheSame(Point3f& v0, Point3f& v1)
@@ -700,8 +682,8 @@ bool GlobalFun::isTwoPoint3fTheSame(Point3f& v0, Point3f& v1)
 	}
 
 	return false;
-
 }
+
 
 bool GlobalFun::isTwoPoint3fOpposite(Point3f& v0, Point3f& v1)
 {
@@ -720,7 +702,6 @@ double GlobalFun::computeRealAngleOfTwoVertor(Point3f v0, Point3f v1)
 {
 	v0.Normalize();
 	v1.Normalize();
-
 
 	if (isTwoPoint3fTheSame(v0, v1))
 	{
@@ -890,8 +871,7 @@ double GlobalFun::computeMeshLineIntersectPoint( CMesh *target, Point3f& p, Poin
   return sqrt(min_dist);
 }
 
-bool
-GlobalFun::cmp(DesityAndIndex &a, DesityAndIndex &b)
+bool GlobalFun::cmp(DesityAndIndex &a, DesityAndIndex &b)
 {
   if (a.density == b.density)
     return false;
@@ -899,8 +879,7 @@ GlobalFun::cmp(DesityAndIndex &a, DesityAndIndex &b)
   return a.density < b.density;
 }
 
-void
-GlobalFun::removeOutliers(CMesh *mesh, double radius, double remove_percent)
+void GlobalFun::removeOutliers(CMesh *mesh, double radius, double remove_percent)
 {
   if (NULL == mesh) 
   { 
@@ -962,8 +941,7 @@ GlobalFun::removeOutliers(CMesh *mesh, double radius, double remove_percent)
   mesh->vn = mesh->vert.size();
 }
 
-void
-GlobalFun::removeOutliers(CMesh *mesh, double radius, int remove_num)
+void GlobalFun::removeOutliers(CMesh *mesh, double radius, int remove_num)
 {
   if (NULL == mesh) 
   { 
@@ -1103,8 +1081,7 @@ GlobalFun::computeICP(CMesh *dst, CMesh *src)
   dst->vn = dst->vert.size();
 }
 
-void
-GlobalFun::downSample(CMesh *dst, CMesh *src, double sample_ratio, bool use_random_downsample)
+void GlobalFun::downSample(CMesh *dst, CMesh *src, double sample_ratio, bool use_random_downsample)
 {
   if (NULL == src || src->vert.size() <= 0)
   {
@@ -1135,8 +1112,7 @@ GlobalFun::downSample(CMesh *dst, CMesh *src, double sample_ratio, bool use_rand
 
 }
 
-void 
-GlobalFun::clearCMesh(CMesh &mesh)
+void GlobalFun::clearCMesh(CMesh &mesh)
 {
   mesh.face.clear();
   mesh.fn = 0;
@@ -1207,7 +1183,6 @@ void GlobalFun::cutPointSelfSlice(CMesh* mesh, Point3f anchor, Point3f direction
     Point3f new_p = v.P() - direction * proj_dist;
     v.P() = new_p;
   }
-
 }
 
 void GlobalFun::printMatrix33(ostream& out, vcg::Matrix33f mat33)
@@ -1390,9 +1365,7 @@ Point3f GlobalFun::scalar2color( double scalar )
 }
 
 void GlobalFun::normalizeConfidence(vector<CVertex>& vertexes, float delta)
-{  
-  //return;// wei add 2014-1-13
-
+{
   float min_confidence = GlobalFun::getDoubleMAXIMUM();
   float max_confidence = 0;
   for (int i = 0; i < vertexes.size(); i++)

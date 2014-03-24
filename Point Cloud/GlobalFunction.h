@@ -1,5 +1,3 @@
-
-
 #pragma once
 #include <vector>
 #include "CMesh.h"
@@ -106,8 +104,6 @@ namespace GlobalFun
   Point3f getVectorFromMat44(vcg::Matrix44f mat44);
   vcg::Matrix44f getMat44FromMat33AndVector(vcg::Matrix33f mat33, Point3f vec);
 }
-
-
 
 class Timer
 {

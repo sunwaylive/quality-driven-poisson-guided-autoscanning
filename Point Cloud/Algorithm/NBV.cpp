@@ -10,18 +10,15 @@ NBV::NBV(RichParameterSet *_para)
   original = NULL;
   iso_points = NULL;
   field_points = NULL;
-  //model = NULL;
 }
 
 NBV::~NBV()
 {
   original = NULL;
   iso_points = NULL;
-  //model = NULL;
 }
 
-void
-  NBV::run()
+void NBV::run()
 {
   double camera_max_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
     global_paraMgr.camera.getDouble("Predicted Model Size");
@@ -90,18 +87,16 @@ void
   }
 }
 
-bool
-  NBV::cmp(const CVertex &v1, const CVertex &v2)
+bool NBV::cmp(const CVertex &v1, const CVertex &v2)
 {
   //in ascending order
   return v1.eigen_confidence > v2.eigen_confidence;
 }
 
-void 
-NBV::runOneKeyNBV()
+void NBV::runOneKeyNBV()
 {
   Timer timer;
-  
+
   timer.start("build grid");
   buildGrid();
   timer.end();
@@ -130,11 +125,11 @@ NBV::runOneKeyNBV()
   /*timer.start("optimize view direction");
   for (int i = 0; i < 1; i++)
   {
-    bool have_direction_move = updateViewDirections();
-    if (!have_direction_move)
-    {
-      break;
-    }
+  bool have_direction_move = updateViewDirections();
+  if (!have_direction_move)
+  {
+  break;
+  }
   }
   timer.end();*/
 
@@ -153,8 +148,7 @@ NBV::runOneKeyNBV()
   }
 }
 
-void
-NBV::setInput(DataMgr *pData)
+void NBV::setInput(DataMgr *pData)
 {
   if (!pData->getCurrentIsoPoints()->vert.empty())
   {
@@ -179,7 +173,7 @@ NBV::setInput(DataMgr *pData)
     cout<<"ERROR: NBV::setInput empty!"<<endl;
     return;
   }
-  
+
   view_bin_each_axis = global_paraMgr.nbv.getInt("View Bin Each Axis");
   model = pData->getCurrentModel();
   view_grid_points = pData->getViewGridPoints();
@@ -190,14 +184,12 @@ NBV::setInput(DataMgr *pData)
   whole_space_box = &pData->whole_space_box;
 }
 
-void
-NBV::clear()
+void NBV::clear()
 {
   original = NULL;
 }
 
-void
-NBV::buildGrid()
+void NBV::buildGrid()
 {
   if (iso_points == NULL)
   {
@@ -236,33 +228,33 @@ NBV::buildGrid()
   int all_max = std::max(std::max(x_max, y_max), z_max);
   x_max = y_max =z_max = all_max+1; // wsh 12-11
 
-   //preallocate the memory
-   int max_index = x_max * y_max * z_max;
-   view_grid_points->vert.resize(max_index);
-   //increase from whole_space_box_min
-   for (int i = 0; i < x_max; ++i)
-   {
-     for (int j = 0; j < y_max; ++j)
-     {
-       for (int k = 0; k < z_max; ++k)
-       {
-         //add the grid
-         int index = i * y_max * z_max + j * z_max + k;
-         //add the center point of the grid
-         CVertex t;
-         t.P()[0] = whole_space_box_min.X() + i * grid_step_size;
-         t.P()[1] = whole_space_box_min.Y() + j * grid_step_size;
-         t.P()[2] = whole_space_box_min.Z() + k * grid_step_size;
-         t.m_index = index;
-         t.is_view_grid = true;
-         view_grid_points->vert[index] = t;
-         view_grid_points->bbox.Add(t.P());
-       }
-     }
-   }
-   view_grid_points->vn = max_index;
-   cout << "all grid points: " << max_index << endl;
-   cout << "resolution: " << x_max << endl;
+  //preallocate the memory
+  int max_index = x_max * y_max * z_max;
+  view_grid_points->vert.resize(max_index);
+  //increase from whole_space_box_min
+  for (int i = 0; i < x_max; ++i)
+  {
+    for (int j = 0; j < y_max; ++j)
+    {
+      for (int k = 0; k < z_max; ++k)
+      {
+        //add the grid
+        int index = i * y_max * z_max + j * z_max + k;
+        //add the center point of the grid
+        CVertex t;
+        t.P()[0] = whole_space_box_min.X() + i * grid_step_size;
+        t.P()[1] = whole_space_box_min.Y() + j * grid_step_size;
+        t.P()[2] = whole_space_box_min.Z() + k * grid_step_size;
+        t.m_index = index;
+        t.is_view_grid = true;
+        view_grid_points->vert[index] = t;
+        view_grid_points->bbox.Add(t.P());
+      }
+    }
+  }
+  view_grid_points->vn = max_index;
+  cout << "all grid points: " << max_index << endl;
+  cout << "resolution: " << x_max << endl;
 
   bool test_field_segment = para->getBool("Test Other Inside Segment");
   if (field_points->vert.empty())
@@ -272,46 +264,46 @@ NBV::buildGrid()
   }
   //distinguish the inside or outside grid
 
-   Timer timer;
-   timer.start("compute ANN");
-   if (test_field_segment)
-   {
-     GlobalFun::computeAnnNeigbhors(field_points->vert, view_grid_points->vert, 1, false, "runGridNearestIsoPoint");
-   }
-   else
-   {
-     GlobalFun::computeAnnNeigbhors(iso_points->vert, view_grid_points->vert, 1, false, "runGridNearestIsoPoint");
-   }
-   timer.end();
-   
-   double grid_step_size2 = grid_step_size * grid_step_size;
-   for (int i = 0; i < view_grid_points->vert.size(); ++i)
-   {
-     Point3f &t = view_grid_points->vert[i].P();
-     if (!view_grid_points->vert[i].neighbors.empty())
-     {
-       if (test_field_segment)
-       {
-         CVertex &nearest = field_points->vert[view_grid_points->vert[i].neighbors[0]];
-         if (nearest.eigen_confidence > 0)
-         {
-           view_grid_points->vert[i].is_ray_stop = true; 
-         }
-       }
-       else
-       {
-         CVertex &nearest = iso_points->vert[view_grid_points->vert[i].neighbors[0]];
-         Point3f &v = nearest.P();
-         double dist2 = GlobalFun::computeEulerDistSquare(t, v);
-         Point3f n = nearest.N();
-         Point3f l = view_grid_points->vert[i].P() - nearest.P();
-         if (n * l < 0.0f && dist2 < grid_step_size2 * 4)
-         {
-           view_grid_points->vert[i].is_ray_stop = true; 
-         }  
-       }
-     }
-   }
+  Timer timer;
+  timer.start("compute ANN");
+  if (test_field_segment)
+  {
+    GlobalFun::computeAnnNeigbhors(field_points->vert, view_grid_points->vert, 1, false, "runGridNearestIsoPoint");
+  }
+  else
+  {
+    GlobalFun::computeAnnNeigbhors(iso_points->vert, view_grid_points->vert, 1, false, "runGridNearestIsoPoint");
+  }
+  timer.end();
+
+  double grid_step_size2 = grid_step_size * grid_step_size;
+  for (int i = 0; i < view_grid_points->vert.size(); ++i)
+  {
+    Point3f &t = view_grid_points->vert[i].P();
+    if (!view_grid_points->vert[i].neighbors.empty())
+    {
+      if (test_field_segment)
+      {
+        CVertex &nearest = field_points->vert[view_grid_points->vert[i].neighbors[0]];
+        if (nearest.eigen_confidence > 0)
+        {
+          view_grid_points->vert[i].is_ray_stop = true; 
+        }
+      }
+      else
+      {
+        CVertex &nearest = iso_points->vert[view_grid_points->vert[i].neighbors[0]];
+        Point3f &v = nearest.P();
+        double dist2 = GlobalFun::computeEulerDistSquare(t, v);
+        Point3f n = nearest.N();
+        Point3f l = view_grid_points->vert[i].P() - nearest.P();
+        if (n * l < 0.0f && dist2 < grid_step_size2 * 4)
+        {
+          view_grid_points->vert[i].is_ray_stop = true; 
+        }  
+      }
+    }
+  }
 
   for (int i = 0; i < view_grid_points->vert.size(); ++i)
   {
@@ -356,8 +348,7 @@ NBV::buildGrid()
 }
 
 
-void
-  NBV::propagate()
+void NBV::propagate()
 {
 
   bool use_propagate_one_point = para->getBool("Run Propagate One Point");
@@ -507,7 +498,7 @@ void
             {
               t.eigen_confidence += coefficient1 * iso_confidence;      
             }
-            
+
             // record hit_grid center index
             hit_grid_indexes.push_back(index);                        
           }//end for k
@@ -653,20 +644,17 @@ void
   GlobalFun::normalizeConfidence(view_grid_points->vert, 0.);
 }
 
-double
-  NBV::getAbsMax(double x, double y, double z)
+double NBV::getAbsMax(double x, double y, double z)
 {
   return std::max(abs(x), std::max(abs(y), abs(z)));
 }
 
-int 
-  NBV::round(double x)
+int NBV::round(double x)
 {
   return static_cast<int>(x + 0.5);
 }
 
-void
-  NBV::setGridUnHit(vector<int>& hit_grids_idx)
+void NBV::setGridUnHit(vector<int>& hit_grids_idx)
 {
   vector<int>::iterator it;
   for (it = hit_grids_idx.begin(); it != hit_grids_idx.end(); ++it)
@@ -675,8 +663,7 @@ void
   }
 }
 
-void 
-  NBV::viewExtraction()
+void NBV::viewExtraction()
 {
   double nbv_confidence_value = para->getDouble("Confidence Separation Value");
   nbv_candidates->vert.clear();
@@ -698,11 +685,10 @@ void
   cout << "candidate number: " << nbv_candidates->vn << endl;
 }
 
-void
-  NBV::viewExtractionIntoBins(int view_bin_each_axis)
+void NBV::viewExtractionIntoBins(int view_bin_each_axis)
 {
   nbv_candidates->vert.clear();
-  
+
   Point3f diff = whole_space_box_max - whole_space_box_min;
   double bin_length_x = diff.X() / view_bin_each_axis;
   double bin_length_y = diff.Y() / view_bin_each_axis;
@@ -737,7 +723,7 @@ void
     t_indexX = (t_indexX >= view_bin_each_axis ? (view_bin_each_axis-1) : t_indexX);
     t_indexY = (t_indexY >= view_bin_each_axis ? (view_bin_each_axis-1) : t_indexY);
     t_indexZ = (t_indexZ >= view_bin_each_axis ? (view_bin_each_axis-1) : t_indexZ);
-    
+
     int idx = t_indexY * view_bin_each_axis * view_bin_each_axis
       + t_indexZ * view_bin_each_axis + t_indexX;
 
@@ -769,10 +755,10 @@ void
   //delete unqualified candidates
   double confidence_threshold = para->getDouble("Confidence Filter Threshold");
   double camera_far_dist = global_paraMgr.camera.getDouble("Camera Far Distance")
-                             / global_paraMgr.camera.getDouble("Predicted Model Size");
+    / global_paraMgr.camera.getDouble("Predicted Model Size");
   double camera_near_dist = global_paraMgr.camera.getDouble("Camera Near Distance") 
-                             / global_paraMgr.camera.getDouble("Predicted Model Size");
-  
+    / global_paraMgr.camera.getDouble("Predicted Model Size");
+
   int nbv_candidate_num = 0;
   for (int i = 0; i < nbv_candidates->vert.size(); i++)
   {
@@ -807,8 +793,7 @@ void
   delete view_bins;
 }
 
-void 
-  NBV::extractViewIntoBinsUsingDist()
+void NBV::extractViewIntoBinsUsingDist()
 {
   nbv_candidates->vert.clear();
   //get 27 grid center points
@@ -1298,8 +1283,7 @@ void NBV::setIsoBottomConfidence()
   }
 }
 
-int
-  NBV::getIsoPointsViewBinIndex(Point3f& p, int which_axis)
+int NBV::getIsoPointsViewBinIndex(Point3f& p, int which_axis)
 {
   Point3f diff = whole_space_box_max - whole_space_box_min;
   double bin_length_x = diff.X() / view_bin_each_axis;
@@ -1414,7 +1398,7 @@ void NBV::runComputeViewCandidateIndex()
     t_indexX = (t_indexX >= view_bin_each_axis ? (view_bin_each_axis-1) : t_indexX);
     t_indexY = (t_indexY >= view_bin_each_axis ? (view_bin_each_axis-1) : t_indexY);
     t_indexZ = (t_indexZ >= view_bin_each_axis ? (view_bin_each_axis-1) : t_indexZ);
-    
+
     int index = t_indexY * view_bin_each_axis * view_bin_each_axis
       + t_indexZ * view_bin_each_axis + t_indexX;
 

@@ -7,37 +7,37 @@ vcc::Camera::Camera(RichParameterSet* _para)
 
 void vcc::Camera::setInput(DataMgr* pData)
 {
-   if (!pData->isModelEmpty())
-   {
-     target = pData->getCurrentModel();
-     original = pData->getCurrentOriginal();
-     //scan candidates for initialing
-     init_scan_candidates = pData->getInitCameraScanCandidates();
-     //candidates for nbv computing
-     scan_candidates = pData->getScanCandidates();
-     current_scanned_mesh = pData->getCurrentScannedMesh();
-     scanned_results = pData->getScannedResults();
-	   nbv_candidates = pData->getNbvCandidates();
+  if (!pData->isModelEmpty())
+  {
+    target = pData->getCurrentModel();
+    original = pData->getCurrentOriginal();
+    //scan candidates for initialing
+    init_scan_candidates = pData->getInitCameraScanCandidates();
+    //candidates for nbv computing
+    scan_candidates = pData->getScanCandidates();
+    current_scanned_mesh = pData->getCurrentScannedMesh();
+    scanned_results = pData->getScannedResults();
+    nbv_candidates = pData->getNbvCandidates();
 
-     far_horizon_dist = global_paraMgr.camera.getDouble("Camera Horizon Dist") 
-                        / global_paraMgr.camera.getDouble("Predicted Model Size");
-     far_vertical_dist = global_paraMgr.camera.getDouble("Camera Vertical Dist")
-                        / global_paraMgr.camera.getDouble("Predicted Model Size");
+    far_horizon_dist = global_paraMgr.camera.getDouble("Camera Horizon Dist") 
+      / global_paraMgr.camera.getDouble("Predicted Model Size");
+    far_vertical_dist = global_paraMgr.camera.getDouble("Camera Vertical Dist")
+      / global_paraMgr.camera.getDouble("Predicted Model Size");
 
-     far_distance = global_paraMgr.camera.getDouble("Camera Far Distance") 
-                   / global_paraMgr.camera.getDouble("Predicted Model Size");
-     near_distance = global_paraMgr.camera.getDouble("Camera Near Distance")
-                    / global_paraMgr.camera.getDouble("Predicted Model Size");
+    far_distance = global_paraMgr.camera.getDouble("Camera Far Distance") 
+      / global_paraMgr.camera.getDouble("Predicted Model Size");
+    near_distance = global_paraMgr.camera.getDouble("Camera Near Distance")
+      / global_paraMgr.camera.getDouble("Predicted Model Size");
 
-     dist_to_model = global_paraMgr.camera.getDouble("Camera Dist To Model")
-                   / global_paraMgr.camera.getDouble("Predicted Model Size");
+    dist_to_model = global_paraMgr.camera.getDouble("Camera Dist To Model")
+      / global_paraMgr.camera.getDouble("Predicted Model Size");
 
-     resolution = global_paraMgr.camera.getDouble("Camera Resolution");
-   }else
-   {
-     cout<<"ERROR: Camera::setInput empty!!" << endl;
-     return;
-   }
+    resolution = global_paraMgr.camera.getDouble("Camera Resolution");
+  }else
+  {
+    cout<<"ERROR: Camera::setInput empty!!" << endl;
+    return;
+  }
 }
 
 void vcc::Camera::run()
@@ -59,8 +59,8 @@ void vcc::Camera::run()
   }
   if (para->getBool("Run One Key NewScans"))
   {
-	  runOneKeyNewScan();
-	  return;
+    runOneKeyNewScan();
+    return;
   }
 }
 
@@ -91,11 +91,11 @@ void vcc::Camera::runVirtualScan()
       if ( dist <= far_distance && dist >= near_distance)
       {        
         //add some random noise
-       /* srand(time(NULL)); 
+        /* srand(time(NULL)); 
         double rndax = (double(2.0f * rand()) / RAND_MAX - 1.0f ) * max_displacement;
         double rnday = (double(2.0f * rand()) / RAND_MAX - 1.0f ) * max_displacement;
         double rndaz = (double(2.0f * rand()) / RAND_MAX - 1.0f ) * max_displacement;*/
-        
+
         CVertex t;
         t.is_scanned = true;
         t.m_index = index++;
@@ -138,7 +138,7 @@ void vcc::Camera::runInitialScan()
     //init scan should consider dist to model
     pos = it->first * dist_to_model;
     direction = it->second;
-    /********* call runVirtualScan() *******/
+    /******* call runVirtualScan() *******/
     cout<<i << "th initial scan begin" <<endl;
     runVirtualScan();
     cout<<i++ <<"th initial scan done!" <<endl;
@@ -194,7 +194,7 @@ void vcc::Camera::runNBVScan()
 
 void vcc::Camera::runOneKeyNewScan()
 {
-	runNBVScan();
+  runNBVScan();
 }
 
 void vcc::Camera::computeUpAndRight()

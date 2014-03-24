@@ -244,7 +244,7 @@ void ParameterMgr::initSkeletonParameter()
 
 	//step2
 	skeleton.addParam(new RichDouble("Branches Search Angle", 25));
-	skeleton.addParam(new RichDouble("Virtual Head Accecpt Angle", 25));
+	skeleton.addParam(new RichDouble("Virtual Head Accept Angle", 25));
 	skeleton.addParam(new RichDouble("Snake Search Max Dist Blue", 0.4));
 	skeleton.addParam(new RichDouble("Accept Branch Size", 6)); // important, and hard to determine
 	skeleton.addParam(new RichDouble("Branch Search Max Dist Yellow", 0.1));
