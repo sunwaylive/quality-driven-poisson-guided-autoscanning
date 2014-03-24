@@ -119,15 +119,15 @@ NBV::runOneKeyNBV()
   timer.end();
 
   //save nbv confidence
-  ofstream out;
+  /*ofstream out;
   out.open("nbv_candidates_confidence.txt");
   for (int i = 0; i < nbv_candidates->vert.size(); ++i)
   {
-    out << nbv_candidates->vert[i].eigen_confidence <<endl;
+  out << nbv_candidates->vert[i].eigen_confidence <<endl;
   }
-  out.close();
+  out.close();*/
 
-  timer.start("optimize view direction");
+  /*timer.start("optimize view direction");
   for (int i = 0; i < 1; i++)
   {
     bool have_direction_move = updateViewDirections();
@@ -136,7 +136,7 @@ NBV::runOneKeyNBV()
       break;
     }
   }
-  timer.end();
+  timer.end();*/
 
   timer.start("view optimize");
   viewPrune();

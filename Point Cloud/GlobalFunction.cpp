@@ -1391,7 +1391,7 @@ Point3f GlobalFun::scalar2color( double scalar )
 
 void GlobalFun::normalizeConfidence(vector<CVertex>& vertexes, float delta)
 {  
-  return;// wei add 2014-1-13
+  //return;// wei add 2014-1-13
 
   float min_confidence = GlobalFun::getDoubleMAXIMUM();
   float max_confidence = 0;
