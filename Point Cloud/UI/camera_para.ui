@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>291</width>
+    <width>471</width>
     <height>908</height>
    </rect>
   </property>
@@ -18,12 +18,12 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>271</width>
+     <width>461</width>
      <height>891</height>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>4</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -1029,7 +1029,7 @@
       <rect>
        <x>30</x>
        <y>510</y>
-       <width>171</width>
+       <width>191</width>
        <height>31</height>
       </rect>
      </property>
@@ -1042,7 +1042,7 @@
       <rect>
        <x>30</x>
        <y>470</y>
-       <width>181</width>
+       <width>191</width>
        <height>31</height>
       </rect>
      </property>
@@ -1124,22 +1124,22 @@
     <widget class="QPushButton" name="pushButton_remove_low_confidence_samples">
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>600</y>
-       <width>201</width>
+       <x>30</x>
+       <y>630</y>
+       <width>191</width>
        <height>31</height>
       </rect>
      </property>
      <property name="text">
-      <string>Remove samples with low confidence</string>
+      <string>Remove samples(low confidence</string>
      </property>
     </widget>
     <widget class="QPushButton" name="pushButton_add_samples_to_original">
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>640</y>
-       <width>201</width>
+       <x>30</x>
+       <y>670</y>
+       <width>191</width>
        <height>31</height>
       </rect>
      </property>
@@ -1150,8 +1150,8 @@
     <widget class="QPushButton" name="pushButton_ICP">
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>560</y>
+       <x>30</x>
+       <y>590</y>
        <width>191</width>
        <height>31</height>
       </rect>
@@ -1163,9 +1163,9 @@
     <widget class="QPushButton" name="pushButton_remove_sample_outliers">
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>520</y>
-       <width>201</width>
+       <x>30</x>
+       <y>550</y>
+       <width>191</width>
        <height>31</height>
       </rect>
      </property>
@@ -1574,6 +1574,24 @@
      </property>
      <property name="text">
       <string>load poisson surface</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="tab_5">
+    <attribute name="title">
+     <string>Evaluation</string>
+    </attribute>
+    <widget class="QLabel" name="label_19">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>61</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Easy one：</string>
      </property>
     </widget>
    </widget>

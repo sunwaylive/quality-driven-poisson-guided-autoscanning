@@ -92,7 +92,6 @@ public:
 	//}
 
 
-
 	static void ComputeAPcaNormalsByKNN(const VertexIterator& begin, const VertexIterator& end, const unsigned int k, double radius, const float sigma)
 	{
 		vector<vector<int> > neighborMap;
