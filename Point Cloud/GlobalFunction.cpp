@@ -775,7 +775,7 @@ bool GlobalFun::isPointInTriangle_3(Point3f& v0, Point3f& v1, Point3f& v2, Point
   else return false;
 }
 
-double GlobalFun::computeMeshLineIntersectPoint( CMesh *target, Point3f& p, Point3f& line_dir, Point3f& result )
+double GlobalFun::computeMeshLineIntersectPoint(CMesh *target, Point3f& p, Point3f& line_dir, Point3f& result, Point3f& result_normal, bool& is_well_visible)
 {
   //compute the intersecting point between the ray and the mesh
   int n_face = target->face.size();
@@ -790,11 +790,12 @@ double GlobalFun::computeMeshLineIntersectPoint( CMesh *target, Point3f& p, Poin
       Point3f& v0 = target->face[f].V(0)->P();
       Point3f& v1 = target->face[f].V(1)->P();
       Point3f& v2 = target->face[f].V(2)->P();
-      Point3f e1 = v0 - v1;
-      Point3f e2 = v1 - v2;
+      Point3f e1 = v1 - v0;
+      Point3f e2 = v2 - v1;
       Point3f face_norm = (e1 ^ e2).Normalize();
       //if the face can't be seen, then continue
       if(face_norm * line_dir > 0) continue;
+
       //the line cross the point: pos, and line vector is viewray_iter 
       double tmp = face_norm * line_dir;
 
@@ -820,6 +821,11 @@ double GlobalFun::computeMeshLineIntersectPoint( CMesh *target, Point3f& p, Poin
         {
           min_dist = dist_temp;
           result = intersect_point;
+          result_normal = face_norm;
+
+          //for visibility based NBV. classify the scanned points
+          if (computeRealAngleOfTwoVertor(face_norm, -line_dir) <= 60)
+            is_well_visible = true;
         }
       }else continue;
     }
@@ -863,6 +869,11 @@ double GlobalFun::computeMeshLineIntersectPoint( CMesh *target, Point3f& p, Poin
       {
         min_dist = dist_temp;
         result = intersect_point;
+        result_normal = face_norm;
+
+        //for visibility based NBV. classify the scanned point
+        if (computeRealAngleOfTwoVertor(face_norm, -line_dir) <= 60)
+          is_well_visible = true;
       }
     }else continue;
   }

@@ -93,7 +93,9 @@ void vcc::Camera::runVirtualScan()
       //line direction vector
       Point3f line_dir = viewray_iter.Normalize();
       Point3f intersect_point;
-      double dist = GlobalFun::computeMeshLineIntersectPoint(target, pos, line_dir, intersect_point);
+      Point3f intersect_point_normal;
+      bool is_well_visible = false;
+      double dist = GlobalFun::computeMeshLineIntersectPoint(target, pos, line_dir, intersect_point, intersect_point_normal, is_well_visible);
       if ( dist <= far_distance && dist >= near_distance)
       {        
         //add some random noise
@@ -104,9 +106,10 @@ void vcc::Camera::runVirtualScan()
 
         CVertex t;
         t.is_scanned = true;
+        t.is_well_visible = is_well_visible;
         t.m_index = index++;
-        t.P() = intersect_point; //+ Point3f(rndax, rnday, rndaz);
-        t.N() = -line_dir; //set out direction as approximate normal
+        t.P() = intersect_point; //Point3f(rndax, rnday, rndaz);
+        t.N() = intersect_point_normal; //set out direction as approximate normal
         current_scanned_mesh->vert.push_back(t);
         current_scanned_mesh->bbox.Add(t.P());
       }

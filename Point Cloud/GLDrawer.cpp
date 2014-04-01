@@ -214,6 +214,11 @@ GLColor GLDrawer::getColorByType(CVertex& v)
 
   if (v.is_original)
   {
+    if (!v.is_well_visible)
+    {
+       return cYellow;
+    }
+
     return original_color;
   }
 
