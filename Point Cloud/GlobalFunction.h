@@ -76,7 +76,7 @@ namespace GlobalFun
 	bool isTwoPoint3fOpposite(Point3f& v0, Point3f& v1);
   double computeTriangleArea_3(Point3f& v0, Point3f& v1, Point3f& v2);
   bool isPointInTriangle_3(Point3f& v0, Point3f& v1, Point3f& v2, Point3f& p);
-  double computeMeshLineIntersectPoint(CMesh *target, Point3f& p, Point3f& line_dir, Point3f& result, Point3f& result_normal, bool& is_well_visible);
+  double computeMeshLineIntersectPoint(CMesh *target, Point3f& p, Point3f& line_dir, Point3f& result, Point3f& result_normal, bool& is_barely_visible);
   Point3f scalar2color(double scalar);
   void normalizeConfidence(vector<CVertex>& vertexes, float delta);
 

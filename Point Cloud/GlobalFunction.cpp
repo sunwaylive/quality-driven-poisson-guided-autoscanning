@@ -775,7 +775,7 @@ bool GlobalFun::isPointInTriangle_3(Point3f& v0, Point3f& v1, Point3f& v2, Point
   else return false;
 }
 
-double GlobalFun::computeMeshLineIntersectPoint(CMesh *target, Point3f& p, Point3f& line_dir, Point3f& result, Point3f& result_normal, bool& is_well_visible)
+double GlobalFun::computeMeshLineIntersectPoint(CMesh *target, Point3f& p, Point3f& line_dir, Point3f& result, Point3f& result_normal, bool& is_barely_visible)
 {
   //compute the intersecting point between the ray and the mesh
   int n_face = target->face.size();
@@ -824,8 +824,8 @@ double GlobalFun::computeMeshLineIntersectPoint(CMesh *target, Point3f& p, Point
           result_normal = face_norm;
 
           //for visibility based NBV. classify the scanned points
-          if (computeRealAngleOfTwoVertor(face_norm, -line_dir) <= 60)
-            is_well_visible = true;
+          if (computeRealAngleOfTwoVertor(face_norm, -line_dir) > 60)
+            is_barely_visible = true;
         }
       }else continue;
     }
@@ -872,8 +872,8 @@ double GlobalFun::computeMeshLineIntersectPoint(CMesh *target, Point3f& p, Point
         result_normal = face_norm;
 
         //for visibility based NBV. classify the scanned point
-        if (computeRealAngleOfTwoVertor(face_norm, -line_dir) <= 60)
-          is_well_visible = true;
+        if (computeRealAngleOfTwoVertor(face_norm, -line_dir) > 60)
+          is_barely_visible = true;
       }
     }else continue;
   }
