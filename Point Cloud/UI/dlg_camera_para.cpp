@@ -98,6 +98,10 @@ void CameraParaDlg::initConnects()
   connect(ui->pushButton_load_poisson_surface, SIGNAL(clicked()), this, SLOT(loadPoissonSurface()));
 
   connect(ui->pushButton_pick_center, SIGNAL(clicked()), this, SLOT(moveTranslation()));
+  
+  /********visibility based NBV*******/
+  connect(ui->pushButton_visibility_first_scan, SIGNAL(clicked()), this, SLOT(visibilityFirstScan()));
+  /********visibility based NBV*******/
 }
 
 bool CameraParaDlg::initWidgets()
@@ -240,7 +244,7 @@ void CameraParaDlg::initialScan()
   area->runCamera();
   global_paraMgr.camera.setValue("Run Initial Scan", BoolValue(false));
 
-  updateTableViewNBVCandidate();
+  updateTabelViewScanResults();
 }
 
 void CameraParaDlg::NBVCandidatesScan()
@@ -1429,4 +1433,13 @@ void CameraParaDlg::moveTranslation()
     v.P() -= movement;
   }
   return;
+}
+
+void CameraParaDlg::visibilityFirstScan()
+{
+  global_paraMgr.camera.setValue("Run Visibility First Scan", BoolValue(true));
+  area->runCamera();
+  global_paraMgr.camera.setValue("Run Visibility First Scan", BoolValue(false));
+
+  updateTabelViewScanResults();
 }

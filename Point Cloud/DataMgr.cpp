@@ -54,6 +54,11 @@ void DataMgr::initDefaultScanCamera()
   ////z axis
   //scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f), Point3f(0.0f, 0.0f, -1.0f)));
   //scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, -1.0f), Point3f(0.0f, 0.0f, 1.0f)));
+
+
+  //*** visibility based NBV
+  visibility_first_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f), Point3f(0.0f, 0.0f, -1.0f)));
+  //*** visibility based NBV
 }
 
 bool DataMgr::isSamplesEmpty()
@@ -495,6 +500,11 @@ CMesh*
 vector<ScanCandidate>* DataMgr::getInitCameraScanCandidates()
 {
   return &init_scan_candidates;
+}
+
+vector<ScanCandidate>* DataMgr::getVisibilityFirstScanCandidates()
+{
+  return &visibility_first_scan_candidates;
 }
 
 vector<ScanCandidate>* DataMgr::getScanCandidates()

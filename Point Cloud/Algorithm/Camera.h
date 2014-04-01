@@ -50,11 +50,19 @@ namespace vcc{
     double                   near_horizon_dist;
     double                   near_vertical_dist;
 
+    //*** visibility based NBV
+    vector<ScanCandidate>*   visibility_first_scan_candidates;
+    //*** visibility based NBV
+
   private:
     void runInitialScan();
     void runNBVScan();
     void runVirtualScan();
     void runOneKeyNewScan();
+
+    //*** visibility based NBV
+    void runVisibilityFirstScan();
+    //*** visibility based NBV
   };
 
 }

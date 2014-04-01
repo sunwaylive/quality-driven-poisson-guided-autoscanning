@@ -253,6 +253,12 @@
     <ClCompile Include="Poisson\PTime.cpp">
       <Filter>Poisson</Filter>
     </ClCompile>
+    <ClCompile Include="Algorithm\PVSBasedNBV.cpp">
+      <Filter>Algorithm</Filter>
+    </ClCompile>
+    <ClCompile Include="Algorithm\VisibilityBasedNBV.cpp">
+      <Filter>Algorithm</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="mainwindow.h">
@@ -468,6 +474,12 @@
       <Filter>Algorithm</Filter>
     </ClInclude>
     <ClInclude Include="Algorithm\pointcloud_normal.h">
+      <Filter>Algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="Algorithm\PVSBasedNBV.h">
+      <Filter>Algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="Algorithm\VisibilityBasedNBV.h">
       <Filter>Algorithm</Filter>
     </ClInclude>
   </ItemGroup>

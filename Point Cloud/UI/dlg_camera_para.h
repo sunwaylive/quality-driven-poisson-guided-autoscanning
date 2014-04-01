@@ -107,6 +107,10 @@ public:
     void sliceAnimation();
     void loadPoissonSurface();
     void moveTranslation();
+    
+    //*** visibility based NBV
+    void visibilityFirstScan();
+    //*** visibility based NBV
 
 private:
   Ui::camera_paras * ui;

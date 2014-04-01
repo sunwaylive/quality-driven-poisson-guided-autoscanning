@@ -90,6 +90,7 @@ public:
   vector<ScanCandidate>*  getInitCameraScanCandidates();
   vector<ScanCandidate>*  getScanCandidates();
   vector<ScanCandidate>*  getSelectedScanCandidates();
+  vector<ScanCandidate>*  getVisibilityFirstScanCandidates();
   CMesh*                  getCurrentScannedMesh();
   vector<CMesh* >*        getScannedResults(); 
 
@@ -182,6 +183,9 @@ public:
 
   Point3f scanner_position;
   
+  //*** visibility based NBV
+  vector<ScanCandidate> visibility_first_scan_candidates;
+  //*** visibility based NBV
 
 };
 

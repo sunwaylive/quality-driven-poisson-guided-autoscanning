@@ -13,6 +13,7 @@ void vcc::Camera::setInput(DataMgr* pData)
     original = pData->getCurrentOriginal();
     //scan candidates for initialing
     init_scan_candidates = pData->getInitCameraScanCandidates();
+    visibility_first_scan_candidates = pData->getVisibilityFirstScanCandidates();
     //candidates for nbv computing
     scan_candidates = pData->getScanCandidates();
     current_scanned_mesh = pData->getCurrentScannedMesh();
@@ -60,6 +61,11 @@ void vcc::Camera::run()
   if (para->getBool("Run One Key NewScans"))
   {
     runOneKeyNewScan();
+    return;
+  }
+  if (para->getBool("Run Visibility First Scan"))
+  {
+    runVisibilityFirstScan();
     return;
   }
 }
@@ -218,4 +224,55 @@ void vcc::Camera::computeUpAndRight()
 
   up = up.Normalize();
   right = right.Normalize();
+}
+
+void vcc::Camera::runVisibilityFirstScan()
+{
+  //clear original points
+  original->face.clear();
+  original->fn = 0;
+  original->vert.clear();
+  original->vn = 0;
+  original->bbox = Box3f();
+
+  //release scanned_result
+  vector<CMesh* >::iterator it_scanned_result = scanned_results->begin();
+  for (; it_scanned_result != scanned_results->end(); ++it_scanned_result)
+  {
+    if ( (*it_scanned_result) != NULL)
+    {
+      delete (*it_scanned_result);
+      (*it_scanned_result) = NULL;
+    }
+  }
+  scanned_results->clear();
+
+  //run visibility first scan
+  vector<ScanCandidate>::iterator it = visibility_first_scan_candidates->begin();
+  int i = 1;
+  for (; it != visibility_first_scan_candidates->end(); ++it)
+  {
+    //first scan should consider dist to model
+    pos = it->first * dist_to_model;
+    direction = it->second;
+    /******* call runVirtualScan() *******/
+    cout<<i << "th initial scan begin" <<endl;
+    runVirtualScan();
+    cout<<i++ <<"th initial scan done!" <<endl;
+
+    //merge scanned mesh with original
+    int index = 0;
+    if (!original->vert.empty()) index = original->vert.back().m_index;
+
+    for (int i = 0; i < current_scanned_mesh->vert.size(); ++i)
+    {
+      CVertex& v = current_scanned_mesh->vert[i];
+      CVertex t = v;
+      t.m_index = ++index;
+      t.is_original = true;
+      original->vert.push_back(t);
+      original->bbox.Add(t.P());
+    }
+    original->vn = original->vert.size();
+  }
 }

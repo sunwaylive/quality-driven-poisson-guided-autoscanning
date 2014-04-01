@@ -1594,6 +1594,19 @@
       <string>Easy one：</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="pushButton_visibility_first_scan">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>30</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>First Scan</string>
+     </property>
+    </widget>
    </widget>
   </widget>
  </widget>
