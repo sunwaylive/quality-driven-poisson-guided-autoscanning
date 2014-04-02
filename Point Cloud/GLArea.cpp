@@ -147,9 +147,6 @@ void GLArea::resizeGL(int w, int h)
 
 void GLArea::paintGL() 
 {
-
-
-
   paintMutex.lock();{
 
     if (is_paintGL_locked)
@@ -266,17 +263,17 @@ void GLArea::paintGL()
         if (!dataMgr.isNBVCandidatesEmpty())
         {
           glDrawer.draw(GLDrawer::NORMAL, dataMgr.getNbvCandidates());
-          glDrawer.drawCandidatesAxis(dataMgr.getNbvCandidates());
-          drawCandidatesConnectISO();
+          //glDrawer.drawCandidatesAxis(dataMgr.getNbvCandidates());
+          //drawCandidatesConnectISO();
 
-          if (para->getBool("Show NBV Label"))
-          {
-            QPainter painter(this);
+          //if (para->getBool("Show NBV Label"))
+          //{
+          //  QPainter painter(this);
 
-            //painter.begin(this);
-            glDrawer.drawMeshLables(dataMgr.getNbvCandidates(), &painter);
-            //painter.end();
-          }
+          //  //painter.begin(this);
+          //  glDrawer.drawMeshLables(dataMgr.getNbvCandidates(), &painter);
+          //  //painter.end();
+          //}
         }
       }else if (para->getBool("Show View Grids"))
       {

@@ -33,6 +33,10 @@ void VisibilityBasedNBV::run()
     runVisibilityPropagate();
     return;
   }
+  if (para->getBool("Run Visibility Candidates Cluster"))
+  {
+    runVisibilityCandidatesCluster();
+  }
 }
 
 void VisibilityBasedNBV::clear()
@@ -42,9 +46,6 @@ void VisibilityBasedNBV::clear()
 
 void VisibilityBasedNBV::runVisibilityPropagate()
 {
-  //do a normalization for original points
-
-
   int index = 0;
   for (int i = 0; i < original->vert.size(); ++i)
   {
@@ -62,9 +63,9 @@ void VisibilityBasedNBV::runVisibilityPropagate()
   std::cout<<"candidate number:"<< nbv_candidates->vn <<std::endl;
 }
 
-void VisibilityBasedNBV::runNBVCandidatesCluster()
+void VisibilityBasedNBV::runVisibilityCandidatesCluster()
 {
-  double radius = para->getDouble("CGrid Radius"); 
+  double radius = global_paraMgr.data.getDouble("CGrid Radius");
   double radius2 = radius * radius;
   double iradius16 = -4/radius2;
 
@@ -72,54 +73,76 @@ void VisibilityBasedNBV::runNBVCandidatesCluster()
   double cos_sigma = cos(sigma / 180.0 * 3.1415926);
   double sharpness_bandwidth = std::pow((std::max)(1e-8, 1 - cos_sigma), 2);
 
-  GlobalFun::computeAnnNeigbhors(nbv_candidates->vert,
-    nbv_candidates->vert, 
-    15,
-    false,
-    "runViewCandidatesClustering");
+  double shift_dist_stop = 0.001;
+  double current_shift = radius;
 
-  vector<CVertex> update_temp;
-  for(int i = 0; i < nbv_candidates->vert.size(); i++)
+  do
   {
-    CVertex& v = nbv_candidates->vert[i];
+    GlobalFun::computeBallNeighbors(nbv_candidates, NULL, radius, nbv_candidates->bbox);
 
-    //if (v.neighbors.size() <= 5)
-    if (v.neighbors.empty())
+    vector<CVertex> update_temp;
+
+    for(int i = 0; i < nbv_candidates->vert.size(); i++)
     {
-      //update_temp.push_back(v);
-      continue;
+      CVertex& v = nbv_candidates->vert[i];
+
+      if (v.neighbors.empty())
+        continue;
+
+      Point3f average_positon = Point3f(0, 0, 0);
+      Point3f average_normal = Point3f(0, 0, 0);
+      double sum_weight = 0.0;
+
+      for (int j = 0; j < v.neighbors.size(); j++)
+      {
+        CVertex& t = nbv_candidates->vert[v.neighbors[j]];
+
+        Point3f diff = v.P() - t.P();
+        double dist2  = diff.SquaredNorm();
+
+        double dist_weight = exp(dist2 * iradius16);
+        double normal_weight = exp(-std::pow(1 - v.N() * t.N(), 2));
+        double weight = dist_weight;
+
+        average_positon += t.P() * weight;
+        average_normal += t.N() * weight;
+        sum_weight += weight;
+      }
+
+      CVertex temp_v = v;
+      temp_v.P() = average_positon / sum_weight;
+      temp_v.N() = average_normal / sum_weight;
+      update_temp.push_back(temp_v);
+
+      double shift_dist = std::sqrt(static_cast<float>((temp_v.P() - v.P()).SquaredNorm()));
+      current_shift = current_shift < shift_dist ? current_shift : shift_dist;
     }
 
-    Point3f average_positon = Point3f(0, 0, 0);
-    Point3f average_normal = Point3f(0, 0, 0);
-    double sum_weight = 0.0;
+    nbv_candidates->vert.clear();
+    for (int i = 0; i < update_temp.size(); i++)
+      nbv_candidates->vert.push_back(update_temp[i]);
 
-    for (int j = 0; j < v.neighbors.size(); j++)
+    nbv_candidates->vn = nbv_candidates->vert.size(); 
+
+    update_temp.clear();
+  }while(current_shift >= shift_dist_stop);
+
+  //get selected NBV
+  double nbv_select_radius = 0.1; 
+  GlobalFun::computeBallNeighbors(nbv_candidates, NULL, nbv_select_radius, nbv_candidates->bbox);
+  int max_neighbors_num = nbv_candidates->vert[0].neighbors.size();
+  int vert_index = 0;
+  for (int i=0; i < nbv_candidates->vert.size(); ++i)
+  {
+    if (nbv_candidates->vert[i].neighbors.size() > max_neighbors_num)
     {
-      CVertex& t = nbv_candidates->vert[v.neighbors[j]];
-
-      Point3f diff = v.P() - t.P();
-      double dist2  = diff.SquaredNorm();
-
-      double dist_weight = exp(dist2 * iradius16);
-      double normal_weight = exp(-std::pow(1 - v.N() * t.N(), 2));
-      double weight = dist_weight;
-
-      average_positon += t.P() * weight;
-      average_normal += t.N() * weight;
-      sum_weight += weight;
+      vert_index = i;
+      max_neighbors_num = nbv_candidates->vert[i].neighbors.size();
+      std::cout<< i <<std::endl;
     }
-
-    CVertex temp_v = v;
-    temp_v.P() = average_positon / sum_weight;
-    temp_v.N() = average_normal / sum_weight;
-    update_temp.push_back(temp_v);
   }
 
+  CVertex v = nbv_candidates->vert[vert_index];
   nbv_candidates->vert.clear();
-  for (int i = 0; i < update_temp.size(); i++)
-  {
-    nbv_candidates->vert.push_back(update_temp[i]);
-  }
-  nbv_candidates->vn = nbv_candidates->vert.size(); 
+  nbv_candidates->vert.push_back(v);
 }

@@ -1456,6 +1456,13 @@ void DataMgr::saveSkeletonAsSkel(QString fileName)
   }
   strStream << endl;
 
+  strStream << "Original_BV " <<original.vert.size() <<endl;
+  for (int i = 0; i < original.vert.size(); ++i)
+  {
+    strStream << original.vert[i].is_barely_visible <<" ";
+  }
+  strStream << endl;
+
   outfile.write( strStream.str().c_str(), strStream.str().size() ); 
   outfile.close();
 }
@@ -1900,6 +1907,18 @@ void DataMgr::loadSkeletonFromSkel(QString fileName)
   }
   view_candidates.vn = iso_points.vert.size();
   }*/
+
+  sem >> str;
+  if (str == "Original_BV")
+  {
+    sem >> num;
+    for (int i = 0; i < num; ++i)
+    {
+      bool is_barely_visible;
+      sem >> is_barely_visible;
+      original.vert[i].is_barely_visible = is_barely_visible;
+    }
+  }
 }
 
 void DataMgr::saveFieldPoints(QString fileName)

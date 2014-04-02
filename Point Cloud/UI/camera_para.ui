@@ -1610,7 +1610,7 @@
     <widget class="QPushButton" name="pushButton_visibility_propagete">
      <property name="geometry">
       <rect>
-       <x>140</x>
+       <x>240</x>
        <y>30</y>
        <width>101</width>
        <height>31</height>
@@ -1618,6 +1618,32 @@
      </property>
      <property name="text">
       <string>Propagate</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_3">
+     <property name="geometry">
+      <rect>
+       <x>152</x>
+       <y>35</y>
+       <width>81</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Normalize!!</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_visibility_cluster">
+     <property name="geometry">
+      <rect>
+       <x>350</x>
+       <y>30</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>cluster</string>
      </property>
     </widget>
    </widget>

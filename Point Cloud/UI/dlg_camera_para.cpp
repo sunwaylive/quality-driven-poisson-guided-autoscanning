@@ -102,6 +102,7 @@ void CameraParaDlg::initConnects()
   /********visibility based NBV*******/
   connect(ui->pushButton_visibility_first_scan, SIGNAL(clicked()), this, SLOT(visibilityFirstScan()));
   connect(ui->pushButton_visibility_propagete, SIGNAL(clicked()), this, SLOT(visibilityPropagate()));
+  connect(ui->pushButton_visibility_cluster, SIGNAL(clicked()), this, SLOT(visibilityCandidatesCluster()));
   /********visibility based NBV*******/
 }
 
@@ -1450,4 +1451,11 @@ void CameraParaDlg::visibilityPropagate()
   global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Propagate", BoolValue(true));
   area->runVisibilityBasedNBV();
   global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Propagate", BoolValue(false));
+}
+
+void CameraParaDlg::visibilityCandidatesCluster()
+{
+  global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Candidates Cluster", BoolValue(true));
+  area->runVisibilityBasedNBV();
+  global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Candidates Cluster", BoolValue(false));
 }

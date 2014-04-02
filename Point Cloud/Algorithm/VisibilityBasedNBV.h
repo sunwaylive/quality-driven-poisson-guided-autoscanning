@@ -3,6 +3,7 @@
 
 #pragma once
 #include <iostream>
+#include <math.h>
 #include "PointCloudAlgorithm.h"
 #include "GlobalFunction.h"
 
@@ -20,7 +21,7 @@ public:
 
 private:
   void runVisibilityPropagate();
-  void runNBVCandidatesCluster();
+  void runVisibilityCandidatesCluster();
 
 private:
   RichParameterSet *para;
