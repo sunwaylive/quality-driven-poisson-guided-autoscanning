@@ -29,6 +29,7 @@
 #include "wrap/gui/coordinateframe.h"
 #include "Algorithm/Camera.h"
 #include "Algorithm/NBV.h"
+#include "Algorithm/VisibilityBasedNBV.h"
 
 //#include "Poisson/Geometry.h"
 //#include "Poisson/PoissonParam.h"
