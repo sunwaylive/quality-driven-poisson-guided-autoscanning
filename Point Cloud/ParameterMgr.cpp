@@ -26,6 +26,7 @@ ParameterMgr::ParameterMgr(void)
 	initPoissonParameter();
 	initCameraParameter();
 	initNBVParameter();
+  initVisibilityBasedNBVParameter();
 }
 
 ParameterMgr::~ParameterMgr(void)

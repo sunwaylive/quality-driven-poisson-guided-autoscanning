@@ -19,8 +19,13 @@ public:
   void clear();
 
 private:
+  void runVisibilityPropagate();
+  void runNBVCandidatesCluster();
+
+private:
   RichParameterSet *para;
   double           optimalDist;
   CMesh            *original;
+  CMesh            *nbv_candidates;
 };
 #endif

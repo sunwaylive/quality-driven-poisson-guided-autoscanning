@@ -650,7 +650,7 @@ void GLArea::runPointCloudAlgorithm(PointCloudAlgorithm& algorithm)
   paintMutex.lock();
 
   QString name = algorithm.getParameterSet()->getString("Algorithm Name");
-  cout << "*********************************** Start  " << name.toStdString() << "  *************************" << endl;
+  cout << "*********************** Start  " << name.toStdString() << "  *************" << endl;
   int starttime, stoptime, timeused;
   starttime = clock();
 
@@ -664,7 +664,7 @@ void GLArea::runPointCloudAlgorithm(PointCloudAlgorithm& algorithm)
   int currentUsedTime = timeused/double(CLOCKS_PER_SEC);
 
   cout << "time used:  " << timeused/double(CLOCKS_PER_SEC) << " seconds." << endl;
-  cout << "*********************************** End  " << name.toStdString() << "  ****************************" << endl;
+  cout << "*********************** End  " << name.toStdString() << "  ****************" << endl;
   cout << endl << endl;
 
   paintMutex.unlock();
@@ -1550,7 +1550,8 @@ void GLArea::runNBV()
 
 void GLArea::runVisibilityBasedNBV()
 {
-  if (dataMgr.isOriginalEmpty()) return;
+  //FIXME: commented for debug
+  //if (dataMgr.isOriginalEmpty()) return;
 
   runPointCloudAlgorithm(visibilityBasedNBV);
 
