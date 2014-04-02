@@ -14,7 +14,8 @@ GLArea::GLArea(QWidget *parent): QGLWidget(/*QGLFormat(QGL::DoubleBuffer | QGL::
   poisson(global_paraMgr.getPoissonParameterSet()),
   camera(global_paraMgr.getCameraParameterSet()),
   paintMutex(QMutex::NonRecursive),
-  nbv(global_paraMgr.getNBVParameterSet())
+  nbv(global_paraMgr.getNBVParameterSet()),
+  visibilityBasedNBV(global_paraMgr.getVisibilityBasedNBVParameterSet())
 {
   setMouseTracking(true); 
   isDragging = false;
@@ -1538,7 +1539,7 @@ void GLArea::runCamera()
 void GLArea::runNBV()
 {
   //fix: this should be iso_points
-  //if (dataMgr.isModelEmpty()) return;
+  if (dataMgr.isIsoPointsEmpty()) return;
 
   runPointCloudAlgorithm(nbv);
 
@@ -1546,6 +1547,18 @@ void GLArea::runNBV()
     StringValue(camera.getParameterSet()->getString("Algorithm Name")));
   emit needUpdateStatus();
 }
+
+void GLArea::runVisibilityBasedNBV()
+{
+  if (dataMgr.isOriginalEmpty()) return;
+
+  runPointCloudAlgorithm(visibilityBasedNBV);
+
+  para->setValue("Running Algorithm Name", 
+    StringValue(visibilityBasedNBV.getParameterSet()->getString("Algorithm Name")));
+  emit needUpdateStatus();
+}
+
 void GLArea::runNormalSmoothing()
 {
   if (dataMgr.isSamplesEmpty())

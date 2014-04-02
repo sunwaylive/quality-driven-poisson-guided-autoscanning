@@ -74,6 +74,7 @@ public:
 	void runPoisson();
 	void runCamera();
 	void runNBV();
+  void runVisibilityBasedNBV();
 
 	void cleanPickPoints();
 
@@ -202,6 +203,7 @@ public:
 	Poisson           poisson;
 	vcc::Camera       camera;
 	NBV               nbv;
+  VisibilityBasedNBV visibilityBasedNBV;
 
 	RichParameterSet* para;
 };

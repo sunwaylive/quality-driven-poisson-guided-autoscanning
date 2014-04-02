@@ -110,6 +110,7 @@ public:
     
     //*** visibility based NBV
     void visibilityFirstScan();
+    void visibilityPropagate();
     //*** visibility based NBV
 
 private:

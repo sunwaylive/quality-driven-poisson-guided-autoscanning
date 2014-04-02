@@ -464,3 +464,9 @@ void ParameterMgr::initNBVParameter()
   nbv.addParam(new RichInt("NBV Top N", 10));
   nbv.addParam(new RichBool("Need Update Direction With More Overlaps", true));
 }  
+
+void ParameterMgr::initVisibilityBasedNBVParameter()
+{
+  visibilityBasedNBV.addParam(new RichBool("Run Visibility Propagate", false));
+  visibilityBasedNBV.addParam(new RichString("Algorithm Name", "visibility Based NBV"));
+}

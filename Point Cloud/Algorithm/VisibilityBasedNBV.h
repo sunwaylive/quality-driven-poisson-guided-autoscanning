@@ -6,7 +6,7 @@
 #include "PointCloudAlgorithm.h"
 #include "GlobalFunction.h"
 
-class VisibilityBasedNBV : PointCloudAlgorithm
+class VisibilityBasedNBV : public PointCloudAlgorithm
 {
 public:
   VisibilityBasedNBV(RichParameterSet* _para);
@@ -14,7 +14,7 @@ public:
 
   void run();
   void setInput(DataMgr *pData);
-  void setParameterSet(RichParameterSet* _para) {para = _para}
+  void setParameterSet(RichParameterSet* _para) {para = _para;}
   RichParameterSet* getParameterSet() {return para;}
   void clear();
 

@@ -175,7 +175,6 @@ void Skeletonization::runStep3_UpdateRadius()
 
 Skeletonization::Skeletonization(RichParameterSet* _para)
 {
-  cout << "WLP constructed!!" << endl;
   para = _para;
   samples = NULL;
   original = NULL;

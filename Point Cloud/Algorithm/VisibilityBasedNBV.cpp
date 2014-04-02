@@ -14,12 +14,14 @@ VisibilityBasedNBV::~VisibilityBasedNBV()
 void VisibilityBasedNBV::setInput(DataMgr *pData)
 {
   optimalDist = global_paraMgr.camera.getDouble("Camera Dist To Model");
-
 }
 
 void VisibilityBasedNBV::run()
 {
-
+  if (para->getBool("Run Visibility Propagate"))
+  {
+    std::cout<< "Run Visibility Propagate" <<std::endl;
+  }
 }
 
 void VisibilityBasedNBV::clear()
