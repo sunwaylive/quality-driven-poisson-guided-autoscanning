@@ -1610,7 +1610,7 @@
     <widget class="QPushButton" name="pushButton_visibility_propagete">
      <property name="geometry">
       <rect>
-       <x>240</x>
+       <x>280</x>
        <y>30</y>
        <width>101</width>
        <height>31</height>
@@ -1623,10 +1623,10 @@
     <widget class="QLabel" name="label_3">
      <property name="geometry">
       <rect>
-       <x>152</x>
-       <y>35</y>
+       <x>174</x>
+       <y>33</y>
        <width>81</width>
-       <height>21</height>
+       <height>20</height>
       </rect>
      </property>
      <property name="text">
@@ -1636,14 +1636,79 @@
     <widget class="QPushButton" name="pushButton_visibility_cluster">
      <property name="geometry">
       <rect>
-       <x>350</x>
-       <y>30</y>
+       <x>30</x>
+       <y>80</y>
        <width>101</width>
        <height>31</height>
       </rect>
      </property>
      <property name="text">
       <string>cluster</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_visibility_NBV_scan">
+     <property name="geometry">
+      <rect>
+       <x>174</x>
+       <y>80</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>NBV Scan</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_20">
+     <property name="geometry">
+      <rect>
+       <x>135</x>
+       <y>38</y>
+       <width>54</width>
+       <height>12</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>----&gt;</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_21">
+     <property name="geometry">
+      <rect>
+       <x>244</x>
+       <y>37</y>
+       <width>54</width>
+       <height>12</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>----&gt;</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_22">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>90</y>
+       <width>54</width>
+       <height>12</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>----&gt;</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_23">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>90</y>
+       <width>54</width>
+       <height>12</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>----&gt;</string>
      </property>
     </widget>
    </widget>

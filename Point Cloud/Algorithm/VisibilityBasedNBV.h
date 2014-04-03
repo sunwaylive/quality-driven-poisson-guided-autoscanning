@@ -24,9 +24,10 @@ private:
   void runVisibilityCandidatesCluster();
 
 private:
-  RichParameterSet *para;
-  double           optimalDist;
-  CMesh            *original;
-  CMesh            *nbv_candidates;
+  RichParameterSet      *para;
+  double                optimalDist;
+  CMesh                 *original;
+  CMesh                 *nbv_candidates;
+  vector<ScanCandidate> *scan_candidates;
 };
 #endif

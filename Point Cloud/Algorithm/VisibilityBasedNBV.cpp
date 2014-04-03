@@ -14,16 +14,14 @@ VisibilityBasedNBV::~VisibilityBasedNBV()
 void VisibilityBasedNBV::setInput(DataMgr *pData)
 {
   if (!pData->getCurrentOriginal()->vert.empty())
-  {
     original = pData->getCurrentOriginal();
-  }else
-  {
+  else
     std::cout<<"ERROR: VisibilitBasedNBV::setInput empty original points"<<std::endl;
-  }
 
-  optimalDist = global_paraMgr.camera.getDouble("Camera Dist To Model")
-    / global_paraMgr.camera.getDouble("Predicted Model Size");
+  optimalDist = (global_paraMgr.camera.getDouble("Camera Far Distance") +global_paraMgr.camera.getDouble("Camera Near Distance")) 
+    / 2 / global_paraMgr.camera.getDouble("Predicted Model Size");
   nbv_candidates = pData->getNbvCandidates();
+  scan_candidates = pData->getScanCandidates();
 }
 
 void VisibilityBasedNBV::run()
@@ -36,6 +34,7 @@ void VisibilityBasedNBV::run()
   if (para->getBool("Run Visibility Candidates Cluster"))
   {
     runVisibilityCandidatesCluster();
+    return;
   }
 }
 
@@ -145,4 +144,13 @@ void VisibilityBasedNBV::runVisibilityCandidatesCluster()
   CVertex v = nbv_candidates->vert[vert_index];
   nbv_candidates->vert.clear();
   nbv_candidates->vert.push_back(v);
+
+  //store them in scan_candidates
+  scan_candidates->clear();
+  for (int i = 0; i < nbv_candidates->vert.size(); ++i)
+  {
+    ScanCandidate s =  make_pair(nbv_candidates->vert[i].P(), nbv_candidates->vert[i].N());
+    scan_candidates->push_back(s);
+  }
 }
+

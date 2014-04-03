@@ -103,6 +103,7 @@ void CameraParaDlg::initConnects()
   connect(ui->pushButton_visibility_first_scan, SIGNAL(clicked()), this, SLOT(visibilityFirstScan()));
   connect(ui->pushButton_visibility_propagete, SIGNAL(clicked()), this, SLOT(visibilityPropagate()));
   connect(ui->pushButton_visibility_cluster, SIGNAL(clicked()), this, SLOT(visibilityCandidatesCluster()));
+  connect(ui->pushButton_visibility_NBV_scan, SIGNAL(clicked()), this, SLOT(visibilityCandidateScan()));
   /********visibility based NBV*******/
 }
 
@@ -895,6 +896,7 @@ void CameraParaDlg::runViewPrune()
   global_paraMgr.nbv.setValue("Run View Prune", BoolValue(true));
   area->runNBV();
   global_paraMgr.nbv.setValue("Run View Prune", BoolValue(false));
+  updateTableViewNBVCandidate();
 }
 
 void CameraParaDlg::runSetIsoBottomConfidence()
@@ -1458,4 +1460,13 @@ void CameraParaDlg::visibilityCandidatesCluster()
   global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Candidates Cluster", BoolValue(true));
   area->runVisibilityBasedNBV();
   global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Candidates Cluster", BoolValue(false));
+  updateTableViewNBVCandidate();
+}
+
+void CameraParaDlg::visibilityCandidateScan()
+{
+  global_paraMgr.camera.setValue("Run NBV Scan", BoolValue(true));
+  area->runCamera();
+  global_paraMgr.camera.setValue("Run NBV Scan", BoolValue(false));
+  updateTabelViewScanResults();
 }
