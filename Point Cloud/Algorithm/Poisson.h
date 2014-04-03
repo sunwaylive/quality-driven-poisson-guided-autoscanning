@@ -48,6 +48,8 @@ private:
 
   void runSlicePoints();
 
+  void runBallPivotingReconstruction();
+
   void samplePointsFromMesh(CMesh& mesh, CMesh* points);
 
 private:

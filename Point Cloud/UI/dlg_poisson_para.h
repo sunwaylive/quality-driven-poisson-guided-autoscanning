@@ -43,6 +43,8 @@ public:
     void runSmoothGridConfidence();
     void runCutPointSlice();
 
+    void runBallPivotingReconstruction();
+
     void labelIsoPoints();
     void labelSmooth();
     void labelBoundaryPoints();
@@ -67,6 +69,7 @@ public:
     void computeSamplesConfidence();
     void computeIsoConfidence();
     void computeNewIsoConfidence();
+
 
 private:
   Ui::poisson_paras * ui;

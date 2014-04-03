@@ -69,6 +69,8 @@ void PoissonParaDlg::initConnects()
   connect(ui->pushButton_smooth_grid_confidence,SIGNAL(clicked()),this,SLOT(runSmoothGridConfidence()));
 
   connect(ui->pushButton_slice_points,SIGNAL(clicked()),this,SLOT(runCutPointSlice()));
+  connect(ui->pushButton_BallPivotingReconstruction,SIGNAL(clicked()),this,SLOT(runBallPivotingReconstruction()));
+
 }
 
  
@@ -372,6 +374,13 @@ void PoissonParaDlg::computeNewIsoConfidence()
   global_paraMgr.poisson.setValue("Compute New ISO Confidence", BoolValue(true));  
   area->runPoisson();
   global_paraMgr.poisson.setValue("Compute New ISO Confidence", BoolValue(false));  
+}
+
+void PoissonParaDlg::runBallPivotingReconstruction()
+{
+  global_paraMgr.poisson.setValue("Run Ball Pivoting Reconstruction", BoolValue(true));  
+  area->runPoisson();
+  global_paraMgr.poisson.setValue("Run Ball Pivoting Reconstruction", BoolValue(false));  
 }
 
 
