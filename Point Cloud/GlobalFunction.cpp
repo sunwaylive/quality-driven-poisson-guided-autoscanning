@@ -606,7 +606,7 @@ void GlobalFun::computeEigenWithTheta(CMesh* _samples, double radius)
 }
 
 
-double GlobalFun::computeEulerDist(Point3f& p1, Point3f& p2)
+double GlobalFun::computeEulerDist(const Point3f& p1, const Point3f& p2)
 {
 	double dist2 = (p1-p2).SquaredNorm();
 	if (dist2 < 1e-8 || dist2 > 1e8)
@@ -747,6 +747,19 @@ double GlobalFun::computeTriangleArea_3(Point3f& v0, Point3f& v1, Point3f& v2)
   return AP.Norm() / 2.0f;
 }
 
+bool GlobalFun::isPointVisible(const Point3f &target, const Point3f &view_pos, const Point3f &view_dir, const CMesh* mesh_surface)
+{
+  Point3f result, result_normal;
+  bool is_bv;
+  double intersection_dist = GlobalFun::computeMeshLineIntersectPoint(mesh_surface, view_pos, view_dir, result, result_normal, is_bv);
+  double target_dist = GlobalFun::computeEulerDist(target, view_pos);
+
+  if (intersection_dist < target_dist)
+    return false;
+  else
+    return true;
+}
+
 bool GlobalFun::isPointInBoundingBox(Point3f &v0, CMesh *mesh, double delta)
 {
   if (NULL == mesh)
@@ -775,7 +788,7 @@ bool GlobalFun::isPointInTriangle_3(Point3f& v0, Point3f& v1, Point3f& v2, Point
   else return false;
 }
 
-double GlobalFun::computeMeshLineIntersectPoint(CMesh *target, Point3f& p, Point3f& line_dir, Point3f& result, Point3f& result_normal, bool& is_barely_visible)
+double GlobalFun::computeMeshLineIntersectPoint(const CMesh *target, const Point3f& p, const Point3f& line_dir, Point3f& result, Point3f& result_normal, bool& is_barely_visible)
 {
   //compute the intersecting point between the ray and the mesh
   int n_face = target->face.size();

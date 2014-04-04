@@ -440,8 +440,6 @@ void GLArea::paintGL()
           //if the scanned mesh is invisible, then continue
           if (!((*it)->vert[0].is_scanned_visible)) continue;
 
-          //glDrawer.draw(GLDrawer::DOT, *it);
-
           if(para->getBool("Show Samples Quad"))
             glDrawer.draw(GLDrawer::QUADE, *it);
           if(para->getBool("Show Samples Dot"))

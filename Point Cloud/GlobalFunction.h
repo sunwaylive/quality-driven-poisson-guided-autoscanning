@@ -60,7 +60,7 @@ namespace GlobalFun
 	void static __cdecl find_original_neighbors(CGrid::iterator starta, CGrid::iterator enda, 
 	CGrid::iterator startb, CGrid::iterator endb, double radius); 
 
-	double computeEulerDist(Point3f& p1, Point3f& p2);
+	double computeEulerDist(const Point3f& p1, const Point3f& p2);
 	double computeEulerDistSquare(Point3f& p1, Point3f& p2);
 	double computeProjDist(Point3f& p1, Point3f& p2, Point3f& normal_of_p1);
 	double computeProjDistSquare(Point3f& p1, Point3f& p2, Point3f& normal_of_p1);
@@ -70,13 +70,14 @@ namespace GlobalFun
 	double getDoubleMAXIMUM();
 	vector<int> GetRandomCards(int Max);
 
+  bool isPointVisible(const Point3f &target, const Point3f &view_pos, const Point3f &view_dir, const CMesh* mesh_surface);
   bool isPointInBoundingBox(Point3f &v0, CMesh *mesh, double delta = 0.0f);
 	double computeRealAngleOfTwoVertor(Point3f v0, Point3f v1);
 	bool isTwoPoint3fTheSame(Point3f& v0, Point3f& v1);
 	bool isTwoPoint3fOpposite(Point3f& v0, Point3f& v1);
   double computeTriangleArea_3(Point3f& v0, Point3f& v1, Point3f& v2);
   bool isPointInTriangle_3(Point3f& v0, Point3f& v1, Point3f& v2, Point3f& p);
-  double computeMeshLineIntersectPoint(CMesh *target, Point3f& p, Point3f& line_dir, Point3f& result, Point3f& result_normal, bool& is_barely_visible);
+  double computeMeshLineIntersectPoint(const CMesh *target, const Point3f& p, const Point3f& line_dir, Point3f& result, Point3f& result_normal, bool& is_barely_visible);
   Point3f scalar2color(double scalar);
   void normalizeConfidence(vector<CVertex>& vertexes, float delta);
 
