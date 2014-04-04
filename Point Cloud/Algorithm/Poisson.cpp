@@ -9,6 +9,8 @@
 #include "Poisson/Ply.h"
 #include "Poisson/MultiGridOctreeData.h"
 #include "vcg/complex/trimesh/point_sampling.h"
+#include "vcg/complex/trimesh/create/ball_pivoting.h"
+
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -211,6 +213,13 @@ void Poisson::run()
   if (para->getBool("Run Cut Slice Points"))
   {
     runSlicePoints();
+    return;
+  }
+
+  if (para->getBool("Run Ball Pivoting Reconstruction"))
+  {
+    cout << "Run Ball Pivoting Reconstruction" << endl;
+    runBallPivotingReconstruction();
     return;
   }
   //runPoisson();
@@ -2429,3 +2438,12 @@ void Poisson::runAddWLOPtoISO()
   cout << "add points: " << add_samples.size() << endl;
 }
 
+void Poisson::runBallPivotingReconstruction()
+{
+  float Radius = 0.0;
+  float Clustering = 20/100.;
+  float CreaseThr = 90.;
+
+  tri::BallPivoting<CMesh> pivot(*samples, Radius, Clustering, CreaseThr); 
+  pivot.BuildMesh();
+}

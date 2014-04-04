@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -548,6 +548,19 @@
      </property>
      <property name="text">
       <string>Smooth ISO Confidence</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_BallPivotingReconstruction">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>520</y>
+       <width>211</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Ball Pivoting Reconstruction</string>
      </property>
     </widget>
    </widget>

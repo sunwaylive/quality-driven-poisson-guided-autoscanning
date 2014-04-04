@@ -254,6 +254,10 @@ void GLArea::paintGL()
         glDrawer.draw(GLDrawer::CIRCLE, dataMgr.getCurrentSamples());	
       if (para->getBool("Show Samples Sphere"))
         glDrawer.draw(GLDrawer::SPHERE, dataMgr.getCurrentSamples());	
+
+      glw.m = dataMgr.getCurrentSamples();
+      glw.Draw(GLW::DMSmooth, GLW::CMPerMesh, GLW::TMNone);
+
     }
 
     if (para->getBool("Show Normal")) 
