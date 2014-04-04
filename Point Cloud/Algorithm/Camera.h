@@ -34,6 +34,7 @@ namespace vcc{
     CMesh*                   original;
     vector<ScanCandidate>*   init_scan_candidates;//for initialization
     vector<ScanCandidate>*   scan_candidates;     
+    vector<ScanCandidate>*   scan_history;
     CMesh*                   current_scanned_mesh;
     CMesh*                   nbv_candidates;
     vector<CMesh* >*         scanned_results;

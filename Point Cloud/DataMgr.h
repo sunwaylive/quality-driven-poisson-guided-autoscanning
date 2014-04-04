@@ -89,6 +89,7 @@ public:
   CMesh*                  getNbvCandidates();
   vector<ScanCandidate>*  getInitCameraScanCandidates();
   vector<ScanCandidate>*  getScanCandidates();
+  vector<ScanCandidate>*  getScanHistory();
   vector<ScanCandidate>*  getSelectedScanCandidates();
   vector<ScanCandidate>*  getVisibilityFirstScanCandidates();
   CMesh*                  getCurrentScannedMesh();
@@ -185,6 +186,7 @@ public:
   
   //*** visibility based NBV
   vector<ScanCandidate> visibility_first_scan_candidates;
+  vector<ScanCandidate>  scan_history;
   //*** visibility based NBV
 
 };

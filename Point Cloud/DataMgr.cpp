@@ -491,8 +491,7 @@ CMesh*
   return &view_grid_points;
 }
 
-CMesh*
-  DataMgr::getNbvCandidates()
+CMesh* DataMgr::getNbvCandidates()
 {
   return &nbv_candidates;
 }
@@ -510,6 +509,11 @@ vector<ScanCandidate>* DataMgr::getVisibilityFirstScanCandidates()
 vector<ScanCandidate>* DataMgr::getScanCandidates()
 {
   return &scan_candidates;
+}
+
+vector<ScanCandidate>* DataMgr::getScanHistory()
+{
+  return &scan_history;
 }
 
 vector<ScanCandidate>* DataMgr::getSelectedScanCandidates()

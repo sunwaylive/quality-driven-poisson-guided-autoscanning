@@ -16,6 +16,7 @@ void vcc::Camera::setInput(DataMgr* pData)
     visibility_first_scan_candidates = pData->getVisibilityFirstScanCandidates();
     //candidates for nbv computing
     scan_candidates = pData->getScanCandidates();
+    scan_history = pData->getScanHistory();
     current_scanned_mesh = pData->getCurrentScannedMesh();
     scanned_results = pData->getScannedResults();
     nbv_candidates = pData->getNbvCandidates();
@@ -197,6 +198,7 @@ void vcc::Camera::runNBVScan()
     runVirtualScan();
     cout<< i++ << "th candidate Ends!" <<endl;
 
+    scan_history->push_back(*it);
     scanned_results->push_back(current_scanned_mesh);
   }
 }
@@ -249,6 +251,9 @@ void vcc::Camera::runVisibilityFirstScan()
     }
   }
   scanned_results->clear();
+
+  //release scan history
+  scan_history->clear();
 
   //run visibility first scan
   vector<ScanCandidate>::iterator it = visibility_first_scan_candidates->begin();

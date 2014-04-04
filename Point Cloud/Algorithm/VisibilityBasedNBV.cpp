@@ -22,6 +22,7 @@ void VisibilityBasedNBV::setInput(DataMgr *pData)
     / 2 / global_paraMgr.camera.getDouble("Predicted Model Size");
   nbv_candidates = pData->getNbvCandidates();
   scan_candidates = pData->getScanCandidates();
+  scan_history = pData->getScanHistory();
 }
 
 void VisibilityBasedNBV::run()

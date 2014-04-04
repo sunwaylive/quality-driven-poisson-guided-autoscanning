@@ -731,6 +731,7 @@ void CameraParaDlg::mergeScannedMeshWithOriginalByHand()
 
           CVertex new_v;
           new_v.m_index = ++index;
+          new_v.is_barely_visible = v.is_barely_visible;
           new_v.is_original = true;
           new_v.P() = v.P();
           new_v.N() = v.N();

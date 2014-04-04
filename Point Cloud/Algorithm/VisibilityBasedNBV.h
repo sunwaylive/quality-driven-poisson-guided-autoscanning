@@ -28,6 +28,7 @@ private:
   double                optimalDist;
   CMesh                 *original;
   CMesh                 *nbv_candidates;
+  vector<ScanCandidate> *scan_history;
   vector<ScanCandidate> *scan_candidates;
 };
 #endif
