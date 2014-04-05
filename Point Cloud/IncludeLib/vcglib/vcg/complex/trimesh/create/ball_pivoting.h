@@ -25,8 +25,8 @@ template <class MESH> class BallPivoting: public AdvancingFront<MESH> {
   typedef GridStaticPtr<typename MESH::VertexType, typename MESH::ScalarType > StaticGrid;        
   
   float radius;          //radius of the ball
-  float min_edge;        //min lenght of an edge 
-  float max_edge;        //min lenght of an edge 
+  float min_edge;        //min length of an edge 
+  float max_edge;        //min length of an edge 
   float max_angle;       //max angle between 2 faces (cos(angle) actually)  
   
  public:

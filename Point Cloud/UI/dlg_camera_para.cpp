@@ -104,6 +104,8 @@ void CameraParaDlg::initConnects()
   connect(ui->pushButton_visibility_propagete, SIGNAL(clicked()), this, SLOT(visibilityPropagate()));
   connect(ui->pushButton_visibility_cluster, SIGNAL(clicked()), this, SLOT(visibilityCandidatesCluster()));
   connect(ui->pushButton_visibility_NBV_scan, SIGNAL(clicked()), this, SLOT(visibilityCandidateScan()));
+  connect(ui->pushButton_visibility_merge, SIGNAL(clicked()), this, SLOT(visibilityMerge()));
+  connect(ui->pushButton_visibility_update, SIGNAL(clicked()), this, SLOT(visibilityUpdate()));
   /********visibility based NBV*******/
 }
 
@@ -731,7 +733,6 @@ void CameraParaDlg::mergeScannedMeshWithOriginalByHand()
 
           CVertex new_v;
           new_v.m_index = ++index;
-          new_v.is_barely_visible = v.is_barely_visible;
           new_v.is_original = true;
           new_v.P() = v.P();
           new_v.N() = v.N();
@@ -1470,4 +1471,18 @@ void CameraParaDlg::visibilityCandidateScan()
   area->runCamera();
   global_paraMgr.camera.setValue("Run NBV Scan", BoolValue(false));
   updateTabelViewScanResults();
+}
+
+void CameraParaDlg::visibilityMerge()
+{
+  global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Merge", BoolValue(true));
+  area->runVisibilityBasedNBV();
+  global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Merge", BoolValue(false));
+}
+
+void CameraParaDlg::visibilityUpdate()
+{
+  global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Update", BoolValue(true));
+  area->runVisibilityBasedNBV();
+  global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Update", BoolValue(false));
 }

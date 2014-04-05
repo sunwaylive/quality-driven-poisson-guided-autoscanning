@@ -1549,8 +1549,7 @@ void GLArea::runNBV()
 
 void GLArea::runVisibilityBasedNBV()
 {
-  //FIXME: commented for debug
-  //if (dataMgr.isOriginalEmpty()) return;
+  if (dataMgr.isOriginalEmpty()) return;
 
   runPointCloudAlgorithm(visibilityBasedNBV);
 

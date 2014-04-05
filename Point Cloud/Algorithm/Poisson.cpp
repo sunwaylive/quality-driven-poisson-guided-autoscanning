@@ -9,8 +9,6 @@
 #include "Poisson/Ply.h"
 #include "Poisson/MultiGridOctreeData.h"
 #include "vcg/complex/trimesh/point_sampling.h"
-#include "vcg/complex/trimesh/create/ball_pivoting.h"
-
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -2440,10 +2438,11 @@ void Poisson::runAddWLOPtoISO()
 
 void Poisson::runBallPivotingReconstruction()
 {
-  float Radius = 0.0;
-  float Clustering = 20/100.;
-  float CreaseThr = 90.;
+  float radius = 0.0;
+  float clustering = 20/100.;
+  float creaseThr = 90.;
 
-  tri::BallPivoting<CMesh> pivot(*samples, Radius, Clustering, CreaseThr); 
-  pivot.BuildMesh();
+  /*tri::BallPivoting<CMesh> pivot(*samples, radius, clustering, creaseThr); 
+  pivot.BuildMesh();*/
+  GlobalFun::ballPivotingReconstruction(*samples, radius, clustering, creaseThr);
 }

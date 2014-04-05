@@ -6,7 +6,7 @@
 #include "TriMesh.h"
 #include "TriMesh_algo.h"
 #include "ICP.h"
-//#include "LAP_Others/eigen.h"
+#include "vcg/complex/trimesh/create/ball_pivoting.h"//#include "LAP_Others/eigen.h"
 #include <fstream>
 #include <float.h>
 #include <QString>
@@ -70,7 +70,7 @@ namespace GlobalFun
 	double getDoubleMAXIMUM();
 	vector<int> GetRandomCards(int Max);
 
-  bool isPointVisible(const Point3f &target, const Point3f &view_pos, const Point3f &view_dir, const CMesh* mesh_surface);
+  bool isPointWellVisible(const Point3f &target, const Point3f &view_pos, const Point3f &view_dir, const CMesh* mesh_surface);
   bool isPointInBoundingBox(Point3f &v0, CMesh *mesh, double delta = 0.0f);
 	double computeRealAngleOfTwoVertor(Point3f v0, Point3f v1);
 	bool isTwoPoint3fTheSame(Point3f& v0, Point3f& v1);
@@ -80,6 +80,8 @@ namespace GlobalFun
   double computeMeshLineIntersectPoint(const CMesh *target, const Point3f& p, const Point3f& line_dir, Point3f& result, Point3f& result_normal, bool& is_barely_visible);
   Point3f scalar2color(double scalar);
   void normalizeConfidence(vector<CVertex>& vertexes, float delta);
+
+  void ballPivotingReconstruction(CMesh& mesh, double radius = 0.0, double clustering = 20 / 100, double creaseThr = 90.0f);
 
   void removeOutliers(CMesh *mesh, double radius, double remove_percent);
   void removeOutliers(CMesh *mesh, double radius, int remove_num);

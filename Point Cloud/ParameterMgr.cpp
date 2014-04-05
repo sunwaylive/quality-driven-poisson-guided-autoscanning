@@ -451,14 +451,10 @@ void ParameterMgr::initNBVParameter()
   //nbv.addParam(new RichBool("Use Average Confidence", false));
   nbv.addParam(new RichBool("Use NBV Test1", false));
   nbv.addParam(new RichBool("Use Max Propagation", true));
-
   nbv.addParam(new RichDouble("Confidence Separation Value", 0.85));
-
   nbv.addParam(new RichDouble("Max Ray Steps Para", 1.5));
   nbv.addParam(new RichDouble("Ray Resolution Para", 0.511111111111111));
-
   nbv.addParam(new RichDouble("View Preserve Angle Threshold", 55));
-
   nbv.addParam(new RichDouble("Confidence Filter Threshold", 0.6f));
   nbv.addParam(new RichDouble("Propagate One Point Index", 0));
   nbv.addParam(new RichInt("View Bin Each Axis", 10));
@@ -472,4 +468,6 @@ void ParameterMgr::initVisibilityBasedNBVParameter()
   visibilityBasedNBV.addParam(new RichBool("Run Visibility Propagate", false));
   visibilityBasedNBV.addParam(new RichString("Algorithm Name", "visibility Based NBV"));
   visibilityBasedNBV.addParam(new RichBool("Run Visibility Candidates Cluster", false));
+  visibilityBasedNBV.addParam(new RichBool("Run Visibility Update", false));
+  visibilityBasedNBV.addParam(new RichBool("Run Visibility Merge", false));
 }

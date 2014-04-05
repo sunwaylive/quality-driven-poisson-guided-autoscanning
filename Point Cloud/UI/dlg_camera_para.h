@@ -113,6 +113,8 @@ public:
     void visibilityPropagate();
     void visibilityCandidatesCluster();
     void visibilityCandidateScan();
+    void visibilityUpdate();
+    void visibilityMerge();
     //*** visibility based NBV
 
 private:

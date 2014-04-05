@@ -268,6 +268,9 @@ void vcc::Camera::runVisibilityFirstScan()
     runVirtualScan();
     cout<<i++ <<"th initial scan done!" <<endl;
 
+    //add to scan history
+    scan_history->push_back(*it);
+
     //merge scanned mesh with original
     int index = 0;
     if (!original->vert.empty()) index = original->vert.back().m_index;

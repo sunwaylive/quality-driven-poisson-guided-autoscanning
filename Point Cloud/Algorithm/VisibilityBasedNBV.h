@@ -6,6 +6,7 @@
 #include <math.h>
 #include "PointCloudAlgorithm.h"
 #include "GlobalFunction.h"
+#include <QMessageBox>
 
 class VisibilityBasedNBV : public PointCloudAlgorithm
 {
@@ -22,13 +23,17 @@ public:
 private:
   void runVisibilityPropagate();
   void runVisibilityCandidatesCluster();
+  void runVisibilityUpdate();
+  void runVisibilityMerge();
 
 private:
   RichParameterSet      *para;
   double                optimalDist;
   CMesh                 *original;
+  CMesh                 *model;
   CMesh                 *nbv_candidates;
   vector<ScanCandidate> *scan_history;
   vector<ScanCandidate> *scan_candidates;
+  vector<CMesh *>*       scanned_results;
 };
 #endif

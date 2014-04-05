@@ -18,6 +18,9 @@ void VisibilityBasedNBV::setInput(DataMgr *pData)
   else
     std::cout<<"ERROR: VisibilitBasedNBV::setInput empty original points"<<std::endl;
 
+  model = pData->getCurrentModel();
+  scanned_results = pData->getScannedResults();
+
   optimalDist = (global_paraMgr.camera.getDouble("Camera Far Distance") +global_paraMgr.camera.getDouble("Camera Near Distance")) 
     / 2 / global_paraMgr.camera.getDouble("Predicted Model Size");
   nbv_candidates = pData->getNbvCandidates();
@@ -35,6 +38,16 @@ void VisibilityBasedNBV::run()
   if (para->getBool("Run Visibility Candidates Cluster"))
   {
     runVisibilityCandidatesCluster();
+    return;
+  }
+  if (para->getBool("Run Visibility Update"))
+  {
+    runVisibilityUpdate();
+    return;
+  }
+  if (para->getBool("Run Visibility Merge"))
+  {
+    runVisibilityMerge();
     return;
   }
 }
@@ -66,6 +79,7 @@ void VisibilityBasedNBV::runVisibilityPropagate()
 void VisibilityBasedNBV::runVisibilityCandidatesCluster()
 {
   double radius = global_paraMgr.data.getDouble("CGrid Radius");
+  double nbv_minimum_dist = radius;
   double radius2 = radius * radius;
   double iradius16 = -4/radius2;
 
@@ -118,17 +132,20 @@ void VisibilityBasedNBV::runVisibilityCandidatesCluster()
       current_shift = current_shift < shift_dist ? current_shift : shift_dist;
     }
 
-    nbv_candidates->vert.clear();
-    for (int i = 0; i < update_temp.size(); i++)
-      nbv_candidates->vert.push_back(update_temp[i]);
+    if (!update_temp.empty())
+    {
+      nbv_candidates->vert.clear();
+      for (int i = 0; i < update_temp.size(); i++)
+        nbv_candidates->vert.push_back(update_temp[i]);
 
-    nbv_candidates->vn = nbv_candidates->vert.size(); 
+      nbv_candidates->vn = nbv_candidates->vert.size(); 
 
-    update_temp.clear();
+      update_temp.clear();
+    }
   }while(current_shift >= shift_dist_stop);
 
   //get selected NBV
-  double nbv_select_radius = 0.1; 
+  double nbv_select_radius = radius; 
   GlobalFun::computeBallNeighbors(nbv_candidates, NULL, nbv_select_radius, nbv_candidates->bbox);
   int max_neighbors_num = nbv_candidates->vert[0].neighbors.size();
   int vert_index = 0;
@@ -146,12 +163,66 @@ void VisibilityBasedNBV::runVisibilityCandidatesCluster()
   nbv_candidates->vert.clear();
   nbv_candidates->vert.push_back(v);
 
-  //store them in scan_candidates
+  //check the minimum distance and store them in scan_candidates
   scan_candidates->clear();
   for (int i = 0; i < nbv_candidates->vert.size(); ++i)
   {
-    ScanCandidate s =  make_pair(nbv_candidates->vert[i].P(), nbv_candidates->vert[i].N());
-    scan_candidates->push_back(s);
+    CVertex &c = nbv_candidates->vert[i];
+
+    if (scan_history->empty())
+    {
+      ScanCandidate s =  make_pair(nbv_candidates->vert[i].P(), nbv_candidates->vert[i].N());
+      scan_candidates->push_back(s);
+      continue;
+    }
+    
+    for (int j = 0; j < scan_history->size(); ++j)
+    {
+      if (GlobalFun::computeEulerDist(c.P(), scan_history->at(j).first) >= nbv_minimum_dist)
+      {
+        ScanCandidate s =  make_pair(nbv_candidates->vert[i].P(), nbv_candidates->vert[i].N());
+        scan_candidates->push_back(s);
+      }
+    }
   }
 }
 
+void VisibilityBasedNBV::runVisibilityMerge()
+{
+  for (int i = 0; i < scanned_results->size(); ++i)
+  {
+    CMesh *sr = scanned_results->at(i);
+    int index = original->vert.back().m_index;
+
+    for (int j = 0; j < sr->vert.size(); ++j)
+    {
+      CVertex &v = sr->vert[j];
+      v.m_index = ++index;
+      v.is_scanned = false;
+      v.is_original = true;
+      original->vert.push_back(v);
+    }
+  }
+  original->vn = original->vert.size();
+}
+
+void VisibilityBasedNBV::runVisibilityUpdate()
+{
+  //CMesh *target_mesh = original;
+  CMesh *target_mesh = model;
+  //first we should reconstruct the target surface
+  //GlobalFuns:ballPivotingReconstruction(*target_mesh);
+
+  for (int i = 0; i < original->vert.size(); ++i)
+  {
+    CVertex &v = original->vert[i];
+
+    if (!v.is_barely_visible) continue;
+
+    for (int j = 0; j < scan_history->size(); ++j)
+    {
+      bool is_wv = GlobalFun::isPointWellVisible(v, scan_history->at(j).first, scan_history->at(j).second, target_mesh);
+      v.is_barely_visible = (v.is_barely_visible && !is_wv);  //make sure all view point can't well-see v.
+    }
+  }
+}

@@ -747,17 +747,17 @@ double GlobalFun::computeTriangleArea_3(Point3f& v0, Point3f& v1, Point3f& v2)
   return AP.Norm() / 2.0f;
 }
 
-bool GlobalFun::isPointVisible(const Point3f &target, const Point3f &view_pos, const Point3f &view_dir, const CMesh* mesh_surface)
+bool GlobalFun::isPointWellVisible(const Point3f &target, const Point3f &view_pos, const Point3f &view_dir, const CMesh* mesh_surface)
 {
   Point3f result, result_normal;
-  bool is_bv;
+  bool is_bv = true;
   double intersection_dist = GlobalFun::computeMeshLineIntersectPoint(mesh_surface, view_pos, view_dir, result, result_normal, is_bv);
   double target_dist = GlobalFun::computeEulerDist(target, view_pos);
 
-  if (intersection_dist < target_dist)
-    return false;
-  else
+  if (intersection_dist > target_dist && !is_bv)
     return true;
+  else
+    return false;
 }
 
 bool GlobalFun::isPointInBoundingBox(Point3f &v0, CMesh *mesh, double delta)
@@ -812,7 +812,7 @@ double GlobalFun::computeMeshLineIntersectPoint(const CMesh *target, const Point
       //the line cross the point: pos, and line vector is viewray_iter 
       double tmp = face_norm * line_dir;
 
-      if (abs(tmp) < 1e-10)
+      if (abs(tmp) < EPS)
       continue;
 
       double tmp2 = 1.0f / tmp;
@@ -1406,4 +1406,11 @@ void GlobalFun::normalizeConfidence(vector<CVertex>& vertexes, float delta)
     v.eigen_confidence = (v.eigen_confidence - min_confidence) / space;
     v.eigen_confidence += delta;
   }
+}
+
+
+void GlobalFun::ballPivotingReconstruction(CMesh &mesh, double radius, double clustering, double creaseThr)
+{
+  tri::BallPivoting<CMesh> pivot(mesh,radius, clustering, creaseThr); 
+  pivot.BuildMesh();
 }
