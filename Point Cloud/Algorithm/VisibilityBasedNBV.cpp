@@ -32,21 +32,25 @@ void VisibilityBasedNBV::run()
 {
   if (para->getBool("Run Visibility Propagate"))
   {
+    std::cout<<"Run Visibility Propagate" <<std::endl;
     runVisibilityPropagate();
     return;
   }
   if (para->getBool("Run Visibility Candidates Cluster"))
   {
+    std::cout<<"Run Visibility Candidates Cluster" <<std::endl;
     runVisibilityCandidatesCluster();
     return;
   }
   if (para->getBool("Run Visibility Update"))
   {
+    std::cout<<"Run VIsibility Update" <<std::endl;
     runVisibilityUpdate();
     return;
   }
   if (para->getBool("Run Visibility Merge"))
   {
+    std::cout<<"Run Visibility Merge" <<std::endl;
     runVisibilityMerge();
     return;
   }
@@ -185,6 +189,15 @@ void VisibilityBasedNBV::runVisibilityCandidatesCluster()
       }
     }
   }
+
+  std::cout<<"scan candidate size:" << scan_candidates->size() <<std::endl;
+  //if no scan_candidate is found, then quit
+  /* if (scan_candidates->empty())
+  {
+  QMessageBox msgBox;
+  msgBox.setText("algorithm has completed!");
+  msgBox.exec();
+  }*/
 }
 
 void VisibilityBasedNBV::runVisibilityMerge()
