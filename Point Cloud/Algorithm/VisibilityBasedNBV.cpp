@@ -182,8 +182,13 @@ void VisibilityBasedNBV::runVisibilityCandidatesCluster()
     }
     
     for (int j = 0; j < scan_history->size() && is_qualified; ++j)
+    {
       if (GlobalFun::computeEulerDist(c.P(), scan_history->at(j).first) < nbv_minimum_dist)
+      {
+        std::cout<<" too near to former scan positions" <<std::endl;
         is_qualified = false;
+      }
+    }
 
     if (is_qualified)
     {
@@ -223,7 +228,7 @@ void VisibilityBasedNBV::runVisibilityMerge()
 
 void VisibilityBasedNBV::runVisibilityUpdate()
 {
-  double camera_fov = global_paraMgr.camera.getDouble("Camera FOV Angle");
+  double camera_fov_angle = global_paraMgr.camera.getDouble("Camera FOV Angle");
   double camera_far_dist = global_paraMgr.camera.getDouble("Camera Far Distance");
   double camera_near_dist = global_paraMgr.camera.getDouble("Camera Near Distance");
   //CMesh *target_mesh = original;
@@ -237,8 +242,9 @@ void VisibilityBasedNBV::runVisibilityUpdate()
 
     for (int j = 0; j < scan_history->size() && v.is_barely_visible; ++j)
     {
-      //two issues:
-      //for each ray, we should compute the ray_dir and check whether it's inside the camera's FOV
+      //for each ray:
+      //1.we should compute the ray_dir;
+      //2.check whether it's inside the camera's FOV
       Point3f pos = scan_history->at(j).first;
       Point3f camera_dir = scan_history->at(j).second;
       Point3f ray_dir = v.P() - pos;
@@ -246,8 +252,11 @@ void VisibilityBasedNBV::runVisibilityUpdate()
       double angle = GlobalFun::computeRealAngleOfTwoVertor(ray_dir, camera_dir);
       double d = GlobalFun::computeEulerDist(pos, v.P());
 
-      //if (angle > camera_fov || d > camera_far_dist || d < camera_near_dist) //out of camera fov
-      //  continue;
+      if (angle > camera_fov_angle || d > camera_far_dist || d < camera_near_dist) //out of camera fov
+      {
+        std::cout<<"point out of camera FOV" <<std::endl;
+        continue;
+      }
 
       bool is_wv = GlobalFun::isPointWellVisible(v, pos, ray_dir, target_mesh);
       if (is_wv)

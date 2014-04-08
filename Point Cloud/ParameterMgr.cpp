@@ -13,8 +13,7 @@ ParameterMgr::ParameterMgr(void)
 		return;
 	}
 
-	grid_r = 0.2;
-
+	grid_r = 0.22;
 
 	initDataMgrParameter();
 	initDrawerParameter();		
@@ -73,7 +72,7 @@ void ParameterMgr::initGlareaParameter()
 	glarea.addParam(new RichBool("Show Samples Dot", true) );
 	glarea.addParam(new RichBool("Show Samples Circle", false) );
 	glarea.addParam(new RichBool("Show Samples Sphere", false) );
-	glarea.addParam(new RichBool("Show ISO Points", true) );
+	glarea.addParam(new RichBool("Show ISO Points", false) );
 	glarea.addParam(new RichBool("Use ISO Interval", false) );
 
 	glarea.addParam(new RichBool("Show View Grids", false));
@@ -154,7 +153,7 @@ void ParameterMgr::initDrawerParameter()
 	drawer.addParam(new RichDouble("Sample Draw Width", 0.005));
 	drawer.addParam(new RichDouble("Sample Dot Size", 6));
 	drawer.addParam(new RichDouble("ISO Dot Size", 4));
-	drawer.addParam(new RichDouble("Original Dot Size", 1));
+	drawer.addParam(new RichDouble("Original Dot Size", 10));
 	drawer.addParam(new RichDouble("Normal Line Width", 2));
 	drawer.addParam(new RichDouble("Normal Line Length", 0.25f));
 
@@ -415,6 +414,7 @@ void ParameterMgr::initCameraParameter()
   camera.addParam(new RichDouble("Predicted Model Size", 20.0f));  //cm lion:20
   camera.addParam(new RichDouble("Camera Horizon Dist", 14.0f));   //cm
   camera.addParam(new RichDouble("Camera Vertical Dist", 18.0f));  //cm
+  camera.addParam(new RichDouble("Camera FOV Angle", 28.07)); // tan-1(Vert_dist/2 / far_dist)
   camera.addParam(new RichDouble("Camera Dist To Model", ((30.0f + 17.0f)/2 + 0.6 * 20.0f))); //cm
 
   camera.addParam(new RichDouble("Camera Resolution",1.0f / 50.0f));

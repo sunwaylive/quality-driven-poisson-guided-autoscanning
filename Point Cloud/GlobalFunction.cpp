@@ -750,11 +750,11 @@ double GlobalFun::computeTriangleArea_3(Point3f& v0, Point3f& v1, Point3f& v2)
 bool GlobalFun::isPointWellVisible(const Point3f &target, const Point3f &view_pos, const Point3f &view_dir, const CMesh* mesh_surface)
 {
   Point3f result, result_normal;
-  bool is_bv = true;
+  bool is_bv = false;
   double intersection_dist = GlobalFun::computeMeshLineIntersectPoint(mesh_surface, view_pos, view_dir, result, result_normal, is_bv);
   double target_dist = GlobalFun::computeEulerDist(target, view_pos);
 
-  if (intersection_dist > target_dist && !is_bv)
+  if (abs(intersection_dist - target_dist) < EPS && !is_bv)
     return true;
   else
     return false;
