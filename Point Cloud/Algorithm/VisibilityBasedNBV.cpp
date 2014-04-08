@@ -82,7 +82,7 @@ void VisibilityBasedNBV::runVisibilityPropagate()
 
 void VisibilityBasedNBV::runVisibilityCandidatesCluster()
 {
-  double radius = global_paraMgr.data.getDouble("CGrid Radius");
+  double radius = 0.5; //global_paraMgr.data.getDouble("CGrid Radius");
   double nbv_minimum_dist = radius;
   double radius2 = radius * radius;
   double iradius16 = -4/radius2;
@@ -139,8 +139,8 @@ void VisibilityBasedNBV::runVisibilityCandidatesCluster()
     if (!update_temp.empty())
     {
       nbv_candidates->vert.clear();
-      for (int i = 0; i < update_temp.size(); i++)
-        nbv_candidates->vert.push_back(update_temp[i]);
+      for (int k = 0; k < update_temp.size(); k++)
+        nbv_candidates->vert.push_back(update_temp[k]);
 
       nbv_candidates->vn = nbv_candidates->vert.size(); 
 
@@ -181,7 +181,7 @@ void VisibilityBasedNBV::runVisibilityCandidatesCluster()
       continue;
     }
     
-    for (int j = 0; j < scan_history->size(); ++j)
+    for (int j = 0; j < scan_history->size() && is_qualified; ++j)
       if (GlobalFun::computeEulerDist(c.P(), scan_history->at(j).first) < nbv_minimum_dist)
         is_qualified = false;
 
@@ -223,6 +223,9 @@ void VisibilityBasedNBV::runVisibilityMerge()
 
 void VisibilityBasedNBV::runVisibilityUpdate()
 {
+  double camera_fov = global_paraMgr.camera.getDouble("Camera FOV Angle");
+  double camera_far_dist = global_paraMgr.camera.getDouble("Camera Far Distance");
+  double camera_near_dist = global_paraMgr.camera.getDouble("Camera Near Distance");
   //CMesh *target_mesh = original;
   CMesh *target_mesh = model;
   //first we should reconstruct the target surface
@@ -232,11 +235,25 @@ void VisibilityBasedNBV::runVisibilityUpdate()
   {
     CVertex &v = original->vert[i];
 
-    if (!v.is_barely_visible) continue;
-
-    for (int j = 0; j < scan_history->size(); ++j)
+    for (int j = 0; j < scan_history->size() && v.is_barely_visible; ++j)
     {
-      bool is_wv = GlobalFun::isPointWellVisible(v, scan_history->at(j).first, scan_history->at(j).second, target_mesh);
+      //two issues:
+      //for each ray, we should compute the ray_dir and check whether it's inside the camera's FOV
+      Point3f pos = scan_history->at(j).first;
+      Point3f camera_dir = scan_history->at(j).second;
+      Point3f ray_dir = v.P() - pos;
+      
+      double angle = GlobalFun::computeRealAngleOfTwoVertor(ray_dir, camera_dir);
+      double d = GlobalFun::computeEulerDist(pos, v.P());
+
+      //if (angle > camera_fov || d > camera_far_dist || d < camera_near_dist) //out of camera fov
+      //  continue;
+
+      bool is_wv = GlobalFun::isPointWellVisible(v, pos, ray_dir, target_mesh);
+      if (is_wv)
+      {
+         std::cout<<"well see!: "<< is_wv <<std::endl;
+      }
       v.is_barely_visible = (v.is_barely_visible && !is_wv);  //make sure all view point can't well-see v.
     }
   }
