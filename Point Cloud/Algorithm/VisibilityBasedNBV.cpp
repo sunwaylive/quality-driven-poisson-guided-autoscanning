@@ -172,6 +172,7 @@ void VisibilityBasedNBV::runVisibilityCandidatesCluster()
   for (int i = 0; i < nbv_candidates->vert.size(); ++i)
   {
     CVertex &c = nbv_candidates->vert[i];
+    bool is_qualified = true;
 
     if (scan_history->empty())
     {
@@ -181,12 +182,13 @@ void VisibilityBasedNBV::runVisibilityCandidatesCluster()
     }
     
     for (int j = 0; j < scan_history->size(); ++j)
+      if (GlobalFun::computeEulerDist(c.P(), scan_history->at(j).first) < nbv_minimum_dist)
+        is_qualified = false;
+
+    if (is_qualified)
     {
-      if (GlobalFun::computeEulerDist(c.P(), scan_history->at(j).first) >= nbv_minimum_dist)
-      {
-        ScanCandidate s =  make_pair(nbv_candidates->vert[i].P(), nbv_candidates->vert[i].N());
-        scan_candidates->push_back(s);
-      }
+      ScanCandidate s =  make_pair(nbv_candidates->vert[i].P(), nbv_candidates->vert[i].N());
+      scan_candidates->push_back(s);
     }
   }
 
