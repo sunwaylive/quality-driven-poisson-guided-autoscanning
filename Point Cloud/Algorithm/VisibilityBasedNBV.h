@@ -23,8 +23,10 @@ public:
 private:
   void runVisibilityPropagate();
   void runVisibilityCandidatesCluster();
+    void runVisibilityMerge();
   void runVisibilityUpdate();
-  void runVisibilityMerge();
+
+  void runVisibilityOneKeyIteration();
 
 private:
   RichParameterSet      *para;

@@ -1586,12 +1586,12 @@
       <rect>
        <x>10</x>
        <y>10</y>
-       <width>61</width>
+       <width>101</width>
        <height>16</height>
       </rect>
      </property>
      <property name="text">
-      <string>Easy one：</string>
+      <string>Visibility based：</string>
      </property>
     </widget>
     <widget class="QPushButton" name="pushButton_visibility_first_scan">
@@ -1610,8 +1610,8 @@
     <widget class="QPushButton" name="pushButton_visibility_propagete">
      <property name="geometry">
       <rect>
-       <x>280</x>
-       <y>30</y>
+       <x>30</x>
+       <y>70</y>
        <width>101</width>
        <height>31</height>
       </rect>
@@ -1636,8 +1636,8 @@
     <widget class="QPushButton" name="pushButton_visibility_cluster">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>80</y>
+       <x>170</x>
+       <y>70</y>
        <width>101</width>
        <height>31</height>
       </rect>
@@ -1649,8 +1649,8 @@
     <widget class="QPushButton" name="pushButton_visibility_NBV_scan">
      <property name="geometry">
       <rect>
-       <x>174</x>
-       <y>80</y>
+       <x>320</x>
+       <y>70</y>
        <width>101</width>
        <height>31</height>
       </rect>
@@ -1689,7 +1689,7 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>90</y>
+       <y>80</y>
        <width>54</width>
        <height>12</height>
       </rect>
@@ -1702,7 +1702,7 @@
      <property name="geometry">
       <rect>
        <x>140</x>
-       <y>90</y>
+       <y>80</y>
        <width>54</width>
        <height>12</height>
       </rect>
@@ -1715,7 +1715,7 @@
      <property name="geometry">
       <rect>
        <x>280</x>
-       <y>90</y>
+       <y>80</y>
        <width>41</width>
        <height>16</height>
       </rect>
@@ -1728,7 +1728,7 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>130</y>
+       <y>120</y>
        <width>41</width>
        <height>16</height>
       </rect>
@@ -1740,8 +1740,8 @@
     <widget class="QPushButton" name="pushButton_visibility_update">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>130</y>
+       <x>190</x>
+       <y>110</y>
        <width>121</width>
        <height>31</height>
       </rect>
@@ -1753,14 +1753,79 @@
     <widget class="QPushButton" name="pushButton_visibility_merge">
      <property name="geometry">
       <rect>
-       <x>320</x>
-       <y>80</y>
+       <x>30</x>
+       <y>110</y>
        <width>131</width>
        <height>31</height>
       </rect>
      </property>
      <property name="text">
       <string>Merge to original</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_visibility_onekey_iteration">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>150</y>
+       <width>131</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Visibility Iteration</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_25">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>120</y>
+       <width>54</width>
+       <height>12</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>----&gt;</string>
+     </property>
+    </widget>
+    <widget class="Line" name="line_9">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>58</y>
+       <width>451</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="Line" name="line_10">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>139</y>
+       <width>451</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="Line" name="line_11">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>180</y>
+       <width>451</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </widget>
