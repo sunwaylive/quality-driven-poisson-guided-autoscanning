@@ -106,7 +106,7 @@ void CameraParaDlg::initConnects()
   connect(ui->pushButton_visibility_NBV_scan, SIGNAL(clicked()), this, SLOT(visibilityCandidateScan()));
   connect(ui->pushButton_visibility_merge, SIGNAL(clicked()), this, SLOT(visibilityMerge()));
   connect(ui->pushButton_visibility_update, SIGNAL(clicked()), this, SLOT(visibilityUpdate()));
-  connect(ui->pushButton_visibility_onekey_iteration, SIGNAL(clicked()), this, SLOT(visibilityOnekeyIteration()));
+  connect(ui->pushButton_visibility_one_key_iteration, SIGNAL(clicked()), this, SLOT(runVisibilityOneKeyNbvIteration()));
   /********visibility based NBV*******/
 }
 
@@ -1488,9 +1488,13 @@ void CameraParaDlg::visibilityUpdate()
   global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Update", BoolValue(false));
 }
 
-void CameraParaDlg::visibilityOnekeyIteration()
+void CameraParaDlg::runVisibilityOneKeyNbvIteration()
 {
-  global_paraMgr.visibilityBasedNBV.setValue("Run Visibility One Key Iteration", BoolValue(true));
-  area->runVisibilityBasedNBV();
-  global_paraMgr.visibilityBasedNBV.setValue("Run Visibility One Key Iteration", BoolValue(false));
+  std::cout <<"One key visibility NBV begins:" <<std::endl;
+  visibilityPropagate();
+  visibilityCandidatesCluster();
+  visibilityCandidateScan();
+  visibilityMerge();
+  //add normalize
+  visibilityUpdate();
 }

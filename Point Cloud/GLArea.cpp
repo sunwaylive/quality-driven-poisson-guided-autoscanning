@@ -1537,7 +1537,6 @@ void GLArea::runCamera()
 
 void GLArea::runNBV()
 {
-  //fix: this should be iso_points
   if (dataMgr.isIsoPointsEmpty()) return;
 
   runPointCloudAlgorithm(nbv);
@@ -1549,7 +1548,11 @@ void GLArea::runNBV()
 
 void GLArea::runVisibilityBasedNBV()
 {
-  if (dataMgr.isOriginalEmpty()) return;
+  if (dataMgr.isOriginalEmpty()) 
+  {
+    std::cout<<" original point empty! Quit!" <<std::endl;
+    return;
+  }
 
   runPointCloudAlgorithm(visibilityBasedNBV);
 

@@ -1763,7 +1763,7 @@
       <string>Merge to original</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_visibility_onekey_iteration">
+    <widget class="QPushButton" name="pushButton_visibility_one_key_iteration">
      <property name="geometry">
       <rect>
        <x>30</x>

@@ -54,12 +54,6 @@ void VisibilityBasedNBV::run()
     runVisibilityMerge();
     return;
   }
-  if (para->getBool("Run Visibility One Key Iteration"))
-  {
-    std::cout<<"Run Visibility One Key Iteration" <<std::endl;
-    runVisibilityOneKeyIteration();
-    return;
-  }
 }
 
 void VisibilityBasedNBV::clear()
@@ -272,9 +266,4 @@ void VisibilityBasedNBV::runVisibilityUpdate()
       v.is_barely_visible = (v.is_barely_visible && !is_wv);  //make sure all view point can't well-see v.
     }
   }
-}
-
-void VisibilityBasedNBV::runVisibilityOneKeyIteration()
-{
-
 }

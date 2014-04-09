@@ -115,7 +115,7 @@ public:
     void visibilityCandidateScan();
     void visibilityUpdate();
     void visibilityMerge();
-    void visibilityOnekeyIteration();
+    void runVisibilityOneKeyNbvIteration();
     //*** visibility based NBV
 
 private:
