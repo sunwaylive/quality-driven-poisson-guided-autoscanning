@@ -286,4 +286,7 @@ void vcc::Camera::runVisibilityFirstScan()
     }
     original->vn = original->vert.size();
   }
+
+  int knn = global_paraMgr.norSmooth.getInt("PCA KNN");
+  GlobalFun::computePCANormal(original, knn);
 }

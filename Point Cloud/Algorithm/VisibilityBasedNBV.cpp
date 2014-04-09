@@ -228,6 +228,11 @@ void VisibilityBasedNBV::runVisibilityMerge()
 
 void VisibilityBasedNBV::runVisibilityUpdate()
 {
+  /* first: compute PCA normal for the points */
+  int knn = global_paraMgr.norSmooth.getInt("PCA KNN");
+  GlobalFun::computePCANormal(original, knn);
+
+  /* second: update the visibility of the points */
   double camera_fov_angle = global_paraMgr.camera.getDouble("Camera FOV Angle");
   double camera_far_dist = global_paraMgr.camera.getDouble("Camera Far Distance");
   double camera_near_dist = global_paraMgr.camera.getDouble("Camera Near Distance");
@@ -254,15 +259,14 @@ void VisibilityBasedNBV::runVisibilityUpdate()
 
       if (angle > camera_fov_angle || d > camera_far_dist || d < camera_near_dist) //out of camera fov
       {
-        std::cout<<"point out of camera FOV" <<std::endl;
+        //std::cout<<"point out of camera FOV" <<std::endl;
         continue;
       }
 
       bool is_wv = GlobalFun::isPointWellVisible(v, pos, ray_dir, target_mesh);
       if (is_wv)
-      {
          std::cout<<"well see!: "<< is_wv <<std::endl;
-      }
+
       v.is_barely_visible = (v.is_barely_visible && !is_wv);  //make sure all view point can't well-see v.
     }
   }
