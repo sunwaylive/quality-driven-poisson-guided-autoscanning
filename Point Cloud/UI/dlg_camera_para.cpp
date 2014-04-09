@@ -1494,7 +1494,11 @@ void CameraParaDlg::runVisibilityOneKeyNbvIteration()
   visibilityPropagate();
   visibilityCandidatesCluster();
   visibilityCandidateScan();
+  //merge scanned point to original
   visibilityMerge();
   //add normalize
+  int knn = global_paraMgr.norSmooth.getInt("PCA KNN");
+  GlobalFun::computePCANormal(area->dataMgr.getCurrentOriginal(), knn);
+  //update original visibility
   visibilityUpdate();
 }

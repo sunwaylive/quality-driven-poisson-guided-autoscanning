@@ -7,6 +7,7 @@
 #include "TriMesh_algo.h"
 #include "ICP.h"
 #include "vcg/complex/trimesh/create/ball_pivoting.h"//#include "LAP_Others/eigen.h"
+#include "Algorithm/pointcloud_normal.h"
 #include <fstream>
 #include <float.h>
 #include <QString>
@@ -82,6 +83,7 @@ namespace GlobalFun
   void normalizeConfidence(vector<CVertex>& vertexes, float delta);
 
   void ballPivotingReconstruction(CMesh& mesh, double radius = 0.0, double clustering = 20 / 100, double creaseThr = 90.0f);
+  void computePCANormal(CMesh *mesh, int knn);
 
   void removeOutliers(CMesh *mesh, double radius, double remove_percent);
   void removeOutliers(CMesh *mesh, double radius, int remove_num);

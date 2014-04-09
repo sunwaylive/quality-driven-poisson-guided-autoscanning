@@ -193,20 +193,8 @@ void NormalParaDlg::applyPCANormalUsingDirection()
     {
       samples = area->dataMgr.getCurrentSamples();
     }
-    vector<Point3f> before_normal;
-    for (int i = 0; i < samples->vert.size(); ++i)
-      before_normal.push_back(samples->vert[i].N()); 
-
-    //vcg::NormalExtrapolation<vector<CVertex> >::ExtrapolateNormals(samples->vert.begin(), samples->vert.end(), knn, -1);
-    vcg::tri::PointCloudNormal<CMesh>::Param pca_para;
-    pca_para.fittingAdjNum = knn;
-    vcg::tri::PointCloudNormal<CMesh>::Compute(*samples, pca_para, NULL);
-
-    for (int i = 0; i < samples->vert.size(); ++i)
-    {
-      if (before_normal[i] * samples->vert[i].N() < 0.0f)
-        samples->vert[i].N() *= -1;
-    }
+   
+    GlobalFun::computePCANormal(samples, knn);
   }
 
   area->dataMgr.recomputeQuad();
