@@ -119,6 +119,7 @@ bool CameraParaDlg::initWidgets()
   ui->spinBox_nbv_iteration_count->setValue(m_paras->nbv.getInt("NBV Iteration Count"));
   ui->horizon_dist->setValue(m_paras->camera.getDouble("Camera Horizon Dist"));
   ui->vertical_dist->setValue(m_paras->camera.getDouble("Camera Vertical Dist"));
+  ui->dist_to_model->setValue(m_paras->camera.getDouble("Camera Dist To Model"));
   ui->view_grid_resolution->setValue(m_paras->nbv.getDouble("View Grid Resolution"));
   ui->max_ray_steps->setValue(m_paras->nbv.getDouble("Max Ray Steps Para"));
   ui->spinBox_nbv_top_n->setValue(m_paras->nbv.getInt("NBV Top N"));

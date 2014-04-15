@@ -1466,6 +1466,14 @@ void DataMgr::saveSkeletonAsSkel(QString fileName)
     strStream << original.vert[i].is_barely_visible <<" ";
   }
   strStream << endl;
+   
+  strStream << "Scan_History "<< scan_history.size() <<endl;
+  for (int i = 0; i < scan_history.size(); ++i)
+  {
+    strStream << scan_history.at(i).first.X() << " " << scan_history.at(i).first.Y() << " " <<scan_history.at(i).first.Z() << " "
+    <<scan_history.at(i).second.X() << " " << scan_history.at(i).second.Y() << " " <<scan_history.at(i).second.Z() <<endl;
+  }
+  strStream << endl;
 
   outfile.write( strStream.str().c_str(), strStream.str().size() ); 
   outfile.close();
@@ -1921,6 +1929,18 @@ void DataMgr::loadSkeletonFromSkel(QString fileName)
       bool is_barely_visible;
       sem >> is_barely_visible;
       original.vert[i].is_barely_visible = is_barely_visible;
+    }
+  }
+
+  sem >> str;
+  if (str == "Scan_History")
+  {
+    sem >> num;
+    for (int i = 0; i < num; i++)
+    {
+      Point3f pos, dir;
+      sem >> pos[0] >> pos[1] >>pos[2] >> dir[0] >> dir[1] >> dir[2];
+      scan_history.push_back(make_pair(pos, dir));
     }
   }
 }

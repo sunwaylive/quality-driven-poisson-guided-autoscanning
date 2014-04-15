@@ -140,6 +140,9 @@ void vcc::Camera::runInitialScan()
   }
   scanned_results->clear();
 
+  //release scan history
+  scan_history->clear();
+
   //run initial scan
   vector<ScanCandidate>::iterator it = init_scan_candidates->begin();
   int i = 1;
@@ -152,6 +155,8 @@ void vcc::Camera::runInitialScan()
     cout<<i << "th initial scan begin" <<endl;
     runVirtualScan();
     cout<<i++ <<"th initial scan done!" <<endl;
+
+    scan_history->push_back(*it);
 
     //merge scanned mesh with original
     int index = 0;
@@ -275,6 +280,7 @@ void vcc::Camera::runVisibilityFirstScan()
     int index = 0;
     if (!original->vert.empty()) index = original->vert.back().m_index;
 
+    std::cout<< i <<"th initial scan points num: " <<current_scanned_mesh->vert.size() << std::endl;
     for (int i = 0; i < current_scanned_mesh->vert.size(); ++i)
     {
       CVertex& v = current_scanned_mesh->vert[i];
@@ -286,7 +292,6 @@ void vcc::Camera::runVisibilityFirstScan()
     }
     original->vn = original->vert.size();
   }
-
-  int knn = global_paraMgr.norSmooth.getInt("PCA KNN");
+   int knn = global_paraMgr.norSmooth.getInt("PCA KNN");
   GlobalFun::computePCANormal(original, knn);
 }

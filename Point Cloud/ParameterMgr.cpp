@@ -77,8 +77,8 @@ void ParameterMgr::initGlareaParameter()
 
 	glarea.addParam(new RichBool("Show View Grids", false));
 	glarea.addParam(new RichBool("Show NBV Candidates", true));
-	glarea.addParam(new RichBool("Show Scan Candidates", false));
-	glarea.addParam(new RichBool("Show Scanned Mesh", false));
+	glarea.addParam(new RichBool("Show Scan Candidates", true));
+	glarea.addParam(new RichBool("Show Scanned Mesh", true));
 
 	glarea.addParam(new RichBool("Show Model", true));
 	glarea.addParam(new RichBool("Show Original", true) );
@@ -415,7 +415,7 @@ void ParameterMgr::initCameraParameter()
   camera.addParam(new RichDouble("Camera Horizon Dist", 14.0f));   //cm
   camera.addParam(new RichDouble("Camera Vertical Dist", 18.0f));  //cm
   camera.addParam(new RichDouble("Camera FOV Angle", 28.07)); // tan-1(Vert_dist/2 / far_dist)
-  camera.addParam(new RichDouble("Camera Dist To Model", ((30.0f + 17.0f)/2 + 0.6 * 20.0f))); //cm
+  camera.addParam(new RichDouble("Camera Dist To Model", 30.0f)); //cm ((30.0f + 17.0f)/2 + 0.6 * 20.0f)
 
   camera.addParam(new RichDouble("Camera Resolution",1.0f / 50.0f));
   camera.addParam(new RichDouble("Merge Confidence Threshold", 0.9f));

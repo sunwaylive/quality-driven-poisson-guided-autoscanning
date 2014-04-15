@@ -241,6 +241,7 @@ void VisibilityBasedNBV::runVisibilityUpdate()
   //first we should reconstruct the target surface
   //GlobalFuns:ballPivotingReconstruction(*target_mesh);
 
+  std::cout<<"scan history size: " <<scan_history->size() <<std::endl;
   for (int i = 0; i < original->vert.size(); ++i)
   {
     CVertex &v = original->vert[i];
