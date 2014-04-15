@@ -108,6 +108,7 @@ private slots:
   void showViewGrids(bool _val);
   void showNBVCandidates(bool _val);
   void showScanCandidates(bool _val);
+  void showScanHistory(bool _val);
   void showScannedMesh(bool _val);
   void showPoissonSurface(bool _val);
 

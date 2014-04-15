@@ -78,9 +78,10 @@ void ParameterMgr::initGlareaParameter()
 	glarea.addParam(new RichBool("Show View Grids", false));
 	glarea.addParam(new RichBool("Show NBV Candidates", true));
 	glarea.addParam(new RichBool("Show Scan Candidates", true));
+  glarea.addParam(new RichBool("Show Scan History", true));
 	glarea.addParam(new RichBool("Show Scanned Mesh", true));
 
-	glarea.addParam(new RichBool("Show Model", true));
+	glarea.addParam(new RichBool("Show Model", false));
 	glarea.addParam(new RichBool("Show Original", true) );
 	glarea.addParam(new RichBool("Show Original Quad", false) );
 	glarea.addParam(new RichBool("Show Original Dot", true) );
@@ -471,4 +472,5 @@ void ParameterMgr::initVisibilityBasedNBVParameter()
   visibilityBasedNBV.addParam(new RichBool("Run Visibility Update", false));
   visibilityBasedNBV.addParam(new RichBool("Run Visibility Merge", false));
   visibilityBasedNBV.addParam(new RichBool("Run Visibility One Key Iteration", false));
+  visibilityBasedNBV.addParam(new RichBool("Run Visibility Smooth", false));
 }

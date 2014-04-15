@@ -418,6 +418,21 @@ void GLArea::paintGL()
       }
     }
 
+    if (para->getBool("Show Scan History"))
+    {
+      vector<ScanCandidate> *history = dataMgr.getScanHistory();
+      if (!history->empty())
+      {
+        vector<ScanCandidate>::iterator it = history->begin();
+        for (; it != history->end(); ++it)
+        {
+          CVertex v;
+          v.P() = it->first;
+          glDrawer.drawSphere(v);
+        }
+      }
+    }
+
     /*
     if(para->getBool("Show Samples"))  
     {

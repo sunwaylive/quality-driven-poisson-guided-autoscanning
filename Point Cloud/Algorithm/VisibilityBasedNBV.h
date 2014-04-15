@@ -25,6 +25,7 @@ private:
   void runVisibilityCandidatesCluster();
   void runVisibilityMerge();
   void runVisibilityUpdate();
+  void runVisibilitySmooth();
 
 private:
   RichParameterSet      *para;
@@ -35,5 +36,6 @@ private:
   vector<ScanCandidate> *scan_history;
   vector<ScanCandidate> *scan_candidates;
   vector<CMesh *>*       scanned_results;
+  static double         general_radius;
 };
 #endif

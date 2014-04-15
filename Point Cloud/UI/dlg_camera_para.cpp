@@ -107,6 +107,7 @@ void CameraParaDlg::initConnects()
   connect(ui->pushButton_visibility_merge, SIGNAL(clicked()), this, SLOT(visibilityMerge()));
   connect(ui->pushButton_visibility_update, SIGNAL(clicked()), this, SLOT(visibilityUpdate()));
   connect(ui->pushButton_visibility_one_key_iteration, SIGNAL(clicked()), this, SLOT(runVisibilityOneKeyNbvIteration()));
+  connect(ui->pushButton_visibility_smooth, SIGNAL(clicked()), this, SLOT(runVisibilitySmooth()));
   /********visibility based NBV*******/
 }
 
@@ -1501,4 +1502,11 @@ void CameraParaDlg::runVisibilityOneKeyNbvIteration()
   
   //update original visibility
   visibilityUpdate();
+}
+
+void CameraParaDlg::runVisibilitySmooth()
+{
+  global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Smooth", BoolValue(true));
+  area->runVisibilityBasedNBV();
+  global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Smooth", BoolValue(false));
 }

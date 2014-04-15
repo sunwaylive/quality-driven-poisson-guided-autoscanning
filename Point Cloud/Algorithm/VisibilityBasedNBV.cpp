@@ -1,5 +1,7 @@
 #include "VisibilityBasedNBV.h"
 
+double VisibilityBasedNBV::general_radius = 0.5;
+
 VisibilityBasedNBV::VisibilityBasedNBV(RichParameterSet* _para)
 {
   std::cout<<"VisibilityBasedNBV constructed!"<<std::endl;
@@ -44,7 +46,7 @@ void VisibilityBasedNBV::run()
   }
   if (para->getBool("Run Visibility Update"))
   {
-    std::cout<<"Run VIsibility Update" <<std::endl;
+    std::cout<<"Run Visibility Update" <<std::endl;
     runVisibilityUpdate();
     return;
   }
@@ -53,6 +55,11 @@ void VisibilityBasedNBV::run()
     std::cout<<"Run Visibility Merge" <<std::endl;
     runVisibilityMerge();
     return;
+  }
+  if (para->getBool("Run Visibility Smooth"))
+  {
+    std::cout<<"Run Visibility Smooth" <<std::endl;
+    runVisibilitySmooth();
   }
 }
 
@@ -148,7 +155,7 @@ void VisibilityBasedNBV::runVisibilityCandidatesCluster()
     }
   }while(current_shift >= shift_dist_stop);
 
-  //get selected NBV
+  //get selected NBV, select the one that has most candidate neighobors
   double nbv_select_radius = radius; 
   GlobalFun::computeBallNeighbors(nbv_candidates, NULL, nbv_select_radius, nbv_candidates->bbox);
   int max_neighbors_num = nbv_candidates->vert[0].neighbors.size();
@@ -270,5 +277,24 @@ void VisibilityBasedNBV::runVisibilityUpdate()
 
       v.is_barely_visible = (v.is_barely_visible && !is_wv);  //make sure all view point can't well-see v.
     }
+  }
+}
+
+void VisibilityBasedNBV::runVisibilitySmooth()
+{
+  double smooth_radius = 0.05f;
+  double is_bv_weight = 0.8;
+  GlobalFun::computeBallNeighbors(original, NULL, smooth_radius, original->bbox);
+  for(int i = 0; i < original->vert.size(); ++i)
+  {
+    CVertex &o_v = original->vert[i];
+    double sum = 0;
+    for (int j = 0; j < o_v.neighbors.size(); ++j)
+    {
+      CVertex &o_n = original->vert[o_v.neighbors[j]];
+      double is_bv_value = o_n.is_barely_visible ? 0.0f : 1.0f * (1 - is_bv_weight);
+      sum += is_bv_value;
+    }
+    o_v.is_barely_visible = (sum / o_v.neighbors.size() > 0.5) ? false : true;
   }
 }

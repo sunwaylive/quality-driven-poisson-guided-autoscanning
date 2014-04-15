@@ -222,6 +222,7 @@
     <addaction name="actionShow_NBV_Label"/>
     <addaction name="actionShow_NBV_Ball"/>
     <addaction name="actionShow_Poisson_Surface"/>
+    <addaction name="actionShow_Scan_History"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuAlgorithom"/>
@@ -294,6 +295,7 @@
    <addaction name="actionShow_View_Grids"/>
    <addaction name="actionShow_NBV_Candidates"/>
    <addaction name="actionShow_Scan_Candidates"/>
+   <addaction name="actionShow_Scan_History"/>
    <addaction name="actionShow_Current_Scanned_Mesh"/>
    <addaction name="actionShow_Poisson_Surface"/>
    <addaction name="separator"/>
@@ -967,6 +969,17 @@
   <action name="actionEvaluation">
    <property name="text">
     <string>Evaluation</string>
+   </property>
+  </action>
+  <action name="actionShow_Scan_History">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Scan History</string>
    </property>
   </action>
  </widget>
