@@ -754,7 +754,7 @@ bool GlobalFun::isPointWellVisible(const Point3f &target, const Point3f &view_po
   double intersection_dist = GlobalFun::computeMeshLineIntersectPoint(mesh_surface, view_pos, view_dir, result, result_normal, is_bv);
   double target_dist = GlobalFun::computeEulerDist(target, view_pos);
 
-  if (abs(intersection_dist - target_dist) < EPS && !is_bv)
+  if (abs(intersection_dist - target_dist) < 0.1 && !is_bv)
     return true;
   else
     return false;

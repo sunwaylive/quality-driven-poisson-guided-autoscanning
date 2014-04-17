@@ -386,8 +386,9 @@ void GLArea::paintGL()
         global_paraMgr.camera.getDouble("Predicted Model Size");
       double near_dist = global_paraMgr.camera.getDouble("Camera Near Distance") / 
         global_paraMgr.camera.getDouble("Predicted Model Size");
-      double dist_to_model = global_paraMgr.camera.getDouble("Camera Dist To Model") / 
-        global_paraMgr.camera.getDouble("Predicted Model Size");
+      double dist_to_model = global_paraMgr.camera.getDouble("Camera Dist To Model");
+      /*double dist_to_model = global_paraMgr.camera.getDouble("Camera Dist To Model") / 
+        global_paraMgr.camera.getDouble("Predicted Model Size");*/
 
       current_camera.far_horizon_dist = h_dist;
       current_camera.far_vertical_dist = v_dist;

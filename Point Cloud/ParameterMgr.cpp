@@ -416,6 +416,7 @@ void ParameterMgr::initCameraParameter()
   camera.addParam(new RichDouble("Camera Horizon Dist", 14.0f));   //cm
   camera.addParam(new RichDouble("Camera Vertical Dist", 18.0f));  //cm
   camera.addParam(new RichDouble("Camera FOV Angle", 28.07)); // tan-1(Vert_dist/2 / far_dist)
+  //20 for sphere test, 30 for dancing children
   camera.addParam(new RichDouble("Camera Dist To Model", 30.0f)); //cm ((30.0f + 17.0f)/2 + 0.6 * 20.0f)
 
   camera.addParam(new RichDouble("Camera Resolution",1.0f / 50.0f));

@@ -89,8 +89,14 @@ void VisibilityBasedNBV::runVisibilityPropagate()
 
 void VisibilityBasedNBV::runVisibilityCandidatesCluster()
 {
-  double radius = 0.5; //global_paraMgr.data.getDouble("CGrid Radius");
-  double nbv_minimum_dist = radius;
+  if (nbv_candidates->vert.empty())
+  {
+    std::cout << "empty nbc candidates for Clustering" << std::endl;
+    return;
+  }
+
+  double radius = 0.5 * 2; //cluster radius; lobal_paraMgr.data.getDouble("CGrid Radius");
+  double nbv_minimum_dist = radius / 2;
   double radius2 = radius * radius;
   double iradius16 = -4/radius2;
 
@@ -155,27 +161,33 @@ void VisibilityBasedNBV::runVisibilityCandidatesCluster()
     }
   }while(current_shift >= shift_dist_stop);
 
-  //get selected NBV, select the one that has most candidate neighobors
+  //get selected NBV, select the one that has most candidate neighbors
   double nbv_select_radius = radius; 
   GlobalFun::computeBallNeighbors(nbv_candidates, NULL, nbv_select_radius, nbv_candidates->bbox);
   int max_neighbors_num = nbv_candidates->vert[0].neighbors.size();
-  int vert_index = 0;
+  int second_max_neighbors_num = nbv_candidates->vert[0].neighbors.size();
+  int max_vert_index = 0;
+  int second_max_vert_index = 0;
   for (int i=0; i < nbv_candidates->vert.size(); ++i)
   {
     if (nbv_candidates->vert[i].neighbors.size() > max_neighbors_num)
     {
-      vert_index = i;
+      max_vert_index = i;
       max_neighbors_num = nbv_candidates->vert[i].neighbors.size();
       std::cout<< i <<std::endl;
+    }else if (nbv_candidates->vert[i].neighbors.size() > second_max_vert_index)
+    {
+      second_max_vert_index = i;
+      second_max_neighbors_num = nbv_candidates->vert[i].neighbors.size();
     }
   }
-
-  CVertex v = nbv_candidates->vert[vert_index];
   nbv_candidates->vert.clear();
-  nbv_candidates->vert.push_back(v);
+  nbv_candidates->vert.push_back(nbv_candidates->vert[max_vert_index]);
+  nbv_candidates->vert.push_back(nbv_candidates->vert[second_max_vert_index]);
 
   //check the minimum distance and store them in scan_candidates
   scan_candidates->clear();
+  std::cout << "scan history size: " <<  scan_history->size() << std::endl;
   for (int i = 0; i < nbv_candidates->vert.size(); ++i)
   {
     CVertex &c = nbv_candidates->vert[i];
@@ -241,8 +253,10 @@ void VisibilityBasedNBV::runVisibilityUpdate()
 
   /* second: update the visibility of the points */
   double camera_fov_angle = global_paraMgr.camera.getDouble("Camera FOV Angle");
-  double camera_far_dist = global_paraMgr.camera.getDouble("Camera Far Distance");
-  double camera_near_dist = global_paraMgr.camera.getDouble("Camera Near Distance");
+  double camera_far_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
+              global_paraMgr.camera.getDouble("Predicted Model Size");
+  double camera_near_dist = global_paraMgr.camera.getDouble("Camera Near Distance") /
+               global_paraMgr.camera.getDouble("Predicted Model Size");
   //CMesh *target_mesh = original;
   CMesh *target_mesh = model;
   //first we should reconstruct the target surface
@@ -252,28 +266,34 @@ void VisibilityBasedNBV::runVisibilityUpdate()
   for (int i = 0; i < original->vert.size(); ++i)
   {
     CVertex &v = original->vert[i];
-
+    if (!v.is_barely_visible) continue;
+    //for each ray:
+    //1.we should compute the ray_dir;
+    //2.check whether it's inside the camera's FOV
     for (int j = 0; j < scan_history->size() && v.is_barely_visible; ++j)
     {
-      //for each ray:
-      //1.we should compute the ray_dir;
-      //2.check whether it's inside the camera's FOV
       Point3f pos = scan_history->at(j).first;
       Point3f camera_dir = scan_history->at(j).second;
-      Point3f ray_dir = v.P() - pos;
-      
+      Point3f ray_dir = v.P() - pos;//end - start
+
       double angle = GlobalFun::computeRealAngleOfTwoVertor(ray_dir, camera_dir);
       double d = GlobalFun::computeEulerDist(pos, v.P());
 
-      if (angle > camera_fov_angle || d > camera_far_dist || d < camera_near_dist) //out of camera fov
-      {
-        //std::cout<<"point out of camera FOV" <<std::endl;
-        continue;
-      }
+      //std::cout<<"angle: "<<angle <<std::endl;
+      //if (angle > camera_fov_angle)
+      //{
+      //  std::cout << "angle too large" <<std::endl;
+      //  continue;
+      //}
+      //if (d > camera_far_dist || d < camera_near_dist)
+      //{
+      //  std::cout << "dist unreasonable" <<std::endl;
+      //  continue;
+      //}
 
       bool is_wv = GlobalFun::isPointWellVisible(v, pos, ray_dir, target_mesh);
-      if (is_wv)
-         std::cout<<"well see!: "<< is_wv <<std::endl;
+      //if (is_wv)
+        //std::cout<<"well see!: "<< is_wv <<std::endl;
 
       v.is_barely_visible = (v.is_barely_visible && !is_wv);  //make sure all view point can't well-see v.
     }

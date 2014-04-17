@@ -1493,15 +1493,27 @@ void CameraParaDlg::visibilityUpdate()
 void CameraParaDlg::runVisibilityOneKeyNbvIteration()
 {
   std::cout <<"One key visibility NBV begins:" <<std::endl;
+  int count = 100;
+  //save the results
+  QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
+  if (!file_location.size()) return;
 
-  visibilityPropagate();
-  visibilityCandidatesCluster();
-  visibilityCandidateScan();
-  //merge scanned point to original
-  visibilityMerge();
-  
-  //update original visibility
-  visibilityUpdate();
+  for (int i = 2; i < count; ++i)
+  {
+    visibilityPropagate();
+    visibilityCandidatesCluster();
+    visibilityCandidateScan();
+    //merge scanned point to original
+    visibilityMerge();
+
+    //update original visibility
+    visibilityUpdate();
+   
+    QString file_name;
+    file_name.sprintf("\\%d_original.skel", i);
+    file_name = file_location + file_name;
+    area->dataMgr.saveSkeletonAsSkel(file_name);
+  }
 }
 
 void CameraParaDlg::runVisibilitySmooth()
