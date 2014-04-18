@@ -91,7 +91,7 @@ void VisibilityBasedNBV::runVisibilityCandidatesCluster()
 {
   if (nbv_candidates->vert.empty())
   {
-    std::cout << "empty nbc candidates for Clustering" << std::endl;
+    std::cout << "Empty NBV candidates for Clustering" << std::endl;
     return;
   }
 
@@ -200,14 +200,14 @@ void VisibilityBasedNBV::runVisibilityCandidatesCluster()
       continue;
     }
     
-    for (int j = 0; j < scan_history->size() && is_qualified; ++j)
+    /* for (int j = 0; j < scan_history->size() && is_qualified; ++j)
     {
-      if (GlobalFun::computeEulerDist(c.P(), scan_history->at(j).first) < nbv_minimum_dist)
-      {
-        std::cout<<" too near to former scan positions" <<std::endl;
-        is_qualified = false;
-      }
+    if (GlobalFun::computeEulerDist(c.P(), scan_history->at(j).first) < nbv_minimum_dist)
+    {
+    std::cout<<" too near to former scan positions" <<std::endl;
+    is_qualified = false;
     }
+    }*/
 
     if (is_qualified)
     {
@@ -231,12 +231,12 @@ void VisibilityBasedNBV::runVisibilityMerge()
   for (int i = 0; i < scanned_results->size(); ++i)
   {
     CMesh *sr = scanned_results->at(i);
-    int index = original->vert.back().m_index;
+    int index = original->vert.back().m_index + 1;
 
     for (int j = 0; j < sr->vert.size(); ++j)
     {
       CVertex &v = sr->vert[j];
-      v.m_index = ++index;
+      v.m_index = index + 1;
       v.is_scanned = false;
       v.is_original = true;
       original->vert.push_back(v);
@@ -252,11 +252,6 @@ void VisibilityBasedNBV::runVisibilityUpdate()
   GlobalFun::computePCANormal(original, knn);
 
   /* second: update the visibility of the points */
-  double camera_fov_angle = global_paraMgr.camera.getDouble("Camera FOV Angle");
-  double camera_far_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
-              global_paraMgr.camera.getDouble("Predicted Model Size");
-  double camera_near_dist = global_paraMgr.camera.getDouble("Camera Near Distance") /
-               global_paraMgr.camera.getDouble("Predicted Model Size");
   //CMesh *target_mesh = original;
   CMesh *target_mesh = model;
   //first we should reconstruct the target surface
@@ -272,26 +267,10 @@ void VisibilityBasedNBV::runVisibilityUpdate()
     //2.check whether it's inside the camera's FOV
     for (int j = 0; j < scan_history->size() && v.is_barely_visible; ++j)
     {
-      Point3f pos = scan_history->at(j).first;
-      Point3f camera_dir = scan_history->at(j).second;
-      Point3f ray_dir = v.P() - pos;//end - start
-
-      double angle = GlobalFun::computeRealAngleOfTwoVertor(ray_dir, camera_dir);
-      double d = GlobalFun::computeEulerDist(pos, v.P());
-
-      //std::cout<<"angle: "<<angle <<std::endl;
-      //if (angle > camera_fov_angle)
-      //{
-      //  std::cout << "angle too large" <<std::endl;
-      //  continue;
-      //}
-      //if (d > camera_far_dist || d < camera_near_dist)
-      //{
-      //  std::cout << "dist unreasonable" <<std::endl;
-      //  continue;
-      //}
-
-      bool is_wv = GlobalFun::isPointWellVisible(v, pos, ray_dir, target_mesh);
+      Point3f view_pos = scan_history->at(j).first;
+      Point3f view_dir = scan_history->at(j).second;
+     
+      bool is_wv = isPointWellVisible(v, view_pos, view_dir, target_mesh);
       //if (is_wv)
         //std::cout<<"well see!: "<< is_wv <<std::endl;
 
@@ -317,4 +296,39 @@ void VisibilityBasedNBV::runVisibilitySmooth()
     }
     o_v.is_barely_visible = (sum / o_v.neighbors.size() > 0.5) ? false : true;
   }
+}
+
+bool VisibilityBasedNBV::isPointWellVisible(const Point3f &target, const Point3f &view_pos, const Point3f &view_dir, const CMesh* mesh_surface)
+{
+  double camera_fov_angle = global_paraMgr.camera.getDouble("Camera FOV Angle");
+  double camera_far_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
+    global_paraMgr.camera.getDouble("Predicted Model Size");
+  double camera_near_dist = global_paraMgr.camera.getDouble("Camera Near Distance") /
+    global_paraMgr.camera.getDouble("Predicted Model Size");
+
+  Point3f target_line = target - view_pos;//end - start
+  double angle = GlobalFun::computeRealAngleOfTwoVertor(target_line, view_dir);
+  double d = GlobalFun::computeEulerDist(target, view_pos);
+
+  //std::cout<<"angle: "<<angle <<std::endl;
+  if (angle > camera_fov_angle)
+  {
+    //std::cout << "angle too large" <<std::endl;
+    return false;
+  }
+  if (d > camera_far_dist || d < camera_near_dist)
+  {
+    //std::cout << "dist unreasonable" <<std::endl;
+    return false;
+  }
+
+  Point3f result, result_normal;
+  bool is_bv = false;
+  double intersection_dist = GlobalFun::computeMeshLineIntersectPoint(mesh_surface, view_pos, target_line, result, result_normal, is_bv);
+  double target_dist = GlobalFun::computeEulerDist(target, view_pos);
+
+  if (abs(intersection_dist - target_dist) < 0.3 &&  !is_bv)
+    return true;
+  else
+    return false;
 }

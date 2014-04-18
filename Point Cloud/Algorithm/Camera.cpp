@@ -108,6 +108,7 @@ void vcc::Camera::runVirtualScan()
         CVertex t;
         t.is_scanned = true;
         t.is_barely_visible= is_barely_visible;
+         
         t.m_index = index++;
         t.P() = intersect_point; //Point3f(rndax, rnday, rndaz);
         t.N() = intersect_point_normal; //set out direction as approximate normal
@@ -160,13 +161,13 @@ void vcc::Camera::runInitialScan()
 
     //merge scanned mesh with original
     int index = 0;
-    if (!original->vert.empty()) index = original->vert.back().m_index;
+    if (!original->vert.empty()) index = original->vert.back().m_index + 1;
 
     for (int i = 0; i < current_scanned_mesh->vert.size(); ++i)
     {
       CVertex& v = current_scanned_mesh->vert[i];
       CVertex t = v;
-      t.m_index = ++index;
+      t.m_index = index++;
       t.is_original = true;
       original->vert.push_back(t);
       original->bbox.Add(t.P());

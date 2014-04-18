@@ -24,6 +24,7 @@
 
 const double PI = 3.1415926;
 const double EPS = 1e-10;    //lion: 1e-8, dc: 1e-10
+const double EPS_VISIBILITY = 0.2;
 const double BIG = 100000;
 
 //#include <Eigen/Dense>
@@ -71,7 +72,6 @@ namespace GlobalFun
 	double getDoubleMAXIMUM();
 	vector<int> GetRandomCards(int Max);
 
-  bool isPointWellVisible(const Point3f &target, const Point3f &view_pos, const Point3f &view_dir, const CMesh* mesh_surface);
   bool isPointInBoundingBox(Point3f &v0, CMesh *mesh, double delta = 0.0f);
 	double computeRealAngleOfTwoVertor(Point3f v0, Point3f v1);
 	bool isTwoPoint3fTheSame(Point3f& v0, Point3f& v1);

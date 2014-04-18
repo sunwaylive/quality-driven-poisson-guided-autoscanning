@@ -53,6 +53,7 @@ public:
   bool is_iso;
   bool is_hole;
   bool is_poisson;
+  bool is_visible;
   bool is_barely_visible;
 
 	int m_index;
@@ -96,6 +97,7 @@ public:
 
 	CVertex():
 		m_index(0),
+    is_visible(false),
     is_barely_visible(false),
     is_view_grid(false),
     is_ray_stop(false),

@@ -747,19 +747,6 @@ double GlobalFun::computeTriangleArea_3(Point3f& v0, Point3f& v1, Point3f& v2)
   return AP.Norm() / 2.0f;
 }
 
-bool GlobalFun::isPointWellVisible(const Point3f &target, const Point3f &view_pos, const Point3f &view_dir, const CMesh* mesh_surface)
-{
-  Point3f result, result_normal;
-  bool is_bv = false;
-  double intersection_dist = GlobalFun::computeMeshLineIntersectPoint(mesh_surface, view_pos, view_dir, result, result_normal, is_bv);
-  double target_dist = GlobalFun::computeEulerDist(target, view_pos);
-
-  if (abs(intersection_dist - target_dist) < 0.1 && !is_bv)
-    return true;
-  else
-    return false;
-}
-
 bool GlobalFun::isPointInBoundingBox(Point3f &v0, CMesh *mesh, double delta)
 {
   if (NULL == mesh)

@@ -592,7 +592,7 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
     for (vector<double>::iterator it = v_confidence.begin(); it != v_confidence.end(); ++it)
       *it = (*it - min_confidence) / (max_confidence - min_confidence);
 
-    int index = original->vert.empty() ? 0 : original->vert.back().m_index;
+    int index = original->vert.empty() ? 0 : (original->vert.back().m_index + 1);
     for (int k = 0;  k < (*it)->vert.size(); ++k)
     {
       CVertex& v = (*it)->vert[k];
@@ -609,7 +609,7 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
       }
 
       CVertex new_v;
-      new_v.m_index = ++index;
+      new_v.m_index = index++;
       new_v.is_original = true;
       new_v.P() = v.P();
       new_v.N() = v.N();
@@ -718,7 +718,7 @@ void CameraParaDlg::mergeScannedMeshWithOriginalByHand()
         for (vector<double>::iterator it = v_confidence.begin(); it != v_confidence.end(); ++it)
           *it = (*it - min_confidence) / (max_confidence - min_confidence);
 
-        int index = original->vert.empty() ? 0 : original->vert.back().m_index;
+        int index = original->vert.empty() ? 0 : (original->vert.back().m_index + 1);
         for (int k = 0;  k < (*it)->vert.size(); ++k)
         {
           CVertex& v = (*it)->vert[k];
@@ -735,7 +735,7 @@ void CameraParaDlg::mergeScannedMeshWithOriginalByHand()
           }
 
           CVertex new_v;
-          new_v.m_index = ++index;
+          new_v.m_index = index++;
           new_v.is_original = true;
           new_v.P() = v.P();
           new_v.N() = v.N();
