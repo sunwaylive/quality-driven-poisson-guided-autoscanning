@@ -26,7 +26,7 @@ private:
   void runVisibilityMerge();
   void runVisibilityUpdate();
   void runVisibilitySmooth();
-  bool isPointWellVisible(const Point3f &target, const Point3f &view_pos, const Point3f &view_dir, const CMesh* mesh_surface);
+  bool isPointWellVisible(const CVertex &target, const Point3f &view_pos, const Point3f &view_dir, const CMesh* mesh_surface);
 private:
   RichParameterSet      *para;
   double                optimalDist;

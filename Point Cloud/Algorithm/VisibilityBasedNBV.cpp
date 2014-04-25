@@ -277,6 +277,12 @@ void VisibilityBasedNBV::runVisibilityUpdate()
       v.is_barely_visible = (v.is_barely_visible && !is_wv);  //make sure all view point can't well-see v.
     }
   }
+
+  //if three of nearest five neighbors are black, we change it into black
+  /*GlobalFun::computeAnnNeigbhors(original->vert, original->vert, 5, false, "change some yellow to black");
+  for ()
+  {
+  }*/
 }
 
 void VisibilityBasedNBV::runVisibilitySmooth()
@@ -298,7 +304,7 @@ void VisibilityBasedNBV::runVisibilitySmooth()
   }
 }
 
-bool VisibilityBasedNBV::isPointWellVisible(const Point3f &target, const Point3f &view_pos, const Point3f &view_dir, const CMesh* mesh_surface)
+bool VisibilityBasedNBV::isPointWellVisible(const CVertex &target, const Point3f &view_pos, const Point3f &view_dir, const CMesh* mesh_surface)
 {
   double camera_fov_angle = global_paraMgr.camera.getDouble("Camera FOV Angle");
   double camera_far_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
@@ -306,11 +312,18 @@ bool VisibilityBasedNBV::isPointWellVisible(const Point3f &target, const Point3f
   double camera_near_dist = global_paraMgr.camera.getDouble("Camera Near Distance") /
     global_paraMgr.camera.getDouble("Predicted Model Size");
 
-  Point3f target_line = target - view_pos;//end - start
+  Point3f target_line = target.P() - view_pos;//end - start
   double angle = GlobalFun::computeRealAngleOfTwoVertor(target_line, view_dir);
-  double d = GlobalFun::computeEulerDist(target, view_pos);
+  double d = GlobalFun::computeEulerDist(target.P(), view_pos);
 
-  //std::cout<<"angle: "<<angle <<std::endl;
+
+  if (target.m_index == 0 || target.m_index == 2032)
+  {
+    std::cout<<"angle: "<<angle <<std::endl;
+    std::cout << "dist: "<< d <<std::endl;
+    std::cout <<"camera near dist: " << camera_near_dist <<"/// camera far dist: " <<camera_far_dist <<std::endl;
+  }
+
   if (angle > camera_fov_angle)
   {
     //std::cout << "angle too large" <<std::endl;
@@ -318,16 +331,16 @@ bool VisibilityBasedNBV::isPointWellVisible(const Point3f &target, const Point3f
   }
   if (d > camera_far_dist || d < camera_near_dist)
   {
-    //std::cout << "dist unreasonable" <<std::endl;
+    //
     return false;
   }
 
   Point3f result, result_normal;
   bool is_bv = false;
   double intersection_dist = GlobalFun::computeMeshLineIntersectPoint(mesh_surface, view_pos, target_line, result, result_normal, is_bv);
-  double target_dist = GlobalFun::computeEulerDist(target, view_pos);
+  double target_dist = GlobalFun::computeEulerDist(target.P(), view_pos);
 
-  if (abs(intersection_dist - target_dist) < 0.3 &&  !is_bv)
+  if (abs(intersection_dist - target_dist) < 0.1 /*&&  !is_bv*/)
     return true;
   else
     return false;
