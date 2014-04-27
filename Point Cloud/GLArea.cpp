@@ -1578,9 +1578,9 @@ void GLArea::runVisibilityBasedNBV()
 
 void GLArea::runPVSBasedNBV()
 {
-  if (dataMgr.isSamplesEmpty())
+  if (dataMgr.isOriginalEmpty())
   {
-    std::cout << "sample point empty for PVS" <<std::endl;
+    std::cout << "original points empty for PVS!" <<std::endl;
     return;
   }
   

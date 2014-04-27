@@ -472,8 +472,8 @@ void ParameterMgr::initNBVParameter()
 
 void ParameterMgr::initVisibilityBasedNBVParameter()
 {
-  visibilityBasedNBV.addParam(new RichBool("Run Visibility Propagate", false));
   visibilityBasedNBV.addParam(new RichString("Algorithm Name", "visibility Based NBV"));
+  visibilityBasedNBV.addParam(new RichBool("Run Visibility Propagate", false));
   visibilityBasedNBV.addParam(new RichBool("Run Visibility Candidates Cluster", false));
   visibilityBasedNBV.addParam(new RichBool("Run Visibility Update", false));
   visibilityBasedNBV.addParam(new RichBool("Run Visibility Merge", false));
@@ -483,5 +483,6 @@ void ParameterMgr::initVisibilityBasedNBVParameter()
 
 void ParameterMgr::initPVSBasedNBVParameter()
 {
+  pvsBasedNBV.addParam(new RichString("Algorithm Name", "PVS Based NBV"));
   pvsBasedNBV.addParam(new RichBool("Run PVS Detect Boundary", false));
 }

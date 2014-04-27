@@ -307,11 +307,7 @@ void vcc::Camera::runVisibilityFirstScan()
 void vcc::Camera::runPVSFirstScan()
 {
   //clear original points
-  original->face.clear();
-  original->fn = 0;
-  original->vert.clear();
-  original->vn = 0;
-  original->bbox = Box3f();
+  GlobalFun::clearCMesh(*original);
 
   //release scanned_result
   vector<CMesh* >::iterator it_scanned_result = scanned_results->begin();
@@ -344,8 +340,7 @@ void vcc::Camera::runPVSFirstScan()
     std::cout<< i++ <<"th initial scan points num: " <<current_scanned_mesh->vert.size() << std::endl;
     for (int j = 0; j < current_scanned_mesh->vert.size(); ++j)
     {
-      CVertex& v = current_scanned_mesh->vert[j];
-      CVertex t = v;
+      CVertex t = current_scanned_mesh->vert[j];
       t.m_index = index++;
       t.is_original = true;
       original->vert.push_back(t);

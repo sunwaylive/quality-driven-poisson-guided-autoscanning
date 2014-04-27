@@ -18,10 +18,7 @@ void PVSBasedNBV::setInput(DataMgr *pData)
   else
     std::cout << "ERROR: PVSBasedNBV::setInput empty original points" <<std::endl;
 
-  if (!pData->getCurrentSamples()->vert.empty())
-    sample = pData->getCurrentSamples();
-  else
-    std::cout << "ERROR: PVSBasedNBV::setInput empty sample points" <<std::endl;
+  sample = pData->getCurrentSamples();
 
   scanned_results = pData->getScannedResults();
   optimalDist = (global_paraMgr.camera.getDouble("Camera Far Distance") +global_paraMgr.camera.getDouble("Camera Near Distance")) 
@@ -46,5 +43,17 @@ void PVSBasedNBV::clear()
 
 void PVSBasedNBV::runPVSDetectBoundary()
 {
-  std::cout << "detect boundary" <<std::endl;
+  //copy point from original to sample
+  GlobalFun::clearCMesh(*sample);  
+
+  for (int i = 0; i < original->vert.size(); ++i)
+  {
+    CVertex v = original->vert[i];
+    v.is_original = false;
+    v.is_fixed_sample = true;
+    sample->vert.push_back(v);
+  }
+  sample->vn = sample->vert.size();
+
+  //detect boundary
 }
