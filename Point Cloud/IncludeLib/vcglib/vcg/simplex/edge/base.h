@@ -36,7 +36,7 @@ namespace vcg {
 
 /*------------------------------------------------------------------*/ 
 /* 
-The base class of all the recusive definition chain. It is just a container of the typenames of the various simplexes.
+The base class of all the recursive definition chain. It is just a container of the typenames of the various simplexes.
 These typenames must be known form all the derived classes.
 */
 
@@ -75,7 +75,7 @@ template <class UserTypes>
 
 The class __VertexArityMax__ is the one that is the Last to be derived,
 and therefore is the only one to know the real members 
-(after the many overrides) so all the functions with common behaviour 
+(after the many overrides) so all the functions with common behavior 
 using the members defined in the various Empty/nonEmpty component classes 
 MUST be defined here. 
 

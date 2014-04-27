@@ -69,6 +69,11 @@ void vcc::Camera::run()
     runVisibilityFirstScan();
     return;
   }
+  if (para->getBool("Run PVS First Scan"))
+  {
+    runPVSFirstScan();
+    return;
+  }
 }
 
 void vcc::Camera::runVirtualScan()
@@ -293,6 +298,12 @@ void vcc::Camera::runVisibilityFirstScan()
     }
     original->vn = original->vert.size();
   }
-   int knn = global_paraMgr.norSmooth.getInt("PCA KNN");
+  
+  int knn = global_paraMgr.norSmooth.getInt("PCA KNN");
   GlobalFun::computePCANormal(original, knn);
+}
+
+void vcc::Camera::runPVSFirstScan()
+{
+  std::cout << "run pvs first scan" <<std::endl;
 }

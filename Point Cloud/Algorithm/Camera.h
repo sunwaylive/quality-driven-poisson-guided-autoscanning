@@ -61,9 +61,11 @@ namespace vcc{
     void runVirtualScan();
     void runOneKeyNewScan();
 
-    //*** visibility based NBV
+    /* visibility based NBV*/
     void runVisibilityFirstScan();
-    //*** visibility based NBV
-  };
+    /* visibility based NBV*/
 
+    /* pvs based NBV*/
+    void runPVSFirstScan();
+  };
 }

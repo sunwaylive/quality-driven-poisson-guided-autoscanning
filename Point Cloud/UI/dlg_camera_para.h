@@ -108,7 +108,7 @@ public:
     void loadPoissonSurface();
     void moveTranslation();
     
-    //*** visibility based NBV
+    /*** visibility based NBV ***/
     void visibilityFirstScan();
     void visibilityPropagate();
     void visibilityCandidatesCluster();
@@ -117,7 +117,12 @@ public:
     void visibilityMerge();
     void runVisibilityOneKeyNbvIteration();
     void runVisibilitySmooth();
-    //*** visibility based NBV
+    /*** visibility based NBV ***/
+
+    /*** pvs based NBV ***/
+    void pvsFirstScan();
+    void pvsDetectBoundary();
+    /*** pvs based NBV ***/
 
 private:
   Ui::camera_paras * ui;

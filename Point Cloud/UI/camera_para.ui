@@ -1805,8 +1805,8 @@
     <widget class="QPushButton" name="pushButton_visibility_smooth">
      <property name="geometry">
       <rect>
-       <x>50</x>
-       <y>250</y>
+       <x>120</x>
+       <y>210</y>
        <width>131</width>
        <height>31</height>
       </rect>
@@ -1826,6 +1826,58 @@
      </property>
      <property name="text">
       <string>Extra functions：</string>
+     </property>
+    </widget>
+    <widget class="Line" name="line_12">
+     <property name="geometry">
+      <rect>
+       <x>3</x>
+       <y>350</y>
+       <width>451</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_21">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>370</y>
+       <width>101</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>PVS based:</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_pvs_first_scan">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>390</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>First Scan</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_pvs_detect_boundary">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>440</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Detect Boundary</string>
      </property>
     </widget>
    </widget>

@@ -30,6 +30,7 @@
 #include "Algorithm/Camera.h"
 #include "Algorithm/NBV.h"
 #include "Algorithm/VisibilityBasedNBV.h"
+#include "Algorithm/PVSBasedNBV.h"
 
 //#include "Poisson/Geometry.h"
 //#include "Poisson/PoissonParam.h"
@@ -75,6 +76,7 @@ public:
 	void runCamera();
 	void runNBV();
   void runVisibilityBasedNBV();
+  void runPVSBasedNBV();
 
 	void cleanPickPoints();
 
@@ -196,14 +198,15 @@ public:
 	DataMgr dataMgr;
 	GLDrawer glDrawer;	
 
-	WLOP              wlop;
-	NormalSmoother    norSmoother;
-	Skeletonization   skeletonization;
-	Upsampler         upsampler;
-	Poisson           poisson;
-	vcc::Camera       camera;
-	NBV               nbv;
+  WLOP               wlop;
+  NormalSmoother     norSmoother;
+  Skeletonization    skeletonization;
+  Upsampler          upsampler;
+  Poisson            poisson;
+  vcc::Camera        camera;
+  NBV                nbv;
   VisibilityBasedNBV visibilityBasedNBV;
+  PVSBasedNBV        pvsBasedNBV;
 
 	RichParameterSet* para;
 };

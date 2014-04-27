@@ -109,6 +109,11 @@ void CameraParaDlg::initConnects()
   connect(ui->pushButton_visibility_one_key_iteration, SIGNAL(clicked()), this, SLOT(runVisibilityOneKeyNbvIteration()));
   connect(ui->pushButton_visibility_smooth, SIGNAL(clicked()), this, SLOT(runVisibilitySmooth()));
   /********visibility based NBV*******/
+
+  /*** PVS Based NBV ***/
+  connect(ui->pushButton_pvs_first_scan, SIGNAL(clicked()), this, SLOT(pvsFirstScan()));
+  connect(ui->pushButton_pvs_detect_boundary, SIGNAL(clicked()), this, SLOT(pvsDetectBoundary()));
+  /*** PVS Based NBV ***/
 }
 
 bool CameraParaDlg::initWidgets()
@@ -1521,4 +1526,18 @@ void CameraParaDlg::runVisibilitySmooth()
   global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Smooth", BoolValue(true));
   area->runVisibilityBasedNBV();
   global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Smooth", BoolValue(false));
+}
+
+void CameraParaDlg::pvsFirstScan()
+{
+  global_paraMgr.camera.setValue("Run PVS First Scan", BoolValue(true));
+  area->runCamera();
+  global_paraMgr.camera.setValue("Run PVS First Scan", BoolValue(false));
+}
+
+void CameraParaDlg::pvsDetectBoundary()
+{
+  global_paraMgr.pvsBasedNBV.setValue("Run PVS Detect Boundary", BoolValue(true));
+  area->runPVSBasedNBV();
+  global_paraMgr.pvsBasedNBV.setValue("Run PVS Detect Boundary", BoolValue(false));
 }

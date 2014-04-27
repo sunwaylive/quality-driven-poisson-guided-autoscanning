@@ -27,6 +27,7 @@ private:
   void runVisibilityUpdate();
   void runVisibilitySmooth();
   bool isPointWellVisible(const CVertex &target, const Point3f &view_pos, const Point3f &view_dir, const CMesh* mesh_surface);
+
 private:
   RichParameterSet      *para;
   double                optimalDist;
@@ -35,7 +36,7 @@ private:
   CMesh                 *nbv_candidates;
   vector<ScanCandidate> *scan_history;
   vector<ScanCandidate> *scan_candidates;
-  vector<CMesh *>*       scanned_results;
+  vector<CMesh *>*      scanned_results;
   static double         general_radius;
 };
 #endif

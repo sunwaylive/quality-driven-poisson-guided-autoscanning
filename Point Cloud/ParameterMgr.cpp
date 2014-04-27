@@ -26,6 +26,7 @@ ParameterMgr::ParameterMgr(void)
 	initCameraParameter();
 	initNBVParameter();
   initVisibilityBasedNBVParameter();
+  initPVSBasedNBVParameter();
 }
 
 ParameterMgr::~ParameterMgr(void)
@@ -423,9 +424,13 @@ void ParameterMgr::initCameraParameter()
   camera.addParam(new RichDouble("Merge Confidence Threshold", 0.9f));
   camera.addParam(new RichDouble("Grid Step Size", -1));
 
-  //*** Visibility Based NBV
+  /*** Visibility Based NBV ***/
   camera.addParam(new RichBool("Run Visibility First Scan", false));
-  //*** Visibility Based NBV
+  /*** Visibility Based NBV ***/
+
+  /***pvs based NBV ***/
+  camera.addParam(new RichBool("Run PVS First Scan", false));
+  /***pvs based NBV ***/
 }
 
 void ParameterMgr::initNBVParameter()
@@ -474,4 +479,9 @@ void ParameterMgr::initVisibilityBasedNBVParameter()
   visibilityBasedNBV.addParam(new RichBool("Run Visibility Merge", false));
   visibilityBasedNBV.addParam(new RichBool("Run Visibility One Key Iteration", false));
   visibilityBasedNBV.addParam(new RichBool("Run Visibility Smooth", false));
+}
+
+void ParameterMgr::initPVSBasedNBVParameter()
+{
+  pvsBasedNBV.addParam(new RichBool("Run PVS Detect Boundary", false));
 }
