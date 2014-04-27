@@ -92,6 +92,7 @@ public:
   vector<ScanCandidate>*  getScanHistory();
   vector<ScanCandidate>*  getSelectedScanCandidates();
   vector<ScanCandidate>*  getVisibilityFirstScanCandidates();
+  vector<ScanCandidate>*  getPVSFirstScanCandidates();
   CMesh*                  getCurrentScannedMesh();
   vector<CMesh* >*        getScannedResults(); 
 
@@ -166,28 +167,31 @@ public:
   CMesh                  current_scanned_mesh; 
   vector<CMesh *>        scanned_results;  
                   
-	Skeleton        skeleton;
-  Slices          slices;
+	Skeleton               skeleton;
+  Slices                 slices;
 
-	RichParameterSet*   para;
-	double              init_radius;
-	QString             curr_file_name;
+	RichParameterSet*      para;
+	double                 init_radius;
+	QString                curr_file_name;
 
-  Box3f whole_space_box;
+  Box3f                  whole_space_box;
 
-  Point3f current_L_to_R_Translation;
-  Quaternionf current_L_to_R_Rotation_Qua;
-  Point3f current_L_to_R_Angle;
+  Point3f                current_L_to_R_Translation;
+  Quaternionf            current_L_to_R_Rotation_Qua;
+  Point3f                current_L_to_R_Angle;
 
-  Matrix44f R_to_S_Matrix44;
-  Matrix44f T_to_L_Matrix44;
+  Matrix44f              R_to_S_Matrix44;
+  Matrix44f              T_to_L_Matrix44;
 
-  Point3f scanner_position;
+  Point3f                scanner_position;
   
-  //*** visibility based NBV
-  vector<ScanCandidate> visibility_first_scan_candidates;
+  /*** visibility based NBV ***/
+  vector<ScanCandidate>  visibility_first_scan_candidates;
   vector<ScanCandidate>  scan_history;
-  //*** visibility based NBV
+  /*** visibility based NBV ***/
 
+  /*** pvs based NBV ***/
+  vector<ScanCandidate> pvs_first_scan_candidates;
+  /*** pvs based NBV***/
 };
 

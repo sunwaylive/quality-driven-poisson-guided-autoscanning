@@ -56,9 +56,12 @@ void DataMgr::initDefaultScanCamera()
   //scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, -1.0f), Point3f(0.0f, 0.0f, 1.0f)));
 
 
-  //*** visibility based NBV
+  /*** visibility based NBV ***/
   visibility_first_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f), Point3f(0.0f, 0.0f, -1.0f)));
-  //*** visibility based NBV
+  /*** visibility based NBV ***/
+  /*** pvs based NBV ***/
+  pvs_first_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f), Point3f(0.0f, 0.0f, -1.0f)));
+  /*** pvs based NBV **/
 }
 
 bool DataMgr::isSamplesEmpty()
@@ -504,6 +507,11 @@ vector<ScanCandidate>* DataMgr::getInitCameraScanCandidates()
 vector<ScanCandidate>* DataMgr::getVisibilityFirstScanCandidates()
 {
   return &visibility_first_scan_candidates;
+}
+
+vector<ScanCandidate>* DataMgr::getPVSFirstScanCandidates()
+{
+  return &pvs_first_scan_candidates;
 }
 
 vector<ScanCandidate>* DataMgr::getScanCandidates()

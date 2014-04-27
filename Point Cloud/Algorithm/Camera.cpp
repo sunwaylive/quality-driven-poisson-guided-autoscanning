@@ -14,6 +14,7 @@ void vcc::Camera::setInput(DataMgr* pData)
     //scan candidates for initialing
     init_scan_candidates = pData->getInitCameraScanCandidates();
     visibility_first_scan_candidates = pData->getVisibilityFirstScanCandidates();
+    pvs_first_scan_candidates = pData->getPVSFirstScanCandidates();
     //candidates for nbv computing
     scan_candidates = pData->getScanCandidates();
     scan_history = pData->getScanHistory();
@@ -277,21 +278,21 @@ void vcc::Camera::runVisibilityFirstScan()
     /******* call runVirtualScan() *******/
     cout<<i << "th initial scan begin" <<endl;
     runVirtualScan();
-    cout<<i++ <<"th initial scan done!" <<endl;
+    cout<<i <<"th initial scan done!" <<endl;
 
     //add to scan history
     scan_history->push_back(*it);
 
     //merge scanned mesh with original
     int index = 0;
-    if (!original->vert.empty()) index = original->vert.back().m_index;
+    if (!original->vert.empty()) index = original->vert.back().m_index + 1;
 
-    std::cout<< i <<"th initial scan points num: " <<current_scanned_mesh->vert.size() << std::endl;
-    for (int i = 0; i < current_scanned_mesh->vert.size(); ++i)
+    std::cout<< i++ <<"th initial scan points num: " <<current_scanned_mesh->vert.size() << std::endl;
+    for (int j = 0; j < current_scanned_mesh->vert.size(); ++j)
     {
-      CVertex& v = current_scanned_mesh->vert[i];
+      CVertex& v = current_scanned_mesh->vert[j];
       CVertex t = v;
-      t.m_index = ++index;
+      t.m_index = index++;
       t.is_original = true;
       original->vert.push_back(t);
       original->bbox.Add(t.P());
@@ -305,5 +306,51 @@ void vcc::Camera::runVisibilityFirstScan()
 
 void vcc::Camera::runPVSFirstScan()
 {
-  std::cout << "run pvs first scan" <<std::endl;
+  //clear original points
+  original->face.clear();
+  original->fn = 0;
+  original->vert.clear();
+  original->vn = 0;
+  original->bbox = Box3f();
+
+  //release scanned_result
+  vector<CMesh* >::iterator it_scanned_result = scanned_results->begin();
+  for (; it_scanned_result != scanned_results->end(); ++it_scanned_result)
+  {
+    if ( (*it_scanned_result) != NULL)
+    {
+      delete (*it_scanned_result);
+      (*it_scanned_result) = NULL;
+    }
+  }
+  scanned_results->clear();
+
+  vector<ScanCandidate>::iterator it = pvs_first_scan_candidates->begin();
+  int i = 1;
+  for (; it != pvs_first_scan_candidates->end(); ++it)
+  {
+    //first scan should consider dist to model
+    pos = it->first * dist_to_model;
+    direction = it->second;
+    /******* call runVirtualScan() *******/
+    cout<<i << "th initial scan begin" <<endl;
+    runVirtualScan();
+    cout<<i <<"th initial scan done!" <<endl;
+    
+    //merge scanned mesh with original
+    int index = 0;
+    if (!original->vert.empty()) index = original->vert.back().m_index + 1;
+
+    std::cout<< i++ <<"th initial scan points num: " <<current_scanned_mesh->vert.size() << std::endl;
+    for (int j = 0; j < current_scanned_mesh->vert.size(); ++j)
+    {
+      CVertex& v = current_scanned_mesh->vert[j];
+      CVertex t = v;
+      t.m_index = index++;
+      t.is_original = true;
+      original->vert.push_back(t);
+      original->bbox.Add(t.P());
+    }
+    original->vn = original->vert.size();
+  }
 }
