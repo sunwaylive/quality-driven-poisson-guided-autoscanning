@@ -256,9 +256,13 @@ void GLArea::paintGL()
       if (para->getBool("Show Samples Sphere"))
         glDrawer.draw(GLDrawer::SPHERE, dataMgr.getCurrentSamples());	
 
-      glw.m = dataMgr.getCurrentSamples();
-      glw.Draw(GLW::DMSmooth, GLW::CMPerMesh, GLW::TMNone);
-
+      if (!dataMgr.isSamplesEmpty())
+      {
+        glw.m = dataMgr.getCurrentSamples();
+        //glw.Draw(GLW::DMSmooth, GLW::CMPerMesh, GLW::TMNone);
+        glw.Draw(GLW::DMWire, GLW::CMPerMesh, GLW::TMNone);
+        glDrawer.draw(GLDrawer::DOT, dataMgr.getCurrentSamples());
+      }
     }
 
     if (para->getBool("Show Normal")) 

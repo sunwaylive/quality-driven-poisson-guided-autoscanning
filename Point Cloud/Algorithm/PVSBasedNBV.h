@@ -6,6 +6,8 @@
 #include "PointCloudAlgorithm.h"
 #include "GlobalFunction.h"
 #include "vcg\complex\trimesh\update\selection.h"
+#include "vcg\complex\algorithms\update\topology.h"
+#include "vcg\complex\complex.h"
 
 
 class PVSBasedNBV : public PointCloudAlgorithm

@@ -281,7 +281,7 @@ inline bool operator != ( const EdgeSorter & pe ) const
 };
 
 
-// versione minimale che non calcola i complex flag.
+// version minimal che non calcola i complex flag.
 static void VertexBorderFromNone(MeshType &m)
 {
   assert(HasPerVertexFlags(m));
@@ -393,7 +393,7 @@ static void FaceBorderFromNone(MeshType &m)
 		if(pe==e.end()) break;
 		++pe;
 	} while(true);
-//	TRACE("found %i border (%i complex) on %i edges\n",nborder,ncomplex,ne);
+	//TRACE("found %i border (%i complex) on %i edges\n",nborder,ncomplex,ne);
 }
 
 /// Compute the PerVertex Border flag deriving it from the faces

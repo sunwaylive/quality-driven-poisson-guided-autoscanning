@@ -59,7 +59,6 @@ void GLDrawer::updateDrawer(vector<int>& pickList)
 	{
 		curr_pick_indx = pickList[0];
 	}
-
 }
 
 
@@ -288,7 +287,8 @@ GLColor GLDrawer::getColorByType(CVertex& v)
 
   if (v.is_fixed_sample)
 	{
-		return feature_color;
+    if (v.IsB())  return cRed;
+    else return feature_color;
 	}
 
   if (v.is_field_grid)
@@ -306,7 +306,9 @@ GLColor GLDrawer::getColorByType(CVertex& v)
     return isoValue2color(v.eigen_confidence, sample_cofidence_color_scale, iso_value_shift, true);
   }
   else
+  {
 	  return sample_color;
+  }
 }
 
 void GLDrawer::drawDot(CVertex& v)

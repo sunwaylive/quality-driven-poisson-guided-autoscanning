@@ -55,5 +55,43 @@ void PVSBasedNBV::runPVSDetectBoundary()
   }
   sample->vn = sample->vert.size();
 
-  //detect boundary
+  //calculate the topology of sample points
+  GlobalFun::ballPivotingReconstruction(*sample);
+  vcg::tri::UpdateTopology<CMesh>::VertexFace(*sample);
+
+  //use vertex topology
+  vcg::tri::UpdateFlags<CMesh>::VertexBorderFromNone(*sample); 
+  std::cout<<"vertex line: " <<tri::UpdateSelection<CMesh>::VertexFromBorderFlag(*sample) << std::endl;
+  for (int i = 0; (i < sample->vert.size()); ++i)
+  {
+    if(sample->vert[i].IsS())
+      std::cout <<" point on border: "<< sample->vert[i].IsB() <<std::endl;
+  }
+
+  //using face topology
+  /*vcg::tri::UpdateFlags<CMesh>::FaceBorderFromNone(*sample);
+  std::cout<<"face line: " <<tri::UpdateSelection<CMesh>::FaceFromBorderFlag(*sample) <<std::endl;
+  for (int i = 0; i < sample->face.size(); ++i)
+  {
+    if (sample->face[i].IsS())
+    {
+      std::cout<< "face is selected: " <<sample->face[i].IsS() <<std::endl;
+      for (int j = 0; j < 3 ; ++j)
+      {
+        std::cout <<j <<"th point of face " << i << " on border: " << sample->face[i].IsB(j) <<std::endl;
+      }
+    }
+  }*/
+  
+  //vcg::tri::UpdateFlags<CMesh>::FaceBorderFromFF(*sample);
+  //
+  //vcg::tri::UpdateFlags<CMesh>::VertexBorderFromNone(*sample);
+  //vcg::tri::UpdateTopology<CMesh>::VertexFace(*sample);
+  //update mesh topology
+  /*vcg::tri::UpdateTopology<CMesh>::FaceFace(*sample);
+  vcg::tri::UpdateTopology<CMesh>::VertexFace(*sample);
+  vcg::tri::UpdateFlags<CMesh>::FaceBorderFromFF(*sample);
+  vcg::tri::UpdateFlags<CMesh>::VertexBorderFromFace(*sample);*/
+  //
+  //std::cout<<"vertex line: " <<tri::UpdateSelection<CMesh>::VertexFromBorderFlag(*sample) << std::endl;    
 }

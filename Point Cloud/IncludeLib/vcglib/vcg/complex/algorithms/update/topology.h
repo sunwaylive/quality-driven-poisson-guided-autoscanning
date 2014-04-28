@@ -220,7 +220,7 @@ static void FaceFace(MeshType &m)
 
   std::vector<PEdge> e;
   FillEdgeVector(m,e);
-  sort(e.begin(), e.end());							// Lo ordino per vertici
+  sort(e.begin(), e.end());							// Lo ordino per vertice
 
   int ne = 0;											// Numero di edge reali
 

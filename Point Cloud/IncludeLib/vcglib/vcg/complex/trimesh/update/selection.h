@@ -374,6 +374,4 @@ void VertexNonManifoldEdges(MeshType &m)
 
 }	// End namespace
 }	// End namespace
-
-
 #endif

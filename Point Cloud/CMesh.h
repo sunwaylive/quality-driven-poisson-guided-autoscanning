@@ -32,9 +32,9 @@ using namespace vcg;
 
 class CVertex;
 class CFace;
+class CEdge;
 
-class CUsedTypes: public vcg::UsedTypes< vcg::Use<CVertex>::AsVertexType,
-	vcg::Use<CFace>::AsFaceType>{};
+class CUsedTypes: public vcg::UsedTypes< vcg::Use<CVertex>::AsVertexType, vcg::Use<CEdge>::AsEdgeType, vcg::Use<CFace>::AsFaceType>{};
 
 
 class CVertex : public vcg::Vertex<CUsedTypes, vcg::vertex::Coord3f, vcg::vertex::Normal3f, vcg::vertex::Color4b, vcg::vertex::BitFlags> 
@@ -211,9 +211,10 @@ public:
 	}
 };
 
-class CFace : public vcg::Face<CUsedTypes, vcg::face::VertexRef> {};
+class CEdge : public vcg::Edge<CUsedTypes>{};
+class CFace : public vcg::Face<CUsedTypes, vcg::face::FFAdj, vcg::face::VFAdj, vcg::face::VertexRef, vcg::face::BitFlags> {};
 
-class CMesh : public vcg::tri::TriMesh< std::vector<CVertex>, std::vector<CFace> >
+class CMesh : public vcg::tri::TriMesh< std::vector<CVertex>, std::vector<CFace>, std::vector<CEdge> >
 {
 //public:
 //  //add two meshes

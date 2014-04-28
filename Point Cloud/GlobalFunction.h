@@ -50,7 +50,6 @@ namespace GlobalFun
 	void computeEigen(CMesh* _samples);
 	void computeEigenIgnoreBranchedPoints(CMesh* _samples);
 	void computeEigenWithTheta(CMesh* _samples, double radius);
-
 	void computeAnnNeigbhors(vector<CVertex> &datapts, vector<CVertex> &querypts, int numKnn, bool need_self_included, QString purpose);
 	//mesh0: search set, mesh1: 
   void computeBallNeighbors(CMesh* mesh0, CMesh* mesh1, double radius, vcg::Box3f& box);
