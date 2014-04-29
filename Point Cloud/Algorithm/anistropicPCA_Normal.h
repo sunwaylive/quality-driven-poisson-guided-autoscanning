@@ -61,7 +61,7 @@ public:
 	//static void ConvertCMesh2CMeshO(const CMesh &cmesh, CMeshO &cmeshO)
 	//{
 	//	CMeshO::VertexIterator viO;
-	//	CMesh::ConstVertexIterator vi;
+	//	CMesh::ConstVertexIterator vi;\
 	//	for(vi = cmesh.vert.begin(), viO = cmeshO.vert.begin(); vi != cmesh.vert.end(); ++vi, ++viO)
 	//	{
 	//		viO->P().Import(vi->P());

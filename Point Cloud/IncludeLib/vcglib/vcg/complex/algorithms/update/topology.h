@@ -39,7 +39,6 @@ namespace tri {
 template <class UpdateMeshType>
 class UpdateTopology
 {
-
 public:
 typedef UpdateMeshType MeshType;
 typedef typename MeshType::VertexType     VertexType;
@@ -50,7 +49,6 @@ typedef typename MeshType::EdgeIterator    EdgeIterator;
 typedef typename MeshType::FaceType       FaceType;
 typedef typename MeshType::FacePointer    FacePointer;
 typedef typename MeshType::FaceIterator   FaceIterator;
-
 
 /// \headerfile topology.h vcg/complex/algorithms/update/topology.h
 
@@ -409,10 +407,6 @@ static void FaceFaceFromTexCoord(MeshType &m)
 	} while(true);
 }
 
-
-
-
-
 /// \brief Test correctness of VFtopology
 static void TestVertexFace(MeshType &m)
 {
@@ -491,7 +485,7 @@ static void TestFaceFace(MeshType &m)
 	}
 }
 
-/// Auxiliairy data structure for computing edge edge adjacency information.
+/// Auxiliary data structure for computing edge edge adjacency information.
 /// It identifies an edge storing a vertex pointer and a edge pointer where it belong.
 class PVertexEdge
 {
@@ -516,7 +510,6 @@ inline bool operator  <  ( const PVertexEdge & pe ) const { return ( v<pe.v ); }
 inline bool operator ==  ( const PVertexEdge & pe ) const { return ( v==pe.v ); }
 inline bool operator !=  ( const PVertexEdge & pe ) const { return ( v!=pe.v ); }
 };
-
 
 
 static void EdgeEdge(MeshType &m)

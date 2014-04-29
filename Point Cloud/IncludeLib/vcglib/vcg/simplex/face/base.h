@@ -119,7 +119,7 @@ public:
 		DELETED     = 0x00000001,		// Face is deleted from the mesh
 		NOTREAD     = 0x00000002,		// Face of the mesh is not readable
 		NOTWRITE    = 0x00000004,		// Face of the mesh is not writable
-    VISITED     = 0x00000010,		// Face has been visited. Usualy this is a per-algorithm used bit. 
+    VISITED     = 0x00000010,		// Face has been visited. Usually this is a per-algorithm used bit. 
 		SELECTED    = 0x00000020,		// Face is selected. Algorithms should try to work only on selected face (if explicitly requested)
 		// Border _flags, it is assumed that BORDERi = BORDER0<<i 
 		BORDER0     = 0x00000040,
@@ -150,7 +150,7 @@ public:
 	bool IsR() const {return (this->Flags() & NOTREAD) == 0;}
 	///  checks if the Face is modifiable
 	bool IsW() const {return (this->Flags() & NOTWRITE)== 0;}
-	/// This funcion checks whether the Face is both readable and modifiable
+	/// This function checks whether the Face is both readable and modifiable
 	bool IsRW() const {return (this->Flags() & (NOTREAD | NOTWRITE)) == 0;}
 	///  checks if the Face is Modified
 	bool IsS() const {return (this->Flags() & SELECTED) != 0;}
@@ -177,7 +177,7 @@ public:
 	void ClearR() {this->Flags() |=NOTREAD;}
 	///  marks the Face as writable
 	void SetW() {this->Flags() &=(~NOTWRITE);}
-	///  marks the Face as notwritable
+	///  marks the Face as not writable
 	void ClearW() {this->Flags() |=NOTWRITE;}
 	///  select the Face
 	void SetS()		{this->Flags() |=SELECTED;}
@@ -192,7 +192,7 @@ public:
 	bool IsB(int i) const {return (this->Flags() & (BORDER0<<i)) != 0;}
 	/// This function select the face
   void SetB(int i)		{this->Flags() |=(BORDER0<<i);}
-	/// This funcion execute the inverse operation of SetS()
+	/// This funcion execute the inverse operation of SetB()
 	void ClearB(int i)	{this->Flags() &= (~(BORDER0<<i));}
 	
 	/// This function checks if a given side of the face is a feature/internal edge

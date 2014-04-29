@@ -8,7 +8,7 @@
 #include "vcg\complex\trimesh\update\selection.h"
 #include "vcg\complex\algorithms\update\topology.h"
 #include "vcg\complex\complex.h"
-
+#include "vcg/complex/algorithms/create/platonic.h" //for mesh copy
 
 class PVSBasedNBV : public PointCloudAlgorithm
 {

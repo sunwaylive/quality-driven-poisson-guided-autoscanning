@@ -16,9 +16,9 @@ class FrontEdge {
   int v0, v1, v2;   //v0, v1 represent the FrontEdge, v2 the other vertex 
                     //in the face this FrontEdge belongs to    
   int face;         //index of the face             
-  bool active; //keep tracks of wether it is in front or in deads
+  bool active; //keep tracks of whether it is in front or in deads
     
-  //the loops in the front are mantained as a double linked list
+  //the loops in the front are maintained as a double linked list
   std::list<FrontEdge>::iterator next;            
   std::list<FrontEdge>::iterator previous;
   
@@ -100,7 +100,7 @@ protected:
 
   bool CheckFrontEdge(int v0, int v1) {
     int tot = 0;
-    //HACK to speed up things until i can use a seach structure
+    //HACK to speed up things until i can use a search structure
 //    int i = mesh.face.size() - 4*(front.size());
 //    if(front.size() < 100) i = mesh.face.size() - 100;
     int  i = 0;

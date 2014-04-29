@@ -352,8 +352,8 @@ static void FaceBorderFromNone(MeshType &m)
 	typename UpdateMeshType::FaceIterator pf;
 	typename std::vector<EdgeSorter>::iterator p;
 
-	for(VertexIterator v=m.vert.begin();v!=m.vert.end();++v)
-		(*v).ClearB();
+	/*for(VertexIterator v=m.vert.begin();v!=m.vert.end();++v)
+		(*v).ClearB();*/
 		
 	if( m.fn == 0 ) 
 		return;
