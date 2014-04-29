@@ -114,7 +114,7 @@ public:
 	bool IsD() const {return (this->Flags() & DELETED) != 0;} ///  checks if the vertex is deleted
 	bool IsR() const {return (this->Flags() & NOTREAD) == 0;} ///  checks if the vertex is readable
 	bool IsW() const {return (this->Flags() & NOTWRITE)== 0;}///  checks if the vertex is modifiable
-	bool IsRW() const {return (this->Flags() & (NOTREAD | NOTWRITE)) == 0;}/// This funcion checks whether the vertex is both readable and modifiable
+	bool IsRW() const {return (this->Flags() & (NOTREAD | NOTWRITE)) == 0;}/// This function checks whether the vertex is both readable and modifiable
 	bool IsS() const {return (this->Flags() & SELECTED) != 0;}///  checks if the vertex is Selected
 	bool IsB() const {return (this->Flags() & BORDER) != 0;}///  checks if the vertex is a border one
 	bool IsV() const {return (this->Flags() & VISITED) != 0;}///  checks if the vertex Has been visited

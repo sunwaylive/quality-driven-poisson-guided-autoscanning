@@ -55,9 +55,6 @@ void PVSBasedNBV::runPVSDetectBoundary()
   }
   sample->vn = sample->vert.size();
 
-  typedef vcg::tri::UpdateFlags<CMesh>::EdgeSorter MyEdge;
-  typedef std::vector<MyEdge>::iterator MyEdgeIter;
-  typedef vcg::tri::UpdateFlags<CMesh>::FaceIterator FaceIter;
   //compute the topology of sample points
   GlobalFun::ballPivotingReconstruction(*sample);
   //update the relation between vertexes and faces
@@ -144,7 +141,7 @@ void PVSBasedNBV::runPVSDetectBoundary()
   std::cout<<"board face num: " <<tri::UpdateSelection<CMesh>::FaceFromBorderFlag(*sample) <<std::endl;
   std::cout<<"total edge size: " << v_edge.size() <<std::endl;
   std::cout<<"board edge num: " <<v_border_edge.size() << std::endl;
-  //This is important: ways to accessing board points
+  //This is important: ways to access board points
   sort(v_border_edge.begin(), v_border_edge.end());
   for (int i = 0; i < v_border_edge.size(); ++i)
   {
@@ -152,6 +149,9 @@ void PVSBasedNBV::runPVSDetectBoundary()
     std::cout<< (v_border_edge[i].v[1]->P()[0])<<" " << (v_border_edge[i].v[1]->P()[1]) <<" " << (v_border_edge[i].v[1]->P()[2]) <<std::endl;
   }
   
+  //clarify board edges into boundaries
+  //typedef std::vector<MyEdge> 
+
   //vcg::tri::UpdateTopology<>::VertexEdge(*sample);
 
   //way2: using face topology
