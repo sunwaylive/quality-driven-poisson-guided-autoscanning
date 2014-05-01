@@ -687,14 +687,23 @@ bool GlobalFun::isTwoPoint3fTheSame(Point3f& v0, Point3f& v1)
 
 bool GlobalFun::isTwoPoint3fOpposite(Point3f& v0, Point3f& v1)
 {
-	if (abs(-v0[0] - v1[0]) < 1e-7 &&  
+  if (abs(v0[0] + v1[0]) < 1e-7
+    && abs(v0[1] + v1[1]) < 1e-7
+    && abs(v0[2] + v1[2]) < 1e-7)
+  {
+    return true;
+  }
+  else
+    return false;
+
+	/*if (abs(-v0[0] - v1[0]) < 1e-7 &&  
 		abs(-v0[1] - v1[1]) < 1e-7 && 
 		abs(-v0[2] - v1[2]) < 1e-7)
 	{
 		return true;
 	}
 
-	return false;
+	return false;*/
 }
 
 
@@ -716,11 +725,11 @@ double GlobalFun::computeRealAngleOfTwoVertor(Point3f v0, Point3f v1)
 	double angle_cos = v0 * v1;
 	if (angle_cos > 1)
 	{
-		angle_cos = 0.99;
+		angle_cos = 0.999999999;
 	}
 	if (angle_cos < -1)
 	{
-		angle_cos = -0.99;
+		angle_cos = -0.99999999;
 	}
 	if (angle_cos > 0 && angle_cos < 1e-8)
 	{
@@ -729,9 +738,10 @@ double GlobalFun::computeRealAngleOfTwoVertor(Point3f v0, Point3f v1)
 
 	double angle = acos(angle_cos) * 180. / 3.1415926 ;
 
-	if (angle < 0 || angle > 180)
+	if (angle < 0 || angle > 181)
 	{
 		cout << "compute angle wrong!!" << endl;
+    std::cout<< "angle: " <<angle <<std::endl;
 		//system("Pause");
 		return -1;
 	}

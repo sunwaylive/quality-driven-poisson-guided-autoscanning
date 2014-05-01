@@ -484,5 +484,13 @@ void ParameterMgr::initVisibilityBasedNBVParameter()
 void ParameterMgr::initPVSBasedNBVParameter()
 {
   pvsBasedNBV.addParam(new RichString("Algorithm Name", "PVS Based NBV"));
+
   pvsBasedNBV.addParam(new RichBool("Run PVS Detect Boundary", false));
+  pvsBasedNBV.addParam(new RichBool("Run PVS Search New Boundaries", false));
+  pvsBasedNBV.addParam(new RichBool("Run PVS Compute Candidates", false));
+  pvsBasedNBV.addParam(new RichBool("Run PVS Select Candidate", false));
+
+  pvsBasedNBV.addParam(new RichDouble("Boundary Search Angle", 45.));
+  pvsBasedNBV.addParam(new RichInt("Boundary Search KNN", 20));
+  pvsBasedNBV.addParam(new RichInt("Accept Boundary Size", 5));
 }

@@ -178,8 +178,7 @@ static inline bool DeleteBitFlag(int bitval)
 	bb.Add(this->cP(0));  
 	bb.Add(this->cP(1));  
 	}
-
-          };
+};
 
           
 /*

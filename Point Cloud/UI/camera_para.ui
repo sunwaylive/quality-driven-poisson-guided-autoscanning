@@ -1872,12 +1872,51 @@
       <rect>
        <x>20</x>
        <y>440</y>
-       <width>101</width>
+       <width>121</width>
        <height>31</height>
       </rect>
      </property>
      <property name="text">
-      <string>Detect Boundary</string>
+      <string>1.1 Detect Boundary</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_pvs_search_new_boundaries">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>440</y>
+       <width>171</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>1.2 Search New Boundaries</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_compute_all_candidates">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>490</y>
+       <width>161</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Compute All Candidates</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_select_candidate">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>540</y>
+       <width>161</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Select a candidate</string>
      </property>
     </widget>
    </widget>

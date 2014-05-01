@@ -539,6 +539,11 @@ vector<CMesh* >* DataMgr::getScannedResults()
   return &scanned_results;
 }
 
+vector<Boundary>* DataMgr::getBoundaries()
+{
+  return &boundaries;
+}
+
 Slices* DataMgr::getCurrentSlices()
 {
   return &slices;

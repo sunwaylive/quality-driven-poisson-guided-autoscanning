@@ -263,6 +263,17 @@ void GLArea::paintGL()
         glw.Draw(GLW::DMWire, GLW::CMPerMesh, GLW::TMNone);
         glDrawer.draw(GLDrawer::DOT, dataMgr.getCurrentSamples());
       }
+
+      if (!dataMgr.getBoundaries()->empty())
+      {
+        for (int i = 0; i < dataMgr.getBoundaries()->size(); ++i)
+        {
+          for (int j = 0; j < dataMgr.getBoundaries()->at(i).curve.size(); ++j)
+          {
+            glDrawer.drawSphere(dataMgr.getBoundaries()->at(i).curve.at(j));
+          }
+        }
+      }
     }
 
     if (para->getBool("Show Normal")) 

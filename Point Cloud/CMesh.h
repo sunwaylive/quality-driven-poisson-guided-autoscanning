@@ -55,7 +55,7 @@ public:
   bool is_poisson;
   bool is_visible;
   bool is_barely_visible;
-
+  bool is_boundary;
 	int m_index;
 
 	bool is_fixed_sample; //feature points (blue color) 
@@ -110,6 +110,7 @@ public:
     is_hole(false),
     is_poisson(false),
 		is_fixed_sample(false),
+    is_boundary(false),
 		eigen_confidence(-1),
 		is_skel_branch(false),
 		is_ignore(false),

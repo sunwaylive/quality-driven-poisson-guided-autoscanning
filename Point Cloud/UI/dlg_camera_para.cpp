@@ -113,6 +113,9 @@ void CameraParaDlg::initConnects()
   /*** PVS Based NBV ***/
   connect(ui->pushButton_pvs_first_scan, SIGNAL(clicked()), this, SLOT(pvsFirstScan()));
   connect(ui->pushButton_pvs_detect_boundary, SIGNAL(clicked()), this, SLOT(pvsDetectBoundary()));
+  connect(ui->pushButton_pvs_search_new_boundaries, SIGNAL(clicked()), this, SLOT(pvsSearchNewBoundaries()));
+  connect(ui->pushButton_compute_all_candidates, SIGNAL(clicked()), this, SLOT(pvsComputeCandidates()));
+  connect(ui->pushButton_select_candidate, SIGNAL(clicked()), this, SLOT(pvsSelectCandidate()));
   /*** PVS Based NBV ***/
 }
 
@@ -1540,4 +1543,25 @@ void CameraParaDlg::pvsDetectBoundary()
   global_paraMgr.pvsBasedNBV.setValue("Run PVS Detect Boundary", BoolValue(true));
   area->runPVSBasedNBV();
   global_paraMgr.pvsBasedNBV.setValue("Run PVS Detect Boundary", BoolValue(false));
+}
+
+void CameraParaDlg::pvsSearchNewBoundaries()
+{
+  global_paraMgr.pvsBasedNBV.setValue("Run PVS Search New Boundaries", BoolValue(true));
+  area->runPVSBasedNBV();
+  global_paraMgr.pvsBasedNBV.setValue("Run PVS Search New Boundaries", BoolValue(false));
+}
+
+void CameraParaDlg::pvsComputeCandidates()
+{
+  global_paraMgr.pvsBasedNBV.setValue("Run PVS Compute Candidates", BoolValue(true));
+  area->runPVSBasedNBV();
+  global_paraMgr.pvsBasedNBV.setValue("Run PVS Compute Candidates", BoolValue(false));
+}
+
+void CameraParaDlg::pvsSelectCandidate()
+{
+  global_paraMgr.pvsBasedNBV.setValue("Run PVS Select Candidate", BoolValue(true));
+  area->runPVSBasedNBV();
+  global_paraMgr.pvsBasedNBV.setValue("Run PVS Select Candidate", BoolValue(false));
 }

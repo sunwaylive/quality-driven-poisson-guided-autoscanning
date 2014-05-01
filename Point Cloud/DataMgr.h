@@ -4,6 +4,7 @@
 #include "Parameter.h"
 #include "GlobalFunction.h"
 #include "Algorithm/Skeleton.h"
+#include "vcg\complex\trimesh\update\selection.h"
 
 #include <qfile.h>
 #include <qtextstream.h>
@@ -22,6 +23,7 @@ using namespace std;
 using namespace tri;
 
 typedef pair<Point3f, Point3f> ScanCandidate;
+typedef vcg::tri::UpdateFlags<CMesh>::EdgeSorter MyBoarderEdge;
 
 class PR2_order
 {
@@ -29,6 +31,35 @@ public:
   double left_rotation;
   Quaternionf L_to_R_rotation_Qua;
   Point3f L_to_R_translation;
+};
+
+class Boundary: public Branch{
+public:
+  Boundary()  { flag = 0x0000;}
+  ~Boundary() { }
+
+  enum{
+    UP = 0x0001,   //up boundary
+    DOWN = 0x0002, //down boundary
+    LEFT = 0x0004, //left boundary
+    RIGHT = 0x0008 //right boundary
+  };
+
+  std::vector<MyBoarderEdge> v_board_edges;
+  int flag;
+
+  inline bool isUpBoundary() const {return this->flag & UP;}
+  inline bool isDownBoundary() const {return this->flag & DOWN;}
+  inline bool isLeftBoundary() const {return this->flag & LEFT;}
+  inline bool isRightBoundary() const {return this->flag & RIGHT;}
+  inline void setUpBoundary() {this->flag |= UP;}
+  inline void setDownBoundary() {this->flag |= DOWN;}
+  inline void setLeftBoundary() {this->flag |= LEFT;}
+  inline void setRightBoundary() {this->flag |= RIGHT;}
+  inline void clearUpBoundary() {this->flag &= (~UP);}
+  inline void clearDownBoundary() {this->flag &= (~DOWN);}
+  inline void clearLeftBoundary() {this->flag &= (~LEFT);}
+  inline void clearRightBoundary() {this->flag &= (~RIGHT);}
 };
 
 
@@ -49,8 +80,6 @@ public:
 	void      loadImage(QString fileName);
   void      loadXYZN(QString fileName);
   void      loadCameraModel(QString fileName);
-
-
 
   bool      isModelEmpty();
   bool      isSamplesEmpty();
@@ -95,7 +124,7 @@ public:
   vector<ScanCandidate>*  getPVSFirstScanCandidates();
   CMesh*                  getCurrentScannedMesh();
   vector<CMesh* >*        getScannedResults(); 
-
+  vector<Boundary>* getBoundaries(); 
 
 	void      recomputeBox();
 	double    getInitRadiuse();
@@ -166,7 +195,7 @@ public:
   vector<ScanCandidate>  selected_scan_candidates;
   CMesh                  current_scanned_mesh; 
   vector<CMesh *>        scanned_results;  
-                  
+  vector<Boundary> boundaries;         
 	Skeleton               skeleton;
   Slices                 slices;
 

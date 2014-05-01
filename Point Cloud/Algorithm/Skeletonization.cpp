@@ -761,7 +761,6 @@ Branch Skeletonization::searchOneBranchFromIndex(int begin_idx)
 
   CVertex& t = samples->vert[nearest_idx];
   Point3f head_direction = (t.P() - begin_v.P()).Normalize();
-  vector<int> indexes0, indexes1;
   Branch branch0 = searchOneBranchFromDirection(begin_idx, head_direction);
   Branch branch1 = searchOneBranchFromDirection(begin_idx, -head_direction);
 
@@ -844,7 +843,6 @@ Branch Skeletonization::searchOneBranchFromDirection(int begin_idx, Point3f head
     double angle = GlobalFun::computeRealAngleOfTwoVertor(head_direction, new_direction);
     if (angle > para->getDouble("Branches Search Angle") || !next_v.is_fixed_sample || next_v.is_skel_branch || next_v.is_skel_virtual)
     {
-
       next_v.is_skel_virtual = true; // the corresponding sample point is not virtual
       new_branch.pushBackCVertex(next_v);
       break;
