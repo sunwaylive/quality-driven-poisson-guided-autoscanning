@@ -45,6 +45,7 @@ private:
   CMesh                 *sample;
   CMesh                 *original;
   CMesh                 *nbv_candidates;
+  CMesh                 *iso_points;
   vector<Boundary>      *m_v_boundaries;
   vector<ScanCandidate> *scan_candidates;
   vector<CMesh *>*      scanned_results;

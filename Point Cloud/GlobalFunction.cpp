@@ -158,15 +158,18 @@ void GlobalFun::computeAnnNeigbhors(vector<CVertex> &datapts, vector<CVertex> &q
 	cout << endl <<"Compute ANN for: " << purpose.toStdString() << endl;
 	int numKnn = knn + 1;
 
-	if (querypts.size() <= numKnn+2)
-	{
-		vector<CVertex>::iterator vi;
-		for(vi = datapts.begin(); vi != datapts.end(); ++vi)
-			for(int j = 0; j < 3; j++)
-				vi->neighbors.clear();
+  vector<CVertex>::iterator vi_temp;
+  for(vi_temp = datapts.begin(); vi_temp != datapts.end(); ++vi_temp)
+      vi_temp->neighbors.clear();
 
-		return;
-	}
+  //if (querypts.size() <= numKnn+2)
+  //{
+  //  vector<CVertex>::iterator vi;
+  //  for(vi = datapts.begin(); vi != datapts.end(); ++vi)
+  //      vi->neighbors.clear();
+
+  //  return;
+  //}
 
 	int					    nPts;			 // actual number of data points
 	ANNpointArray		dataPts;	 // data points

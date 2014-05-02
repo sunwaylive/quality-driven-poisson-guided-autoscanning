@@ -26,6 +26,7 @@ void PVSBasedNBV::setInput(DataMgr *pData)
   nbv_candidates = pData->getNbvCandidates();
   scan_candidates = pData->getScanCandidates();
   m_v_boundaries = pData->getBoundaries();
+  iso_points = pData->getCurrentIsoPoints();
 }
 
 void PVSBasedNBV::run()
@@ -232,7 +233,6 @@ void PVSBasedNBV::runComputeCandidates()
   GlobalFun::clearCMesh(*nbv_candidates);
   for (int i = 0; i < m_v_boundaries->size(); ++i)
   {
-    std::cout<< i << "th iteration" <<std::endl;
     Boundary b = m_v_boundaries->at(i);
     int mid_curve_idx = b.curve.size() / 2;
     int cmesh_index = b.curve[mid_curve_idx].m_index;
@@ -249,7 +249,7 @@ void PVSBasedNBV::runComputeCandidates()
     
     Point3f boder_dir = b.curve[mid_curve_idx].P() - b.curve[mid_curve_idx - 1].P();
     Point3f mid_point_normal = b.curve[mid_curve_idx].N();
-    Point3f step_aside_direction = (boder_dir ^ mid_point_normal).Normalize();//cross product
+    Point3f step_aside_direction = (boder_dir ^ mid_point_normal).Normalize();//cross product, remember always normalize
 
     Point3f inside_direction = inside_point.P() - b.curve[mid_curve_idx].P();
     if (step_aside_direction * inside_direction > 0)
@@ -258,14 +258,30 @@ void PVSBasedNBV::runComputeCandidates()
     //clear candidates
     CVertex candidate = v;
     candidate.m_index = i;
-    GlobalFun::printPoint3(std::cout, step_aside_direction);
-    std::cout<< step_aside_size <<std::endl;
     candidate.P() = v.P() + step_aside_direction * step_aside_size;
     nbv_candidates->vert.push_back(candidate);
     nbv_candidates->bbox.Add(candidate.P());
   }
   nbv_candidates->vn = nbv_candidates->vert.size();
-  std::cout<< nbv_candidates->vert.size() <<std::endl;
+
+  std::cout<< "nbv candidates size: "<< nbv_candidates->vert.size() <<std::endl;
+
+  //adjust the candidates according to the poisson surface
+  if (iso_points->vert.empty())
+  {
+    std::cout<<"iso points empty" <<std::endl;
+    return;
+  }
+  std::cout<<iso_points->vert.size() << std::endl;
+  GlobalFun::computeAnnNeigbhors(iso_points->vert, nbv_candidates->vert, 5, false, "PVS search nearest point on poisson surface to the given coarse candidates");
+  
+  //compute neighbor wrong
+  std::cout<< nbv_candidates->vert[0].neighbors.size() << std::endl;
+  for (int i = 0; i < nbv_candidates->vert.size(); ++i)
+  {
+    nbv_candidates->vert[i] = iso_points->vert[nbv_candidates->vert[i].neighbors[0]];
+  }
+
 }
 
 void PVSBasedNBV::runSelectCandidate()
