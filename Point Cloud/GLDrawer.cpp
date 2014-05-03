@@ -1,6 +1,5 @@
 #include "GLDrawer.h"
 
-
 GLDrawer::GLDrawer(RichParameterSet* _para)
 {
 	para = _para;
@@ -76,22 +75,18 @@ void GLDrawer::draw(DrawType type, CMesh* _mesh)
 	for(vi = _mesh->vert.begin(); vi != _mesh->vert.end(); ++vi) 
 	{
 		if (doPick)
-		{
 			glLoadName(qcnt);
-		}
 
 		if (vi->is_ignore)
-		{
 			continue;
-		}
 
 		if (bUseConfidenceSeparation && vi->is_view_grid)
-		{
 			if (vi->eigen_confidence < confidence_Separation_value)
-			{
 				continue;
-			}
-		}
+
+    //don't draw free points
+    if (abs(vi->pvs_value - 1) < 1e-7)
+      continue;
 
 		Point3f& p = vi->P();      
 		Point3f& normal = vi->N();
@@ -134,7 +129,7 @@ bool GLDrawer::isCanSee(const Point3f& pos, const Point3f& normal)
 	return  ( (view_point - pos) * normal >= 0 );
 }
 
-GLColor GLDrawer::isoValue2color(double iso_value, 
+GLColor GLDrawer::isoValue2Color(double iso_value, 
 	                               double scale_threshold,
 	                               double shift,
 	                               bool need_negative)
@@ -204,27 +199,29 @@ GLColor GLDrawer::isoValue2color(double iso_value,
 		             mixed_color.Z() / float(step_size));
 }
 
+GLColor GLDrawer::pvsValue2Color(double value)
+{
+  if (abs(value - (-1)) < 1e-7)   { return cGray; }
+  else if (value >= 0 && value <= 1 ) 
+    return GLColor(1 - value, 1 - value, 1 - value);
+  else std::cout<<"wrong pvs value! for pvsValue2Colcor" <<std::endl;
+}
+
 GLColor GLDrawer::getColorByType(CVertex& v)
 {
 	if (v.is_model)
-	{
 		return cBlack;
-	}
 
   if (v.is_original)
   {
     if (v.is_barely_visible)
-    {
        return cYellow;
-    }
 
     return original_color;
   }
 
 	if (v.is_scanned && v.is_scanned_visible)
-	{
 		return cRed;
-	}
 
 	if (useNormalColor)
 	{
@@ -253,19 +250,19 @@ GLColor GLDrawer::getColorByType(CVertex& v)
   if (v.is_view_grid)
   {
     //if (v.is_ray_hit) 
-    //{
     //	return isoValue2color(v.eigen_confidence, iso_color_scale, iso_value_shift, true);
-    //}
     if (v.is_ray_stop) return cOrange;
-    else return isoValue2color(v.eigen_confidence, grid_color_scale, grid_value_shift, true);
+    else return isoValue2Color(v.eigen_confidence, grid_color_scale, grid_value_shift, true);
   }
+
+  //probabilistic value decides its value
+  if (v.is_pvs)
+    return pvsValue2Color(v.pvs_value);
 
 	if (v.is_iso)
 	{
     if (bUseConfidenceColor)
-    {
-      return isoValue2color(v.eigen_confidence, iso_color_scale, iso_value_shift, true);
-    }
+      return isoValue2Color(v.eigen_confidence, iso_color_scale, iso_value_shift, true);
     else
       return cGreen;
 	}
@@ -274,12 +271,12 @@ GLColor GLDrawer::getColorByType(CVertex& v)
   {
     if (bUseConfidenceColor)
     {
-      GLColor c = isoValue2color(1 - v.eigen_confidence, iso_color_scale, iso_value_shift, true);
+      GLColor c = isoValue2Color(1 - v.eigen_confidence, iso_color_scale, iso_value_shift, true);
       unsigned int r = 255 * c.r;
       unsigned int g = 255 * c.g;
       unsigned int b = 255 * c.b;
       v.C().SetRGB(r, g, b);
-      return isoValue2color(1 - v.eigen_confidence, iso_color_scale, iso_value_shift, true);
+      return isoValue2Color(1 - v.eigen_confidence, iso_color_scale, iso_value_shift, true);
     }
     else
       return cGreen;
@@ -292,23 +289,15 @@ GLColor GLDrawer::getColorByType(CVertex& v)
 	}
 
   if (v.is_field_grid)
-  {
-    return isoValue2color(v.eigen_confidence, iso_color_scale, iso_value_shift, true);
-  }
+    return isoValue2Color(v.eigen_confidence, iso_color_scale, iso_value_shift, true);
 
   if (v.is_scanned)
-  {
     return cRed;
-  }
 
   if (bUseConfidenceColor)
-  {
-    return isoValue2color(v.eigen_confidence, sample_cofidence_color_scale, iso_value_shift, true);
-  }
+    return isoValue2Color(v.eigen_confidence, sample_cofidence_color_scale, iso_value_shift, true);
   else
-  {
 	  return sample_color;
-  }
 }
 
 void GLDrawer::drawDot(CVertex& v)
@@ -890,10 +879,10 @@ void GLDrawer::drawSlice(Slice& slice, double trans_val)
       
       if (show_view_grid_slice)
       {
-        GLColor c0 = isoValue2color(v0.eigen_confidence, grid_color_scale, grid_value_shift, true);
-        GLColor c1 = isoValue2color(v1.eigen_confidence, grid_color_scale, grid_value_shift, true);
-        GLColor c2 = isoValue2color(v2.eigen_confidence, grid_color_scale, grid_value_shift, true);
-        GLColor c3 = isoValue2color(v3.eigen_confidence, grid_color_scale, grid_value_shift, true);
+        GLColor c0 = isoValue2Color(v0.eigen_confidence, grid_color_scale, grid_value_shift, true);
+        GLColor c1 = isoValue2Color(v1.eigen_confidence, grid_color_scale, grid_value_shift, true);
+        GLColor c2 = isoValue2Color(v2.eigen_confidence, grid_color_scale, grid_value_shift, true);
+        GLColor c3 = isoValue2Color(v3.eigen_confidence, grid_color_scale, grid_value_shift, true);
         glBegin(GL_QUADS);
         glColor4f(c0.r, c0.g, c0.b, trans_val); glVertex3f(v0.P().X(), v0.P().Y(), v0.P().Z());
         glColor4f(c1.r, c1.g, c1.b, trans_val); glVertex3f(v1.P().X(), v1.P().Y(), v1.P().Z());
@@ -903,10 +892,10 @@ void GLDrawer::drawSlice(Slice& slice, double trans_val)
       }
       else
       {
-        GLColor c0 = isoValue2color(v0.eigen_confidence, iso_color_scale, iso_value_shift, true);
-        GLColor c1 = isoValue2color(v1.eigen_confidence, iso_color_scale, iso_value_shift, true);
-        GLColor c2 = isoValue2color(v2.eigen_confidence, iso_color_scale, iso_value_shift, true);
-        GLColor c3 = isoValue2color(v3.eigen_confidence, iso_color_scale, iso_value_shift, true);
+        GLColor c0 = isoValue2Color(v0.eigen_confidence, iso_color_scale, iso_value_shift, true);
+        GLColor c1 = isoValue2Color(v1.eigen_confidence, iso_color_scale, iso_value_shift, true);
+        GLColor c2 = isoValue2Color(v2.eigen_confidence, iso_color_scale, iso_value_shift, true);
+        GLColor c3 = isoValue2Color(v3.eigen_confidence, iso_color_scale, iso_value_shift, true);
         glBegin(GL_QUADS);
         glColor4f(c0.r, c0.g, c0.b, trans_val); glVertex3f(v0.P().X(), v0.P().Y(), v0.P().Z());
         glColor4f(c1.r, c1.g, c1.b, trans_val); glVertex3f(v1.P().X(), v1.P().Y(), v1.P().Z());

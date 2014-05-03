@@ -544,6 +544,11 @@ vector<Boundary>* DataMgr::getBoundaries()
   return &boundaries;
 }
 
+CMesh* DataMgr::getPVS()
+{
+  return &pvs;
+}
+
 Slices* DataMgr::getCurrentSlices()
 {
   return &slices;

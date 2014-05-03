@@ -116,6 +116,7 @@ void CameraParaDlg::initConnects()
   connect(ui->pushButton_pvs_search_new_boundaries, SIGNAL(clicked()), this, SLOT(pvsSearchNewBoundaries()));
   connect(ui->pushButton_compute_all_candidates, SIGNAL(clicked()), this, SLOT(pvsComputeCandidates()));
   connect(ui->pushButton_select_candidate, SIGNAL(clicked()), this, SLOT(pvsSelectCandidate()));
+  connect(ui->pushButton_build_pvs, SIGNAL(clicked()), this, SLOT(pvsBuildPVS()));
   /*** PVS Based NBV ***/
 }
 
@@ -1564,4 +1565,11 @@ void CameraParaDlg::pvsSelectCandidate()
   global_paraMgr.pvsBasedNBV.setValue("Run PVS Select Candidate", BoolValue(true));
   area->runPVSBasedNBV();
   global_paraMgr.pvsBasedNBV.setValue("Run PVS Select Candidate", BoolValue(false));
+}
+
+void CameraParaDlg::pvsBuildPVS()
+{
+  global_paraMgr.pvsBasedNBV.setValue("Run Build PVS", BoolValue(true));
+  area->runPVSBasedNBV();
+  global_paraMgr.pvsBasedNBV.setValue("Run Build PVS", BoolValue(false));
 }

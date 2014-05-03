@@ -30,6 +30,7 @@ public:
   void searchNewBoundaries();
   Boundary searchOneBoundaryFromIndex(int begin_idx);
   Boundary searchOneBoundaryFromDirection(int begin_idx, Point3f direction);
+  void runBuildPVS();
 
 private:
   void runPVSDetectBoundary();
@@ -42,10 +43,12 @@ private:
 private:
   RichParameterSet      *para;
   double                optimalDist;
+  CMesh                 *model;
   CMesh                 *sample;
   CMesh                 *original;
   CMesh                 *nbv_candidates;
   CMesh                 *iso_points;
+  CMesh                 *pvs;
   vector<Boundary>      *m_v_boundaries;
   vector<ScanCandidate> *scan_candidates;
   vector<CMesh *>*      scanned_results;

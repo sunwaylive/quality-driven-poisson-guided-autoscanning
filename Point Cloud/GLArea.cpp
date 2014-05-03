@@ -367,6 +367,8 @@ void GLArea::paintGL()
     if (para->getBool("Show View Grids"))
     {
       CMesh *nbv_grids = dataMgr.getViewGridPoints();
+      CMesh *pvs = dataMgr.getPVS();
+
       if (NULL == nbv_grids) return;
 
       if(!nbv_grids->vert.empty())
@@ -380,6 +382,11 @@ void GLArea::paintGL()
         {
           glDrawer.draw(GLDrawer::DOT, field_points);
         }
+      }
+      //draw pvs grids for PVSBasedNBV
+      if (!pvs->vert.empty())
+      {
+        glDrawer.draw(GLDrawer::DOT, pvs);
       }
     }
 

@@ -18,6 +18,7 @@ void PVSBasedNBV::setInput(DataMgr *pData)
   else
     std::cout << "ERROR: PVSBasedNBV::setInput empty original points" <<std::endl;
 
+  model = pData->getCurrentModel();
   sample = pData->getCurrentSamples();
 
   scanned_results = pData->getScannedResults();
@@ -27,6 +28,7 @@ void PVSBasedNBV::setInput(DataMgr *pData)
   scan_candidates = pData->getScanCandidates();
   m_v_boundaries = pData->getBoundaries();
   iso_points = pData->getCurrentIsoPoints();
+  pvs = pData->getPVS();
 }
 
 void PVSBasedNBV::run()
@@ -50,6 +52,11 @@ void PVSBasedNBV::run()
   {
     std::cout<<"Run PVS Select Candidate"<< std::endl;
     runSelectCandidate();
+  }
+  if (para->getBool("Run Build PVS"))
+  {
+    std::cout<<"Run Build PVS" <<std::endl;
+    runBuildPVS();
   }
 }
 
@@ -230,6 +237,9 @@ void PVSBasedNBV::runSearchNewBoundaries()
 void PVSBasedNBV::runComputeCandidates()
 {
   double step_aside_size = 0.2; //global_paraMgr.wLop.getDouble("CGrid Radius");
+  double camera_max_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
+    global_paraMgr.camera.getDouble("Predicted Model Size");
+
   GlobalFun::clearCMesh(*nbv_candidates);
   for (int i = 0; i < m_v_boundaries->size(); ++i)
   {
@@ -269,24 +279,25 @@ void PVSBasedNBV::runComputeCandidates()
   //adjust the candidates according to the poisson surface
   if (iso_points->vert.empty())
   {
-    std::cout<<"iso points empty" <<std::endl;
+    std::cout<<"ERROR: Iso points empty!" <<std::endl;
     return;
   }
   std::cout<<iso_points->vert.size() << std::endl;
   GlobalFun::computeAnnNeigbhors(iso_points->vert, nbv_candidates->vert, 5, false, "PVS search nearest point on poisson surface to the given coarse candidates");
   
-  //compute neighbor wrong
-  std::cout<< nbv_candidates->vert[0].neighbors.size() << std::endl;
   for (int i = 0; i < nbv_candidates->vert.size(); ++i)
   {
     nbv_candidates->vert[i] = iso_points->vert[nbv_candidates->vert[i].neighbors[0]];
+    // move outward in the normal direction and reverse the normal to get the nbv direction
+    nbv_candidates->vert[i].P() = nbv_candidates->vert[i].P() + nbv_candidates->vert[i].N() * camera_max_dist;
+    nbv_candidates->vert[i].N() = -nbv_candidates->vert[i].N();
   }
 
 }
 
 void PVSBasedNBV::runSelectCandidate()
 {
-
+  
 }
 
 std::vector<Boundary> PVSBasedNBV::getBoundary(std::vector<MyBoarderEdge> &v_border_edge)
@@ -453,4 +464,71 @@ Boundary PVSBasedNBV::searchOneBoundaryFromDirection(int begin_idx, Point3f dire
   } while (true);
 
   return new_boundary;
+}
+
+void PVSBasedNBV::runBuildPVS()
+{
+  if (model->vert.empty())
+  {
+    std::cout<< " Model Empty!" <<std::endl;
+    return;
+  }
+
+  GlobalFun::clearCMesh(*pvs);
+  Point3f bbox_max = model->bbox.max;
+  Point3f bbox_min = model->bbox.min;
+  //get the whole 3D space that a camera may exist
+  double camera_max_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
+    global_paraMgr.camera.getDouble("Predicted Model Size");
+  double pvs_resolution = global_paraMgr.pvsBasedNBV.getDouble("PVS Grid Resolution");
+  assert(pvs_resolution > 2);
+  double grid_step_size = (camera_max_dist*2.0 + 1.0) / (pvs_resolution - 1);
+
+  float pvs_box_size = camera_max_dist + 0.5;
+  Point3f whole_space_box_min = Point3f(-pvs_box_size, -pvs_box_size, -pvs_box_size);
+  Point3f whole_space_box_max = Point3f(pvs_box_size, pvs_box_size, pvs_box_size);
+  Box3f whole_space_box;
+  whole_space_box.SetNull();
+  whole_space_box.Add(whole_space_box_min);
+  whole_space_box.Add(whole_space_box_max);
+  //compute the size of the 3D space
+  Point3f dif = whole_space_box_max - whole_space_box_min;
+  //change the whole space box into a cube
+  double max_length = std::max(dif.X(), std::max(dif.Y(), dif.Z()));
+  whole_space_box_max = whole_space_box_min + Point3f(max_length, max_length, max_length);
+  dif = whole_space_box_max - whole_space_box_min;
+  //divide the box into grid
+  int x_max = static_cast<int> (dif.X() / grid_step_size);
+  int y_max = static_cast<int> (dif.Y() / grid_step_size);
+  int z_max = static_cast<int> (dif.Z() / grid_step_size);
+
+  int all_max = std::max(std::max(x_max, y_max), z_max);
+  x_max = y_max =z_max = all_max+1; // wsh 12-11
+  //preallocate the memory
+  int max_index = x_max * y_max * z_max;
+  pvs->vert.resize(max_index);
+  //increase from whole_space_box_min
+  for (int i = 0; i < x_max; ++i)
+  {
+    for (int j = 0; j < y_max; ++j)
+    {
+      for (int k = 0; k < z_max; ++k)
+      {
+        //add the grid
+        int index = i * y_max * z_max + j * z_max + k;
+        //add the center point of the grid
+        CVertex t;
+        t.P()[0] = whole_space_box_min.X() + i * grid_step_size;
+        t.P()[1] = whole_space_box_min.Y() + j * grid_step_size;
+        t.P()[2] = whole_space_box_min.Z() + k * grid_step_size;
+        t.m_index = index;
+        t.is_pvs = true;
+        pvs->vert[index] = t;
+        pvs->bbox.Add(t.P());
+      }
+    }
+  }
+  pvs->vn = max_index;
+  cout << "all grid points: " << max_index << endl;
+  cout << "resolution: " << x_max << endl;
 }

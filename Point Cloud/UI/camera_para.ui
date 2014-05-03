@@ -1870,20 +1870,20 @@
     <widget class="QPushButton" name="pushButton_pvs_detect_boundary">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>210</x>
        <y>440</y>
-       <width>121</width>
+       <width>251</width>
        <height>31</height>
       </rect>
      </property>
      <property name="text">
-      <string>1.1 Detect Boundary</string>
+      <string>1.1 Detect Boundary[deprecate]</string>
      </property>
     </widget>
     <widget class="QPushButton" name="pushButton_pvs_search_new_boundaries">
      <property name="geometry">
       <rect>
-       <x>160</x>
+       <x>20</x>
        <y>440</y>
        <width>171</width>
        <height>31</height>
@@ -1910,13 +1910,26 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>540</y>
+       <y>580</y>
        <width>161</width>
        <height>31</height>
       </rect>
      </property>
      <property name="text">
       <string>Select a candidate</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_build_pvs">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>540</y>
+       <width>161</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Build PVS</string>
      </property>
     </widget>
    </widget>

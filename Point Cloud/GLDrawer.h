@@ -38,6 +38,7 @@ static GLColor cBrown(0.7, 0, 0);
 static GLColor cRed(1, 0, 0);
 static GLColor cGreen(0, 1, 0);
 static GLColor cBlue(0, 0, 1);
+static GLColor cGray(0.5, 0.5, 0.5);
 static GLColor cWhite(1, 1, 1);
 static GLColor cBlack(0, 0, 0);
 static GLColor cYellow(1, 1, 0);
@@ -65,7 +66,8 @@ public:
 	void drawPickPoint(CMesh* samples, vector<int>& pickList, bool bShow_as_dot);
 	void setRGBNormals(vector<Point3f>& normals){RGB_normals = normals; }
 
-  GLColor isoValue2color(double value, double scale_threshold, double shift, bool need_negative);
+  GLColor isoValue2Color(double value, double scale_threshold, double shift, bool need_negative);
+  GLColor pvsValue2Color(double value);
   //cut from private
   void glDrawLine(Point3f& p0, Point3f& p1, GLColor color, double width);
   void drawSphere(CVertex& v);

@@ -125,6 +125,7 @@ public:
     void pvsSearchNewBoundaries();
     void pvsComputeCandidates();
     void pvsSelectCandidate();
+    void pvsBuildPVS();
     /*** pvs based NBV ***/
 
 private:

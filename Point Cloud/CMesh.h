@@ -45,6 +45,7 @@ public:
   bool is_ray_hit;
   bool is_ray_stop;
   bool is_view_grid;// should change name to is_view_grid
+  bool is_pvs;
   bool is_field_grid;
   bool is_model;
   bool is_scanned;
@@ -67,6 +68,8 @@ public:
 	Point3f eigen_vector1; // Also use for remember last better virtual point
 	//Point3f eigen_vector2; //The smallest eigen value : should be PCA normal N()
 	
+  //for pvsBasedNBV
+  double pvs_value;
   bool is_skel_virtual; //in our papaer, we said bridge point instead of virtual point
 	bool is_skel_branch;
   bool is_fixed_original; 
@@ -100,6 +103,7 @@ public:
     is_visible(false),
     is_barely_visible(false),
     is_view_grid(false),
+    is_pvs(false),
     is_ray_stop(false),
     is_ray_hit(false),
     is_model(false),
@@ -119,6 +123,7 @@ public:
     is_field_grid(false),
 		eigen_vector0(Point3f(1, 0, 0)),
 		eigen_vector1(Point3f(0, 1, 0)),
+    pvs_value(-1.0f),
     skel_radius(-1.0)
 		{
 			N() = Point3f(0,0,0);

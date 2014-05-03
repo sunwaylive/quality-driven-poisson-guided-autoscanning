@@ -124,7 +124,8 @@ public:
   vector<ScanCandidate>*  getPVSFirstScanCandidates();
   CMesh*                  getCurrentScannedMesh();
   vector<CMesh* >*        getScannedResults(); 
-  vector<Boundary>* getBoundaries(); 
+  vector<Boundary>*       getBoundaries(); 
+  CMesh*                  getPVS();
 
 	void      recomputeBox();
 	double    getInitRadiuse();
@@ -195,7 +196,7 @@ public:
   vector<ScanCandidate>  selected_scan_candidates;
   CMesh                  current_scanned_mesh; 
   vector<CMesh *>        scanned_results;  
-  vector<Boundary> boundaries;         
+  vector<Boundary>       boundaries;         
 	Skeleton               skeleton;
   Slices                 slices;
 
@@ -221,6 +222,7 @@ public:
 
   /*** pvs based NBV ***/
   vector<ScanCandidate> pvs_first_scan_candidates;
+  CMesh                 pvs;                      //probabilistic viewing space
   /*** pvs based NBV***/
 };
 
