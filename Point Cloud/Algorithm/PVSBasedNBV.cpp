@@ -26,6 +26,7 @@ void PVSBasedNBV::setInput(DataMgr *pData)
     / 2 / global_paraMgr.camera.getDouble("Predicted Model Size");
   nbv_candidates = pData->getNbvCandidates();
   scan_candidates = pData->getScanCandidates();
+  scan_history = pData->getScanHistory();
   m_v_boundaries = pData->getBoundaries();
   iso_points = pData->getCurrentIsoPoints();
   pvs = pData->getPVS();
@@ -57,6 +58,11 @@ void PVSBasedNBV::run()
   {
     std::cout<<"Run Build PVS" <<std::endl;
     runBuildPVS();
+  }
+  if (para->getBool("Run Update PVS"))
+  {
+    std::cout<<"Run Update PVS" <<std::endl;
+    runUpdatePVS();
   }
 }
 
@@ -237,7 +243,7 @@ void PVSBasedNBV::runSearchNewBoundaries()
 void PVSBasedNBV::runComputeCandidates()
 {
   double step_aside_size = 0.2; //global_paraMgr.wLop.getDouble("CGrid Radius");
-  double camera_max_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
+  double camera_far_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
     global_paraMgr.camera.getDouble("Predicted Model Size");
 
   GlobalFun::clearCMesh(*nbv_candidates);
@@ -289,15 +295,122 @@ void PVSBasedNBV::runComputeCandidates()
   {
     nbv_candidates->vert[i] = iso_points->vert[nbv_candidates->vert[i].neighbors[0]];
     // move outward in the normal direction and reverse the normal to get the nbv direction
-    nbv_candidates->vert[i].P() = nbv_candidates->vert[i].P() + nbv_candidates->vert[i].N() * camera_max_dist;
+    nbv_candidates->vert[i].P() = nbv_candidates->vert[i].P() + nbv_candidates->vert[i].N() * camera_far_dist;
     nbv_candidates->vert[i].N() = -nbv_candidates->vert[i].N();
   }
-
 }
 
 void PVSBasedNBV::runSelectCandidate()
 {
-  
+  vector<double> candidate_score;
+  candidate_score.resize(nbv_candidates->vert.size());
+  double resolution = global_paraMgr.camera.getDouble("Camera Resolution");
+  double far_horizon_dist = global_paraMgr.camera.getDouble("Camera Horizon Dist") 
+    / global_paraMgr.camera.getDouble("Predicted Model Size");
+  double far_vertical_dist = global_paraMgr.camera.getDouble("Camera Vertical Dist")
+    / global_paraMgr.camera.getDouble("Predicted Model Size");
+  double camera_max_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
+    global_paraMgr.camera.getDouble("Predicted Model Size");
+  int grid_resolution = global_paraMgr.pvsBasedNBV.getDouble("PVS Grid Resolution");
+  if (grid_resolution <= 2)
+    return;
+  double grid_step_size = (camera_max_dist*2.0 + 1.0) / (grid_resolution - 1);
+  int max_steps = static_cast<int>(camera_max_dist / grid_step_size);
+
+  Point3f x_axis(1.0f, 0.0f, 0.0f);
+  Point3f z_axis(0.0f, 0.0f, 1.0f);
+
+  for ( int c_i = 0; c_i < nbv_candidates->vert.size(); ++c_i)
+  {
+    CVertex &v = nbv_candidates->vert[c_i];
+    Point3f viewray = v.N().Normalize();
+    Point3f pos = v.P();
+    Point3f up, right;
+    //compute up and right direction of the candidates
+    if (viewray.Z() > 0)
+      up = viewray ^ x_axis;
+    else if (fabs(viewray.Z()) < EPS)
+      up = viewray ^ z_axis;
+    else
+      up = x_axis ^ viewray;
+    right = viewray ^ up;
+    up = up.Normalize();
+    right = right.Normalize();
+
+    vector<int> hit_grid_indexes;
+    //compute the end of the ray
+    Point3f viewray_end = pos + viewray * camera_max_dist;
+    //get the x,y,z index of each nbv_candidate
+    int t_indexX = static_cast<int>( ceil((v.P()[0] - whole_space_box_min.X()) / grid_step_size ));
+    int t_indexY = static_cast<int>( ceil((v.P()[1] - whole_space_box_min.Y()) / grid_step_size ));
+    int t_indexZ = static_cast<int>( ceil((v.P()[2] - whole_space_box_min.Z()) / grid_step_size ));
+    std::cout<< t_indexX<<" " << t_indexY<< " " << t_indexZ<< " " <<std::endl;
+    //next point index along the ray, pay attention , index should be stored in double ,used in integer
+    double n_indexX, n_indexY, n_indexZ;
+    //for DDA algorithm
+    double deltaX, deltaY, deltaZ; 
+    double x = 0.0f, y = 0.f, z = 0.0f;
+    double length = 0.0f;
+    //sweep
+    int n_point_hr_half  = static_cast<int>(0.5 * far_horizon_dist / resolution);
+    int n_point_ver_half = static_cast<int>(0.5 * far_vertical_dist / resolution);
+
+
+    for (int i = - n_point_hr_half; i < n_point_hr_half; ++i)
+    {
+      for (int j = - n_point_ver_half; j < n_point_ver_half; ++j)
+      {
+        Point3f viewray_end_iter = viewray_end + right * (i * resolution) + up * (j * resolution);
+        Point3f viewray_iter = viewray_end_iter - pos;
+        //line direction vector
+        Point3f line_dir = viewray_iter.Normalize();
+
+        x = line_dir.X(); y = line_dir.Y(); z = line_dir.Z();
+        std::cout<< "line dir x: "<< x << "line dir y:" <<y << "line dir z: "<< z <<std::endl;
+        //reset the next grid indexes
+        n_indexX = t_indexX; n_indexY = t_indexY; n_indexZ = t_indexZ;
+        //2. compute the next grid indexes
+        length = GlobalFun::getAbsMax(x, y, z);
+        deltaX = x / length; 
+        deltaY = y / length;
+        deltaZ = z / length;
+
+        for (int k = 0; k <= max_steps; ++k)
+        {
+          n_indexX = n_indexX + deltaX;
+          n_indexY = n_indexY + deltaY;
+          n_indexZ = n_indexZ + deltaZ;
+          int index = round(n_indexX) * y_max * z_max + round(n_indexY) * z_max + round(n_indexZ);
+                  
+          if (index >= pvs->vert.size())  break;
+          //if the direction is into the model, or has been hit, then stop tracing
+          if (pvs->vert[index].is_ray_stop) break;            
+          if (pvs->vert[index].is_ray_hit)  continue;
+
+          //if the grid get first hit 
+          pvs->vert[index].is_ray_hit = true;
+          //TODO:1.calculate the pvs value of the pvs grids
+
+
+          
+          // record hit_grid center index
+          hit_grid_indexes.push_back(index); 
+        }// end for k
+      }//end for j
+    }//end for i
+    
+    //calculate score of each candidate
+
+
+    if (hit_grid_indexes.size() > 0)
+    {
+      vector<int>::iterator it;
+      for (it = hit_grid_indexes.begin(); it != hit_grid_indexes.end(); ++it)
+        pvs->vert[*it].is_ray_hit = false;
+      hit_grid_indexes.clear();
+    }
+
+  }//end for nbv_candidates
 }
 
 std::vector<Boundary> PVSBasedNBV::getBoundary(std::vector<MyBoarderEdge> &v_border_edge)
@@ -485,8 +598,8 @@ void PVSBasedNBV::runBuildPVS()
   double grid_step_size = (camera_max_dist*2.0 + 1.0) / (pvs_resolution - 1);
 
   float pvs_box_size = camera_max_dist + 0.5;
-  Point3f whole_space_box_min = Point3f(-pvs_box_size, -pvs_box_size, -pvs_box_size);
-  Point3f whole_space_box_max = Point3f(pvs_box_size, pvs_box_size, pvs_box_size);
+  whole_space_box_min = Point3f(-pvs_box_size, -pvs_box_size, -pvs_box_size);
+  whole_space_box_max = Point3f(pvs_box_size, pvs_box_size, pvs_box_size);
   Box3f whole_space_box;
   whole_space_box.SetNull();
   whole_space_box.Add(whole_space_box_min);
@@ -498,9 +611,9 @@ void PVSBasedNBV::runBuildPVS()
   whole_space_box_max = whole_space_box_min + Point3f(max_length, max_length, max_length);
   dif = whole_space_box_max - whole_space_box_min;
   //divide the box into grid
-  int x_max = static_cast<int> (dif.X() / grid_step_size);
-  int y_max = static_cast<int> (dif.Y() / grid_step_size);
-  int z_max = static_cast<int> (dif.Z() / grid_step_size);
+  x_max = static_cast<int> (dif.X() / grid_step_size);
+  y_max = static_cast<int> (dif.Y() / grid_step_size);
+  z_max = static_cast<int> (dif.Z() / grid_step_size);
 
   int all_max = std::max(std::max(x_max, y_max), z_max);
   x_max = y_max =z_max = all_max+1; // wsh 12-11
@@ -521,6 +634,7 @@ void PVSBasedNBV::runBuildPVS()
         t.P()[0] = whole_space_box_min.X() + i * grid_step_size;
         t.P()[1] = whole_space_box_min.Y() + j * grid_step_size;
         t.P()[2] = whole_space_box_min.Z() + k * grid_step_size;
+
         t.m_index = index;
         t.is_pvs = true;
         pvs->vert[index] = t;
@@ -531,4 +645,135 @@ void PVSBasedNBV::runBuildPVS()
   pvs->vn = max_index;
   cout << "all grid points: " << max_index << endl;
   cout << "resolution: " << x_max << endl;
+}
+
+void PVSBasedNBV::runUpdatePVS()
+{
+  //for pvsBasedNBV, only one nbv candidate each time
+  std::cout<<"scan history size: " <<scan_history->size() <<std::endl;
+  GlobalFun::printPoint3(std::cout, scan_history->back().first);
+  GlobalFun::printPoint3(std::cout, scan_history->back().second);
+  std::cout<<"scan mesh vert size: " <<scanned_results->back()->vert.size() <<std::endl;
+
+  double resolution = global_paraMgr.camera.getDouble("Camera Resolution");
+  double far_horizon_dist = global_paraMgr.camera.getDouble("Camera Horizon Dist") 
+    / global_paraMgr.camera.getDouble("Predicted Model Size");
+  double far_vertical_dist = global_paraMgr.camera.getDouble("Camera Vertical Dist")
+    / global_paraMgr.camera.getDouble("Predicted Model Size");
+  double camera_max_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
+    global_paraMgr.camera.getDouble("Predicted Model Size");
+  int grid_resolution = global_paraMgr.pvsBasedNBV.getDouble("PVS Grid Resolution");
+  if (grid_resolution <= 2)
+    return;
+  double grid_step_size = (camera_max_dist*2.0 + 1.0) / (grid_resolution - 1);
+  int max_steps = static_cast<int>(camera_max_dist / grid_step_size);
+  int pvs_size = pvs->vert.size();
+
+  //step1: for new scanned mesh, we should update the occupied pvs grid value
+  CMesh *new_scan_result = scanned_results->back();
+  if (!new_scan_result->vert.empty())
+  {
+    for (int sc_i = 0; sc_i < new_scan_result->vert.size(); ++sc_i)
+    {
+      CVertex &sc_v = new_scan_result->vert[sc_i];
+      //get the x,y,z index of each scan result vertex
+      int sc_v_indexX = static_cast<int>( ceil((sc_v.P()[0] - whole_space_box_min.X()) / grid_step_size ));
+      int sc_v_indexY = static_cast<int>( ceil((sc_v.P()[1] - whole_space_box_min.Y()) / grid_step_size ));
+      int sc_v_indexZ = static_cast<int>( ceil((sc_v.P()[2] - whole_space_box_min.Z()) / grid_step_size ));
+      int index = sc_v_indexX * y_max * z_max + sc_v_indexY * z_max + sc_v_indexZ;
+
+      if (index >= pvs->vert.size())  break;
+      pvs->vert[index].is_ray_stop = true;   //the grid is occupied by object, so the ray should stop
+      pvs->vert[index].pvs_value = 0;        //0: pvs grid occupied
+    }
+  }
+
+  //step2: for newly visited points, update the pvs values
+  Point3f x_axis(1.0f, 0.0f, 0.0f);
+  Point3f z_axis(0.0f, 0.0f, 1.0f);
+
+  ScanCandidate sc = scan_history->back();
+
+  Point3f pos = sc.first;
+  Point3f viewray = sc.second.Normalize();
+  Point3f up, right;
+  //compute up and right direction of the candidates
+  if (viewray.Z() > 0)
+    up = viewray ^ x_axis;
+  else if (fabs(viewray.Z()) < EPS)
+    up = viewray ^ z_axis;
+  else
+    up = x_axis ^ viewray;
+
+  right = viewray ^ up;
+  up = up.Normalize();
+  right = right.Normalize();
+
+  vector<int> hit_grid_indexes;
+  //compute the end of the ray
+  Point3f viewray_end = pos + viewray * camera_max_dist;
+  //get the x,y,z index of each nbv_candidate
+  int t_indexX = static_cast<int>( ceil((pos[0] - whole_space_box_min.X()) / grid_step_size ));
+  int t_indexY = static_cast<int>( ceil((pos[1] - whole_space_box_min.Y()) / grid_step_size ));
+  int t_indexZ = static_cast<int>( ceil((pos[2] - whole_space_box_min.Z()) / grid_step_size ));
+  //next point index along the ray, pay attention , index should be stored in double ,used in integer
+  double n_indexX, n_indexY, n_indexZ;
+  //for DDA algorithm
+  double deltaX, deltaY, deltaZ; 
+  double x = 0.0f, y = 0.f, z = 0.0f;
+  double length = 0.0f;
+  //sweep
+  int n_point_hr_half  = static_cast<int>(0.5 * far_horizon_dist / resolution);
+  int n_point_ver_half = static_cast<int>(0.5 * far_vertical_dist / resolution);
+  std::cout<< n_point_hr_half <<" " << n_point_ver_half <<std::endl;
+
+  for (int i = - n_point_hr_half; i < n_point_hr_half; ++i)
+  {
+    for (int j = - n_point_ver_half; j < n_point_ver_half; ++j)
+    {
+      Point3f viewray_end_iter = viewray_end + right * (i * resolution) + up * (j * resolution);
+      Point3f viewray_iter = viewray_end_iter - pos;
+      //line direction vector
+      Point3f line_dir = viewray_iter.Normalize();
+
+      x = line_dir.X(); y = line_dir.Y(); z = line_dir.Z();
+      //reset the next grid indexes
+      n_indexX = t_indexX; n_indexY = t_indexY; n_indexZ = t_indexZ;
+      //2. compute the next grid indexes
+      length = GlobalFun::getAbsMax(x, y, z);
+      deltaX = x / length; 
+      deltaY = y / length;
+      deltaZ = z / length;
+
+      for (int k = 0; k <= max_steps; ++k)
+      {
+        n_indexX = n_indexX + deltaX;
+        n_indexY = n_indexY + deltaY;
+        n_indexZ = n_indexZ + deltaZ;
+        int index = round(n_indexX) * y_max * z_max + round(n_indexY) * z_max + round(n_indexZ);
+
+        if (index >= pvs_size)  break;
+        //TODO: add is_ray_stop to pvs grid points
+        //if the direction is into the model, or has been hit, then stop tracing
+        if (pvs->vert[index].is_ray_stop) break;            
+        if (pvs->vert[index].is_ray_hit)  continue;
+
+        ////if the grid get first hit 
+        pvs->vert[index].is_ray_hit = true;
+        pvs->vert[index].pvs_value = 1;
+
+        // record hit_grid center index
+        hit_grid_indexes.push_back(index); 
+      }// end for k
+    }//end for j
+  }//end for i
+
+  if (hit_grid_indexes.size() > 0)
+  {
+    vector<int>::iterator it;
+    for (it = hit_grid_indexes.begin(); it != hit_grid_indexes.end(); ++it)
+      pvs->vert[*it].is_ray_hit = false;
+    hit_grid_indexes.clear();
+  }
+
 }

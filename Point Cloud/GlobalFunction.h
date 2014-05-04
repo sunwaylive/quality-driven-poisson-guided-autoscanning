@@ -45,6 +45,7 @@ namespace GlobalFun
   };
 
   bool cmp(DesityAndIndex &a, DesityAndIndex &b);
+  double getAbsMax(double x, double y, double z);
 
 	void computeKnnNeigbhors(vector<CVertex> &datapts, vector<CVertex> &querypts, int numKnn, bool need_self_included, QString purpose);
 	void computeEigen(CMesh* _samples);

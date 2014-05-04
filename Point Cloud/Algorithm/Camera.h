@@ -57,6 +57,7 @@ namespace vcc{
 
     /***pvs based NBV ***/
     vector<ScanCandidate>*   pvs_first_scan_candidates;
+    int *                    scan_count;
     /***pvs based NBV ***/
 
   private:

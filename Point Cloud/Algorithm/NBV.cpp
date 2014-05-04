@@ -350,7 +350,6 @@ void NBV::buildGrid()
 
 void NBV::propagate()
 {
-
   bool use_propagate_one_point = para->getBool("Run Propagate One Point");
   bool use_max_propagation = para->getBool("Use Max Propagation");
 
@@ -450,7 +449,7 @@ void NBV::propagate()
           //reset the next grid indexes
           n_indexX = t_indexX; n_indexY = t_indexY; n_indexZ = t_indexZ;
           //2. compute the next grid indexes
-          length = getAbsMax(x, y, z);
+          length = GlobalFun::getAbsMax(x, y, z);
           deltaX = x / length; 
           deltaY = y / length;
           deltaZ = z / length;
@@ -644,11 +643,6 @@ void NBV::propagate()
   GlobalFun::normalizeConfidence(view_grid_points->vert, 0.);
 }
 
-double NBV::getAbsMax(double x, double y, double z)
-{
-  return std::max(abs(x), std::max(abs(y), abs(z)));
-}
-
 int NBV::round(double x)
 {
   return static_cast<int>(x + 0.5);
@@ -658,9 +652,7 @@ void NBV::setGridUnHit(vector<int>& hit_grids_idx)
 {
   vector<int>::iterator it;
   for (it = hit_grids_idx.begin(); it != hit_grids_idx.end(); ++it)
-  {
     view_grid_points->vert[*it].is_ray_hit = false;
-  }
 }
 
 void NBV::viewExtraction()

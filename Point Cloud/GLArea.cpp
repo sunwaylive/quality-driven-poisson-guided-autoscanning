@@ -385,9 +385,7 @@ void GLArea::paintGL()
       }
       //draw pvs grids for PVSBasedNBV
       if (!pvs->vert.empty())
-      {
         glDrawer.draw(GLDrawer::DOT, pvs);
-      }
     }
 
     if (para->getBool("Show NBV Candidates"))
@@ -408,8 +406,7 @@ void GLArea::paintGL()
       double far_dist = global_paraMgr.camera.getDouble("Camera Far Distance") / predict_size;
       double near_dist = global_paraMgr.camera.getDouble("Camera Near Distance") / predict_size; 
       //double dist_to_model = global_paraMgr.camera.getDouble("Camera Dist To Model");
-      double dist_to_model = global_paraMgr.camera.getDouble("Camera Dist To Model") / 
-        global_paraMgr.camera.getDouble("Predicted Model Size");
+      double dist_to_model = global_paraMgr.camera.getDouble("Camera Dist To Model") / predict_size;
 
       current_camera.far_horizon_dist = h_dist;
       current_camera.far_vertical_dist = v_dist;
@@ -429,7 +426,7 @@ void GLArea::paintGL()
           current_camera.direction = it->second;
           //if it is initial scan, we should consider dist_to_model
           if (global_paraMgr.camera.getBool("Is Init Camera Show"))
-            current_camera.pos =  current_camera.pos * dist_to_model;
+            current_camera.pos =  current_camera.pos * far_dist;
 
           current_camera.computeUpAndRight();
           CVertex v;

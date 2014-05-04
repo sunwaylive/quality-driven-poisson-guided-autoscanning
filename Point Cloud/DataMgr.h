@@ -126,6 +126,7 @@ public:
   vector<CMesh* >*        getScannedResults(); 
   vector<Boundary>*       getBoundaries(); 
   CMesh*                  getPVS();
+  int*                    getScanCount();
 
 	void      recomputeBox();
 	double    getInitRadiuse();
@@ -223,6 +224,7 @@ public:
   /*** pvs based NBV ***/
   vector<ScanCandidate> pvs_first_scan_candidates;
   CMesh                 pvs;                      //probabilistic viewing space
+  int                   scan_count;
   /*** pvs based NBV***/
 };
 

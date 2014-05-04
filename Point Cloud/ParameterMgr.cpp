@@ -490,6 +490,7 @@ void ParameterMgr::initPVSBasedNBVParameter()
   pvsBasedNBV.addParam(new RichBool("Run PVS Compute Candidates", false));
   pvsBasedNBV.addParam(new RichBool("Run PVS Select Candidate", false));
   pvsBasedNBV.addParam(new RichBool("Run Build PVS", false));
+  pvsBasedNBV.addParam(new RichBool("Run Update PVS", false));
 
   pvsBasedNBV.addParam(new RichDouble("Boundary Search Angle", 45.));
   pvsBasedNBV.addParam(new RichInt("Boundary Search KNN", 20));

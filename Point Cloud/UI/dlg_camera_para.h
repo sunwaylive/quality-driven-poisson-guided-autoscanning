@@ -126,6 +126,7 @@ public:
     void pvsComputeCandidates();
     void pvsSelectCandidate();
     void pvsBuildPVS();
+    void pvsUpdatePVS();
     /*** pvs based NBV ***/
 
 private:

@@ -64,9 +64,7 @@ void GLDrawer::updateDrawer(vector<int>& pickList)
 void GLDrawer::draw(DrawType type, CMesh* _mesh)
 {
 	if (!_mesh)
-	{
 		return;
-	}
 
 	bool doPick = para->getBool("Doing Pick");
 
@@ -84,9 +82,9 @@ void GLDrawer::draw(DrawType type, CMesh* _mesh)
 			if (vi->eigen_confidence < confidence_Separation_value)
 				continue;
 
-    //don't draw free points
-    if (abs(vi->pvs_value - 1) < 1e-7)
-      continue;
+    ////don't draw free points
+    //if (abs(vi->pvs_value - 1) < 1e-7)
+    //  continue;
 
 		Point3f& p = vi->P();      
 		Point3f& normal = vi->N();
@@ -201,10 +199,12 @@ GLColor GLDrawer::isoValue2Color(double iso_value,
 
 GLColor GLDrawer::pvsValue2Color(double value)
 {
-  if (abs(value - (-1)) < 1e-7)   { return cGray; }
-  else if (value >= 0 && value <= 1 ) 
-    return GLColor(1 - value, 1 - value, 1 - value);
-  else std::cout<<"wrong pvs value! for pvsValue2Colcor" <<std::endl;
+  if (abs(value - (-1)) < 1e-7)   { return cGray; } //pvs default color
+  if (abs(value) < 1e-7)          { return cRed;}   //occupied pvs grid color
+  if (abs(value - 1.0) < 1e-4)      { return cGreen;} //free pvs grid color
+  /* else if (value >= 0 && value <= 1 ) 
+  return GLColor(1 - value, 1 - value, 1 - value);
+  else std::cout<<"wrong pvs value! for pvsValue2Colcor" <<std::endl;*/
 }
 
 GLColor GLDrawer::getColorByType(CVertex& v)

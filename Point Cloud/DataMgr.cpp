@@ -5,7 +5,7 @@ DataMgr::DataMgr(RichParameterSet* _para)
   para = _para;
   camera_pos = Point3f(0.0f, 0.0f, 1.0f);
   camera_direction = Point3f(0.0f, 0.0f, -1.0f);
-
+  scan_count = 0;
   initDefaultScanCamera();
 
   whole_space_box.Add(Point3f(2.0, 2.0, 2.0));
@@ -44,9 +44,11 @@ void DataMgr::initDefaultScanCamera()
 
   //this should be deleted, for UI debug
   //for test
-  scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f), Point3f(0.0f, 0.0f, -1.0f)));
+  double predict_size = global_paraMgr.camera.getDouble("Predicted Model Size");
+  double far_dist = global_paraMgr.camera.getDouble("Camera Far Distance") / predict_size;
+  scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f * far_dist), Point3f(0.0f, 0.0f, -1.0f)));
   //x axis
-  scan_candidates.push_back(make_pair(Point3f(1.0f, 0.0f, 0.0f), Point3f(-1.0f, 0.0f, 0.0f)));
+  scan_candidates.push_back(make_pair(Point3f(1.0f * far_dist, 0.0f, 0.0f), Point3f(-1.0f, 0.0f, 0.0f)));
   //scan_candidates.push_back(make_pair(Point3f(-1.0f, 0.0f, 0.0f), Point3f(1.0f, 0.0f, 0.0f)));
   ////y axis
   //scan_candidates.push_back(make_pair(Point3f(0.0f, 1.0f, 0.0f), Point3f(0.0f, -1.0f, 0.0f)));
@@ -547,6 +549,11 @@ vector<Boundary>* DataMgr::getBoundaries()
 CMesh* DataMgr::getPVS()
 {
   return &pvs;
+}
+
+int* DataMgr::getScanCount()
+{
+  return &scan_count;
 }
 
 Slices* DataMgr::getCurrentSlices()

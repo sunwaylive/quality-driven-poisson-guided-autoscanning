@@ -31,6 +31,7 @@ public:
   Boundary searchOneBoundaryFromIndex(int begin_idx);
   Boundary searchOneBoundaryFromDirection(int begin_idx, Point3f direction);
   void runBuildPVS();
+  void runUpdatePVS();
 
 private:
   void runPVSDetectBoundary();
@@ -51,7 +52,13 @@ private:
   CMesh                 *pvs;
   vector<Boundary>      *m_v_boundaries;
   vector<ScanCandidate> *scan_candidates;
+  vector<ScanCandidate> *scan_history;
   vector<CMesh *>*      scanned_results;
+  Point3f               whole_space_box_min;
+  Point3f               whole_space_box_max;
+  int                   x_max;
+  int                   y_max;
+  int                   z_max;
 };
 
 #endif

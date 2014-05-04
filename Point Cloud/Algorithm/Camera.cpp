@@ -12,6 +12,7 @@ void vcc::Camera::setInput(DataMgr* pData)
     target = pData->getCurrentModel();
     original = pData->getCurrentOriginal();
     //scan candidates for initialing
+    scan_count = pData->getScanCount();
     init_scan_candidates = pData->getInitCameraScanCandidates();
     visibility_first_scan_candidates = pData->getVisibilityFirstScanCandidates();
     pvs_first_scan_candidates = pData->getPVSFirstScanCandidates();
@@ -104,7 +105,7 @@ void vcc::Camera::runVirtualScan()
       bool is_barely_visible = false;
       double dist = GlobalFun::computeMeshLineIntersectPoint(target, pos, line_dir, intersect_point, intersect_point_normal, is_barely_visible);
       if ( dist <= far_distance && dist >= near_distance)
-      {        
+      {
         //add some random noise
         /* srand(time(NULL)); 
         double rndax = (double(2.0f * rand()) / RAND_MAX - 1.0f ) * max_displacement;
@@ -122,6 +123,9 @@ void vcc::Camera::runVirtualScan()
         current_scanned_mesh->bbox.Add(t.P());
       }
     }
+
+    //increase the scan count;
+    (*scan_count)++;
   }
   current_scanned_mesh->vn = current_scanned_mesh->vert.size();
 }
@@ -129,11 +133,7 @@ void vcc::Camera::runVirtualScan()
 void vcc::Camera::runInitialScan()
 {
   //clear original points
-  original->face.clear();
-  original->fn = 0;
-  original->vert.clear();
-  original->vn = 0;
-  original->bbox = Box3f();
+  GlobalFun::clearCMesh(*original);
 
   //release scanned_result
   vector<CMesh* >::iterator it_scanned_result = scanned_results->begin();
@@ -246,11 +246,7 @@ void vcc::Camera::computeUpAndRight()
 void vcc::Camera::runVisibilityFirstScan()
 {
   //clear original points
-  original->face.clear();
-  original->fn = 0;
-  original->vert.clear();
-  original->vn = 0;
-  original->bbox = Box3f();
+  GlobalFun::clearCMesh(*original);
 
   //release scanned_result
   vector<CMesh* >::iterator it_scanned_result = scanned_results->begin();
@@ -321,6 +317,9 @@ void vcc::Camera::runPVSFirstScan()
   }
   scanned_results->clear();
 
+  //release scan history
+  scan_history->clear();
+
   vector<ScanCandidate>::iterator it = pvs_first_scan_candidates->begin();
   int i = 1;
   for (; it != pvs_first_scan_candidates->end(); ++it)
@@ -333,6 +332,8 @@ void vcc::Camera::runPVSFirstScan()
     runVirtualScan();
     cout<<i <<"th initial scan done!" <<endl;
     
+    //add to scan history
+    scan_history->push_back(*it);
     //merge scanned mesh with original
     int index = 0;
     if (!original->vert.empty()) index = original->vert.back().m_index + 1;
@@ -347,5 +348,7 @@ void vcc::Camera::runPVSFirstScan()
       original->bbox.Add(t.P());
     }
     original->vn = original->vert.size();
+    //add scanned points to scanned_resultd for computing pvs grid value
+    scanned_results->push_back(current_scanned_mesh);
   }
 }

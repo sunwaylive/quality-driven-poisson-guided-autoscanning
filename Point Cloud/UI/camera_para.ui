@@ -1858,7 +1858,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>390</y>
+       <y>430</y>
        <width>101</width>
        <height>31</height>
       </rect>
@@ -1870,8 +1870,8 @@
     <widget class="QPushButton" name="pushButton_pvs_detect_boundary">
      <property name="geometry">
       <rect>
-       <x>210</x>
-       <y>440</y>
+       <x>200</x>
+       <y>510</y>
        <width>251</width>
        <height>31</height>
       </rect>
@@ -1884,8 +1884,8 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>440</y>
-       <width>171</width>
+       <y>510</y>
+       <width>161</width>
        <height>31</height>
       </rect>
      </property>
@@ -1897,7 +1897,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>490</y>
+       <y>560</y>
        <width>161</width>
        <height>31</height>
       </rect>
@@ -1910,7 +1910,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>580</y>
+       <y>610</y>
        <width>161</width>
        <height>31</height>
       </rect>
@@ -1923,13 +1923,26 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>540</y>
+       <y>390</y>
        <width>161</width>
        <height>31</height>
       </rect>
      </property>
      <property name="text">
       <string>Build PVS</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_update_pvs">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>470</y>
+       <width>161</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Update PVS</string>
      </property>
     </widget>
    </widget>

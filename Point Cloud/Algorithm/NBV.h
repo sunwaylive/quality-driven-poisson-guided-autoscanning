@@ -38,7 +38,6 @@ private:
   void runSmoothGridConfidence();
   void runComputeViewCandidateIndex();
 
-  double getAbsMax(double x, double y, double z);
   int    round(double x);
   void   setGridUnHit(vector<int>& hit_grids_idx);
   double computeLocalScores(CVertex& view_t, CVertex& iso_v, 

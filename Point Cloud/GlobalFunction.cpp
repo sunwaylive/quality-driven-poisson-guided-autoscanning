@@ -903,6 +903,11 @@ bool GlobalFun::cmp(DesityAndIndex &a, DesityAndIndex &b)
   return a.density < b.density;
 }
 
+double GlobalFun::getAbsMax(double x, double y, double z)
+{
+  return std::max(abs(x), std::max(abs(y), abs(z)));
+}
+
 void GlobalFun::removeOutliers(CMesh *mesh, double radius, double remove_percent)
 {
   if (NULL == mesh) 
