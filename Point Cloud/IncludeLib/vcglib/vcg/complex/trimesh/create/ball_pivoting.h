@@ -47,8 +47,7 @@ template <class MESH> class BallPivoting: public AdvancingFront<MESH> {
     UpdateBounding<MESH>::Box(_mesh);
 		for(VertexIterator vi=this->mesh.vert.begin();vi!=this->mesh.vert.end();++vi)
 			if( !(*vi).IsD() )  baricenter += (*vi).P();
-    
-    baricenter /= this->mesh.vn;
+        baricenter /= this->mesh.vn;
 		
 		assert(this->mesh.vn > 3);
     if(radius == 0) // radius ==0 means that an auto guess should be attempted. 

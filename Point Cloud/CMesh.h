@@ -70,11 +70,12 @@ public:
 	
   //for pvsBasedNBV
   double pvs_value;
+  double pvs_density;
+  int total_point_num;
+  int boarder_point_num;
   bool is_skel_virtual; //in our papaer, we said bridge point instead of virtual point
 	bool is_skel_branch;
   bool is_fixed_original; 
-  int total_point_num;
-  int boarder_point_num;
   
   union
   {
@@ -125,7 +126,8 @@ public:
     is_field_grid(false),
 		eigen_vector0(Point3f(1, 0, 0)),
 		eigen_vector1(Point3f(0, 1, 0)),
-    pvs_value(-1.0f),
+    pvs_value(0.5f),
+    pvs_density(0.0f),
     total_point_num(0),
     boarder_point_num(0),
     skel_radius(-1.0)

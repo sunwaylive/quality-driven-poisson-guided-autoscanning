@@ -97,43 +97,43 @@ void GlobalFun::other_neighbors(CGrid::iterator starta, CGrid::iterator enda,
 	}
 }
 
-
+//mesh0: goal_set; mesh1: search_set
 void GlobalFun::computeBallNeighbors(CMesh* mesh0, CMesh* mesh1, double radius, vcg::Box3f& box)
 {
-	if (radius < 0.0001)
-	{
-		cout << "too small grid!!" << endl; 
-		return;
-	}
-	//mesh1 should be original
+  if (radius < 0.0001)
+  {
+    cout << "too small grid!!" << endl; 
+    return;
+  }
+  //mesh1 should be original
 
-	//cout << "compute_Bll_Neighbors" << endl;
-	//cout << "radius: " << radius << endl;
+  //cout << "compute_Bll_Neighbors" << endl;
+  //cout << "radius: " << radius << endl;
 
-	CGrid samples_grid;
-	samples_grid.init(mesh0->vert, box, radius);
-	//cout << "finished init" << endl;
+  CGrid samples_grid;
+  samples_grid.init(mesh0->vert, box, radius);
+  //cout << "finished init" << endl;
 
-	if (mesh1 != NULL)
-	{
-		for (int i = 0; i < mesh0->vn; i++)
-		{
-			mesh0->vert[i].original_neighbors.clear();
-		}
+  if (mesh1 != NULL)
+  {
+    for (int i = 0; i < mesh0->vn; i++)
+    {
+      mesh0->vert[i].original_neighbors.clear();
+    }
 
-		CGrid original_grid;
-		original_grid.init(mesh1->vert, box, radius); // This can be speed up
-		samples_grid.sample(original_grid, find_original_neighbors);
-	}
-	else
-	{
-		for (int i = 0; i < mesh0->vn; i++)
-		{
-			mesh0->vert[i].neighbors.clear();
-		}
+    CGrid original_grid;
+    original_grid.init(mesh1->vert, box, radius); // This can be speed up
+    samples_grid.sample(original_grid, find_original_neighbors);
+  }
+  else
+  {
+    for (int i = 0; i < mesh0->vn; i++)
+    {
+      mesh0->vert[i].neighbors.clear();
+    }
 
-		samples_grid.iterate(self_neighbors, other_neighbors);
-	}
+    samples_grid.iterate(self_neighbors, other_neighbors);
+  }
 
 }
 
@@ -657,17 +657,14 @@ double GlobalFun::computeProjPlusPerpenDist(Point3f& p1, Point3f& p2, Point3f& n
 	double proj_dist = GlobalFun::computeProjDist(p1, p2, normal_of_p1);
 
 	if (proj_dist <= 0)
-	{
 		return -1.;
-	}
-
+  
 	Point3f proj_p = p1 + normal_of_p1 * proj_dist;
 	double perpend_dist = sqrt((proj_p - p2).SquaredNorm());
 	double eular_dist = GlobalFun::computeEulerDist(p1, p2);
 	return eular_dist + perpend_dist;
 	/*return proj_dist  * 0.5 + perpend_dist;*/
 }
-
 
 double GlobalFun::getDoubleMAXIMUM()
 {  

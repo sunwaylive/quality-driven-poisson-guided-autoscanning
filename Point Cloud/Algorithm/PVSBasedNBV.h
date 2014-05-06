@@ -38,6 +38,7 @@ private:
   void runSearchNewBoundaries();
   void runComputeCandidates();
   void runSelectCandidate();
+  void runPVSMerge();
 
   std::vector<Boundary> getBoundary(std::vector<MyBoarderEdge> &v_board_edge);
 
@@ -47,13 +48,14 @@ private:
   CMesh                 *model;
   CMesh                 *sample;
   CMesh                 *original;
-  CMesh                 *nbv_candidates;
   CMesh                 *iso_points;
   CMesh                 *pvs;
   vector<Boundary>      *m_v_boundaries;
+  CMesh                 *nbv_candidates;
   vector<ScanCandidate> *scan_candidates;
   vector<ScanCandidate> *scan_history;
   vector<CMesh *>*      scanned_results;
+  int                   *scan_count;
   Point3f               whole_space_box_min;
   Point3f               whole_space_box_max;
   int                   x_max;

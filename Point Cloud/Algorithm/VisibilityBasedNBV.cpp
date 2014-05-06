@@ -231,6 +231,7 @@ void VisibilityBasedNBV::runVisibilityMerge()
   for (int i = 0; i < scanned_results->size(); ++i)
   {
     CMesh *sr = scanned_results->at(i);
+    assert(!original->vert.empty());
     int index = original->vert.back().m_index + 1;
 
     for (int j = 0; j < sr->vert.size(); ++j)

@@ -118,6 +118,8 @@ void CameraParaDlg::initConnects()
   connect(ui->pushButton_select_candidate, SIGNAL(clicked()), this, SLOT(pvsSelectCandidate()));
   connect(ui->pushButton_build_pvs, SIGNAL(clicked()), this, SLOT(pvsBuildPVS()));
   connect(ui->pushButton_update_pvs, SIGNAL(clicked()), this, SLOT(pvsUpdatePVS()));
+  connect(ui->pushButton_pvs_NBV_scan, SIGNAL(clicked()), this, SLOT(pvsNBVScan()));
+  connect(ui->pushButton_pvs_merge, SIGNAL(clicked()), this, SLOT(pvsMerge()));
   /*** PVS Based NBV ***/
 }
 
@@ -1362,9 +1364,8 @@ void CameraParaDlg::runRemoveSamplesWithLowConfidence()
   //CMesh* iso_points = area->dataMgr.getCurrentIsoPoints();
 
   Timer time;
-  time.start("Sample ISOpoints Neighbor Tree!!");
-  GlobalFun::computeBallNeighbors(samples, iso_points, 
-    radius_threshold, samples->bbox);
+  time.start("Sample ISO points Neighbor Tree!!");
+  GlobalFun::computeBallNeighbors(samples, iso_points, radius_threshold, samples->bbox);
   time.end();
 
   double max_confidence = 0.0f;
@@ -1540,6 +1541,20 @@ void CameraParaDlg::pvsFirstScan()
   global_paraMgr.camera.setValue("Run PVS First Scan", BoolValue(false));
 }
 
+void CameraParaDlg::pvsBuildPVS()
+{
+  global_paraMgr.pvsBasedNBV.setValue("Run Build PVS", BoolValue(true));
+  area->runPVSBasedNBV();
+  global_paraMgr.pvsBasedNBV.setValue("Run Build PVS", BoolValue(false));
+}
+
+void CameraParaDlg::pvsUpdatePVS()
+{
+  global_paraMgr.pvsBasedNBV.setValue("Run Update PVS", BoolValue(true));
+  area->runPVSBasedNBV();
+  global_paraMgr.pvsBasedNBV.setValue("Run Update PVS", BoolValue(false));
+}
+
 void CameraParaDlg::pvsDetectBoundary()
 {
   global_paraMgr.pvsBasedNBV.setValue("Run PVS Detect Boundary", BoolValue(true));
@@ -1568,16 +1583,17 @@ void CameraParaDlg::pvsSelectCandidate()
   global_paraMgr.pvsBasedNBV.setValue("Run PVS Select Candidate", BoolValue(false));
 }
 
-void CameraParaDlg::pvsBuildPVS()
+void CameraParaDlg::pvsNBVScan()
 {
-  global_paraMgr.pvsBasedNBV.setValue("Run Build PVS", BoolValue(true));
-  area->runPVSBasedNBV();
-  global_paraMgr.pvsBasedNBV.setValue("Run Build PVS", BoolValue(false));
+  global_paraMgr.camera.setValue("Run NBV Scan", BoolValue(true));
+  area->runCamera();
+  global_paraMgr.camera.setValue("Run NBV Scan", BoolValue(false));
+  updateTabelViewScanResults();
 }
 
-void CameraParaDlg::pvsUpdatePVS()
+void CameraParaDlg::pvsMerge()
 {
-  global_paraMgr.pvsBasedNBV.setValue("Run Update PVS", BoolValue(true));
+  global_paraMgr.pvsBasedNBV.setValue("Run PVS Merge", BoolValue(true));
   area->runPVSBasedNBV();
-  global_paraMgr.pvsBasedNBV.setValue("Run Update PVS", BoolValue(false));
+  global_paraMgr.pvsBasedNBV.setValue("Run PVS Merge", BoolValue(false));
 }

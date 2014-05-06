@@ -68,12 +68,12 @@ void ParameterMgr::initGlareaParameter()
 	glarea.addParam(new RichString("Running Algorithm Name", "") );
 	glarea.addParam(new RichBool("Light On or Off", true) );
 	glarea.addParam(new RichBool("Show Normal", true) );
-	glarea.addParam(new RichBool("Show Samples", false) );
+	glarea.addParam(new RichBool("Show Samples", true) );
 	glarea.addParam(new RichBool("Show Samples Quad", false) );
 	glarea.addParam(new RichBool("Show Samples Dot", true) );
 	glarea.addParam(new RichBool("Show Samples Circle", false) );
 	glarea.addParam(new RichBool("Show Samples Sphere", false) );
-	glarea.addParam(new RichBool("Show ISO Points", false) );
+	glarea.addParam(new RichBool("Show ISO Points", true) );
 	glarea.addParam(new RichBool("Use ISO Interval", false) );
 
 	glarea.addParam(new RichBool("Show View Grids", false));
@@ -491,6 +491,7 @@ void ParameterMgr::initPVSBasedNBVParameter()
   pvsBasedNBV.addParam(new RichBool("Run PVS Select Candidate", false));
   pvsBasedNBV.addParam(new RichBool("Run Build PVS", false));
   pvsBasedNBV.addParam(new RichBool("Run Update PVS", false));
+  pvsBasedNBV.addParam(new RichBool("Run PVS Merge", false));
 
   pvsBasedNBV.addParam(new RichDouble("Boundary Search Angle", 45.));
   pvsBasedNBV.addParam(new RichInt("Boundary Search KNN", 20));

@@ -123,11 +123,11 @@ void vcc::Camera::runVirtualScan()
         current_scanned_mesh->bbox.Add(t.P());
       }
     }
-
-    //increase the scan count;
-    (*scan_count)++;
   }
   current_scanned_mesh->vn = current_scanned_mesh->vert.size();
+  //increase the scan count;
+  (*scan_count)++;
+  std::cout<<"scan count right after virtual scan: "<<*scan_count <<std::endl;
 }
 
 void vcc::Camera::runInitialScan()

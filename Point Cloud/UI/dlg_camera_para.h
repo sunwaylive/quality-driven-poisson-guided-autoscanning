@@ -121,12 +121,14 @@ public:
 
     /*** pvs based NBV ***/
     void pvsFirstScan();
+    void pvsBuildPVS();
+    void pvsUpdatePVS();
     void pvsDetectBoundary();
     void pvsSearchNewBoundaries();
     void pvsComputeCandidates();
     void pvsSelectCandidate();
-    void pvsBuildPVS();
-    void pvsUpdatePVS();
+    void pvsNBVScan();
+    void pvsMerge();
     /*** pvs based NBV ***/
 
 private:

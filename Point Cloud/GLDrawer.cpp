@@ -199,7 +199,7 @@ GLColor GLDrawer::isoValue2Color(double iso_value,
 
 GLColor GLDrawer::pvsValue2Color(double value)
 {
-  if (abs(value - (-1)) < 1e-7)   { return cGray; } //pvs default color
+  if (abs(value - (0.5)) < 1e-7)   { return cGray; } //pvs default color
   if (abs(value) < 1e-7)          { return cRed;}   //occupied pvs grid color
   if (abs(value - 1.0) < 1e-4)      { return cGreen;} //free pvs grid color
   /* else if (value >= 0 && value <= 1 ) 
@@ -284,7 +284,7 @@ GLColor GLDrawer::getColorByType(CVertex& v)
 
   if (v.is_fixed_sample)
 	{
-    if (v.IsB())  return cRed;
+    if (v.IsB())  return cPink;
     else return feature_color;
 	}
 

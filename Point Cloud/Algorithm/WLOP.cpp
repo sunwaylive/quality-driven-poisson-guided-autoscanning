@@ -279,13 +279,9 @@ void WLOP::computeDensity(bool isOriginal, double radius)
 {
   CMesh* mesh;
   if (isOriginal)
-  {
     mesh = original;
-  }
   else
-  {
     mesh = samples;
-  }
 
   double radius2 = radius * radius;
   double iradius16 = -para->getDouble("H Gaussian Para") / radius2;
