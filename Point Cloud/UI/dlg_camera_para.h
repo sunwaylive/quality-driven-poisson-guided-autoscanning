@@ -129,6 +129,7 @@ public:
     void pvsSelectCandidate();
     void pvsNBVScan();
     void pvsMerge();
+    void pvsOneKeyNbvIteration();
     /*** pvs based NBV ***/
 
 private:

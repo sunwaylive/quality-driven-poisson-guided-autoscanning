@@ -120,6 +120,7 @@ void CameraParaDlg::initConnects()
   connect(ui->pushButton_update_pvs, SIGNAL(clicked()), this, SLOT(pvsUpdatePVS()));
   connect(ui->pushButton_pvs_NBV_scan, SIGNAL(clicked()), this, SLOT(pvsNBVScan()));
   connect(ui->pushButton_pvs_merge, SIGNAL(clicked()), this, SLOT(pvsMerge()));
+  connect(ui->pushButton_pvs_one_key_iteration, SIGNAL(clicked()), this, SLOT(pvsOneKeyNbvIteration()));
   /*** PVS Based NBV ***/
 }
 
@@ -1596,4 +1597,38 @@ void CameraParaDlg::pvsMerge()
   global_paraMgr.pvsBasedNBV.setValue("Run PVS Merge", BoolValue(true));
   area->runPVSBasedNBV();
   global_paraMgr.pvsBasedNBV.setValue("Run PVS Merge", BoolValue(false));
+}
+
+void CameraParaDlg::pvsOneKeyNbvIteration()
+{
+  std::cout <<"One Key PVS NBV Begins:" <<std::endl;
+  int count = 40;
+  //save the results
+  QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
+  if (!file_location.size()) return;
+
+  for (int i = 2; i < count; ++i)
+  {
+    pvsUpdatePVS();
+    pvsSearchNewBoundaries();
+
+    //run poisson reconstruction
+    global_paraMgr.poisson.setValue("Run Poisson On Samples", BoolValue(true));
+    global_paraMgr.poisson.setValue("Run Extract MC Points", BoolValue(true));
+    //global_paraMgr.poisson.setValue("Run One Key PoissonConfidence", BoolValue(true));
+    area->runPoisson();
+    global_paraMgr.poisson.setValue("Run Extract MC Points", BoolValue(false));
+    global_paraMgr.poisson.setValue("Run Poisson On Samples", BoolValue(false));
+    //global_paraMgr.poisson.setValue("Run One Key PoissonConfidence", BoolValue(false));
+
+    pvsComputeCandidates();
+    pvsSelectCandidate();
+    pvsNBVScan();
+    pvsMerge();
+
+    QString file_name;
+    file_name.sprintf("\\%d_original.skel", i);
+    file_name = file_location + file_name;
+    area->dataMgr.saveSkeletonAsSkel(file_name);
+  }  
 }

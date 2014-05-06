@@ -1871,7 +1871,7 @@
      <property name="geometry">
       <rect>
        <x>200</x>
-       <y>510</y>
+       <y>360</y>
        <width>251</width>
        <height>31</height>
       </rect>
@@ -1884,7 +1884,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>510</y>
+       <y>519</y>
        <width>161</width>
        <height>31</height>
       </rect>
@@ -1897,7 +1897,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>560</y>
+       <y>563</y>
        <width>161</width>
        <height>31</height>
       </rect>
@@ -1910,7 +1910,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>604</y>
+       <y>606</y>
        <width>161</width>
        <height>31</height>
       </rect>
@@ -1936,7 +1936,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>470</y>
+       <y>479</y>
        <width>161</width>
        <height>31</height>
       </rect>
@@ -1969,6 +1969,58 @@
      </property>
      <property name="text">
       <string>Merge to original</string>
+     </property>
+    </widget>
+    <widget class="Line" name="line_13">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>730</y>
+       <width>441</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_pvs_one_key_iteration">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>474</y>
+       <width>141</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>PVS One Key</string>
+     </property>
+    </widget>
+    <widget class="Line" name="line_14">
+     <property name="geometry">
+      <rect>
+       <x>188</x>
+       <y>470</y>
+       <width>20</width>
+       <height>261</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </widget>
+    <widget class="Line" name="line_15">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>460</y>
+       <width>421</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </widget>

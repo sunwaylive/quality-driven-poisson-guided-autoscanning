@@ -842,7 +842,7 @@ void PVSBasedNBV::runSelectCandidate()
             //std::cout<<"candidate hit count: "<<candidate_hit_count <<std::endl;
 
             double pi = pvs->vert[index].pvs_value;
-            std::cout<<"pi: "<<pi <<std::endl;
+            //std::cout<<"pi: "<<pi <<std::endl;
             //1.calculate evi
             double evi;
             if (abs(pi) < 1e-6 || abs(pi -1 ) < 1e-6)
@@ -914,8 +914,7 @@ void PVSBasedNBV::runPVSMerge()
       CVertex &v = sr->vert[j];
       if (v.original_neighbors.size() > 0 ) continue;
 
-      v.m_index = index++;
-      std::cout<<"index: "<<index <<std::endl;
+      v.m_index = index++;      
       v.is_scanned = true;
       v.is_original = true;
       original->vert.push_back(v);
