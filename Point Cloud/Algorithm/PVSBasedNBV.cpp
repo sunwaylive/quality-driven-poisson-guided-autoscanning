@@ -553,7 +553,7 @@ void PVSBasedNBV::runComputeCandidates()
   {
     nbv_candidates->vert[i] = iso_points->vert[nbv_candidates->vert[i].neighbors[0]];
     // move outward in the normal direction and reverse the normal to get the nbv direction
-    nbv_candidates->vert[i].P() = nbv_candidates->vert[i].P() + nbv_candidates->vert[i].N() * camera_far_dist;
+    nbv_candidates->vert[i].P() = nbv_candidates->vert[i].P() + nbv_candidates->vert[i].N() * optimalDist;
     nbv_candidates->vert[i].N() = -nbv_candidates->vert[i].N();
   }
 }
