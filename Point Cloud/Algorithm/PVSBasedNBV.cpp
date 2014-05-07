@@ -95,9 +95,9 @@ void PVSBasedNBV::runBuildPVS()
   assert(pvs_resolution > 2);
   double grid_step_size = (camera_max_dist*2.0 + 1.0) / (pvs_resolution - 1);
 
-  float pvs_box_size = camera_max_dist + 0.5;
-  whole_space_box_min = Point3f(-pvs_box_size, -pvs_box_size, -pvs_box_size);
-  whole_space_box_max = Point3f(pvs_box_size, pvs_box_size, pvs_box_size);
+  float extend_pvs_box_size = 0.5;
+  whole_space_box_min = bbox_min - Point3f(extend_pvs_box_size, extend_pvs_box_size, extend_pvs_box_size);
+  whole_space_box_max = bbox_max + Point3f(extend_pvs_box_size, extend_pvs_box_size, extend_pvs_box_size);
   Box3f whole_space_box;
   whole_space_box.SetNull();
   whole_space_box.Add(whole_space_box_min);
@@ -202,9 +202,9 @@ void PVSBasedNBV::runUpdatePVS()
   }  
 
   //STEP2:compute the topology of sample points
-  GlobalFun::ballPivotingReconstruction(*sample);//global_paraMgr.wLop.getDouble("CGrid Radius")
+  //GlobalFun::ballPivotingReconstruction(*sample);//global_paraMgr.wLop.getDouble("CGrid Radius")
   //mark the border vertexes
-  vcg::tri::UpdateFlags<CMesh>::VertexBorderFromNone(*sample); 
+  //vcg::tri::UpdateFlags<CMesh>::VertexBorderFromNone(*sample); 
 
   vector<int> v_pvs_occupied_index;
   if (!sample->vert.empty())
@@ -237,6 +237,11 @@ void PVSBasedNBV::runUpdatePVS()
   for (int p_i = 0; p_i < v_pvs_occupied_index.size(); ++p_i)
   {
     int idx = v_pvs_occupied_index[p_i];
+    if (pvs->vert[idx].total_point_num == 0)
+    {
+      std::cout<<"pvs grid point num == 0!" <<std::endl;
+      continue;
+    }
     pvs->vert[idx].N() /= pvs->vert[idx].total_point_num;
     pvs->vert[idx].N().Normalize();
   }
@@ -305,7 +310,7 @@ void PVSBasedNBV::runUpdatePVS()
         n_indexZ = n_indexZ + deltaZ;
         int index = round(n_indexX) * y_max * z_max + round(n_indexY) * z_max + round(n_indexZ);
 
-        if (index >= pvs_size)  break;
+        if (index >= pvs_size || index < 0)  break;
         //if the direction is into the model, or has been hit, then stop tracing
         if (pvs->vert[index].is_ray_stop) break;            
         if (pvs->vert[index].is_ray_hit)  continue;
@@ -500,7 +505,15 @@ void PVSBasedNBV::runSearchNewBoundaries()
 
 void PVSBasedNBV::runComputeCandidates()
 {
-  double step_aside_size = 0.2; //global_paraMgr.wLop.getDouble("CGrid Radius");
+  if (m_v_boundaries->empty())
+  {
+    global_paraMgr.pvsBasedNBV.setValue("Is PVS Stop", BoolValue(true));
+    std::cout<<"No Boundary Found! Algorithm Finished! " <<std::endl;
+    std::cout<<"Scan Count: " <<*scan_count <<std::endl;
+    return;
+  }
+  
+  double step_aside_size = 0.05; //global_paraMgr.wLop.getDouble("CGrid Radius");
   double camera_far_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
     global_paraMgr.camera.getDouble("Predicted Model Size");
 
@@ -539,6 +552,14 @@ void PVSBasedNBV::runComputeCandidates()
   nbv_candidates->vn = nbv_candidates->vert.size();
 
   std::cout<< "nbv candidates size: "<< nbv_candidates->vert.size() <<std::endl;
+
+  if (nbv_candidates->vert.empty())
+  {
+    global_paraMgr.pvsBasedNBV.setValue("Is PVS Stop", BoolValue(true));
+    std::cout<<"No candidates found! Algorithm Finished Correctly !" <<std::endl;
+    std::cout<<"Scan count: " <<*scan_count <<std::endl;
+    return;
+  }
 
   //adjust the candidates according to the poisson surface
   if (iso_points->vert.empty())
@@ -871,7 +892,7 @@ void PVSBasedNBV::runSelectCandidate()
     if (candidate_hit_count == 0)
     {
       std::cout<<"candidate hit grid count: " << candidate_hit_count <<std::endl;
-      break;
+      continue;
     }
     double ev = ev_sum / candidate_hit_count;
     double qs = qs_sum / candidate_hit_count;
@@ -894,7 +915,10 @@ void PVSBasedNBV::runSelectCandidate()
     scan_candidates->push_back(make_pair(nbv_candidates->vert[max_score_candidate_idx].P(),
       nbv_candidates->vert[max_score_candidate_idx].N()));
   }else
+  {
+    global_paraMgr.pvsBasedNBV.addParam(new RichBool("Is PVS Stop", false));
     std::cout<<"No scan candidates found! Something went wrong in PVSBasedNBV::runSelectCandidate!" <<std::endl;
+  }
 }
 
 void PVSBasedNBV::runPVSMerge()

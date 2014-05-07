@@ -420,7 +420,7 @@ void ParameterMgr::initCameraParameter()
   //20 for sphere test, 30 for dancing children
   camera.addParam(new RichDouble("Camera Dist To Model", 30.0f)); //cm ((30.0f + 17.0f)/2 + 0.6 * 20.0f)
 
-  camera.addParam(new RichDouble("Camera Resolution",1.0f / 50.0f));
+  camera.addParam(new RichDouble("Camera Resolution",1.0f / 200.0f));
   camera.addParam(new RichDouble("Merge Confidence Threshold", 0.9f));
   camera.addParam(new RichDouble("Grid Step Size", -1));
 
@@ -492,9 +492,10 @@ void ParameterMgr::initPVSBasedNBVParameter()
   pvsBasedNBV.addParam(new RichBool("Run Build PVS", false));
   pvsBasedNBV.addParam(new RichBool("Run Update PVS", false));
   pvsBasedNBV.addParam(new RichBool("Run PVS Merge", false));
+  pvsBasedNBV.addParam(new RichBool("Is PVS Stop", false));
 
   pvsBasedNBV.addParam(new RichDouble("Boundary Search Angle", 45.));
   pvsBasedNBV.addParam(new RichInt("Boundary Search KNN", 20));
-  pvsBasedNBV.addParam(new RichInt("Accept Boundary Size", 5));
-  pvsBasedNBV.addParam(new RichDouble("PVS Grid Resolution", 20.8));
+  pvsBasedNBV.addParam(new RichInt("Accept Boundary Size", 12));
+  pvsBasedNBV.addParam(new RichDouble("PVS Grid Resolution", 100.8));
 }

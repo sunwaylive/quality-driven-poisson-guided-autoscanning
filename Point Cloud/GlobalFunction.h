@@ -23,7 +23,7 @@
 #define EIGEN_EXCEPTIONS
 
 const double PI = 3.1415926;
-const double EPS = 1e-7;    //lion: 1e-8, dc: 1e-10, sphere: 1e-7
+const double EPS = 1e-10;    //lion: 1e-8, dc: 1e-10, sphere: 1e-7
 const double EPS_VISIBILITY = 0.2;
 const double BIG = 100000;
 

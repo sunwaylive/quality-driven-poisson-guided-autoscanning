@@ -1602,7 +1602,7 @@ void CameraParaDlg::pvsMerge()
 void CameraParaDlg::pvsOneKeyNbvIteration()
 {
   std::cout <<"One Key PVS NBV Begins:" <<std::endl;
-  int count = 40;
+  int count = 100;
   //save the results
   QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
   if (!file_location.size()) return;
@@ -1610,7 +1610,10 @@ void CameraParaDlg::pvsOneKeyNbvIteration()
   for (int i = 2; i < count; ++i)
   {
     pvsUpdatePVS();
+
     pvsSearchNewBoundaries();
+    if (global_paraMgr.pvsBasedNBV.getBool("Is PVS Stop"))
+      break;
 
     //run poisson reconstruction
     global_paraMgr.poisson.setValue("Run Poisson On Samples", BoolValue(true));
@@ -1622,7 +1625,13 @@ void CameraParaDlg::pvsOneKeyNbvIteration()
     //global_paraMgr.poisson.setValue("Run One Key PoissonConfidence", BoolValue(false));
 
     pvsComputeCandidates();
+    if (global_paraMgr.pvsBasedNBV.getBool("Is PVS Stop"))
+      break;
+
     pvsSelectCandidate();
+    if (global_paraMgr.pvsBasedNBV.getBool("Is PVS Stop"))
+      break;
+
     pvsNBVScan();
     pvsMerge();
 
