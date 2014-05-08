@@ -155,8 +155,7 @@ void vcc::Camera::runInitialScan()
   int i = 1;
   for (; it != init_scan_candidates->end(); ++it)
   {
-    //init scan should consider dist to model
-    pos = it->first * dist_to_model;
+    pos = it->first;
     direction = it->second;
     /******* call runVirtualScan() *******/
     cout<<i << "th initial scan begin" <<endl;
@@ -268,8 +267,7 @@ void vcc::Camera::runVisibilityFirstScan()
   int i = 1;
   for (; it != visibility_first_scan_candidates->end(); ++it)
   {
-    //first scan should consider dist to model
-    pos = it->first * dist_to_model;
+    pos = it->first;
     direction = it->second;
     /******* call runVirtualScan() *******/
     cout<<i << "th initial scan begin" <<endl;
@@ -324,8 +322,7 @@ void vcc::Camera::runPVSFirstScan()
   int i = 1;
   for (; it != pvs_first_scan_candidates->end(); ++it)
   {
-    //first scan should consider dist to model
-    pos = it->first * dist_to_model;
+    pos = it->first;
     direction = it->second;
     /******* call runVirtualScan() *******/
     cout<<i << "th initial scan begin" <<endl;

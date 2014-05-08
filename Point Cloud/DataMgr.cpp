@@ -31,21 +31,21 @@ void DataMgr::clearCMesh(CMesh& mesh)
 
 void DataMgr::initDefaultScanCamera()
 {
+  double predict_size = global_paraMgr.camera.getDouble("Predicted Model Size");
+  double far_dist = global_paraMgr.camera.getDouble("Camera Far Distance") / predict_size;
   //default cameras for initial scanning, pair<pos, direction>
   //x axis
-  init_scan_candidates.push_back(make_pair(Point3f(1.0f, 0.0f, 0.0f), Point3f(-1.0f, 0.0f, 0.0f)));
-  init_scan_candidates.push_back(make_pair(Point3f(-1.0f, 0.0f, 0.0f), Point3f(1.0f, 0.0f, 0.0f)));
+  init_scan_candidates.push_back(make_pair(Point3f(1.0f * far_dist, 0.0f, 0.0f), Point3f(-1.0f, 0.0f, 0.0f)));
+  init_scan_candidates.push_back(make_pair(Point3f(-1.0f * far_dist, 0.0f, 0.0f), Point3f(1.0f, 0.0f, 0.0f)));
   //z axis
-  init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f), Point3f(0.0f, 0.0f, -1.0f)));
-  init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, -1.0f), Point3f(0.0f, 0.0f, 1.0f)));
+  init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f * far_dist), Point3f(0.0f, 0.0f, -1.0f)));
+  init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, -1.0f * far_dist), Point3f(0.0f, 0.0f, 1.0f)));
   //y axis
   /*init_scan_candidates.push_back(make_pair(Point3f(0.0f, 1.0f, 0.0f), Point3f(0.0f, -1.0f, 0.0f)));
   init_scan_candidates.push_back(make_pair(Point3f(0.0f, -1.0f, 0.0f), Point3f(0.0f, 1.0f, 0.0f)));*/
 
   //this should be deleted, for UI debug
   //for test
-  double predict_size = global_paraMgr.camera.getDouble("Predicted Model Size");
-  double far_dist = global_paraMgr.camera.getDouble("Camera Far Distance") / predict_size;
   scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f * far_dist), Point3f(0.0f, 0.0f, -1.0f)));
   //x axis
   scan_candidates.push_back(make_pair(Point3f(1.0f * far_dist, 0.0f, 0.0f), Point3f(-1.0f, 0.0f, 0.0f)));
@@ -59,10 +59,11 @@ void DataMgr::initDefaultScanCamera()
 
 
   /*** visibility based NBV ***/
-  visibility_first_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f), Point3f(0.0f, 0.0f, -1.0f)));
+  visibility_first_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f * far_dist), Point3f(0.0f, 0.0f, -1.0f)));
   /*** visibility based NBV ***/
+
   /*** pvs based NBV ***/
-  pvs_first_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f), Point3f(0.0f, 0.0f, -1.0f)));
+  pvs_first_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f * far_dist), Point3f(0.0f, 0.0f, -1.0f)));
   /*** pvs based NBV **/
 }
 

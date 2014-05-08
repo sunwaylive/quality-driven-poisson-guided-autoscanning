@@ -483,7 +483,7 @@ void PVSBasedNBV::runSearchNewBoundaries()
   sample->vn = sample->vert.size();
 
   //compute the topology of sample points
-  GlobalFun::ballPivotingReconstruction(*sample);
+  GlobalFun::ballPivotingReconstruction(*sample,0.2);
   //use vertex topology
   //mark the border vertexes
   std::cout<<"face num: "<< sample->fn <<std::endl;

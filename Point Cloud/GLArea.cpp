@@ -407,7 +407,7 @@ void GLArea::paintGL()
       double near_dist = global_paraMgr.camera.getDouble("Camera Near Distance") / predict_size; 
       //double dist_to_model = global_paraMgr.camera.getDouble("Camera Dist To Model");
       double dist_to_model = global_paraMgr.camera.getDouble("Camera Dist To Model") / predict_size;
-
+      
       current_camera.far_horizon_dist = h_dist;
       current_camera.far_vertical_dist = v_dist;
       current_camera.near_horizon_dist = h_dist / far_dist * near_dist;
@@ -424,10 +424,6 @@ void GLArea::paintGL()
         {
           current_camera.pos = it->first;
           current_camera.direction = it->second;
-          //if it is initial scan, we should consider dist_to_model
-          if (global_paraMgr.camera.getBool("Is Init Camera Show"))
-            current_camera.pos =  current_camera.pos * far_dist;
-
           current_camera.computeUpAndRight();
           CVertex v;
           v.P() = current_camera.pos;
@@ -440,6 +436,8 @@ void GLArea::paintGL()
     if (para->getBool("Show Scan History"))
     {
       vector<ScanCandidate> *history = dataMgr.getScanHistory();
+      double far_dist = global_paraMgr.camera.getDouble("Camera Far Distance") / 
+                             global_paraMgr.camera.getDouble("Predicted Model Size");
       if (!history->empty())
       {
         vector<ScanCandidate>::iterator it = history->begin();
@@ -448,6 +446,7 @@ void GLArea::paintGL()
           CVertex v;
           v.P() = it->first;
           glDrawer.drawSphere(v);
+          glDrawer.glDrawLine(it->first, it->first + it->second.Normalize() * far_dist, cBlue, 5);
         }
       }
     }
