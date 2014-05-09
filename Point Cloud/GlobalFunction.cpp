@@ -781,7 +781,7 @@ bool GlobalFun::isPointInTriangle_3(Point3f& v0, Point3f& v1, Point3f& v2, Point
   double area2 = GlobalFun::computeTriangleArea_3(v0, v2, p);
   double area3 = GlobalFun::computeTriangleArea_3(v1, v2, p);
   double area  = GlobalFun::computeTriangleArea_3(v0, v1, v2);
-  if (fabs(area - (area1 + area2 + area3)) < EPS) return true;
+  if (fabs(area - (area1 + area2 + area3)) < EPS_SUN) return true;
   else return false;
 }
 
@@ -809,7 +809,7 @@ double GlobalFun::computeMeshLineIntersectPoint(const CMesh *target, const Point
       //the line cross the point: pos, and line vector is viewray_iter 
       double tmp = face_norm * line_dir;
 
-      if (abs(tmp) < EPS)
+      if (abs(tmp) < EPS_SUN)
       continue;
 
       double tmp2 = 1.0f / tmp;

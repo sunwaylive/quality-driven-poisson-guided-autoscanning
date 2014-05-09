@@ -249,6 +249,9 @@
     <ClCompile Include="Algorithm\NormalSmoother.cpp" />
     <ClCompile Include="Algorithm\Poisson.cpp" />
     <ClCompile Include="Algorithm\PVSBasedNBV.cpp" />
+    <ClCompile Include="Algorithm\RIMLS\apss.cpp" />
+    <ClCompile Include="Algorithm\RIMLS\kdtree.cpp" />
+    <ClCompile Include="Algorithm\RIMLS\rimls.cpp" />
     <ClCompile Include="Algorithm\Skeleton.cpp" />
     <ClCompile Include="Algorithm\Skeletonization.cpp" />
     <ClCompile Include="Algorithm\Upsampler.cpp" />
@@ -544,6 +547,16 @@
     <ClInclude Include="Algorithm\pointcloud_normal.h" />
     <ClInclude Include="Algorithm\Poisson.h" />
     <ClInclude Include="Algorithm\PVSBasedNBV.h" />
+    <ClInclude Include="Algorithm\RIMLS\apss.h" />
+    <ClInclude Include="Algorithm\RIMLS\balltree.h" />
+    <ClInclude Include="Algorithm\RIMLS\implicits.h" />
+    <ClInclude Include="Algorithm\RIMLS\kdtree.h" />
+    <ClInclude Include="Algorithm\RIMLS\mlsmarchingcube.h" />
+    <ClInclude Include="Algorithm\RIMLS\mlssurface.h" />
+    <ClInclude Include="Algorithm\RIMLS\mlsutils.h" />
+    <ClInclude Include="Algorithm\RIMLS\priorityqueue.h" />
+    <ClInclude Include="Algorithm\RIMLS\rimls.h" />
+    <ClInclude Include="Algorithm\RIMLS\smallcomponentselection.h" />
     <ClInclude Include="Algorithm\Skeleton.h" />
     <ClInclude Include="Algorithm\Skeletonization.h" />
     <ClInclude Include="Algorithm\Upsampler.h" />
@@ -971,6 +984,10 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Algorithm\RIMLS\apss.tpp" />
+    <None Include="Algorithm\RIMLS\balltree.tpp" />
+    <None Include="Algorithm\RIMLS\mlssurface.tpp" />
+    <None Include="Algorithm\RIMLS\rimls.tpp" />
     <None Include="Poisson\Array.inl" />
     <None Include="Poisson\BSplineData.inl" />
     <None Include="Poisson\FunctionData.inl" />

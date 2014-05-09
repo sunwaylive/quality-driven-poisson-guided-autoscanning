@@ -9,6 +9,24 @@
 #include "vcg\complex\complex.h"
 #include "vcg/complex/algorithms/create/platonic.h" //for mesh copy
 
+#include <QtGui>
+#include <math.h>
+#include <stdlib.h>
+#include <time.h>
+#include <iostream>
+//#include "CMesh.h"
+
+#include "RIMLS/mlsmarchingcube.h"
+//#include "Algorithm/RIMLS/mlsplugin.h"
+#include "RIMLS/rimls.h"
+#include "RIMLS/apss.h"
+#include "RIMLS/mlsutils.h"
+#include "RIMLS/implicits.h"
+#include "RIMLS/smallcomponentselection.h"
+#include "Algorithm/RIMLS/balltree.h"
+using namespace GaelMls;
+
+
 typedef std::vector<MyBoarderEdge>::iterator MyEdgeIter;
 typedef vcg::tri::UpdateFlags<CMesh>::FaceIterator FaceIter;
 

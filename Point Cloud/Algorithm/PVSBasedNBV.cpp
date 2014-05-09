@@ -1,5 +1,15 @@
 #include "PVSBasedNBV.h"
 
+//#include <common/interfaces.h>
+#include <vcg/complex/trimesh/clean.h>
+#include <vcg/complex/trimesh/refine.h>
+#include <vcg/complex/trimesh/refine_loop.h>
+#include <vcg/complex/trimesh/append.h>
+#include <vcg/complex/trimesh/create/advancing_front.h>
+#include <vcg/complex/trimesh/create/marching_cubes.h>
+
+
+
 PVSBasedNBV::PVSBasedNBV(RichParameterSet* _para)
 {
   std::cout<< "PVSBasedNBV constructed!" <<std::endl;
@@ -95,7 +105,7 @@ void PVSBasedNBV::runBuildPVS()
   assert(pvs_resolution > 2);
   double grid_step_size = (camera_max_dist*2.0 + 1.0) / (pvs_resolution - 1);
 
-  float extend_pvs_box_size = 0.5;
+  float extend_pvs_box_size = camera_max_dist;
   whole_space_box_min = bbox_min - Point3f(extend_pvs_box_size, extend_pvs_box_size, extend_pvs_box_size);
   whole_space_box_max = bbox_max + Point3f(extend_pvs_box_size, extend_pvs_box_size, extend_pvs_box_size);
   Box3f whole_space_box;
@@ -147,12 +157,6 @@ void PVSBasedNBV::runBuildPVS()
 
 void PVSBasedNBV::runUpdatePVS()
 {
-  std::cout<<"scan history size: " <<scan_history->size() <<std::endl;
-  std::cout<<"sample vert size: " <<sample->vert.size() <<std::endl;
-  GlobalFun::printPoint3(std::cout, scan_history->back().first);
-  GlobalFun::printPoint3(std::cout, scan_history->back().second);
-  std::cout<<"scan mesh vert size: " <<scanned_results->back()->vert.size() <<std::endl;
-
   double resolution = global_paraMgr.camera.getDouble("Camera Resolution");
   double far_horizon_dist = global_paraMgr.camera.getDouble("Camera Horizon Dist") 
     / global_paraMgr.camera.getDouble("Predicted Model Size");
@@ -218,7 +222,7 @@ void PVSBasedNBV::runUpdatePVS()
       int sc_v_indexZ = static_cast<int>( ceil((o_v.P()[2] - whole_space_box_min.Z()) / grid_step_size ));
       int index = sc_v_indexX * y_max * z_max + sc_v_indexY * z_max + sc_v_indexZ;
 
-      if (index >= pvs_size)  break;
+      if (index >= pvs_size || index < 0)  break;
 
       pvs->vert[index].is_ray_stop = true;   //the grid is occupied by object, so the ray should stop
       pvs->vert[index].pvs_value = 0;        //0: pvs grid occupied
@@ -258,7 +262,7 @@ void PVSBasedNBV::runUpdatePVS()
   //compute up and right direction of the candidates
   if (viewray.Z() > 0)
     up = viewray ^ x_axis;
-  else if (fabs(viewray.Z()) < EPS)
+  else if (fabs(viewray.Z()) < EPS_SUN)
     up = viewray ^ z_axis;
   else
     up = x_axis ^ viewray;
@@ -310,6 +314,7 @@ void PVSBasedNBV::runUpdatePVS()
         n_indexZ = n_indexZ + deltaZ;
         int index = round(n_indexX) * y_max * z_max + round(n_indexY) * z_max + round(n_indexZ);
 
+        //if (n_indexX < 0 || n_indexY < 0 || n_indexZ < 0) break;//the index is out of pvs grids
         if (index >= pvs_size || index < 0)  break;
         //if the direction is into the model, or has been hit, then stop tracing
         if (pvs->vert[index].is_ray_stop) break;            
@@ -481,9 +486,32 @@ void PVSBasedNBV::runSearchNewBoundaries()
     sample->bbox.Add(v.P());
   }
   sample->vn = sample->vert.size();
+  
 
-  //compute the topology of sample points
-  GlobalFun::ballPivotingReconstruction(*sample,0.2);
+  //1. use BallPivoting to reconstruc surfaces
+  double resolution = global_paraMgr.camera.getDouble("Camera Resolution");
+  //GlobalFun::ballPivotingReconstruction(*sample);//, resolution * 2
+
+  //2.another surface reconstruction method
+
+
+  GaelMls::MlsSurface<CMesh>* mls = 0;
+
+  GaelMls::RIMLS<CMesh>* rimls = 0;
+  mls = rimls = new RIMLS<CMesh>(*sample);
+  
+  typedef vcg::tri::MlsWalker<CMesh,MlsSurface<CMesh> > MlsWalker;
+  typedef vcg::tri::MarchingCubes<CMesh, MlsWalker> MlsMarchingCubes;
+  MlsWalker walker;
+  walker.resolution = 200;//par.getInt("Resolution");
+
+  // iso extraction
+  MlsMarchingCubes mc(*sample, walker);
+  walker.BuildMesh<MlsMarchingCubes>(*sample, *mls, mc);
+
+
+
+
   //use vertex topology
   //mark the border vertexes
   std::cout<<"face num: "<< sample->fn <<std::endl;
