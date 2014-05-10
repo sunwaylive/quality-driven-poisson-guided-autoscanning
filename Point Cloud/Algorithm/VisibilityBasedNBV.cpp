@@ -183,7 +183,7 @@ void VisibilityBasedNBV::runVisibilityCandidatesCluster()
   }
   nbv_candidates->vert.clear();
   nbv_candidates->vert.push_back(nbv_candidates->vert[max_vert_index]);
-  nbv_candidates->vert.push_back(nbv_candidates->vert[second_max_vert_index]);
+  //nbv_candidates->vert.push_back(nbv_candidates->vert[second_max_vert_index]);
 
   //check the minimum distance and store them in scan_candidates
   scan_candidates->clear();
@@ -237,7 +237,7 @@ void VisibilityBasedNBV::runVisibilityMerge()
     for (int j = 0; j < sr->vert.size(); ++j)
     {
       CVertex &v = sr->vert[j];
-      v.m_index = index + 1;
+      v.m_index = index++;
       v.is_scanned = false;
       v.is_original = true;
       original->vert.push_back(v);
@@ -272,8 +272,8 @@ void VisibilityBasedNBV::runVisibilityUpdate()
       Point3f view_dir = scan_history->at(j).second;
      
       bool is_wv = isPointWellVisible(v, view_pos, view_dir, target_mesh);
-      //if (is_wv)
-        //std::cout<<"well see!: "<< is_wv <<std::endl;
+      if (is_wv)
+        std::cout<<"well see!: "<< is_wv <<std::endl;
 
       v.is_barely_visible = (v.is_barely_visible && !is_wv);  //make sure all view point can't well-see v.
     }
@@ -322,7 +322,7 @@ bool VisibilityBasedNBV::isPointWellVisible(const CVertex &target, const Point3f
   {
     std::cout<<"angle: "<<angle <<std::endl;
     std::cout << "dist: "<< d <<std::endl;
-    std::cout <<"camera near dist: " << camera_near_dist <<"/// camera far dist: " <<camera_far_dist <<std::endl;
+    std::cout <<"camera near dist: " << camera_near_dist <<" camera far dist: " <<camera_far_dist <<std::endl;
   }
 
   if (angle > camera_fov_angle)
@@ -332,7 +332,6 @@ bool VisibilityBasedNBV::isPointWellVisible(const CVertex &target, const Point3f
   }
   if (d > camera_far_dist || d < camera_near_dist)
   {
-    //
     return false;
   }
 
@@ -341,7 +340,7 @@ bool VisibilityBasedNBV::isPointWellVisible(const CVertex &target, const Point3f
   double intersection_dist = GlobalFun::computeMeshLineIntersectPoint(mesh_surface, view_pos, target_line, result, result_normal, is_bv);
   double target_dist = GlobalFun::computeEulerDist(target.P(), view_pos);
 
-  if (abs(intersection_dist - target_dist) < 0.1 /*&&  !is_bv*/)
+  if (abs(intersection_dist - target_dist) < EPS_VISIBILITY &&  !is_bv)
     return true;
   else
     return false;

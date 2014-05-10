@@ -641,8 +641,7 @@ public:
         assert(0); return *this;
     }
 
-
-  vector_ocf<typename T::FaceType> &Base() const { return *_ovp;}
+  vector_ocf<typename T::FaceType> &Base() const { return *_ovp;}//FIXME: Sun 2014-5-9
 
 	template <class LeftF>
 	void ImportData(const LeftF & leftF){T::ImportData(leftF);}

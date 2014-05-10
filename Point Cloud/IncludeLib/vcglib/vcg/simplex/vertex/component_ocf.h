@@ -100,7 +100,6 @@ namespace vcg {
 	namespace vertex {
 /*
 All the Components that can be added to a vertex should be defined in the namespace vert:
-
 */
 template <class VALUE_TYPE>
 class vector_ocf: public std::vector<VALUE_TYPE> {
@@ -135,7 +134,8 @@ public:
 		if (CurvatureDirEnabled)  CuDV.push_back(typename VALUE_TYPE::CurvatureDirType());
 		if (RadiusEnabled)        RadiusV.push_back(typename VALUE_TYPE::RadiusType());
 	}
-	void pop_back();
+	//void pop_back();
+  
 	void resize(const unsigned int & _size)
 	{
 		const unsigned int oldsize = BaseType::size();
@@ -628,7 +628,7 @@ public:
 		return tt2;
 	}
 public:
-	vector_ocf<typename T::VertexType> *_ovp;
+	vector_ocf<typename T::VertexType> * _ovp;
 
 	static bool HasQualityOcf()   { return false; }
 	static bool HasTexCoordOcf()   { return false; }

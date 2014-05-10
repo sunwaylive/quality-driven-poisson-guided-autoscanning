@@ -473,6 +473,7 @@ void PVSBasedNBV::runSearchNewBoundaries()
 {
   //copy point from original to sample
   GlobalFun::clearCMesh(*sample); 
+  sample->vert.EnableRadius();
   int idx = 0;
   for (int i = 0; i < original->vert.size(); ++i)
   {
@@ -487,29 +488,30 @@ void PVSBasedNBV::runSearchNewBoundaries()
   }
   sample->vn = sample->vert.size();
   
-
-  //1. use BallPivoting to reconstruc surfaces
+  //1. use BallPivoting to reconstruct surfaces
   double resolution = global_paraMgr.camera.getDouble("Camera Resolution");
   //GlobalFun::ballPivotingReconstruction(*sample);//, resolution * 2
 
   //2.another surface reconstruction method
-
-
+  //vcg::tri::Allocator<CMesh>::CompactVertexVector(*sample);
+  
   GaelMls::MlsSurface<CMesh>* mls = 0;
-
   GaelMls::RIMLS<CMesh>* rimls = 0;
   mls = rimls = new RIMLS<CMesh>(*sample);
-  
+
+  mls->setFilterScale(2);
+  mls->setMaxProjectionIters(15);
+  mls->setProjectionAccuracy(0.0001);
+
+  //marching cube
   typedef vcg::tri::MlsWalker<CMesh,MlsSurface<CMesh> > MlsWalker;
   typedef vcg::tri::MarchingCubes<CMesh, MlsWalker> MlsMarchingCubes;
   MlsWalker walker;
-  walker.resolution = 200;//par.getInt("Resolution");
+  walker.resolution = 200;
 
-  // iso extraction
+  //iso extraction
   MlsMarchingCubes mc(*sample, walker);
   walker.BuildMesh<MlsMarchingCubes>(*sample, *mls, mc);
-
-
 
 
   //use vertex topology

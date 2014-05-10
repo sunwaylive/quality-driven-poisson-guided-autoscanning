@@ -23,8 +23,8 @@
 #define EIGEN_EXCEPTIONS
 
 const double PI = 3.1415926;
-const double EPS_SUN = 1e-7;    //lion: 1e-8, dc: 1e-10, sphere: 1e-7, cube:
-const double EPS_VISIBILITY = 0.2;
+const double EPS_SUN = 1e-10;    //lion: 1e-8, dc: 1e-10, sphere: 1e-7, cube:
+const double EPS_VISIBILITY = 1e-4;
 const double BIG = 100000;
 
 //#include <Eigen/Dense>
