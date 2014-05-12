@@ -552,6 +552,11 @@ CMesh* DataMgr::getPVS()
   return &pvs;
 }
 
+CMesh* DataMgr::getRIMLS()
+{
+  return &rimls;
+}
+
 int* DataMgr::getScanCount()
 {
   return &scan_count;

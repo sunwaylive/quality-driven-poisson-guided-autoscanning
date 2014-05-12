@@ -30,6 +30,7 @@ void PVSBasedNBV::setInput(DataMgr *pData)
 
   model = pData->getCurrentModel();
   sample = pData->getCurrentSamples();
+  rimls_result = pData->getRIMLS();
 
   scanned_results = pData->getScannedResults();
   optimalDist = (global_paraMgr.camera.getDouble("Camera Far Distance") +global_paraMgr.camera.getDouble("Camera Near Distance")) 
@@ -508,7 +509,6 @@ void PVSBasedNBV::runSearchNewBoundaries()
   MlsWalker walker;
   walker.resolution = 200;
   //iso extraction
-  CMesh *rimls_result = new CMesh;
   MlsMarchingCubes mc(*rimls_result, walker);
   walker.BuildMesh<MlsMarchingCubes>(*rimls_result, *mls, mc);
 
@@ -522,8 +522,7 @@ void PVSBasedNBV::runSearchNewBoundaries()
   
   std::cout<<"face num: "<< rimls_result->fn <<std::endl;
   std::cout<<"face num: "<< rimls_result->face.size() <<std::endl;
-
-  GlobalFun::clearCMesh(*sample);
+  
   sample = rimls_result;
 
   vcg::tri::UpdateFlags<CMesh>::VertexBorderFromNone(*sample); 
@@ -719,10 +718,7 @@ Boundary PVSBasedNBV::searchOneBoundaryFromIndex(int begin_idx)
   Point3f head_direction = (t.P() - begin_vert.P()).Normalize();
   Boundary boundary_first_part = searchOneBoundaryFromDirection(begin_idx, head_direction);
   Boundary boundary_second_part = searchOneBoundaryFromDirection(begin_idx, -head_direction);
-
-  std::cout<<"first half boundary size: "<< boundary_first_part.getSize() << std::endl;
-  std::cout<<"second half boundary size: " << boundary_second_part.getSize() <<std::endl;
-
+  
   //combine them
   Curve curve_first_part = boundary_first_part.curve;
   Curve curve_second_part = boundary_second_part.curve;

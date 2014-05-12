@@ -126,6 +126,7 @@ public:
   vector<CMesh* >*        getScannedResults(); 
   vector<Boundary>*       getBoundaries(); 
   CMesh*                  getPVS();
+  CMesh*                  getRIMLS();
   int*                    getScanCount();
 
 	void      recomputeBox();
@@ -224,6 +225,7 @@ public:
   /*** pvs based NBV ***/
   vector<ScanCandidate> pvs_first_scan_candidates;
   CMesh                 pvs;                      //probabilistic viewing space
+  CMesh                 rimls;
   int                   scan_count;
   /*** pvs based NBV***/
 };

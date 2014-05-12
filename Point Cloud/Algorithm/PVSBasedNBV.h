@@ -7,17 +7,14 @@
 #include "GlobalFunction.h"
 #include "vcg\complex\algorithms\update\topology.h"
 #include "vcg\complex\complex.h"
-#include "vcg/complex/algorithms/create/platonic.h" //for mesh copy
 
 #include <QtGui>
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>
 #include <iostream>
-//#include "CMesh.h"
 
 #include "RIMLS/mlsmarchingcube.h"
-//#include "Algorithm/RIMLS/mlsplugin.h"
 #include "RIMLS/rimls.h"
 #include "RIMLS/apss.h"
 #include "RIMLS/mlsutils.h"
@@ -68,6 +65,7 @@ private:
   CMesh                 *original;
   CMesh                 *iso_points;
   CMesh                 *pvs;
+  CMesh                 *rimls_result;
   vector<Boundary>      *m_v_boundaries;
   CMesh                 *nbv_candidates;
   vector<ScanCandidate> *scan_candidates;
