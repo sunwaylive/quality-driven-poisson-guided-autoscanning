@@ -122,6 +122,11 @@ bool DataMgr::isNBVCandidatesEmpty()
   return nbv_candidates.vert.empty();
 }
 
+bool DataMgr::isRIMLSEmpty()
+{
+  return rimls.vert.empty();
+}
+
 void DataMgr::loadPlyToModel(QString fileName)
 {
   clearCMesh(model);

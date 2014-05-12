@@ -520,18 +520,16 @@ void PVSBasedNBV::runSearchNewBoundaries()
   vcg::tri::SmallComponent<CMesh>::DeleteFaceVert(*rimls_result);
   rimls_result->face.DisableFFAdjacency();
   
-  std::cout<<"face num: "<< rimls_result->fn <<std::endl;
-  std::cout<<"face num: "<< rimls_result->face.size() <<std::endl;
+  for (int i = 0; i < rimls_result->vert.size(); ++i)
+    rimls_result->vert[i].m_index = i;
   
-  sample = rimls_result;
-
-  vcg::tri::UpdateFlags<CMesh>::VertexBorderFromNone(*sample); 
+  vcg::tri::UpdateFlags<CMesh>::VertexBorderFromNone(*rimls_result); 
   //select the border vertexes
-  std::cout<<"selected boarder points: " <<tri::UpdateSelection<CMesh>::VertexFromBorderFlag(*sample) << std::endl;
+  std::cout<<"selected boarder points: " <<tri::UpdateSelection<CMesh>::VertexFromBorderFlag(*rimls_result) << std::endl;
   //print them out
-  for (int i = 0; (i < sample->vert.size()); ++i)
-    if(sample->vert[i].IsB())
-      sample->vert[i].is_boundary = true;
+  for (int i = 0; (i < rimls_result->vert.size()); ++i)
+    if(rimls_result->vert[i].IsB())
+      rimls_result->vert[i].is_boundary = true;
 
   //clear former boundaries and search for new ones
   m_v_boundaries->clear();
@@ -562,12 +560,12 @@ void PVSBasedNBV::runComputeCandidates()
     int mid_curve_idx = b.curve.size() / 2;
     int cmesh_index = b.curve[mid_curve_idx].m_index;
     //corresponding point in CMesh
-    CVertex &v = sample->vert[cmesh_index];
+    CVertex &v = rimls_result->vert[cmesh_index];
     //find one point which is not a board point
     CVertex inside_point;
     for (int j = 0; j < v.neighbors.size(); ++j)
     {
-      CVertex &n = sample->vert[v.neighbors[j]];
+      CVertex &n = rimls_result->vert[v.neighbors[j]];
       if (n.IsB()) continue;
       else { inside_point = n; break;}
     }
@@ -649,17 +647,17 @@ std::vector<Boundary> PVSBasedNBV::getBoundary(std::vector<MyBoarderEdge> &v_bor
 void PVSBasedNBV::searchNewBoundaries()
 {
   int boundary_knn = para->getInt("Boundary Search KNN");
-  GlobalFun::computeAnnNeigbhors(sample->vert, sample->vert, boundary_knn, false, "void PVSBasedNBV::search New Boundaies");
+  GlobalFun::computeAnnNeigbhors(rimls_result->vert, rimls_result->vert, boundary_knn, false, "void PVSBasedNBV::search New Boundaies");
   
-  std::cout<<"sample neighbors: " <<sample->vert[0].neighbors.size() <<std::endl;
+  std::cout<<"sample neighbors: " <<rimls_result->vert[0].neighbors.size() <<std::endl;
 
   while (true)
   {
     //make sure boundary search begin at boundary point
     int begin_idx = -1;
-    for (int i = 0; i < sample->vert.size(); ++i)
+    for (int i = 0; i < rimls_result->vert.size(); ++i)
     {
-      if (sample->vert[i].is_boundary) 
+      if (rimls_result->vert[i].is_boundary) 
       {
         begin_idx = i;
         break;
@@ -674,7 +672,7 @@ void PVSBasedNBV::searchNewBoundaries()
     {
       for (int j = 0; j < new_boundary.getSize(); ++j)
       {
-        sample->vert[new_boundary.curve[j].m_index].is_boundary = false;//mark the point have been handled
+        rimls_result->vert[new_boundary.curve[j].m_index].is_boundary = false;//mark the point have been handled
       }
       m_v_boundaries->push_back(new_boundary);
     }
@@ -686,7 +684,7 @@ void PVSBasedNBV::searchNewBoundaries()
 Boundary PVSBasedNBV::searchOneBoundaryFromIndex(int begin_idx)
 {
   Boundary new_boundary;
-  CVertex& begin_vert = sample->vert[begin_idx];
+  CVertex& begin_vert = rimls_result->vert[begin_idx];
   if (!begin_vert.is_boundary)
   {
     std::cout<< "start point is not a border one! " <<std::endl;
@@ -704,7 +702,7 @@ Boundary PVSBasedNBV::searchOneBoundaryFromIndex(int begin_idx)
   int nearest_idx = -1;
   for (int i = 0; i < begin_vert.neighbors.size(); ++i)
   {
-    CVertex& t = sample->vert[begin_vert.neighbors[i]];
+    CVertex& t = rimls_result->vert[begin_vert.neighbors[i]];
     if (t.is_boundary)
     {
       nearest_idx = begin_vert.neighbors[i];
@@ -714,7 +712,7 @@ Boundary PVSBasedNBV::searchOneBoundaryFromIndex(int begin_idx)
 
   if (nearest_idx < 0) return new_boundary;
 
-  CVertex &t = sample->vert[nearest_idx];
+  CVertex &t = rimls_result->vert[nearest_idx];
   Point3f head_direction = (t.P() - begin_vert.P()).Normalize();
   Boundary boundary_first_part = searchOneBoundaryFromDirection(begin_idx, head_direction);
   Boundary boundary_second_part = searchOneBoundaryFromDirection(begin_idx, -head_direction);
@@ -745,15 +743,15 @@ Boundary PVSBasedNBV::searchOneBoundaryFromDirection(int begin_idx, Point3f dire
   int curr_idx = begin_idx;
   do 
   {
-    CVertex curr_vertex = sample->vert[curr_idx];
+    CVertex curr_vertex = rimls_result->vert[curr_idx];
     new_boundary.pushBackCVertex(curr_vertex);
-    sample->vert[curr_idx].is_boundary = false;
+    rimls_result->vert[curr_idx].is_boundary = false;
 
     Point3f new_direction;
     int next_idx = -1;
     for (int i = 0; i < curr_vertex.neighbors.size(); ++i)
     {
-      CVertex &t = sample->vert[curr_vertex.neighbors[i]];
+      CVertex &t = rimls_result->vert[curr_vertex.neighbors[i]];
 
       if (!t.is_boundary) continue;
 

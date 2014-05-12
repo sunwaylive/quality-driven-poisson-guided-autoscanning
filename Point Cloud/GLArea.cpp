@@ -262,6 +262,10 @@ void GLArea::paintGL()
         //glw.Draw(GLW::DMSmooth, GLW::CMPerMesh, GLW::TMNone);
         glw.Draw(GLW::DMWire, GLW::CMPerMesh, GLW::TMNone);
         glDrawer.draw(GLDrawer::DOT, dataMgr.getCurrentSamples());
+        if (!dataMgr.isRIMLSEmpty())
+        {
+          glDrawer.draw(GLDrawer::DOT, dataMgr.getRIMLS());
+        }
       }
 
       if (!dataMgr.getBoundaries()->empty())

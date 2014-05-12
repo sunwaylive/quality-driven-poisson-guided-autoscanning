@@ -93,6 +93,7 @@ public:
   bool      isPoissonSurfaceEmpty();
   bool      isViewGridsEmpty();
   bool      isNBVCandidatesEmpty();
+  bool      isRIMLSEmpty();
 
   void                    setCurrentTemperalSample(CMesh *mesh);
   CMesh*                  getCurrentSamples();
