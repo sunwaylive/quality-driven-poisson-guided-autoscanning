@@ -78,6 +78,7 @@ void VisibilityBasedNBV::runVisibilityPropagate()
     {
       CVertex p;
       p.P() = v.P() + v.N() * optimalDist;
+
       p.N() = -v.N();
       p.m_index = index++;
       nbv_candidates->vert.push_back(p);

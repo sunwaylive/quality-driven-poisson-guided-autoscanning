@@ -488,13 +488,12 @@ void PVSBasedNBV::runSearchNewBoundaries()
   }
   sample->vn = sample->vert.size();
   
-  //1. use BallPivoting to reconstruct surfaces
   double resolution = global_paraMgr.camera.getDouble("Camera Resolution");
-  //GlobalFun::ballPivotingReconstruction(*sample);//, resolution * 2
 
   //2.another surface reconstruction method
-  //vcg::tri::Allocator<CMesh>::CompactVertexVector(*sample);
-  
+  GaelMls::APSS<CMesh> mls_apss(*sample);
+  mls_apss.computeVertexRaddi();
+
   GaelMls::MlsSurface<CMesh>* mls = 0;
   GaelMls::RIMLS<CMesh>* rimls = 0;
   mls = rimls = new RIMLS<CMesh>(*sample);
@@ -508,15 +507,25 @@ void PVSBasedNBV::runSearchNewBoundaries()
   typedef vcg::tri::MarchingCubes<CMesh, MlsWalker> MlsMarchingCubes;
   MlsWalker walker;
   walker.resolution = 200;
-
   //iso extraction
-  MlsMarchingCubes mc(*sample, walker);
-  walker.BuildMesh<MlsMarchingCubes>(*sample, *mls, mc);
+  CMesh *rimls_result = new CMesh;
+  MlsMarchingCubes mc(*rimls_result, walker);
+  walker.BuildMesh<MlsMarchingCubes>(*rimls_result, *mls, mc);
 
+  //update face topology
+  rimls_result->face.EnableFFAdjacency();
+  vcg::tri::UpdateTopology<CMesh>::FaceFace(*rimls_result);
+  vcg::tri::UpdateFlags<CMesh>::FaceBorderFromFF(*rimls_result);
+  vcg::tri::SmallComponent<CMesh>::Select(*rimls_result, 0.1f);
+  vcg::tri::SmallComponent<CMesh>::DeleteFaceVert(*rimls_result);
+  rimls_result->face.DisableFFAdjacency();
+  
+  std::cout<<"face num: "<< rimls_result->fn <<std::endl;
+  std::cout<<"face num: "<< rimls_result->face.size() <<std::endl;
 
-  //use vertex topology
-  //mark the border vertexes
-  std::cout<<"face num: "<< sample->fn <<std::endl;
+  GlobalFun::clearCMesh(*sample);
+  sample = rimls_result;
+
   vcg::tri::UpdateFlags<CMesh>::VertexBorderFromNone(*sample); 
   //select the border vertexes
   std::cout<<"selected boarder points: " <<tri::UpdateSelection<CMesh>::VertexFromBorderFlag(*sample) << std::endl;
