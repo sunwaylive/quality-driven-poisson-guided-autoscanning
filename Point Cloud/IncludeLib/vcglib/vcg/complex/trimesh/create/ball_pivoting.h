@@ -197,7 +197,7 @@ template <class MESH> class BallPivoting: public AdvancingFront<MESH> {
     return false;    
   }
   
-  //select a new vertex, mark as Visited and mark as usedBit all neighbours (less than min_edge)
+  //select a new vertex, mark as Visited and mark as usedBit all neighbors (less than min_edge)
   int Place(FrontEdge &edge,typename AdvancingFront<MESH>::ResultIterator &touch) {
     Point3x v0 = this->mesh.vert[edge.v0].P();
     Point3x v1 = this->mesh.vert[edge.v1].P();  
@@ -248,8 +248,9 @@ template <class MESH> class BallPivoting: public AdvancingFront<MESH> {
       if(v->IsD()) continue; 
 
       // this should always be true IsB => IsV , IsV => IsU
-      if(v->IsB()) assert(v->IsV());
-      if(v->IsV()) assert(v->IsUserBit(usedBit));
+      //Wei 2014-5-14
+      /*if(v->IsB()) assert(v->IsV());
+      if(v->IsV()) assert(v->IsUserBit(usedBit));*/
       
       
       if(v->IsUserBit(usedBit) && !(v->IsB())) continue;

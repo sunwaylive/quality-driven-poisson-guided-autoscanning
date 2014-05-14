@@ -1525,6 +1525,7 @@ void DataMgr::loadSkeletonFromSkel(QString fileName)
   clearCMesh(view_grid_points);
   clearCMesh(nbv_candidates);
   clearCMesh(current_scanned_mesh);
+  scan_history.clear();
 
   for (int i = 0; i < scanned_results.size(); ++i)
     clearCMesh(*scanned_results[i]);

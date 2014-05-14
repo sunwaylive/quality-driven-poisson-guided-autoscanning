@@ -551,7 +551,6 @@
     <ClInclude Include="Algorithm\RIMLS\balltree.h" />
     <ClInclude Include="Algorithm\RIMLS\implicits.h" />
     <ClInclude Include="Algorithm\RIMLS\kdtree.h" />
-    <ClInclude Include="Algorithm\RIMLS\mesh_operators.h" />
     <ClInclude Include="Algorithm\RIMLS\mlsmarchingcube.h" />
     <ClInclude Include="Algorithm\RIMLS\mlssurface.h" />
     <ClInclude Include="Algorithm\RIMLS\mlsutils.h" />

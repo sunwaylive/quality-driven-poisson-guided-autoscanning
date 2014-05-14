@@ -869,7 +869,7 @@ void PVSBasedNBV::runPVSMerge()
     for (int j = 0; j < sr->vert.size(); ++j)
     {
       CVertex &v = sr->vert[j];
-      if (v.original_neighbors.size() > 0 ) continue;
+      //if (v.original_neighbors.size() > 0 ) continue;
 
       v.m_index = index++;      
       v.is_scanned = true;

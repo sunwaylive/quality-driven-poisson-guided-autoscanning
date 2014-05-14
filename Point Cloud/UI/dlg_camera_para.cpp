@@ -112,8 +112,8 @@ void CameraParaDlg::initConnects()
 
   /*** PVS Based NBV ***/
   connect(ui->pushButton_pvs_first_scan, SIGNAL(clicked()), this, SLOT(pvsFirstScan()));
-  connect(ui->pushButton_pvs_detect_boundary, SIGNAL(clicked()), this, SLOT(pvsDetectBoundary()));
   connect(ui->pushButton_pvs_search_new_boundaries, SIGNAL(clicked()), this, SLOT(pvsSearchNewBoundaries()));
+  connect(ui->pushButton_pvs_search_new_boundaries_ball_pivoting, SIGNAL(clicked()), this, SLOT(pvsSearchNewBoundariesByBallpivoting()));
   connect(ui->pushButton_compute_all_candidates, SIGNAL(clicked()), this, SLOT(pvsComputeCandidates()));
   connect(ui->pushButton_select_candidate, SIGNAL(clicked()), this, SLOT(pvsSelectCandidate()));
   connect(ui->pushButton_build_pvs, SIGNAL(clicked()), this, SLOT(pvsBuildPVS()));
@@ -1556,13 +1556,6 @@ void CameraParaDlg::pvsUpdatePVS()
   global_paraMgr.pvsBasedNBV.setValue("Run Update PVS", BoolValue(false));
 }
 
-void CameraParaDlg::pvsDetectBoundary()
-{
-  global_paraMgr.pvsBasedNBV.setValue("Run PVS Detect Boundary", BoolValue(true));
-  area->runPVSBasedNBV();
-  global_paraMgr.pvsBasedNBV.setValue("Run PVS Detect Boundary", BoolValue(false));
-}
-
 void CameraParaDlg::pvsSearchNewBoundaries()
 {
   global_paraMgr.pvsBasedNBV.setValue("Run PVS Search New Boundaries", BoolValue(true));
@@ -1570,11 +1563,19 @@ void CameraParaDlg::pvsSearchNewBoundaries()
   global_paraMgr.pvsBasedNBV.setValue("Run PVS Search New Boundaries", BoolValue(false));
 }
 
+void CameraParaDlg::pvsSearchNewBoundariesByBallpivoting()
+{
+  global_paraMgr.pvsBasedNBV.setValue("Run PVS Search New Boundaries By Ballpivoting", BoolValue(true));
+  area->runPVSBasedNBV();
+  global_paraMgr.pvsBasedNBV.setValue("Run PVS Search New Boundaries By Ballpivoting", BoolValue(false));
+}
+
 void CameraParaDlg::pvsComputeCandidates()
 {
   global_paraMgr.pvsBasedNBV.setValue("Run PVS Compute Candidates", BoolValue(true));
   area->runPVSBasedNBV();
   global_paraMgr.pvsBasedNBV.setValue("Run PVS Compute Candidates", BoolValue(false));
+  updateTableViewNBVCandidate();
 }
 
 void CameraParaDlg::pvsSelectCandidate()
@@ -1602,16 +1603,17 @@ void CameraParaDlg::pvsMerge()
 void CameraParaDlg::pvsOneKeyNbvIteration()
 {
   std::cout <<"One Key PVS NBV Begins:" <<std::endl;
-  int count = 100;
+  int count = 15;
   //save the results
   QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
   if (!file_location.size()) return;
 
   for (int i = 2; i < count; ++i)
   {
+    pvsSearchNewBoundaries();
+
     pvsUpdatePVS();
 
-    pvsSearchNewBoundaries();
     if (global_paraMgr.pvsBasedNBV.getBool("Is PVS Stop"))
       break;
 

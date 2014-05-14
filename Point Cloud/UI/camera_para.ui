@@ -1867,30 +1867,17 @@
       <string>First Scan</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_pvs_detect_boundary">
-     <property name="geometry">
-      <rect>
-       <x>200</x>
-       <y>360</y>
-       <width>251</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>1.1 Detect Boundary[deprecate]</string>
-     </property>
-    </widget>
     <widget class="QPushButton" name="pushButton_pvs_search_new_boundaries">
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>519</y>
+       <y>480</y>
        <width>161</width>
        <height>31</height>
       </rect>
      </property>
      <property name="text">
-      <string>1.2 Search New Boundaries</string>
+      <string>1.1 Search New Boundaries</string>
      </property>
     </widget>
     <widget class="QPushButton" name="pushButton_compute_all_candidates">
@@ -1936,7 +1923,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>479</y>
+       <y>520</y>
        <width>161</width>
        <height>31</height>
       </rect>
@@ -1975,7 +1962,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>730</y>
+       <y>720</y>
        <width>441</width>
        <height>16</height>
       </rect>
@@ -1987,9 +1974,9 @@
     <widget class="QPushButton" name="pushButton_pvs_one_key_iteration">
      <property name="geometry">
       <rect>
-       <x>230</x>
-       <y>474</y>
-       <width>141</width>
+       <x>350</x>
+       <y>480</y>
+       <width>101</width>
        <height>31</height>
       </rect>
      </property>
@@ -2000,10 +1987,10 @@
     <widget class="Line" name="line_14">
      <property name="geometry">
       <rect>
-       <x>188</x>
-       <y>470</y>
-       <width>20</width>
-       <height>261</height>
+       <x>340</x>
+       <y>480</y>
+       <width>16</width>
+       <height>241</height>
       </rect>
      </property>
      <property name="orientation">
@@ -2021,6 +2008,19 @@
      </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_pvs_search_new_boundaries_ball_pivoting">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>480</y>
+       <width>141</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>1.2 Ball pivoting</string>
      </property>
     </widget>
    </widget>

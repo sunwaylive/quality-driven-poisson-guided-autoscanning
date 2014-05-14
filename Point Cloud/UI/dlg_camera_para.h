@@ -123,8 +123,8 @@ public:
     void pvsFirstScan();
     void pvsBuildPVS();
     void pvsUpdatePVS();
-    void pvsDetectBoundary();
     void pvsSearchNewBoundaries();
+    void pvsSearchNewBoundariesByBallpivoting();
     void pvsComputeCandidates();
     void pvsSelectCandidate();
     void pvsNBVScan();
