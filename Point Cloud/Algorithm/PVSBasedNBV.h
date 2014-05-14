@@ -45,7 +45,10 @@ public:
   void searchNewBoundaries();
   Boundary searchOneBoundaryFromIndex(int begin_idx);
   Boundary searchOneBoundaryFromDirection(int begin_idx, Point3f direction);
-  void holeRescan();
+
+  //IEEE sphere
+  void buildSphereCandidates();
+  void computeScore();
 
 private:
   void runSearchNewBoundaries();

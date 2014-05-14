@@ -673,9 +673,31 @@ Boundary PVSBasedNBV::searchOneBoundaryFromDirection(int begin_idx, Point3f dire
   return new_boundary;
 }
 
-void PVSBasedNBV::holeRescan()
+void PVSBasedNBV::buildSphereCandidates()
 {
-  findBoarderPoints();
+  double camera_max_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
+    global_paraMgr.camera.getDouble("Predicted Model Size");
+
+  //coarse candidates
+  CMesh *coarse_candidates = new CMesh;
+  vcg::tri::Sphere<CMesh>(*coarse_candidates, 1);
+  //fine candidates
+  vcg::tri::Sphere<CMesh>(*nbv_candidates, 3);
+  //adjust sphere size
+  for (int i = 0; i < coarse_candidates->vert.size(); ++i)
+    coarse_candidates->vert[i].P() = coarse_candidates->vert[i].N().Normalize() * camera_max_dist;
+
+  for (int i = 0; i < nbv_candidates->vert.size(); ++i)
+    nbv_candidates->vert[i].P() = nbv_candidates->vert[i].N().Normalize() * camera_max_dist;
+
+  //compute relation
+  GlobalFun::computeAnnNeigbhors(nbv_candidates->vert, coarse_candidates->vert, 6, false, "IEEE Sphere");
+  std::cout<<"coarse candidates neighbor size: "<< coarse_candidates->vert[0].original_neighbors.size() <<std::endl;
+}
+
+void PVSBasedNBV::computeScore()
+{
+
 }
 
 void PVSBasedNBV::runSelectCandidate()
