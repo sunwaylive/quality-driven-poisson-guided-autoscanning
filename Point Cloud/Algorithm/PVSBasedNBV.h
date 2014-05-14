@@ -40,23 +40,22 @@ public:
   void clear();
 
 public:
-  void detectBoundary();
-
+  void findBoarderPoints();
+  void findBoarderPointsByBallpivoting();
   void searchNewBoundaries();
   Boundary searchOneBoundaryFromIndex(int begin_idx);
   Boundary searchOneBoundaryFromDirection(int begin_idx, Point3f direction);
-  void runBuildPVS();
-  void runUpdatePVS();
+  void holeRescan();
 
 private:
-  void runPVSDetectBoundary();
   void runSearchNewBoundaries();
+  void runBuildPVS();
+  void runUpdatePVS();
+  void runSearchNewBoundariesByBallpivoting();
   void runComputeCandidates();
   void runSelectCandidate();
   void runPVSMerge();
-
-  std::vector<Boundary> getBoundary(std::vector<MyBoarderEdge> &v_board_edge);
-
+  
 private:
   RichParameterSet      *para;
   double                optimalDist;
@@ -65,7 +64,7 @@ private:
   CMesh                 *original;
   CMesh                 *iso_points;
   CMesh                 *pvs;
-  CMesh                 *rimls_result;
+  CMesh                 *detect_result;
   vector<Boundary>      *m_v_boundaries;
   CMesh                 *nbv_candidates;
   vector<ScanCandidate> *scan_candidates;
