@@ -1603,7 +1603,7 @@ void CameraParaDlg::pvsMerge()
 void CameraParaDlg::pvsOneKeyNbvIteration()
 {
   std::cout <<"One Key PVS NBV Begins:" <<std::endl;
-  int count = 15;
+  int count = 100;
   //save the results
   QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
   if (!file_location.size()) return;
