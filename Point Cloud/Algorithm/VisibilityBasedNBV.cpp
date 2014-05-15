@@ -96,7 +96,7 @@ void VisibilityBasedNBV::runVisibilityCandidatesCluster()
     return;
   }
 
-  double radius = 0.5 * 2; //cluster radius; lobal_paraMgr.data.getDouble("CGrid Radius");
+  double radius = 0.5 * 2; //cluster radius; global_paraMgr.data.getDouble("CGrid Radius");
   double nbv_minimum_dist = radius / 2;
   double radius2 = radius * radius;
   double iradius16 = -4/radius2;

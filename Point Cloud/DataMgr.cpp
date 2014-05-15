@@ -2134,10 +2134,11 @@ void
     << global_paraMgr.nbv.getInt("View Bin Each Axis") <<endl << endl;
 
   out_para.close();
+
+  std::cout<<"save parameters to ./"<<fileName.toStdString() <<std::endl;
 }
 
-void
-  DataMgr::loadParameters(QString fileName)
+void DataMgr::loadParameters(QString fileName)
 {
   ifstream in_para;
   in_para.open(fileName.toAscii().data());

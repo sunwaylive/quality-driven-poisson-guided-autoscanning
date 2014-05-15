@@ -52,6 +52,7 @@ public:
     void getCameraHorizonDist(double _val);
     void getCameraVerticalDist(double _val);
     void getCameraDistToModel(double _val);
+    void getCameraResolution(int _val);
     void getGridResolution(double _val);
     void getMaxRaySteps(double _val);
     void getIsoBottomDelta(double _val);

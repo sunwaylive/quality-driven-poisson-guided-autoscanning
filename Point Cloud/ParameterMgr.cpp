@@ -420,7 +420,7 @@ void ParameterMgr::initCameraParameter()
   //20 for sphere test, 30 for dancing children
   camera.addParam(new RichDouble("Camera Dist To Model", 30.0f)); //cm ((30.0f + 17.0f)/2 + 0.6 * 20.0f)
 
-  camera.addParam(new RichDouble("Camera Resolution",1.0f / 50.0f));
+  camera.addParam(new RichDouble("Camera Resolution",1.0f / 300.0f));
   camera.addParam(new RichDouble("Merge Confidence Threshold", 0.9f));
   camera.addParam(new RichDouble("Grid Step Size", -1));
 

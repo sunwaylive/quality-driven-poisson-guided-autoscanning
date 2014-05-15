@@ -37,6 +37,7 @@ void CameraParaDlg::initConnects()
   connect(ui->horizon_dist, SIGNAL(valueChanged(double)), this, SLOT(getCameraHorizonDist(double)));
   connect(ui->vertical_dist, SIGNAL(valueChanged(double)), this, SLOT(getCameraVerticalDist(double)));
   connect(ui->dist_to_model, SIGNAL(valueChanged(double)), this, SLOT(getCameraDistToModel(double)));
+  connect(ui->spinBox_camera_resolution, SIGNAL(valueChanged(int)), this, SLOT(getCameraResolution(int)));
   connect(ui->tableView_scan_candidates, SIGNAL(clicked(QModelIndex)), this, SLOT(showSelectedScannCandidates(QModelIndex)));
   connect(ui->tableView_scan_results, SIGNAL(clicked(QModelIndex)), this, SLOT(showSelectedScannedMesh(QModelIndex)));
   connect(ui->pushButton_merge_with_original, SIGNAL(clicked()), this, SLOT(mergeScannedMeshWithOriginalByHand()));
@@ -142,6 +143,7 @@ bool CameraParaDlg::initWidgets()
   ui->doubleSpinBox_predicted_model_size->setValue(m_paras->camera.getDouble("Predicted Model Size"));
   ui->doubleSpinBox_optimal_plane_width->setValue(m_paras->camera.getDouble("Optimal Plane Width"));
   ui->propagate_one_point_index->setValue(m_paras->nbv.getDouble("Propagate One Point Index"));
+  ui->spinBox_camera_resolution->setValue(round(1.0 / m_paras->camera.getDouble("Camera Resolution")));
   ui->ray_resolution_para->setValue(m_paras->nbv.getDouble("Ray Resolution Para"));
 
   Qt::CheckState state = m_paras->nbv.getBool("Test Other Inside Segment") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
@@ -795,6 +797,11 @@ void CameraParaDlg::getCameraVerticalDist(double _val)
 void CameraParaDlg::getCameraDistToModel(double _val)
 {
   global_paraMgr.camera.setValue("Camera Dist To Model", DoubleValue(_val));
+}
+
+void CameraParaDlg::getCameraResolution(int _val)
+{
+  global_paraMgr.camera.setValue("Camera Resolution", DoubleValue(1.0f / _val));
 }
 
 void CameraParaDlg::getViewPruneConfidenceThreshold(double _val)
@@ -1603,7 +1610,7 @@ void CameraParaDlg::pvsMerge()
 void CameraParaDlg::pvsOneKeyNbvIteration()
 {
   std::cout <<"One Key PVS NBV Begins:" <<std::endl;
-  int count = 100;
+  int count = 30;
   //save the results
   QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
   if (!file_location.size()) return;
