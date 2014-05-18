@@ -41,7 +41,7 @@
      <x>0</x>
      <y>0</y>
      <width>1515</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -301,6 +301,9 @@
    <addaction name="separator"/>
    <addaction name="separator"/>
    <addaction name="actionCull_Points"/>
+   <addaction name="actionShow_NBV_Ball"/>
+   <addaction name="actionShow_NBV_Label"/>
+   <addaction name="actionSwitch_Sample_with_ISO"/>
   </widget>
   <action name="actionImport_Ply">
    <property name="icon">

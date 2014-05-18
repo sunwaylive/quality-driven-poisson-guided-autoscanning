@@ -180,6 +180,8 @@ public:
   //void pickRotateCenter();
   //void pickRotateNormal();
 
+  bool initial_light_have_set;
+
 public:
 	void poissonTest();
 

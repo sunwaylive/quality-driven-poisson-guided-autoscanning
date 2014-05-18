@@ -48,6 +48,8 @@ GLArea::GLArea(QWidget *parent): QGLWidget(/*QGLFormat(QGL::DoubleBuffer | QGL::
   nbv_ball_slice = 90;
   cout << "GLArea constructed" << endl;
 
+  initial_light_have_set = false;
+
   CVertex v;
   cout << "Memory Size of each CVertex:  " << sizeof(v) << endl;
 }
@@ -110,6 +112,7 @@ void GLArea::initializeGL()
   glEnable(GL_POLYGON_SMOOTH);
   glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 
+  glDisable(GL_LIGHTING);
 
   glLoadIdentity(); 
 }
@@ -629,7 +632,14 @@ void GLArea::paintGL()
 
   }
 
+  if (!initial_light_have_set)
+  {
 
+    glDisable(GL_LIGHTING);
+    glDisable(GL_LIGHT0);
+    glDisable(GL_LIGHT1);
+    initial_light_have_set = true;
+  }
 
 PAINT_RETURN:
   paintMutex.unlock();
@@ -910,17 +920,18 @@ void GLArea::drawNBVBall()
   //glDisable(GL_CULL_FACE);
 }
 
+
 void GLArea::removeBadCandidates()
 {
   Box3f box = dataMgr.getCurrentOriginal()->bbox;
   Point3f center = (box.min + box.max) / 2.0;
 
-  double max_normalize_length = global_paraMgr.data.getDouble("Max Normalize Length");
-  Point3f scanner_position_normalize = dataMgr.scanner_position / max_normalize_length - dataMgr.original_center_point;
+  //double max_normalize_length = global_paraMgr.data.getDouble("Max Normalize Length");
+  //Point3f scanner_position_normalize = dataMgr.scanner_position / max_normalize_length - dataMgr.original_center_point;
 
-  double save_radius = GlobalFun::computeEulerDist(scanner_position_normalize, center);
+  //double save_radius = GlobalFun::computeEulerDist(scanner_position_normalize, center);
 
-  double radius_threshold = global_paraMgr.data.getDouble("CGrid Radius") * 4.1;
+  double radius_threshold =GlobalFun::computeEulerDist(box.min, box.max)/2.5;
 
   CMesh* nbv_candidates = dataMgr.getNbvCandidates();
   for (int i = 0; i < nbv_candidates->vert.size(); i++)
@@ -928,9 +939,9 @@ void GLArea::removeBadCandidates()
     CVertex& v = nbv_candidates->vert[i];
 
     double nbv_dist = GlobalFun::computeEulerDist(v.P(), center);
-    double dist_diff = abs(nbv_dist - save_radius);
+    //double dist_diff = abs(nbv_dist - save_radius);
 
-    if (dist_diff > radius_threshold)
+    if (nbv_dist < radius_threshold)
     {
       v.is_ignore = true;
     }
@@ -938,6 +949,35 @@ void GLArea::removeBadCandidates()
 
   GlobalFun::deleteIgnore(nbv_candidates);
 }
+
+//void GLArea::removeBadCandidates()
+//{
+//  Box3f box = dataMgr.getCurrentOriginal()->bbox;
+//  Point3f center = (box.min + box.max) / 2.0;
+//
+//  double max_normalize_length = global_paraMgr.data.getDouble("Max Normalize Length");
+//  Point3f scanner_position_normalize = dataMgr.scanner_position / max_normalize_length - dataMgr.original_center_point;
+//
+//  double save_radius = GlobalFun::computeEulerDist(scanner_position_normalize, center);
+//
+//  double radius_threshold = global_paraMgr.data.getDouble("CGrid Radius") * 4.1;
+//
+//  CMesh* nbv_candidates = dataMgr.getNbvCandidates();
+//  for (int i = 0; i < nbv_candidates->vert.size(); i++)
+//  {
+//    CVertex& v = nbv_candidates->vert[i];
+//
+//    double nbv_dist = GlobalFun::computeEulerDist(v.P(), center);
+//    double dist_diff = abs(nbv_dist - save_radius);
+//
+//    if (dist_diff > radius_threshold)
+//    {
+//      v.is_ignore = true;
+//    }
+//  }
+//
+//  GlobalFun::deleteIgnore(nbv_candidates);
+//}
 
 
 void GLArea::drawNeighborhoodRadius()
