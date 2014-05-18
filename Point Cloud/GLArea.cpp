@@ -632,14 +632,7 @@ void GLArea::paintGL()
 
   }
 
-  if (!initial_light_have_set)
-  {
 
-    glDisable(GL_LIGHTING);
-    glDisable(GL_LIGHT0);
-    glDisable(GL_LIGHT1);
-    initial_light_have_set = true;
-  }
 
 PAINT_RETURN:
   paintMutex.unlock();
@@ -785,6 +778,11 @@ void GLArea::openByDrop(QString fileName)
   if (fileName.endsWith("mat44"))
   {
     dataMgr.loadNBVformMartrix44(fileName);
+  }
+
+  if (fileName.endsWith("xf"))
+  {
+    dataMgr.loadArtectXfAndTransform(fileName);
   }
 
   emit needUpdateStatus();
@@ -3029,4 +3027,41 @@ void GLArea::moveAllCandidates(bool is_forward)
       v.P() -= v.N() * step;
     }
   }
+}
+
+void DataMgr::loadArtectXfAndTransform(QString fileName)
+{
+  ifstream infile;
+  infile.open(fileName.toStdString().c_str());
+
+  std::string temp_str;
+
+  Point3f artect_trans(0., 0., 0.);
+  for (int i = 0; i < 3; i++)
+  {
+    infile >> temp_str;
+  }
+  infile >> artect_trans[0];
+
+  for (int i = 0; i < 3; i++)
+  {
+    infile >> temp_str;
+  }
+  infile >> artect_trans[1];
+
+  for (int i = 0; i < 3; i++)
+  {
+    infile >> temp_str;
+  }
+  infile >> artect_trans[2];
+
+  infile.close();
+
+  artect_trans *= -1.0;
+  for (int i = 0; i < samples.vert.size(); i++)
+  {
+    samples.vert[i].P() += artect_trans;
+  }
+
+  cout << "finished artect transform" << endl;
 }

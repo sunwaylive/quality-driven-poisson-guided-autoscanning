@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>4</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -812,6 +812,19 @@
       </property>
       <property name="text">
        <string>Optimal plane width(cm) :</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_get_model_size">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>70</y>
+        <width>31</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>get</string>
       </property>
      </widget>
     </widget>

@@ -170,6 +170,8 @@ public:
   void savePR2_orders(QString fileName_commands);
   void nbvReoders();
 
+  void loadArtectXfAndTransform(QString fileName);
+
 private:
 	void clearCMesh(CMesh& mesh);
   void initDefaultScanCamera();

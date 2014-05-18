@@ -123,6 +123,9 @@ void CameraParaDlg::initConnects()
   connect(ui->pushButton_pvs_merge, SIGNAL(clicked()), this, SLOT(pvsMerge()));
   connect(ui->pushButton_pvs_one_key_iteration, SIGNAL(clicked()), this, SLOT(pvsOneKeyNbvIteration()));
   /*** PVS Based NBV ***/
+
+  connect(ui->pushButton_get_model_size, SIGNAL(clicked()), this, SLOT(getModelSize()));
+
 }
 
 bool CameraParaDlg::initWidgets()
@@ -1649,4 +1652,36 @@ void CameraParaDlg::pvsOneKeyNbvIteration()
     file_name = file_location + file_name;
     area->dataMgr.saveSkeletonAsSkel(file_name);
   }  
+}
+
+
+
+void CameraParaDlg::getModelSize()
+{
+  CMesh* original = area->dataMgr.getCurrentOriginal();
+  original->bbox.SetNull();
+  for (int i = 0; i < original->vert.size(); i++)
+  {
+    original->bbox.Add(original->vert[i]);
+  }
+
+  Box3f box = original->bbox;
+
+  GlobalFun::printPoint3(cout, box.min);
+  GlobalFun::printPoint3(cout, box.max);
+
+  float dist1 = abs(box.min.X() - box.max.X());
+  float dist2 = abs(box.min.Y() - box.max.Y());
+  float dist3 = abs(box.min.Z() - box.max.Z());
+
+  float max_dist = dist1 > dist2 ? dist1 : dist2;
+  max_dist = max_dist > dist3 ? max_dist : dist3;
+
+
+  m_paras->camera.setValue("Predicted Model Size", DoubleValue(max_dist/10.));
+
+  initWidgets();
+  update();
+
+  //m_paras->camera.getDouble("Predicted Model Size")
 }

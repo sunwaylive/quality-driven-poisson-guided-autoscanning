@@ -133,6 +133,8 @@ public:
     void pvsOneKeyNbvIteration();
     /*** pvs based NBV ***/
 
+    void getModelSize();
+
 private:
   Ui::camera_paras * ui;
   ParameterMgr * m_paras;
