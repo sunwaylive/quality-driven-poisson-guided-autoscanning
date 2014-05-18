@@ -1101,12 +1101,14 @@ PR2_order DataMgr::computePR2orderFromTwoCandidates(CVertex v0, CVertex v1)
   Point3f dir0 = Point3f(0, v0.P().Y(), v0.P().Z());
   Point3f dir1 = Point3f(0, v1.P().Y(), v1.P().Z());
   double angle = GlobalFun::computeRealAngleOfTwoVertor(dir0, dir1) * 3.1415926 / 180.;
-  //Point3f up_direction = dir0 ^ dir1;
-  //if (up_direction.X() > 0)
-  //{
-  //  angle = 3.1415926*2 - angle;
-  //}
+  Point3f up_direction = dir0 ^ dir1;
+  if (up_direction.X() > 0)
+  {
+    angle = 3.1415926*2 - angle;
+  }
   order.left_rotation = angle;
+
+
 
   //cout << "2 to 3" << endl;
   //GlobalFun::printPoint3(cout, v0.P());
