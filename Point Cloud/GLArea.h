@@ -105,6 +105,9 @@ private:
 	void initLight();
 	void lightOnOff(bool _val);
 
+  double nbv_ball_slice;
+
+
 private: // For Light Control Ball: Shift + Ctrl + mouse drag
 	bool activeDefaultTrackball; 
 	bool isDefaultTrackBall()   { return activeDefaultTrackball; }

@@ -45,7 +45,7 @@ GLArea::GLArea(QWidget *parent): QGLWidget(/*QGLFormat(QGL::DoubleBuffer | QGL::
   is_figure_shot = false;
   rotate_delta = 1;
   rotate_angle = 0.;
-
+  nbv_ball_slice = 90;
   cout << "GLArea constructed" << endl;
 
   CVertex v;
@@ -2129,7 +2129,7 @@ void GLArea::wheelEvent(QWheelEvent *e)
     {
       size_temp = global_paraMgr.glarea.getDouble("Radius Ball Transparency") * change;
       global_paraMgr.glarea.setValue("Radius Ball Transparency", DoubleValue(size_temp));
-      cout << "trans: " << size_temp << endl;
+      cout << "Radius Ball Transparency:  " << size_temp << endl;
       if(size_temp < 0)
       {
         size_temp = 0;
@@ -2297,7 +2297,12 @@ void GLArea::wheelEvent(QWheelEvent *e)
   }
   else if((e->modifiers() & Qt::ShiftModifier) && (e->modifiers() & Qt::AltModifier))
   {
-    if (para->getBool("Show Normal") && para->getBool("Show NBV Candidates"))
+    if (para->getBool("Show NBV Candidates") && para->getBool("Show NBV Ball"))
+    {
+      nbv_ball_slice *= change;
+      cout << "nbv_ball_slice:  " << nbv_ball_slice << endl; 
+    }
+    else if (para->getBool("Show Normal") && para->getBool("Show NBV Candidates"))
     {
       size_temp = global_paraMgr.drawer.getDouble("Normal Line Width");
       size_temp *= change;
