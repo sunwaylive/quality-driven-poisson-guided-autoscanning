@@ -71,6 +71,8 @@
     <addaction name="actionRecover_Ignore"/>
     <addaction name="actionSave_Grid_As_Points"/>
     <addaction name="actionNBV_ReOrders"/>
+    <addaction name="actionSwitch_History_NBV"/>
+    <addaction name="actionAdd_NBV_To_History"/>
    </widget>
    <widget class="QMenu" name="menuAlgorithom">
     <property name="title">
@@ -983,6 +985,16 @@
    </property>
    <property name="text">
     <string>Show Scan History</string>
+   </property>
+  </action>
+  <action name="actionSwitch_History_NBV">
+   <property name="text">
+    <string>Switch History_NBV</string>
+   </property>
+  </action>
+  <action name="actionAdd_NBV_To_History">
+   <property name="text">
+    <string>Add NBV To History</string>
    </property>
   </action>
  </widget>

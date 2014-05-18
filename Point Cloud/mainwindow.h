@@ -68,6 +68,9 @@ private slots:
   void switchSampleOriginal();
   void switchSampleISO();
   void switchSampleNBV();
+
+  void switchHistoryNBV();
+  void addNBVtoHistory();
   
   void coordinateTransform();
   void addSamplesToOriginal();
