@@ -12,6 +12,16 @@ DataMgr::DataMgr(RichParameterSet* _para)
   whole_space_box.Add(Point3f(-2.0, -2.0, -2.0));
 
   loadCommonTransform();
+
+
+  //scanner_position = Point3f(184, -7, -254); //gundam 1-18
+
+  //scanner_position = Point3f(64, -12, -302); //opera 5-11
+
+  //scanner_position = Point3f(234, -5, -245); //violin 1-19
+
+  scanner_position = Point3f(232, -21, -243); //church 5-10
+
   slices.assign(3, Slice());
 }
 
@@ -888,7 +898,13 @@ void DataMgr::savePR2_orders(QString fileName_commands)
 
   //v_start.P() = Point3f(135, -7, -223);
   //v_start.P() = scanner_position;
-  v_start.P() = Point3f(164, -7, -254);
+
+  //v_start.P() = Point3f(164, -7, -254); //hunter 1-13
+  //v_start.P() = Point3f(-42.3699, -101.141, 150.589);
+  //v_start.P() = Point3f(135, -7, -223); // saiya 1-14 overview
+  //v_start.P() = Point3f(134, -8, -253); //lion 1-15
+
+  v_start.P() = scanner_position; 
 
   cout << "!!!scanner_position before normalize" << endl;
   GlobalFun::printPoint3(cout, v_start.P());
@@ -923,8 +939,9 @@ void DataMgr::savePR2_orders(QString fileName_commands)
     //cout << "after transform: " << endl;
     //GlobalFun::printPoint3(cout, v1.P());
 
-    PR2_order order = computePR2orderFromTwoCandidates(v0, v1);
-    //PR2_order order = computePR2orderFromTwoCandidates(v_start, v1);    
+    //PR2_order order = computePR2orderFromTwoCandidates(v0, v1);
+    PR2_order order = computePR2orderFromTwoCandidates(v_start, v1);    
+
     pr2_orders.push_back(order);
   }
 
@@ -987,7 +1004,7 @@ void DataMgr::nbvReoders()
   {
     CVertex& v = nbv_candidates.vert[i];
 
-    if (v.P().X() < -0.4)
+    if (v.P().X() < -0.85)
     {
       cout << "rotate Y axis" << endl;
 
@@ -1032,6 +1049,7 @@ void DataMgr::nbvReoders()
     CVertex& v = nbv_candidates.vert[i];
     v.m_index = i;
   }
+
 
   for (int i = 0; i < nbv_candidates.vert.size(); i++)
   {
@@ -2440,8 +2458,8 @@ void DataMgr::loadCommonTransform()
     }
   }
 
-  infile >> temp_str;
-  infile >> scanner_position[0] >> scanner_position[1] >> scanner_position[2];
+  //infile >> temp_str;
+  //infile >> scanner_position[0] >> scanner_position[1] >> scanner_position[2];
 
   cout << "Scanner Position: ";
   GlobalFun::printPoint3(cout, scanner_position);

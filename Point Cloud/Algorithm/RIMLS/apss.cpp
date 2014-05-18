@@ -21,7 +21,7 @@
 *                                                                           *
 ****************************************************************************/
 
-#include <qglobal.h>
+#include <QtCore/qglobal.h>
 #include "apss.h"
 #include "apss.tpp"
 //#include <common/meshmodel.h>

@@ -288,16 +288,16 @@ void GLArea::paintGL()
         {
           glDrawer.draw(GLDrawer::NORMAL, dataMgr.getNbvCandidates());
           //glDrawer.drawCandidatesAxis(dataMgr.getNbvCandidates());
-          //drawCandidatesConnectISO();
+          drawCandidatesConnectISO();
 
-          //if (para->getBool("Show NBV Label"))
-          //{
-          //  QPainter painter(this);
+          if (para->getBool("Show NBV Label"))
+          {
+            QPainter painter(this);
 
-          //  //painter.begin(this);
-          //  glDrawer.drawMeshLables(dataMgr.getNbvCandidates(), &painter);
-          //  //painter.end();
-          //}
+            //painter.begin(this);
+            glDrawer.drawMeshLables(dataMgr.getNbvCandidates(), &painter);
+            //painter.end();
+          }
         }
       }else if (para->getBool("Show View Grids"))
       {
@@ -858,9 +858,29 @@ void GLArea::drawNBVBall()
   glMatrixMode(GL_MODELVIEW_MATRIX);
 
   glColorMaterial(GL_FRONT,GL_AMBIENT_AND_DIFFUSE);
+  //glColorMaterial(GL_FRONT,GL_AMBIENT_AND_DIFFUSE);
+  glEnable(GL_DEPTH_TEST);
+  //draw transparent ball
+  //static const GLfloat light_position[] = {1.0f, 1.0f, -1.0f, 1.0f};
+  //static const GLfloat light_ambient[]   = {0.2f, 0.2f, 0.2f, 1.0f};
+  //static const GLfloat light_diffuse[]   = {1.0f, 1.0f, 1.0f, 1.0f};
+  //static const GLfloat light_specular[] = {1.0f, 1.0f, 1.0f, 1.0f};
+
+  static const GLfloat light_position[] = {1.0f, 1.0f, -1.0f, 1.0f};
+  static const GLfloat light_ambient[]   = {0.2f, 0.2f, 0.2f, 1.0f};
+  static const GLfloat light_diffuse[]   = {1.0f, 1.0f, 1.0f, 1.0f};
+  static const GLfloat light_specular[] = {1.0f, 1.0f, 1.0f, 1.0f};
+
+  glLightfv(GL_LIGHT0, GL_AMBIENT,   light_ambient);
+  glLightfv(GL_LIGHT0, GL_DIFFUSE,   light_diffuse);
+  glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+
+  //glEnable(GL_LIGHT0);
+  //glEnable(GL_LIGHTING);
+
   double trans_value = para->getDouble("Radius Ball Transparency");
   glColor4f(0,0,1,trans_value);
-  glShadeModel(GL_SMOOTH);
+  //glShadeModel(GL_SMOOTH);
 
   Box3f box = dataMgr.getCurrentOriginal()->bbox;
   Point3f center = (box.min + box.max) / 2.0;
@@ -870,17 +890,24 @@ void GLArea::drawNBVBall()
 
   double radius = GlobalFun::computeEulerDist(scanner_position_normalize, center);
 
+  //2014-5-13
+  radius = GlobalFun::computeEulerDist(scanner_position_normalize, Point3f(0., 0., 0.));
+  center = Point3f(0., 0., 0.);
+  //cout << max_normalize_length << endl;
+
   glPushMatrix();
   glTranslatef(center[0], center[1], center[2]);
+
   //glutSolidSphere(radius, 40, 40);
-  glutWireSphere(radius, 90, 90);
+  glutWireSphere(radius, nbv_ball_slice, nbv_ball_slice);
+  glutSolidSphere(radius, nbv_ball_slice, nbv_ball_slice);
 
   glPopMatrix();
 
-  glDisable(GL_LIGHTING);
-  glDisable(GL_LIGHT0);
-  glDisable(GL_BLEND);
-  glDisable(GL_CULL_FACE);
+  //glDisable(GL_LIGHTING);
+  //glDisable(GL_LIGHT0);
+  //glDisable(GL_BLEND);
+  //glDisable(GL_CULL_FACE);
 }
 
 void GLArea::removeBadCandidates()
@@ -1730,6 +1757,10 @@ void GLArea::saveView(QString fileName)
   outfile << global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma") <<endl;
   outfile << global_paraMgr.norSmooth.getInt("PCA KNN") <<endl;
   outfile << global_paraMgr.camera.getDouble("Camera Resolution") <<endl;
+
+  outfile << global_paraMgr.camera.getDouble("Camera Far Distance") <<endl;
+  outfile << global_paraMgr.camera.getDouble("Camera Near Distance") <<endl;
+
   outfile.close();
 }
 
@@ -1750,7 +1781,9 @@ void
     CVertex &v = nbv_candidates->vert[i];
 
     CVertex t = v;
-    t.P() = (t.P() + original_center_point) * max_normalize_length;
+    //t.P() = (t.P() + original_center_point) * max_normalize_length;
+    t.P() = (t.P()) * max_normalize_length;
+
     t.N().Normalize();
     t.m_index = index++;
     nbv.vert.push_back(t);
@@ -1990,9 +2023,15 @@ void GLArea::loadView(QString fileName)
   infile >> temp;
   global_paraMgr.data.setValue("Max Normalize Length", DoubleValue(temp));
 
+  if (temp > 0)
+  {
+    cout << "temp" << endl;
+    global_paraMgr.camera.setValue("Predicted Model Size", DoubleValue(temp/10.));
+  }
+
   infile >> dataMgr.original_center_point[0]
-  >> dataMgr.original_center_point[1]
-  >> dataMgr.original_center_point[2];
+         >> dataMgr.original_center_point[1]
+         >> dataMgr.original_center_point[2];
 
   infile >> temp;
   global_paraMgr.glarea.setValue("Grid ISO Value Shift", DoubleValue(temp));
@@ -2004,6 +2043,18 @@ void GLArea::loadView(QString fileName)
   global_paraMgr.norSmooth.setValue("PCA KNN", IntValue(temp));
   infile >> temp;
   global_paraMgr.camera.setValue("Camera Resolution", DoubleValue(temp));
+
+
+  infile >> temp;
+  if (temp > 10.)
+  {
+    global_paraMgr.camera.setValue("Camera Far Distance", DoubleValue(temp));
+  }
+  infile >> temp;
+  if (temp > 10.)
+  {
+    global_paraMgr.camera.setValue("Camera Near Distance", DoubleValue(temp));
+  }
 
   infile.close();
   emit needUpdateStatus();
@@ -2813,6 +2864,75 @@ void GLArea::figureSnapShot()
 
 void GLArea::drawCandidatesConnectISO()
 {
+  double width = global_paraMgr.drawer.getDouble("Normal Line Width") ;
+  double length = global_paraMgr.drawer.getDouble("Normal Line Length");
+  //double half_length = normal_length / 2.0;
+  QColor qcolor = global_paraMgr.drawer.getDouble("Original Point Color");
+  double near_dist = global_paraMgr.camera.getDouble("Camera Near Distance");
+  double max_length = global_paraMgr.data.getDouble("Max Normalize Length");
+  near_dist*=10;
+  near_dist/=max_length;
+
+  CMesh* candidates = dataMgr.getNbvCandidates();
+  for (int i = 0; i < candidates->vert.size(); i++)
+  {
+    CVertex& v = candidates->vert[i];
+
+    glLineWidth(width* 3); 
+    GLColor color(qcolor);
+
+    glColor4f(color.r, color.g, color.b, 1);  
+    glColor3f(0, 1, 0);
+
+    Point3f p = v.P(); 
+    //Point3f m0 = v.N();
+    //Point3f m1 = v.eigen_vector0;
+    //Point3f m2 = v.eigen_vector1;
+
+    //int remember_index = v.remember_iso_index;
+    Point3f tp = v.P() + v.N() *  near_dist;
+    // Z
+    glBegin(GL_LINES);	
+    glVertex3d(p[0], p[1], p[2]);
+    glVertex3f(tp[0], tp[1], tp[2]);
+    glEnd(); 
+  }
+
+  glLineWidth(width);
+
+  //CMesh* candidates = dataMgr.getNbvCandidates();
+  CMesh* iso_points = dataMgr.getCurrentIsoPoints();
+
+  for (int i = 0; i < candidates->vert.size(); i++)
+  {
+    CVertex& v = candidates->vert[i];
+
+    glLineWidth(width); 
+    GLColor color(qcolor);
+
+    glColor4f(color.r, color.g, color.b, 1);  
+    glColor3f(0, 0, 1);
+
+    Point3f p = v.P(); 
+    Point3f m0 = v.N();
+    Point3f m1 = v.eigen_vector0;
+    Point3f m2 = v.eigen_vector1;
+
+    int remember_index = v.remember_iso_index;
+    if (remember_index < 0 || v.remember_iso_index > iso_points->vert.size())
+    {
+      continue;
+    }
+    CVertex tp = iso_points->vert.at(remember_index);
+    // Z
+    glBegin(GL_LINES);	
+    glVertex3d(p[0], p[1], p[2]);
+    glVertex3f(tp[0], tp[1], tp[2]);
+    glEnd(); 
+  }
+
+
+
   //double width = global_paraMgr.drawer.getDouble("Normal Line Width");
   //double length = global_paraMgr.drawer.getDouble("Normal Line Length");
   ////double half_length = normal_length / 2.0;
