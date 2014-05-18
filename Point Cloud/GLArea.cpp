@@ -773,6 +773,7 @@ void GLArea::openByDrop(QString fileName)
   if (fileName.endsWith("tf"))
   {
     dataMgr.loadCurrentTF(fileName);
+    dataMgr.coordinateTransform();
   }
 
   if (fileName.endsWith("mat44"))

@@ -2310,113 +2310,53 @@ void DataMgr::loadNBVformMartrix44(QString fileName)
   ifstream infile;
   infile.open(fileName.toStdString().c_str());
 
-  Matrix44f mat44;
-  for (int i = 0; i < 4; i++)
+  std::string temp_str;
+
+  infile >> temp_str;
+  for (int i = 0; i < 3; i++)
   {
-    for (int j = 0; j < 4; j++)
-    {
-      infile >> mat44[i][j];
-    }
+    infile >> current_L_to_R_Translation[i]; 
+    current_L_to_R_Translation[i] *= 1000.;
   }
 
-  CVertex v;
-  //v.is_view_grid
-  v.P().X() = mat44[0][3];
-  v.P().Y() = mat44[1][3];
-  v.P().Z() = mat44[2][3];
+  infile >> temp_str;
+  for (int i = 0; i < 4; i++)
+  {
+    infile >> current_L_to_R_Rotation_Qua[i];
+  }
 
-  v.N().X() = mat44[2][0];
-  v.N().Y() = mat44[2][1];
-  v.N().Z() = mat44[2][2];
+  cout << "current_L_to_R_Translation: ";
+  GlobalFun::printPoint3(cout, current_L_to_R_Translation);
 
-  v.eigen_vector0.X() = mat44[0][0];
-  v.eigen_vector0.Y() = mat44[0][1];
-  v.eigen_vector0.Z() = mat44[0][2];
-
-  v.eigen_vector1.X() = mat44[1][0];
-  v.eigen_vector1.Y() = mat44[1][1];
-  v.eigen_vector1.Z() = mat44[1][2];
-
-  v.m_index = nbv_candidates.vert.size(); 
-  v.is_view_grid = true;
-  nbv_candidates.vert.push_back(v);
-  nbv_candidates.vn = nbv_candidates.vert.size();
+  cout << "current_L_to_R_Rotation_Qua: ";
+  GlobalFun::printQuaternionf(cout, current_L_to_R_Rotation_Qua);
 }
 
 void DataMgr::loadCurrentTF(QString fileName)
 {
-  //ifstream infile;
-  //infile.open(fileName.toStdString().c_str());
+  ifstream infile;
+  infile.open(fileName.toStdString().c_str());
 
-  QFile file(fileName);
-
-  if(!file.open( QIODevice::ReadOnly ))
-  {
-    return;
-  }
-
-  QTextStream infile(&file);
   std::string temp_str;
-  float temp_float;
-  char temp_c;
-  QString line;
 
-  line = infile.readLine();
-  cout << line.toStdString() << endl;
-
-  line.replace("- Translation: [", "");
-  line.replace("]", "");
-
-  QStringList str_list;
-  str_list = line.split(", ");
-  if (str_list.size() != 3)
-  {
-    cout << "wrong tf file!!!" << endl;
-    return;
-  }
+  infile >> temp_str;
   for (int i = 0; i < 3; i++)
   {
-    QString qstr = str_list.at(i);
-    float f_value = qstr.toFloat();
-    current_L_to_R_Translation[i] = f_value * 1000.;
+    infile >> current_L_to_R_Translation[i]; 
+    current_L_to_R_Translation[i] *= 1000.;
   }
 
-  line = infile.readLine();
-  cout << line.toStdString() << endl;
-
-  line.replace("- Rotation: in Quaternion [", "");
-  line.replace("]", "");
-
-  str_list = line.split(", ");
-  if (str_list.size() != 4)
-  {
-    cout << "wrong tf file!!!" << endl;
-    return;
-  }
+  infile >> temp_str;
   for (int i = 0; i < 4; i++)
   {
-    QString qstr = str_list.at(i);
-    float f_value = qstr.toFloat();
-    current_L_to_R_Rotation_Qua[i] = f_value;
+    infile >> current_L_to_R_Rotation_Qua[i];
   }
 
-  line = infile.readLine();
-  cout << line.toStdString() << endl;
-  line.replace("in RPY [", "");
-  line.replace("]", "");
+  cout << "current_L_to_R_Translation: ";
+  GlobalFun::printPoint3(cout, current_L_to_R_Translation);
 
-  str_list = line.split(", ");
-  if (str_list.size() != 3)
-  {
-    cout << "wrong tf file!!!" << endl;
-    return;
-  }
-  for (int i = 0; i < 3; i++)
-  {
-    QString qstr = str_list.at(i);
-    float f_value = qstr.toFloat();
-    current_L_to_R_Angle[i] = f_value;
-  }
+  cout << "current_L_to_R_Rotation_Qua: ";
+  GlobalFun::printQuaternionf(cout, current_L_to_R_Rotation_Qua);
 }
 
 void DataMgr::loadCommonTransform()
@@ -2504,8 +2444,10 @@ void DataMgr::coordinateTransform()
   out << "T_to_S_Matrix44" << endl;
   GlobalFun::printMatrix44(out, T_to_S_Matrix44);
 
+
   for (int i = 0; i < samples.vert.size(); i++)
   {
+
     CVertex& v = samples.vert[i];
     if (i < 10)
     {
@@ -2520,6 +2462,7 @@ void DataMgr::coordinateTransform()
       out << "after trans: ";
       GlobalFun::printPoint3(out, v.P());
     }
+
   }
 }
 
