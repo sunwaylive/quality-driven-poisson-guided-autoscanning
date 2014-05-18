@@ -109,6 +109,8 @@ void CameraParaDlg::initConnects()
   connect(ui->pushButton_visibility_update, SIGNAL(clicked()), this, SLOT(visibilityUpdate()));
   connect(ui->pushButton_visibility_one_key_iteration, SIGNAL(clicked()), this, SLOT(runVisibilityOneKeyNbvIteration()));
   connect(ui->pushButton_visibility_smooth, SIGNAL(clicked()), this, SLOT(runVisibilitySmooth()));
+  connect(ui->pushButton_compute_current_visibility, SIGNAL(clicked()), this, SLOT(computeCurrentVisibility()));
+
   /********visibility based NBV*******/
 
   /*** PVS Based NBV ***/
@@ -1543,6 +1545,13 @@ void CameraParaDlg::runVisibilitySmooth()
   global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Smooth", BoolValue(true));
   area->runVisibilityBasedNBV();
   global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Smooth", BoolValue(false));
+}
+
+void CameraParaDlg::computeCurrentVisibility()
+{
+  global_paraMgr.visibilityBasedNBV.setValue("Compute Current Visibility", BoolValue(true));
+  area->runVisibilityBasedNBV();
+  global_paraMgr.visibilityBasedNBV.setValue("Compute Current Visibility", BoolValue(false));
 }
 
 void CameraParaDlg::pvsFirstScan()

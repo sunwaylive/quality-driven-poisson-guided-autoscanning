@@ -56,10 +56,18 @@ void VisibilityBasedNBV::run()
     runVisibilityMerge();
     return;
   }
+  if (para->getBool("Compute Current Visibility"))
+  {
+    std::cout<<"Run Visibility Merge" <<std::endl;
+    runComputeCurrentVisibility();
+    return;
+  }
+
   if (para->getBool("Run Visibility Smooth"))
   {
     std::cout<<"Run Visibility Smooth" <<std::endl;
     runVisibilitySmooth();
+    return;
   }
 }
 
@@ -345,4 +353,47 @@ bool VisibilityBasedNBV::isPointWellVisible(const CVertex &target, const Point3f
     return true;
   else
     return false;
+}
+
+
+void VisibilityBasedNBV::runComputeCurrentVisibility()
+{
+  cout << "runComputeCurrentVisibility" << endl;
+
+  double camera_fov_angle = global_paraMgr.camera.getDouble("Camera FOV Angle");
+  double camera_far_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
+    global_paraMgr.camera.getDouble("Predicted Model Size");
+  double camera_near_dist = global_paraMgr.camera.getDouble("Camera Near Distance") /
+    global_paraMgr.camera.getDouble("Predicted Model Size");
+
+  double camera_far_dist2 = camera_far_dist * camera_far_dist;
+  double camera_near_dist2 = camera_near_dist * camera_near_dist;
+
+  for (int i = 0; i < original->vn; i++)
+  {
+    CVertex& v = original->vert[i];
+    v.N().Normalize();
+    v.is_barely_visible = true;
+
+    for (int j = 0; j < nbv_candidates->vert.size(); j++)
+    {
+      CVertex& t = nbv_candidates->vert[j];
+
+      double dist2 = GlobalFun::computeEulerDistSquare(v.P(), t.P());
+      if (dist2 > camera_far_dist2 || dist2 < camera_near_dist2)
+        continue;
+
+      Point3f diff = (t.P()-v.P()).Normalize();
+      double angle = GlobalFun::computeRealAngleOfTwoVertor(diff, v.N());
+
+      if (angle < 60)
+      {
+        v.is_barely_visible = false;
+        break;
+      }
+    }
+    
+  }
+
+
 }

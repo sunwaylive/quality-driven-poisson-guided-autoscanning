@@ -118,6 +118,7 @@ public:
     void visibilityMerge();
     void runVisibilityOneKeyNbvIteration();
     void runVisibilitySmooth();
+    void computeCurrentVisibility();
     /*** visibility based NBV ***/
 
     /*** pvs based NBV ***/

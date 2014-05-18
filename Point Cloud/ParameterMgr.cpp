@@ -426,6 +426,8 @@ void ParameterMgr::initCameraParameter()
 
   /*** Visibility Based NBV ***/
   camera.addParam(new RichBool("Run Visibility First Scan", false));
+ 
+
   /*** Visibility Based NBV ***/
 
   /***pvs based NBV ***/
@@ -479,6 +481,7 @@ void ParameterMgr::initVisibilityBasedNBVParameter()
   visibilityBasedNBV.addParam(new RichBool("Run Visibility Merge", false));
   visibilityBasedNBV.addParam(new RichBool("Run Visibility One Key Iteration", false));
   visibilityBasedNBV.addParam(new RichBool("Run Visibility Smooth", false));
+  visibilityBasedNBV.addParam(new RichBool("Compute Current Visibility", false));
 }
 
 void ParameterMgr::initPVSBasedNBVParameter()
