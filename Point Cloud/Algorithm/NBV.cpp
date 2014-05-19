@@ -1045,6 +1045,13 @@ void NBV::viewPrune()
     }
   }
   GlobalFun::deleteIgnore(nbv_candidates);
+    vector<CVertex> new_candidates;
+  for (int i = 0; i < nbv_candidates->vert.size(); ++i)
+  {
+    CVertex &v = nbv_candidates->vert[i];
+    //if the point has been ignored, then skip it
+    if (v.is_ignore)
+      continue;
 
     Point3f vp = v.P();
     int remember_index = v.remember_iso_index;
@@ -1079,12 +1086,6 @@ void NBV::viewPrune()
     v.N() = new_v.N();
     //new_candidates.push_back(new_v);
   }
-  //for (int i = 0; i < new_candidates.size(); i++)
-  //{
-  //  nbv_candidates->vert.push_back(new_candidates[i]);
-  //}
-
-
   GlobalFun::deleteIgnore(nbv_candidates);
   cout << "after View Prune candidate num: " <<nbv_candidates->vert.size() <<endl;
 }
