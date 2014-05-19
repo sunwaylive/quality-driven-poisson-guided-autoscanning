@@ -45,8 +45,10 @@ GLArea::GLArea(QWidget *parent): QGLWidget(/*QGLFormat(QGL::DoubleBuffer | QGL::
   is_figure_shot = false;
   rotate_delta = 1;
   rotate_angle = 0.;
-
+  nbv_ball_slice = 90;
   cout << "GLArea constructed" << endl;
+
+  initial_light_have_set = false;
 
   CVertex v;
   cout << "Memory Size of each CVertex:  " << sizeof(v) << endl;
@@ -110,6 +112,7 @@ void GLArea::initializeGL()
   glEnable(GL_POLYGON_SMOOTH);
   glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 
+  glDisable(GL_LIGHTING);
 
   glLoadIdentity(); 
 }
@@ -247,16 +250,9 @@ void GLArea::paintGL()
 
     if(para->getBool("Show Samples"))  
     {
-      /*if(para->getBool("Show Samples Quad"))
-        glDrawer.draw(GLDrawer::QUADE, dataMgr.getCurrentSamples());
-      if(para->getBool("Show Samples Dot"))
-        glDrawer.draw(GLDrawer::DOT, dataMgr.getCurrentSamples());
-      if(para->getBool("Show Samples Circle"))
-        glDrawer.draw(GLDrawer::CIRCLE, dataMgr.getCurrentSamples());	
-      if (para->getBool("Show Samples Sphere"))
-        glDrawer.draw(GLDrawer::SPHERE, dataMgr.getCurrentSamples());	*/
 
-      if (!dataMgr.isSamplesEmpty())
+
+      if (!dataMgr.isSamplesEmpty() && para->getBool("Show Model"))
       {
         glw.m = dataMgr.getCurrentSamples();
         glw.Draw(GLW::DMWire, GLW::CMPerMesh, GLW::TMNone);
@@ -266,6 +262,17 @@ void GLArea::paintGL()
         {
           glDrawer.draw(GLDrawer::DOT, dataMgr.getRIMLS());
         }*/
+      }
+      else
+      {
+        if(para->getBool("Show Samples Quad"))
+          glDrawer.draw(GLDrawer::QUADE, dataMgr.getCurrentSamples());
+        if(para->getBool("Show Samples Dot"))
+          glDrawer.draw(GLDrawer::DOT, dataMgr.getCurrentSamples());
+        if(para->getBool("Show Samples Circle"))
+          glDrawer.draw(GLDrawer::CIRCLE, dataMgr.getCurrentSamples());	
+        if (para->getBool("Show Samples Sphere"))
+          glDrawer.draw(GLDrawer::SPHERE, dataMgr.getCurrentSamples());	
       }
 
       if (!dataMgr.getBoundaries()->empty())
@@ -288,16 +295,16 @@ void GLArea::paintGL()
         {
           glDrawer.draw(GLDrawer::NORMAL, dataMgr.getNbvCandidates());
           //glDrawer.drawCandidatesAxis(dataMgr.getNbvCandidates());
-          //drawCandidatesConnectISO();
+          drawCandidatesConnectISO();
 
-          //if (para->getBool("Show NBV Label"))
-          //{
-          //  QPainter painter(this);
+          if (para->getBool("Show NBV Label"))
+          {
+            QPainter painter(this);
 
-          //  //painter.begin(this);
-          //  glDrawer.drawMeshLables(dataMgr.getNbvCandidates(), &painter);
-          //  //painter.end();
-          //}
+            //painter.begin(this);
+            glDrawer.drawMeshLables(dataMgr.getNbvCandidates(), &painter);
+            //painter.end();
+          }
         }
       }else if (para->getBool("Show View Grids"))
       {
@@ -769,11 +776,17 @@ void GLArea::openByDrop(QString fileName)
   if (fileName.endsWith("tf"))
   {
     dataMgr.loadCurrentTF(fileName);
+    dataMgr.coordinateTransform();
   }
 
   if (fileName.endsWith("mat44"))
   {
     dataMgr.loadNBVformMartrix44(fileName);
+  }
+
+  if (fileName.endsWith("xf"))
+  {
+    dataMgr.loadArtectXfAndTransform(fileName);
   }
 
   emit needUpdateStatus();
@@ -862,9 +875,29 @@ void GLArea::drawNBVBall()
   glMatrixMode(GL_MODELVIEW_MATRIX);
 
   glColorMaterial(GL_FRONT,GL_AMBIENT_AND_DIFFUSE);
+  //glColorMaterial(GL_FRONT,GL_AMBIENT_AND_DIFFUSE);
+  glEnable(GL_DEPTH_TEST);
+  //draw transparent ball
+  //static const GLfloat light_position[] = {1.0f, 1.0f, -1.0f, 1.0f};
+  //static const GLfloat light_ambient[]   = {0.2f, 0.2f, 0.2f, 1.0f};
+  //static const GLfloat light_diffuse[]   = {1.0f, 1.0f, 1.0f, 1.0f};
+  //static const GLfloat light_specular[] = {1.0f, 1.0f, 1.0f, 1.0f};
+
+  static const GLfloat light_position[] = {1.0f, 1.0f, -1.0f, 1.0f};
+  static const GLfloat light_ambient[]   = {0.2f, 0.2f, 0.2f, 1.0f};
+  static const GLfloat light_diffuse[]   = {1.0f, 1.0f, 1.0f, 1.0f};
+  static const GLfloat light_specular[] = {1.0f, 1.0f, 1.0f, 1.0f};
+
+  glLightfv(GL_LIGHT0, GL_AMBIENT,   light_ambient);
+  glLightfv(GL_LIGHT0, GL_DIFFUSE,   light_diffuse);
+  glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+
+  //glEnable(GL_LIGHT0);
+  //glEnable(GL_LIGHTING);
+
   double trans_value = para->getDouble("Radius Ball Transparency");
   glColor4f(0,0,1,trans_value);
-  glShadeModel(GL_SMOOTH);
+  //glShadeModel(GL_SMOOTH);
 
   Box3f box = dataMgr.getCurrentOriginal()->bbox;
   Point3f center = (box.min + box.max) / 2.0;
@@ -874,30 +907,38 @@ void GLArea::drawNBVBall()
 
   double radius = GlobalFun::computeEulerDist(scanner_position_normalize, center);
 
+  //2014-5-13
+  radius = GlobalFun::computeEulerDist(scanner_position_normalize, Point3f(0., 0., 0.));
+  center = Point3f(0., 0., 0.);
+  //cout << max_normalize_length << endl;
+
   glPushMatrix();
   glTranslatef(center[0], center[1], center[2]);
+
   //glutSolidSphere(radius, 40, 40);
-  glutWireSphere(radius, 90, 90);
+  glutWireSphere(radius, nbv_ball_slice, nbv_ball_slice);
+  glutSolidSphere(radius, nbv_ball_slice, nbv_ball_slice);
 
   glPopMatrix();
 
-  glDisable(GL_LIGHTING);
-  glDisable(GL_LIGHT0);
-  glDisable(GL_BLEND);
-  glDisable(GL_CULL_FACE);
+  //glDisable(GL_LIGHTING);
+  //glDisable(GL_LIGHT0);
+  //glDisable(GL_BLEND);
+  //glDisable(GL_CULL_FACE);
 }
+
 
 void GLArea::removeBadCandidates()
 {
   Box3f box = dataMgr.getCurrentOriginal()->bbox;
   Point3f center = (box.min + box.max) / 2.0;
 
-  double max_normalize_length = global_paraMgr.data.getDouble("Max Normalize Length");
-  Point3f scanner_position_normalize = dataMgr.scanner_position / max_normalize_length - dataMgr.original_center_point;
+  //double max_normalize_length = global_paraMgr.data.getDouble("Max Normalize Length");
+  //Point3f scanner_position_normalize = dataMgr.scanner_position / max_normalize_length - dataMgr.original_center_point;
 
-  double save_radius = GlobalFun::computeEulerDist(scanner_position_normalize, center);
+  //double save_radius = GlobalFun::computeEulerDist(scanner_position_normalize, center);
 
-  double radius_threshold = global_paraMgr.data.getDouble("CGrid Radius") * 4.1;
+  double radius_threshold =GlobalFun::computeEulerDist(box.min, box.max)/2.5;
 
   CMesh* nbv_candidates = dataMgr.getNbvCandidates();
   for (int i = 0; i < nbv_candidates->vert.size(); i++)
@@ -905,9 +946,9 @@ void GLArea::removeBadCandidates()
     CVertex& v = nbv_candidates->vert[i];
 
     double nbv_dist = GlobalFun::computeEulerDist(v.P(), center);
-    double dist_diff = abs(nbv_dist - save_radius);
+    //double dist_diff = abs(nbv_dist - save_radius);
 
-    if (dist_diff > radius_threshold)
+    if (nbv_dist < radius_threshold)
     {
       v.is_ignore = true;
     }
@@ -915,6 +956,35 @@ void GLArea::removeBadCandidates()
 
   GlobalFun::deleteIgnore(nbv_candidates);
 }
+
+//void GLArea::removeBadCandidates()
+//{
+//  Box3f box = dataMgr.getCurrentOriginal()->bbox;
+//  Point3f center = (box.min + box.max) / 2.0;
+//
+//  double max_normalize_length = global_paraMgr.data.getDouble("Max Normalize Length");
+//  Point3f scanner_position_normalize = dataMgr.scanner_position / max_normalize_length - dataMgr.original_center_point;
+//
+//  double save_radius = GlobalFun::computeEulerDist(scanner_position_normalize, center);
+//
+//  double radius_threshold = global_paraMgr.data.getDouble("CGrid Radius") * 4.1;
+//
+//  CMesh* nbv_candidates = dataMgr.getNbvCandidates();
+//  for (int i = 0; i < nbv_candidates->vert.size(); i++)
+//  {
+//    CVertex& v = nbv_candidates->vert[i];
+//
+//    double nbv_dist = GlobalFun::computeEulerDist(v.P(), center);
+//    double dist_diff = abs(nbv_dist - save_radius);
+//
+//    if (dist_diff > radius_threshold)
+//    {
+//      v.is_ignore = true;
+//    }
+//  }
+//
+//  GlobalFun::deleteIgnore(nbv_candidates);
+//}
 
 
 void GLArea::drawNeighborhoodRadius()
@@ -1735,6 +1805,10 @@ void GLArea::saveView(QString fileName)
   outfile << global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma") <<endl;
   outfile << global_paraMgr.norSmooth.getInt("PCA KNN") <<endl;
   outfile << global_paraMgr.camera.getDouble("Camera Resolution") <<endl;
+
+  outfile << global_paraMgr.camera.getDouble("Camera Far Distance") <<endl;
+  outfile << global_paraMgr.camera.getDouble("Camera Near Distance") <<endl;
+
   outfile.close();
 }
 
@@ -1755,7 +1829,9 @@ void
     CVertex &v = nbv_candidates->vert[i];
 
     CVertex t = v;
-    t.P() = (t.P() + original_center_point) * max_normalize_length;
+    //t.P() = (t.P() + original_center_point) * max_normalize_length;
+    t.P() = (t.P()) * max_normalize_length;
+
     t.N().Normalize();
     t.m_index = index++;
     nbv.vert.push_back(t);
@@ -1995,9 +2071,15 @@ void GLArea::loadView(QString fileName)
   infile >> temp;
   global_paraMgr.data.setValue("Max Normalize Length", DoubleValue(temp));
 
+  if (temp > 0)
+  {
+    cout << "temp" << endl;
+    global_paraMgr.camera.setValue("Predicted Model Size", DoubleValue(temp/10.));
+  }
+
   infile >> dataMgr.original_center_point[0]
-  >> dataMgr.original_center_point[1]
-  >> dataMgr.original_center_point[2];
+         >> dataMgr.original_center_point[1]
+         >> dataMgr.original_center_point[2];
 
   infile >> temp;
   global_paraMgr.glarea.setValue("Grid ISO Value Shift", DoubleValue(temp));
@@ -2009,6 +2091,18 @@ void GLArea::loadView(QString fileName)
   global_paraMgr.norSmooth.setValue("PCA KNN", IntValue(temp));
   infile >> temp;
   global_paraMgr.camera.setValue("Camera Resolution", DoubleValue(temp));
+
+
+  infile >> temp;
+  if (temp > 10.)
+  {
+    global_paraMgr.camera.setValue("Camera Far Distance", DoubleValue(temp));
+  }
+  infile >> temp;
+  if (temp > 10.)
+  {
+    global_paraMgr.camera.setValue("Camera Near Distance", DoubleValue(temp));
+  }
 
   infile.close();
   emit needUpdateStatus();
@@ -2083,7 +2177,7 @@ void GLArea::wheelEvent(QWheelEvent *e)
     {
       size_temp = global_paraMgr.glarea.getDouble("Radius Ball Transparency") * change;
       global_paraMgr.glarea.setValue("Radius Ball Transparency", DoubleValue(size_temp));
-      cout << "trans: " << size_temp << endl;
+      cout << "Radius Ball Transparency:  " << size_temp << endl;
       if(size_temp < 0)
       {
         size_temp = 0;
@@ -2251,7 +2345,12 @@ void GLArea::wheelEvent(QWheelEvent *e)
   }
   else if((e->modifiers() & Qt::ShiftModifier) && (e->modifiers() & Qt::AltModifier))
   {
-    if (para->getBool("Show Normal") && para->getBool("Show NBV Candidates"))
+    if (para->getBool("Show NBV Candidates") && para->getBool("Show NBV Ball"))
+    {
+      nbv_ball_slice *= change;
+      cout << "nbv_ball_slice:  " << nbv_ball_slice << endl; 
+    }
+    else if (para->getBool("Show Normal") && para->getBool("Show NBV Candidates"))
     {
       size_temp = global_paraMgr.drawer.getDouble("Normal Line Width");
       size_temp *= change;
@@ -2818,6 +2917,75 @@ void GLArea::figureSnapShot()
 
 void GLArea::drawCandidatesConnectISO()
 {
+  double width = global_paraMgr.drawer.getDouble("Normal Line Width") ;
+  double length = global_paraMgr.drawer.getDouble("Normal Line Length");
+  //double half_length = normal_length / 2.0;
+  QColor qcolor = global_paraMgr.drawer.getDouble("Original Point Color");
+  double near_dist = global_paraMgr.camera.getDouble("Camera Near Distance");
+  double max_length = global_paraMgr.data.getDouble("Max Normalize Length");
+  near_dist*=10;
+  near_dist/=max_length;
+
+  CMesh* candidates = dataMgr.getNbvCandidates();
+  for (int i = 0; i < candidates->vert.size(); i++)
+  {
+    CVertex& v = candidates->vert[i];
+
+    glLineWidth(width* 3); 
+    GLColor color(qcolor);
+
+    glColor4f(color.r, color.g, color.b, 1);  
+    glColor3f(0, 1, 0);
+
+    Point3f p = v.P(); 
+    //Point3f m0 = v.N();
+    //Point3f m1 = v.eigen_vector0;
+    //Point3f m2 = v.eigen_vector1;
+
+    //int remember_index = v.remember_iso_index;
+    Point3f tp = v.P() + v.N() *  near_dist;
+    // Z
+    glBegin(GL_LINES);	
+    glVertex3d(p[0], p[1], p[2]);
+    glVertex3f(tp[0], tp[1], tp[2]);
+    glEnd(); 
+  }
+
+  glLineWidth(width);
+
+  //CMesh* candidates = dataMgr.getNbvCandidates();
+  CMesh* iso_points = dataMgr.getCurrentIsoPoints();
+
+  for (int i = 0; i < candidates->vert.size(); i++)
+  {
+    CVertex& v = candidates->vert[i];
+
+    glLineWidth(width); 
+    GLColor color(qcolor);
+
+    glColor4f(color.r, color.g, color.b, 1);  
+    glColor3f(0, 0, 1);
+
+    Point3f p = v.P(); 
+    Point3f m0 = v.N();
+    Point3f m1 = v.eigen_vector0;
+    Point3f m2 = v.eigen_vector1;
+
+    int remember_index = v.remember_iso_index;
+    if (remember_index < 0 || v.remember_iso_index > iso_points->vert.size())
+    {
+      continue;
+    }
+    CVertex tp = iso_points->vert.at(remember_index);
+    // Z
+    glBegin(GL_LINES);	
+    glVertex3d(p[0], p[1], p[2]);
+    glVertex3f(tp[0], tp[1], tp[2]);
+    glEnd(); 
+  }
+
+
+
   //double width = global_paraMgr.drawer.getDouble("Normal Line Width");
   //double length = global_paraMgr.drawer.getDouble("Normal Line Length");
   ////double half_length = normal_length / 2.0;
@@ -2869,4 +3037,41 @@ void GLArea::moveAllCandidates(bool is_forward)
       v.P() -= v.N() * step;
     }
   }
+}
+
+void DataMgr::loadArtectXfAndTransform(QString fileName)
+{
+  ifstream infile;
+  infile.open(fileName.toStdString().c_str());
+
+  std::string temp_str;
+
+  Point3f artect_trans(0., 0., 0.);
+  for (int i = 0; i < 3; i++)
+  {
+    infile >> temp_str;
+  }
+  infile >> artect_trans[0];
+
+  for (int i = 0; i < 3; i++)
+  {
+    infile >> temp_str;
+  }
+  infile >> artect_trans[1];
+
+  for (int i = 0; i < 3; i++)
+  {
+    infile >> temp_str;
+  }
+  infile >> artect_trans[2];
+
+  infile.close();
+
+  artect_trans *= -1.0;
+  for (int i = 0; i < samples.vert.size(); i++)
+  {
+    samples.vert[i].P() += artect_trans;
+  }
+
+  cout << "finished artect transform" << endl;
 }

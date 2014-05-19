@@ -27,6 +27,7 @@ private:
   void runVisibilityUpdate();
   void runVisibilitySmooth();
   bool isPointWellVisible(const CVertex &target, const Point3f &view_pos, const Point3f &view_dir, const CMesh* mesh_surface);
+  void runComputeCurrentVisibility();
 
 private:
   RichParameterSet      *para;

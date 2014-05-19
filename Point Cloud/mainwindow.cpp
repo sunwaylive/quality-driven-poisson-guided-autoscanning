@@ -162,6 +162,9 @@ void MainWindow::initConnect()
   connect(ui.actionRemove_Ignore,SIGNAL(triggered()),this,SLOT(deleteIgnore()));
   connect(ui.actionRecover_Ignore,SIGNAL(triggered()),this,SLOT(recoverIgnore()));
 
+  connect(ui.actionSwitch_History_NBV,SIGNAL(triggered()),this,SLOT(switchHistoryNBV()));
+  connect(ui.actionAdd_NBV_To_History,SIGNAL(triggered()),this,SLOT(addNBVtoHistory()));
+
   //connect(ui.actionPoisson_test,SIGNAL(triggered()),this,SLOT(poissonTest()));
   //connect(ui.actionPoisson_test_all,SIGNAL(triggered()),this,SLOT(poissonTestAll()));
 
@@ -1244,4 +1247,48 @@ void MainWindow::evaluation()
     }
   }
   GlobalFun::normalizeConfidence(target->vert, 0.f);
+}
+
+
+void MainWindow::switchHistoryNBV()
+{
+  vector<ScanCandidate> temp_history = *area->dataMgr.getScanHistory();
+  vector<ScanCandidate>* history = area->dataMgr.getScanHistory();
+  history->clear();
+
+  CMesh* candidates = area->dataMgr.getNbvCandidates();
+
+  for (int i = 0; i < candidates->vert.size(); i++)
+  {
+    ScanCandidate s =  make_pair(candidates->vert[i].P(), candidates->vert[i].N());
+    temp_history.push_back(s);
+  }
+
+  candidates->vert.clear();
+  for (int i = 0; i < temp_history.size(); i++)
+  {
+    ScanCandidate& s = temp_history[i];
+    CVertex new_v;
+    new_v.m_index = i;
+    new_v.is_view_grid = true;
+    new_v.P() = s.first;
+    new_v.N() = s.second;
+
+    candidates->vert.push_back(new_v);
+  }
+  candidates->vn = candidates->vert.size();
+}
+
+void MainWindow::addNBVtoHistory()
+{
+
+  CMesh* candidates = area->dataMgr.getNbvCandidates();
+  vector<ScanCandidate>* history = area->dataMgr.getScanHistory();
+
+  for (int i = 0; i < candidates->vert.size(); i++)
+  {
+    ScanCandidate s =  make_pair(candidates->vert[i].P(), candidates->vert[i].N());
+    history->push_back(s);
+  }
+
 }

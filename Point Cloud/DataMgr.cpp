@@ -12,6 +12,16 @@ DataMgr::DataMgr(RichParameterSet* _para)
   whole_space_box.Add(Point3f(-2.0, -2.0, -2.0));
 
   loadCommonTransform();
+
+
+  //scanner_position = Point3f(184, -7, -254); //gundam 1-18
+
+  //scanner_position = Point3f(64, -12, -302); //opera 5-11
+
+  //scanner_position = Point3f(234, -5, -245); //violin 1-19
+
+  scanner_position = Point3f(232, -21, -243); //church 5-10
+
   slices.assign(3, Slice());
 }
 
@@ -888,7 +898,13 @@ void DataMgr::savePR2_orders(QString fileName_commands)
 
   //v_start.P() = Point3f(135, -7, -223);
   //v_start.P() = scanner_position;
-  v_start.P() = Point3f(164, -7, -254);
+
+  //v_start.P() = Point3f(164, -7, -254); //hunter 1-13
+  //v_start.P() = Point3f(-42.3699, -101.141, 150.589);
+  //v_start.P() = Point3f(135, -7, -223); // saiya 1-14 overview
+  //v_start.P() = Point3f(134, -8, -253); //lion 1-15
+
+  v_start.P() = scanner_position; 
 
   cout << "!!!scanner_position before normalize" << endl;
   GlobalFun::printPoint3(cout, v_start.P());
@@ -923,8 +939,9 @@ void DataMgr::savePR2_orders(QString fileName_commands)
     //cout << "after transform: " << endl;
     //GlobalFun::printPoint3(cout, v1.P());
 
-    PR2_order order = computePR2orderFromTwoCandidates(v0, v1);
-    //PR2_order order = computePR2orderFromTwoCandidates(v_start, v1);    
+    //PR2_order order = computePR2orderFromTwoCandidates(v0, v1);
+    PR2_order order = computePR2orderFromTwoCandidates(v_start, v1);    
+
     pr2_orders.push_back(order);
   }
 
@@ -987,7 +1004,7 @@ void DataMgr::nbvReoders()
   {
     CVertex& v = nbv_candidates.vert[i];
 
-    if (v.P().X() < -0.4)
+    if (v.P().X() < -0.85)
     {
       cout << "rotate Y axis" << endl;
 
@@ -1032,6 +1049,7 @@ void DataMgr::nbvReoders()
     CVertex& v = nbv_candidates.vert[i];
     v.m_index = i;
   }
+
 
   for (int i = 0; i < nbv_candidates.vert.size(); i++)
   {
@@ -1083,12 +1101,14 @@ PR2_order DataMgr::computePR2orderFromTwoCandidates(CVertex v0, CVertex v1)
   Point3f dir0 = Point3f(0, v0.P().Y(), v0.P().Z());
   Point3f dir1 = Point3f(0, v1.P().Y(), v1.P().Z());
   double angle = GlobalFun::computeRealAngleOfTwoVertor(dir0, dir1) * 3.1415926 / 180.;
-  //Point3f up_direction = dir0 ^ dir1;
-  //if (up_direction.X() > 0)
-  //{
-  //  angle = 3.1415926*2 - angle;
-  //}
+  Point3f up_direction = dir0 ^ dir1;
+  if (up_direction.X() > 0)
+  {
+    angle = 3.1415926*2 - angle;
+  }
   order.left_rotation = angle;
+
+
 
   //cout << "2 to 3" << endl;
   //GlobalFun::printPoint3(cout, v0.P());
@@ -2290,113 +2310,53 @@ void DataMgr::loadNBVformMartrix44(QString fileName)
   ifstream infile;
   infile.open(fileName.toStdString().c_str());
 
-  Matrix44f mat44;
-  for (int i = 0; i < 4; i++)
+  std::string temp_str;
+
+  infile >> temp_str;
+  for (int i = 0; i < 3; i++)
   {
-    for (int j = 0; j < 4; j++)
-    {
-      infile >> mat44[i][j];
-    }
+    infile >> current_L_to_R_Translation[i]; 
+    current_L_to_R_Translation[i] *= 1000.;
   }
 
-  CVertex v;
-  //v.is_view_grid
-  v.P().X() = mat44[0][3];
-  v.P().Y() = mat44[1][3];
-  v.P().Z() = mat44[2][3];
+  infile >> temp_str;
+  for (int i = 0; i < 4; i++)
+  {
+    infile >> current_L_to_R_Rotation_Qua[i];
+  }
 
-  v.N().X() = mat44[2][0];
-  v.N().Y() = mat44[2][1];
-  v.N().Z() = mat44[2][2];
+  cout << "current_L_to_R_Translation: ";
+  GlobalFun::printPoint3(cout, current_L_to_R_Translation);
 
-  v.eigen_vector0.X() = mat44[0][0];
-  v.eigen_vector0.Y() = mat44[0][1];
-  v.eigen_vector0.Z() = mat44[0][2];
-
-  v.eigen_vector1.X() = mat44[1][0];
-  v.eigen_vector1.Y() = mat44[1][1];
-  v.eigen_vector1.Z() = mat44[1][2];
-
-  v.m_index = nbv_candidates.vert.size(); 
-  v.is_view_grid = true;
-  nbv_candidates.vert.push_back(v);
-  nbv_candidates.vn = nbv_candidates.vert.size();
+  cout << "current_L_to_R_Rotation_Qua: ";
+  GlobalFun::printQuaternionf(cout, current_L_to_R_Rotation_Qua);
 }
 
 void DataMgr::loadCurrentTF(QString fileName)
 {
-  //ifstream infile;
-  //infile.open(fileName.toStdString().c_str());
+  ifstream infile;
+  infile.open(fileName.toStdString().c_str());
 
-  QFile file(fileName);
-
-  if(!file.open( QIODevice::ReadOnly ))
-  {
-    return;
-  }
-
-  QTextStream infile(&file);
   std::string temp_str;
-  float temp_float;
-  char temp_c;
-  QString line;
 
-  line = infile.readLine();
-  cout << line.toStdString() << endl;
-
-  line.replace("- Translation: [", "");
-  line.replace("]", "");
-
-  QStringList str_list;
-  str_list = line.split(", ");
-  if (str_list.size() != 3)
-  {
-    cout << "wrong tf file!!!" << endl;
-    return;
-  }
+  infile >> temp_str;
   for (int i = 0; i < 3; i++)
   {
-    QString qstr = str_list.at(i);
-    float f_value = qstr.toFloat();
-    current_L_to_R_Translation[i] = f_value * 1000.;
+    infile >> current_L_to_R_Translation[i]; 
+    current_L_to_R_Translation[i] *= 1000.;
   }
 
-  line = infile.readLine();
-  cout << line.toStdString() << endl;
-
-  line.replace("- Rotation: in Quaternion [", "");
-  line.replace("]", "");
-
-  str_list = line.split(", ");
-  if (str_list.size() != 4)
-  {
-    cout << "wrong tf file!!!" << endl;
-    return;
-  }
+  infile >> temp_str;
   for (int i = 0; i < 4; i++)
   {
-    QString qstr = str_list.at(i);
-    float f_value = qstr.toFloat();
-    current_L_to_R_Rotation_Qua[i] = f_value;
+    infile >> current_L_to_R_Rotation_Qua[i];
   }
 
-  line = infile.readLine();
-  cout << line.toStdString() << endl;
-  line.replace("in RPY [", "");
-  line.replace("]", "");
+  cout << "current_L_to_R_Translation: ";
+  GlobalFun::printPoint3(cout, current_L_to_R_Translation);
 
-  str_list = line.split(", ");
-  if (str_list.size() != 3)
-  {
-    cout << "wrong tf file!!!" << endl;
-    return;
-  }
-  for (int i = 0; i < 3; i++)
-  {
-    QString qstr = str_list.at(i);
-    float f_value = qstr.toFloat();
-    current_L_to_R_Angle[i] = f_value;
-  }
+  cout << "current_L_to_R_Rotation_Qua: ";
+  GlobalFun::printQuaternionf(cout, current_L_to_R_Rotation_Qua);
 }
 
 void DataMgr::loadCommonTransform()
@@ -2440,8 +2400,8 @@ void DataMgr::loadCommonTransform()
     }
   }
 
-  infile >> temp_str;
-  infile >> scanner_position[0] >> scanner_position[1] >> scanner_position[2];
+  //infile >> temp_str;
+  //infile >> scanner_position[0] >> scanner_position[1] >> scanner_position[2];
 
   cout << "Scanner Position: ";
   GlobalFun::printPoint3(cout, scanner_position);
@@ -2484,8 +2444,10 @@ void DataMgr::coordinateTransform()
   out << "T_to_S_Matrix44" << endl;
   GlobalFun::printMatrix44(out, T_to_S_Matrix44);
 
+
   for (int i = 0; i < samples.vert.size(); i++)
   {
+
     CVertex& v = samples.vert[i];
     if (i < 10)
     {
@@ -2500,6 +2462,7 @@ void DataMgr::coordinateTransform()
       out << "after trans: ";
       GlobalFun::printPoint3(out, v.P());
     }
+
   }
 }
 

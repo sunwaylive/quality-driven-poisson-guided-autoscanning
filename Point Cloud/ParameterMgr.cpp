@@ -59,7 +59,7 @@ void ParameterMgr::initDataMgrParameter()
 	data.addParam(new RichDouble("Init Radius Para", 2.0));
 	data.addParam(new RichDouble("Down Sample Num", 20000));
 	data.addParam(new RichDouble("CGrid Radius", grid_r));
-  data.addParam(new RichDouble("Max Normalize Length", 1.0f));
+  data.addParam(new RichDouble("Max Normalize Length", -1.0f));
 }
 
 
@@ -426,6 +426,8 @@ void ParameterMgr::initCameraParameter()
 
   /*** Visibility Based NBV ***/
   camera.addParam(new RichBool("Run Visibility First Scan", false));
+ 
+
   /*** Visibility Based NBV ***/
 
   /***pvs based NBV ***/
@@ -480,6 +482,7 @@ void ParameterMgr::initVisibilityBasedNBVParameter()
   visibilityBasedNBV.addParam(new RichBool("Run Visibility Merge", false));
   visibilityBasedNBV.addParam(new RichBool("Run Visibility One Key Iteration", false));
   visibilityBasedNBV.addParam(new RichBool("Run Visibility Smooth", false));
+  visibilityBasedNBV.addParam(new RichBool("Compute Current Visibility", false));
 }
 
 void ParameterMgr::initPVSBasedNBVParameter()

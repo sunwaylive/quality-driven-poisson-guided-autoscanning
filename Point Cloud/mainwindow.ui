@@ -41,7 +41,7 @@
      <x>0</x>
      <y>0</y>
      <width>1515</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -71,6 +71,8 @@
     <addaction name="actionRecover_Ignore"/>
     <addaction name="actionSave_Grid_As_Points"/>
     <addaction name="actionNBV_ReOrders"/>
+    <addaction name="actionSwitch_History_NBV"/>
+    <addaction name="actionAdd_NBV_To_History"/>
    </widget>
    <widget class="QMenu" name="menuAlgorithom">
     <property name="title">
@@ -301,6 +303,9 @@
    <addaction name="separator"/>
    <addaction name="separator"/>
    <addaction name="actionCull_Points"/>
+   <addaction name="actionShow_NBV_Ball"/>
+   <addaction name="actionShow_NBV_Label"/>
+   <addaction name="actionSwitch_Sample_with_ISO"/>
   </widget>
   <action name="actionImport_Ply">
    <property name="icon">
@@ -980,6 +985,16 @@
    </property>
    <property name="text">
     <string>Show Scan History</string>
+   </property>
+  </action>
+  <action name="actionSwitch_History_NBV">
+   <property name="text">
+    <string>Switch History_NBV</string>
+   </property>
+  </action>
+  <action name="actionAdd_NBV_To_History">
+   <property name="text">
+    <string>Add NBV To History</string>
    </property>
   </action>
  </widget>

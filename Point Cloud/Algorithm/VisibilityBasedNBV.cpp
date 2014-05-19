@@ -56,10 +56,18 @@ void VisibilityBasedNBV::run()
     runVisibilityMerge();
     return;
   }
+  if (para->getBool("Compute Current Visibility"))
+  {
+    std::cout<<"Run Visibility Merge" <<std::endl;
+    runComputeCurrentVisibility();
+    return;
+  }
+
   if (para->getBool("Run Visibility Smooth"))
   {
     std::cout<<"Run Visibility Smooth" <<std::endl;
     runVisibilitySmooth();
+    return;
   }
 }
 
@@ -96,7 +104,9 @@ void VisibilityBasedNBV::runVisibilityCandidatesCluster()
     return;
   }
 
-  double radius = 0.5 * 2; //cluster radius; global_paraMgr.data.getDouble("CGrid Radius");
+  //double radius = 0.5 * 2; 
+  double radius = 10 * global_paraMgr.data.getDouble("CGrid Radius");
+
   double nbv_minimum_dist = radius / 2;
   double radius2 = radius * radius;
   double iradius16 = -4/radius2;
@@ -344,4 +354,50 @@ bool VisibilityBasedNBV::isPointWellVisible(const CVertex &target, const Point3f
     return true;
   else
     return false;
+}
+
+
+void VisibilityBasedNBV::runComputeCurrentVisibility()
+{
+  cout << "runComputeCurrentVisibility" << endl;
+  
+  
+  double camera_fov_angle = global_paraMgr.camera.getDouble("Camera FOV Angle");
+  double camera_far_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
+    global_paraMgr.camera.getDouble("Predicted Model Size");
+  double camera_near_dist = global_paraMgr.camera.getDouble("Camera Near Distance") /
+    global_paraMgr.camera.getDouble("Predicted Model Size");
+
+  double camera_far_dist2 = camera_far_dist * camera_far_dist;
+  double camera_near_dist2 = camera_near_dist * camera_near_dist;
+
+  cout << "histroy  " << scan_history->size() << endl;
+
+  for (int i = 0; i < original->vn; i++)
+  {
+    CVertex& v = original->vert[i];
+    v.N().Normalize();
+    v.is_barely_visible = true;
+
+    for (int j = 0; j < scan_history->size(); j++)
+    {
+      ScanCandidate t = (*scan_history)[j];
+
+      double dist2 = GlobalFun::computeEulerDistSquare(v.P(), t.first);
+      if (dist2 > camera_far_dist2 || dist2 < camera_near_dist2)
+        continue;
+
+      Point3f diff = (t.first-v.P()).Normalize();
+      double angle = GlobalFun::computeRealAngleOfTwoVertor(diff, v.N());
+
+      if (angle < 60)
+      {
+        v.is_barely_visible = false;
+        break;
+      }
+    }
+    
+  }
+
+
 }

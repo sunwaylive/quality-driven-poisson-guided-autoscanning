@@ -990,18 +990,25 @@ void NBV::viewClustering()
   return;
 }
 
+
 void NBV::viewPrune()
 {
   Point3f diff = whole_space_box_max - whole_space_box_min;
-  double view_prune_radius = diff.X() / 6;  //can not be too large, or some good view will always be ignored
+  double view_prune_radius = diff.X() / 6;
   double prune_confidence_threshold = global_paraMgr.nbv.getDouble("View Prune Confidence Threshold");
 
   GlobalFun::computeBallNeighbors(nbv_candidates, NULL, view_prune_radius, nbv_candidates->bbox);
   sort(nbv_candidates->vert.begin(), nbv_candidates->vert.end(), cmp);
 
+  ////change 5-14 wsh
+  //vector<CVertex> temp_nbv_candidates;
+  //int start_index = nbv_candidates->vert.size() * prune_confidence_threshold;
+
+
   for (int i = 0; i < nbv_candidates->vert.size(); ++i)
   {
     CVertex &v = nbv_candidates->vert[i];
+    cout << "candidate confidence:  " << v.eigen_confidence << endl;
     //if the point has been ignored, then skip it
     if (v.is_ignore)
       continue;
@@ -1039,21 +1046,108 @@ void NBV::viewPrune()
   }
   GlobalFun::deleteIgnore(nbv_candidates);
 
-  /*ofstream out;
-  out.open("aftere_prune_confidence.txt");
-  for (int i = 0; i < nbv_candidates->vert.size(); ++i)
-  {
-  out << nbv_candidates->vert[i].eigen_confidence <<endl;
-  }
-  out.close();*/
+    Point3f vp = v.P();
+    int remember_index = v.remember_iso_index;
+    if (remember_index < 0 || v.remember_iso_index > iso_points->vert.size())
+    {
+      continue;
+    }
+    Point3f tp = iso_points->vert.at(remember_index).P();
+    Point3f plane_point(tp.X(), vp.Y(), vp.Z());
 
-  //save nbv candidates to scan candidates
-  for (int i = 0; i < nbv_candidates->vert.size(); ++i)
-  {
-    CVertex &v = nbv_candidates->vert[i];
-    scan_candidates->push_back(make_pair(v.P(), v.N()));
+    if (vp.X() > tp.X())
+    {
+      Point3f vector0 = (vp - tp).Normalize();
+      Point3f vector1 = (plane_point - tp).Normalize();
+      double angle = GlobalFun::computeRealAngleOfTwoVertor(vector0, vector1);
+      if (angle > 13)
+      {
+        continue;
+      }
+    }
+
+    //float x_movement;
+    float x_movement = tp.X() - vp.X();
+    float new_x = tp.X() + x_movement;
+    Point3f new_p = Point3f(new_x, plane_point.Y(), plane_point.Z());
+
+    CVertex new_v = v;
+    new_v.P() = new_p;
+    new_v.N() = (tp - new_p).Normalize();
+
+    v.P() = new_v.P();
+    v.N() = new_v.N();
+    //new_candidates.push_back(new_v);
   }
+  //for (int i = 0; i < new_candidates.size(); i++)
+  //{
+  //  nbv_candidates->vert.push_back(new_candidates[i]);
+  //}
+
+
+  GlobalFun::deleteIgnore(nbv_candidates);
+  cout << "after View Prune candidate num: " <<nbv_candidates->vert.size() <<endl;
 }
+
+//void NBV::viewPrune()
+//{
+//  Point3f diff = whole_space_box_max - whole_space_box_min;
+//  double view_prune_radius = diff.X() / 3;  //can not be too large, or some good view will always be ignored
+//  double prune_confidence_threshold = global_paraMgr.nbv.getDouble("View Prune Confidence Threshold");
+//
+//  GlobalFun::computeBallNeighbors(nbv_candidates, NULL, view_prune_radius, nbv_candidates->bbox);
+//  sort(nbv_candidates->vert.begin(), nbv_candidates->vert.end(), cmp);
+//
+//  for (int i = 0; i < nbv_candidates->vert.size(); ++i)
+//  {
+//    CVertex &v = nbv_candidates->vert[i];
+//    //if the point has been ignored, then skip it
+//    if (v.is_ignore)
+//      continue;
+//
+//    if (v.eigen_confidence < prune_confidence_threshold)
+//    {
+//      v.is_ignore = true;
+//      continue;
+//    }
+//
+//    for (int j = 0; j < v.neighbors.size(); ++j)
+//    {
+//      CVertex &np = nbv_candidates->vert[v.neighbors[j]];
+//      if (np.m_index == v.m_index)
+//        continue;
+//      else
+//        np.is_ignore = true;
+//    }
+//  }
+//
+//  //GlobalFun::deleteIgnore(nbv_candidates);
+//  //cout << "after View Prune candidates num: " <<nbv_candidates->vert.size() <<endl;
+//
+//  ////get the top n = 4
+//  //int topn = global_paraMgr.nbv.getInt("NBV Top N");
+//
+//  //sort(nbv_candidates->vert.begin(), nbv_candidates->vert.end(), cmp);
+//  //if (nbv_candidates->vert.size() > topn)
+//  //{
+//  //  for (int i = 0; i < nbv_candidates->vn; i++)
+//  //  {
+//  //    CVertex& v = nbv_candidates->vert[i];
+//  //    if (i >= topn)
+//  //      v.is_ignore = true;
+//  //  }
+//  //}
+//
+//  //GlobalFun::deleteIgnore(nbv_candidates);
+//
+//  ofstream out;
+//  out.open("aftere_prune_confidence.txt");
+//  for (int i = 0; i < nbv_candidates->vert.size(); ++i)
+//  {
+//    out << nbv_candidates->vert[i].eigen_confidence <<endl;
+//  }
+//  out.close();
+//}
 
 bool NBV::updateViewDirections()
 {

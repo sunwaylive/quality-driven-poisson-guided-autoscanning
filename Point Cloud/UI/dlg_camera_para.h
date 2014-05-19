@@ -118,6 +118,7 @@ public:
     void visibilityMerge();
     void runVisibilityOneKeyNbvIteration();
     void runVisibilitySmooth();
+    void computeCurrentVisibility();
     /*** visibility based NBV ***/
 
     /*** pvs based NBV ***/
@@ -132,6 +133,8 @@ public:
     void pvsMerge();
     void pvsOneKeyNbvIteration();
     /*** pvs based NBV ***/
+
+    void getModelSize();
 
 private:
   Ui::camera_paras * ui;

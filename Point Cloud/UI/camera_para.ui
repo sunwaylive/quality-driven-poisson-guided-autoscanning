@@ -814,6 +814,19 @@
        <string>Optimal plane width(cm) :</string>
       </property>
      </widget>
+     <widget class="QPushButton" name="pushButton_get_model_size">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>70</y>
+        <width>31</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>get</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QDoubleSpinBox" name="ray_resolution_para">
      <property name="geometry">
@@ -2066,6 +2079,19 @@
      </property>
      <property name="text">
       <string>Poisson surface reconstruction</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_compute_current_visibility">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>30</y>
+       <width>181</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>compute current visibility</string>
      </property>
     </widget>
    </widget>
