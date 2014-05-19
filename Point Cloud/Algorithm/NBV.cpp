@@ -758,7 +758,7 @@ void NBV::viewExtractionIntoBins(int view_bin_each_axis)
     double dist_to_correspondese = GlobalFun::computeEulerDistSquare(v.P(), iso_points->vert[v.remember_iso_index].P());
 
     if ( /*dist_to_correspondese <= camera_near_dist
-         || dist_to_correspondese >= camera_far_dist
+         || dist_to_correspondese >= camera_far_distviewpru
          || */GlobalFun::isPointInBoundingBox(v.P(), model, bin_length_x))
     {
       v.is_ignore = true;
@@ -993,7 +993,7 @@ void NBV::viewClustering()
 void NBV::viewPrune()
 {
   Point3f diff = whole_space_box_max - whole_space_box_min;
-  double view_prune_radius = diff.X() / 3;  //can not be too large, or some good view will always be ignored
+  double view_prune_radius = diff.X() / 6;  //can not be too large, or some good view will always be ignored
   double prune_confidence_threshold = global_paraMgr.nbv.getDouble("View Prune Confidence Threshold");
 
   GlobalFun::computeBallNeighbors(nbv_candidates, NULL, view_prune_radius, nbv_candidates->bbox);
@@ -1022,32 +1022,37 @@ void NBV::viewPrune()
     }
   }
 
-  //GlobalFun::deleteIgnore(nbv_candidates);
-  //cout << "after View Prune candidates num: " <<nbv_candidates->vert.size() <<endl;
+  GlobalFun::deleteIgnore(nbv_candidates);
+  cout << "after View Prune candidates num: " <<nbv_candidates->vert.size() <<endl;
 
-  ////get the top n = 4
-  //int topn = global_paraMgr.nbv.getInt("NBV Top N");
+  //get the top n = 4
+  int topn = global_paraMgr.nbv.getInt("NBV Top N");
+  sort(nbv_candidates->vert.begin(), nbv_candidates->vert.end(), cmp);
+  if (nbv_candidates->vert.size() > topn)
+  {
+    for (int i = 0; i < nbv_candidates->vn; i++)
+    {
+      CVertex& v = nbv_candidates->vert[i];
+      if (i >= topn)
+        v.is_ignore = true;
+    }
+  }
+  GlobalFun::deleteIgnore(nbv_candidates);
 
-  //sort(nbv_candidates->vert.begin(), nbv_candidates->vert.end(), cmp);
-  //if (nbv_candidates->vert.size() > topn)
-  //{
-  //  for (int i = 0; i < nbv_candidates->vn; i++)
-  //  {
-  //    CVertex& v = nbv_candidates->vert[i];
-  //    if (i >= topn)
-  //      v.is_ignore = true;
-  //  }
-  //}
-
-  //GlobalFun::deleteIgnore(nbv_candidates);
-
-  ofstream out;
+  /*ofstream out;
   out.open("aftere_prune_confidence.txt");
   for (int i = 0; i < nbv_candidates->vert.size(); ++i)
   {
-    out << nbv_candidates->vert[i].eigen_confidence <<endl;
+  out << nbv_candidates->vert[i].eigen_confidence <<endl;
   }
-  out.close();
+  out.close();*/
+
+  //save nbv candidates to scan candidates
+  for (int i = 0; i < nbv_candidates->vert.size(); ++i)
+  {
+    CVertex &v = nbv_candidates->vert[i];
+    scan_candidates->push_back(make_pair(v.P(), v.N()));
+  }
 }
 
 bool NBV::updateViewDirections()

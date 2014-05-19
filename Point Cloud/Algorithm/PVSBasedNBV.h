@@ -47,8 +47,12 @@ public:
   Boundary searchOneBoundaryFromDirection(int begin_idx, Point3f direction);
 
   //IEEE sphere
-  void buildSphereCandidates();
-  void computeScore();
+  void buildSphereCandidatesIEEE();
+  void computeScoreIEEE();
+  double areaFactorIEEE(double percentage, double optimum_percentage);
+  //distance should be normalized to 0~1
+  double navigationFactorIEEE(double distance, double rho = 0.2);
+  void updateIEEE();
 
 private:
   void runSearchNewBoundaries();
@@ -69,6 +73,7 @@ private:
   CMesh                 *pvs;
   CMesh                 *detect_result;
   vector<Boundary>      *m_v_boundaries;
+  CMesh                 *coarse_candidates;
   CMesh                 *nbv_candidates;
   vector<ScanCandidate> *scan_candidates;
   vector<ScanCandidate> *scan_history;

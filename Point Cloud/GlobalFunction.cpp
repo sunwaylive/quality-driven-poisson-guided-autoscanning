@@ -749,7 +749,7 @@ double GlobalFun::computeRealAngleOfTwoVertor(Point3f v0, Point3f v1)
 	return angle;
 }
 
-double GlobalFun::computeTriangleArea_3(Point3f& v0, Point3f& v1, Point3f& v2)
+double inline GlobalFun::computeTriangleArea_3(Point3f& v0, Point3f& v1, Point3f& v2)
 {
   Point3f AB = v1 - v0;  //vector v0v1
   Point3f AC = v2 - v0;  //vector v0v2
@@ -775,7 +775,7 @@ bool GlobalFun::isPointInBoundingBox(Point3f &v0, CMesh *mesh, double delta)
     return false;
 }
 
-bool GlobalFun::isPointInTriangle_3(Point3f& v0, Point3f& v1, Point3f& v2, Point3f& p)
+bool inline GlobalFun::isPointInTriangle_3(Point3f& v0, Point3f& v1, Point3f& v2, Point3f& p)
 {
   double area1 = GlobalFun::computeTriangleArea_3(v0, v1, p);
   double area2 = GlobalFun::computeTriangleArea_3(v0, v2, p);
@@ -800,9 +800,8 @@ double GlobalFun::computeMeshLineIntersectPoint(const CMesh *target, const Point
       Point3f& v0 = target->face[f].V(0)->P();
       Point3f& v1 = target->face[f].V(1)->P();
       Point3f& v2 = target->face[f].V(2)->P();
-      Point3f e1 = v1 - v0;
-      Point3f e2 = v2 - v1;
-      Point3f face_norm = (e1 ^ e2).Normalize();
+
+      Point3f face_norm = target->face[f].cN();
       //if the face can't be seen, then continue
       if(face_norm * line_dir > 0) continue;
 
@@ -814,12 +813,6 @@ double GlobalFun::computeMeshLineIntersectPoint(const CMesh *target, const Point
 
       double tmp2 = 1.0f / tmp;
       double t = (v0 - p) * face_norm * tmp2;
-
-      /*double t = ( (v0.X() - p.X()) * face_norm.X() 
-      + (v0.Y() - p.Y()) * face_norm.Y() 
-      + (v0.Z() - p.Z()) * face_norm.Z() ) 
-      / ( face_norm.X() * line_dir.X() + face_norm.Y() * line_dir.Y() + face_norm.Z() * line_dir.Z() ) ;*/
-
       Point3f intersect_point = p + line_dir * t;
 
       if(GlobalFun::isPointInTriangle_3(v0, v1, v2, intersect_point)) 
@@ -834,10 +827,11 @@ double GlobalFun::computeMeshLineIntersectPoint(const CMesh *target, const Point
           result_normal = face_norm;
 
           //for visibility based NBV. classify the scanned points
-          if (computeRealAngleOfTwoVertor(face_norm, -line_dir) > 60)
-            is_barely_visible = true;
+          //TODO: open for visibility
+          /*if (computeRealAngleOfTwoVertor(face_norm, -line_dir) > 60)
+            is_barely_visible = true;*/
         }
-      }else continue;
+      }
     }
   });
 #else

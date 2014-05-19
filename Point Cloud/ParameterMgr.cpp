@@ -149,7 +149,7 @@ void ParameterMgr::initDrawerParameter()
 	drawer.addParam(new RichBool("Show Individual Color", true));
 	drawer.addParam(new RichBool("Use Color From Normal", false));
 	drawer.addParam(new RichBool("Use Differ Branch Color", false));
-	drawer.addParam(new RichBool("Show Confidence Color", false));
+	drawer.addParam(new RichBool("Show Confidence Color", true));
 
 	drawer.addParam(new RichDouble("Original Draw Width", 0.0015));
 	drawer.addParam(new RichDouble("Sample Draw Width", 0.005));
@@ -420,7 +420,7 @@ void ParameterMgr::initCameraParameter()
   //20 for sphere test, 30 for dancing children
   camera.addParam(new RichDouble("Camera Dist To Model", 30.0f)); //cm ((30.0f + 17.0f)/2 + 0.6 * 20.0f)
 
-  camera.addParam(new RichDouble("Camera Resolution",1.0f / 300.0f));
+  camera.addParam(new RichDouble("Camera Resolution",1.0f / 100.0f));
   camera.addParam(new RichDouble("Merge Confidence Threshold", 0.9f));
   camera.addParam(new RichDouble("Grid Step Size", -1));
 
@@ -442,7 +442,7 @@ void ParameterMgr::initNBVParameter()
   nbv.addParam(new RichBool("Run Propagate", false));
   nbv.addParam(new RichBool("Run Propagate One Point", false));
   nbv.addParam(new RichBool("Run Grid Segment", false));
-  nbv.addParam(new RichDouble("Merge Probability Pow", 3));
+  nbv.addParam(new RichDouble("Merge Probability Pow", 1));
   nbv.addParam(new RichBool("Run Viewing Clustering", false));
   nbv.addParam(new RichBool("Run View Prune", false));
   nbv.addParam(new RichBool("Run Extract Views Into Bins", false));
@@ -465,7 +465,7 @@ void ParameterMgr::initNBVParameter()
   nbv.addParam(new RichDouble("Confidence Filter Threshold", 0.6f));
   nbv.addParam(new RichDouble("Propagate One Point Index", 0));
   nbv.addParam(new RichInt("View Bin Each Axis", 10));
-  nbv.addParam(new RichDouble("View Prune Confidence Threshold", 0.5));
+  nbv.addParam(new RichDouble("View Prune Confidence Threshold", 0.9));
   nbv.addParam(new RichInt("NBV Top N", 10));
   nbv.addParam(new RichBool("Need Update Direction With More Overlaps", true));
 }  
@@ -473,6 +473,7 @@ void ParameterMgr::initNBVParameter()
 void ParameterMgr::initVisibilityBasedNBVParameter()
 {
   visibilityBasedNBV.addParam(new RichString("Algorithm Name", "visibility Based NBV"));
+  visibilityBasedNBV.addParam(new RichBool("IS Visibility Run", false));
   visibilityBasedNBV.addParam(new RichBool("Run Visibility Propagate", false));
   visibilityBasedNBV.addParam(new RichBool("Run Visibility Candidates Cluster", false));
   visibilityBasedNBV.addParam(new RichBool("Run Visibility Update", false));

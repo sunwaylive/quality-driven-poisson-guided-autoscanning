@@ -1884,7 +1884,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>563</y>
+       <y>593</y>
        <width>161</width>
        <height>31</height>
       </rect>
@@ -1897,7 +1897,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>606</y>
+       <y>636</y>
        <width>161</width>
        <height>31</height>
       </rect>
@@ -1936,7 +1936,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>650</y>
+       <y>680</y>
        <width>161</width>
        <height>31</height>
       </rect>
@@ -1949,7 +1949,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>690</y>
+       <y>720</y>
        <width>161</width>
        <height>31</height>
       </rect>
@@ -1962,7 +1962,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>720</y>
+       <y>750</y>
        <width>441</width>
        <height>16</height>
       </rect>
@@ -2039,7 +2039,7 @@
       <number>1000</number>
      </property>
      <property name="value">
-      <number>300</number>
+      <number>80</number>
      </property>
     </widget>
     <widget class="QLabel" name="label_27">
@@ -2053,6 +2053,19 @@
      </property>
      <property name="text">
       <string>Camera Res</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_28">
+     <property name="geometry">
+      <rect>
+       <x>12</x>
+       <y>560</y>
+       <width>181</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Poisson surface reconstruction</string>
      </property>
     </widget>
    </widget>

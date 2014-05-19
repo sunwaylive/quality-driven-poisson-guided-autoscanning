@@ -273,8 +273,8 @@ void VisibilityBasedNBV::runVisibilityUpdate()
       Point3f view_dir = scan_history->at(j).second;
      
       bool is_wv = isPointWellVisible(v, view_pos, view_dir, target_mesh);
-      if (is_wv)
-        std::cout<<"well see!: "<< is_wv <<std::endl;
+      /*if (is_wv)
+        std::cout<<"well see!: "<< is_wv <<std::endl;*/
 
       v.is_barely_visible = (v.is_barely_visible && !is_wv);  //make sure all view point can't well-see v.
     }
@@ -317,7 +317,6 @@ bool VisibilityBasedNBV::isPointWellVisible(const CVertex &target, const Point3f
   Point3f target_line = target.P() - view_pos;//end - start
   double angle = GlobalFun::computeRealAngleOfTwoVertor(target_line, view_dir);
   double d = GlobalFun::computeEulerDist(target.P(), view_pos);
-
 
   if (target.m_index == 0 || target.m_index == 2032)
   {
