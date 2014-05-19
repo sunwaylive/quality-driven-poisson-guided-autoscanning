@@ -413,7 +413,7 @@ void ParameterMgr::initCameraParameter()
 
 
   camera.addParam(new RichDouble("Optimal Plane Width", 4.0f));    //cm
-  camera.addParam(new RichDouble("Predicted Model Size", 20.0f));  //cm lion:20
+  camera.addParam(new RichDouble("Predicted Model Size", 37.0f));  //cm lion:20
   camera.addParam(new RichDouble("Camera Horizon Dist", 14.0f));   //cm
   camera.addParam(new RichDouble("Camera Vertical Dist", 18.0f));  //cm
   camera.addParam(new RichDouble("Camera FOV Angle", 28.07)); // tan-1(Vert_dist/2 / far_dist)
@@ -475,7 +475,6 @@ void ParameterMgr::initNBVParameter()
 void ParameterMgr::initVisibilityBasedNBVParameter()
 {
   visibilityBasedNBV.addParam(new RichString("Algorithm Name", "visibility Based NBV"));
-  visibilityBasedNBV.addParam(new RichBool("IS Visibility Run", false));
   visibilityBasedNBV.addParam(new RichBool("Run Visibility Propagate", false));
   visibilityBasedNBV.addParam(new RichBool("Run Visibility Candidates Cluster", false));
   visibilityBasedNBV.addParam(new RichBool("Run Visibility Update", false));

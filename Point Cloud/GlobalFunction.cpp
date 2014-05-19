@@ -828,8 +828,8 @@ double GlobalFun::computeMeshLineIntersectPoint(const CMesh *target, const Point
 
           //for visibility based NBV. classify the scanned points
           //TODO: open for visibility
-          /*if (computeRealAngleOfTwoVertor(face_norm, -line_dir) > 60)
-            is_barely_visible = true;*/
+          if (computeRealAngleOfTwoVertor(face_norm, -line_dir) > 60)
+            is_barely_visible = true;
         }
       }
     }

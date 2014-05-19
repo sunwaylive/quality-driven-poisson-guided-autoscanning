@@ -1664,13 +1664,11 @@ void GLArea::runVisibilityBasedNBV()
     std::cout<<"original point empty! Quit!" <<std::endl;
     return;
   }
-  global_paraMgr.visibilityBasedNBV.setValue("Is Visibility Run", BoolValue(true));
   runPointCloudAlgorithm(visibilityBasedNBV);
 
   para->setValue("Running Algorithm Name", 
     StringValue(visibilityBasedNBV.getParameterSet()->getString("Algorithm Name")));
   emit needUpdateStatus();
-  global_paraMgr.visibilityBasedNBV.setValue("Is Visibility Run", BoolValue(false));
 }
 
 void GLArea::runPVSBasedNBV()
