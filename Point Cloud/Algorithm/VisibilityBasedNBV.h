@@ -23,6 +23,8 @@ public:
 private:
   void runVisibilityPropagate();
   void runVisibilityCandidatesCluster();
+  void runVisibilityCandidatesPick(); // wsh 5-19
+
   void runVisibilityMerge();
   void runVisibilityUpdate();
   void runVisibilitySmooth();
