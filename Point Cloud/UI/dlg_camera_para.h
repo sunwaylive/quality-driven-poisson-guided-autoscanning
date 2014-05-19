@@ -113,6 +113,7 @@ public:
     void visibilityFirstScan();
     void visibilityPropagate();
     void visibilityCandidatesCluster();
+    void visibilityCandidatesPick();
     void visibilityCandidateScan();
     void visibilityUpdate();
     void visibilityMerge();

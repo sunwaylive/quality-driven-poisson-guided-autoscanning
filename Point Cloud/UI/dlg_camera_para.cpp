@@ -104,6 +104,8 @@ void CameraParaDlg::initConnects()
   connect(ui->pushButton_visibility_first_scan, SIGNAL(clicked()), this, SLOT(visibilityFirstScan()));
   connect(ui->pushButton_visibility_propagete, SIGNAL(clicked()), this, SLOT(visibilityPropagate()));
   connect(ui->pushButton_visibility_cluster, SIGNAL(clicked()), this, SLOT(visibilityCandidatesCluster()));
+  connect(ui->pushButton_visibility_pick, SIGNAL(clicked()), this, SLOT(visibilityCandidatesPick()));
+  
   connect(ui->pushButton_visibility_NBV_scan, SIGNAL(clicked()), this, SLOT(visibilityCandidateScan()));
   connect(ui->pushButton_visibility_merge, SIGNAL(clicked()), this, SLOT(visibilityMerge()));
   connect(ui->pushButton_visibility_update, SIGNAL(clicked()), this, SLOT(visibilityUpdate()));
@@ -1492,6 +1494,22 @@ void CameraParaDlg::visibilityCandidatesCluster()
   updateTableViewNBVCandidate();
 }
 
+//void CameraParaDlg::visibilityCandidatesCluster()
+//{
+//  global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Candidates Cluster", BoolValue(true));
+//  area->runVisibilityBasedNBV();
+//  global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Candidates Cluster", BoolValue(false));
+//  updateTableViewNBVCandidate();
+//}
+
+void CameraParaDlg::visibilityCandidatesPick()
+{
+  global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Candidates Pick", BoolValue(true));
+  area->runVisibilityBasedNBV();
+  global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Candidates Pick", BoolValue(false));
+  updateTableViewNBVCandidate();
+}
+
 void CameraParaDlg::visibilityCandidateScan()
 {
   global_paraMgr.camera.setValue("Run NBV Scan", BoolValue(true));
@@ -1526,6 +1544,7 @@ void CameraParaDlg::runVisibilityOneKeyNbvIteration()
   {
     visibilityPropagate();
     visibilityCandidatesCluster();
+    visibilityCandidatesPick();
     visibilityCandidateScan();
     //merge scanned point to original
     visibilityMerge();
