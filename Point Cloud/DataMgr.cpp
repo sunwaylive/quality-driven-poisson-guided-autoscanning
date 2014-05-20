@@ -14,7 +14,6 @@ DataMgr::DataMgr(RichParameterSet* _para)
 
   loadCommonTransform();
 
-
   //scanner_position = Point3f(184, -7, -254); //gundam 1-18
 
   //scanner_position = Point3f(64, -12, -302); //opera 5-11
@@ -46,23 +45,22 @@ void DataMgr::initDefaultScanCamera()
 {
   double predict_size = global_paraMgr.camera.getDouble("Predicted Model Size");
   double far_dist = global_paraMgr.camera.getDouble("Camera Far Distance") / predict_size;
-  double dist_to_model = global_paraMgr.camera.getDouble("Camera Dist To Model") / predict_size;
   //default cameras for initial scanning, pair<pos, direction>
   //x axis
-  init_scan_candidates.push_back(make_pair(Point3f(1.0f * dist_to_model, 0.0f, 0.0f), Point3f(-1.0f, 0.0f, 0.0f)));
-  init_scan_candidates.push_back(make_pair(Point3f(-1.0f * dist_to_model, 0.0f, 0.0f), Point3f(1.0f, 0.0f, 0.0f)));
+  init_scan_candidates.push_back(make_pair(Point3f(1.0f * far_dist, 0.0f, 0.0f), Point3f(-1.0f, 0.0f, 0.0f)));
+  init_scan_candidates.push_back(make_pair(Point3f(-1.0f * far_dist, 0.0f, 0.0f), Point3f(1.0f, 0.0f, 0.0f)));
   //z axis
-  init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f * dist_to_model), Point3f(0.0f, 0.0f, -1.0f)));
-  init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, -1.0f * dist_to_model), Point3f(0.0f, 0.0f, 1.0f)));
+  init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f * far_dist), Point3f(0.0f, 0.0f, -1.0f)));
+  init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, -1.0f * far_dist), Point3f(0.0f, 0.0f, 1.0f)));
   //y axis
   /*init_scan_candidates.push_back(make_pair(Point3f(0.0f, 1.0f, 0.0f), Point3f(0.0f, -1.0f, 0.0f)));
   init_scan_candidates.push_back(make_pair(Point3f(0.0f, -1.0f, 0.0f), Point3f(0.0f, 1.0f, 0.0f)));*/
 
   //this should be deleted, for UI debug
   //for test
-  scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f * dist_to_model), Point3f(0.0f, 0.0f, -1.0f)));
+  scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f * far_dist), Point3f(0.0f, 0.0f, -1.0f)));
   //x axis
-  scan_candidates.push_back(make_pair(Point3f(1.0f * dist_to_model, 0.0f, 0.0f), Point3f(-1.0f, 0.0f, 0.0f)));
+  scan_candidates.push_back(make_pair(Point3f(1.0f * far_dist, 0.0f, 0.0f), Point3f(-1.0f, 0.0f, 0.0f)));
   //scan_candidates.push_back(make_pair(Point3f(-1.0f, 0.0f, 0.0f), Point3f(1.0f, 0.0f, 0.0f)));
   ////y axis
   //scan_candidates.push_back(make_pair(Point3f(0.0f, 1.0f, 0.0f), Point3f(0.0f, -1.0f, 0.0f)));

@@ -1089,6 +1089,7 @@ void NBV::viewPrune()
   }
   GlobalFun::deleteIgnore(nbv_candidates);
   cout << "after top N candidate num: " <<nbv_candidates->vert.size() <<endl;
+
 }
 
 //void NBV::viewPrune()
