@@ -250,8 +250,6 @@ void GLArea::paintGL()
 
     if(para->getBool("Show Samples"))  
     {
-
-
       if (!dataMgr.isSamplesEmpty() && para->getBool("Show Model"))
       {
         glw.m = dataMgr.getCurrentSamples();

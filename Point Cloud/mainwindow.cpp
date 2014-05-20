@@ -1101,14 +1101,21 @@ void MainWindow::addSamplesToOriginal()
   CMesh* samples = area->dataMgr.getCurrentSamples();
   CMesh* original = area->dataMgr.getCurrentOriginal();
 
+  samples->face.clear();
+  original->face.clear();
+
+  int idx = original->vert.back().m_index + 1;
+
   for (int i = 0; i < samples->vert.size(); i++)
   {
     CVertex t = samples->vert[i];
     t.is_original = true;
-    t.m_index = original->vert.size() + i;
+    t.m_index = idx++;
 
     original->vert.push_back(t);
+    original->bbox.Add(t.P());
   }
+  original->vn = original->vert.size();
 }
 
 void MainWindow::deleteIgnore()

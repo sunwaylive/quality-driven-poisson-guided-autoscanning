@@ -285,7 +285,7 @@ GLColor GLDrawer::getColorByType(CVertex& v)
   if (v.is_fixed_sample)
 	{
     if (v.IsB())  return cPink;
-    else return feature_color;
+    else return cRed;
 	}
 
   if (v.is_field_grid)
@@ -675,7 +675,6 @@ void GLDrawer::glDrawBranches(vector<Branch>& branches, GLColor gl_color)
 		{
 			Point3f p0 = curve[0];
 			glDrawSphere(p0, GLColor(cBlue), skel_node_size, 40);
-
 		}
 		Point3f p0, p1;
 		double size_scale = 0.5;
