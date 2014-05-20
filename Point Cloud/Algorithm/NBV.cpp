@@ -1045,7 +1045,8 @@ void NBV::viewPrune()
     }
   }
   GlobalFun::deleteIgnore(nbv_candidates);
-    vector<CVertex> new_candidates;
+  
+  vector<CVertex> new_candidates;
   for (int i = 0; i < nbv_candidates->vert.size(); ++i)
   {
     CVertex &v = nbv_candidates->vert[i];
@@ -1087,7 +1088,7 @@ void NBV::viewPrune()
     //new_candidates.push_back(new_v);
   }
   GlobalFun::deleteIgnore(nbv_candidates);
-  cout << "after View Prune candidate num: " <<nbv_candidates->vert.size() <<endl;
+  cout << "after top N candidate num: " <<nbv_candidates->vert.size() <<endl;
 }
 
 //void NBV::viewPrune()

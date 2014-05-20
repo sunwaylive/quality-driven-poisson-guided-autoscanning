@@ -1,5 +1,11 @@
 #include "VisibilityBasedNBV.h"
 
+
+bool VisibilityBasedNBV::cmp2(const CVertex &v1, const CVertex &v2)
+{
+  return v1.neighbor_num > v2.neighbor_num;
+}
+
 double VisibilityBasedNBV::general_radius = 0.5;
 
 VisibilityBasedNBV::VisibilityBasedNBV(RichParameterSet* _para)
@@ -84,6 +90,8 @@ void VisibilityBasedNBV::clear()
 
 void VisibilityBasedNBV::runVisibilityPropagate()
 {
+  GlobalFun::clearCMesh(*nbv_candidates);
+
   int index = 0;
   for (int i = 0; i < original->vert.size(); ++i)
   {
@@ -92,7 +100,6 @@ void VisibilityBasedNBV::runVisibilityPropagate()
     {
       CVertex p;
       p.P() = v.P() + v.N() * optimalDist;
-
       p.N() = -v.N();
       p.m_index = index++;
       nbv_candidates->vert.push_back(p);
@@ -112,7 +119,7 @@ void VisibilityBasedNBV::runVisibilityCandidatesCluster()
   }
 
   //double radius = 0.5 * 2; 
-  double radius = 8 * global_paraMgr.data.getDouble("CGrid Radius");
+  double radius = 5 * global_paraMgr.data.getDouble("CGrid Radius");
 
   double nbv_minimum_dist = radius / 2;
   double radius2 = radius * radius;
@@ -130,6 +137,13 @@ void VisibilityBasedNBV::runVisibilityCandidatesCluster()
     GlobalFun::computeBallNeighbors(nbv_candidates, NULL, radius, nbv_candidates->bbox);
 
     vector<CVertex> update_temp;
+
+    vector<Point3f> average_positons;
+    vector<Point3f> average_normals;
+    vector<float> sum_weights;
+    average_positons.assign(nbv_candidates->vert.size(), Point3f(0, 0, 0));
+    average_normals.assign(nbv_candidates->vert.size(), Point3f(0, 0, 0));
+    sum_weights.assign(nbv_candidates->vert.size(), 0);
 
     for(int i = 0; i < nbv_candidates->vert.size(); i++)
     {
@@ -153,95 +167,152 @@ void VisibilityBasedNBV::runVisibilityCandidatesCluster()
         double normal_weight = exp(-std::pow(1 - v.N() * t.N(), 2));
         double weight = dist_weight;
 
-        average_positon += t.P() * weight;
-        average_normal += t.N() * weight;
-        sum_weight += weight;
+        average_positons[i] += t.P() * weight;
+        average_normals[i] += t.N() * weight;
+        sum_weights[i] += weight;
       }
+      //update_temp.push_back(temp_v);
 
-      CVertex temp_v = v;
-      temp_v.P() = average_positon / sum_weight;
-      temp_v.N() = average_normal / sum_weight;
-      update_temp.push_back(temp_v);
-
-      double shift_dist = std::sqrt(static_cast<float>((temp_v.P() - v.P()).SquaredNorm()));
-      current_shift = current_shift < shift_dist ? current_shift : shift_dist;
+      //double shift_dist = std::sqrt(static_cast<float>((temp_v.P() - v.P()).SquaredNorm()));
+      //current_shift = current_shift < shift_dist ? current_shift : shift_dist;
     }
 
-    if (!update_temp.empty())
+    for(int i = 0; i < nbv_candidates->vert.size(); i++)
     {
-      nbv_candidates->vert.clear();
-      for (int k = 0; k < update_temp.size(); k++)
-        nbv_candidates->vert.push_back(update_temp[k]);
+      CVertex& v = nbv_candidates->vert[i];
+      if (sum_weights[i] < 1e-8) continue;
 
-      nbv_candidates->vn = nbv_candidates->vert.size(); 
-
-      update_temp.clear();
+      v.P() = average_positons[i] / sum_weights[i];
+      v.N() = average_normals[i] / sum_weights[i];
     }
+    //if (!update_temp.empty())
+    //{
+    //  nbv_candidates->vert.clear();
+    //  for (int k = 0; k < update_temp.size(); k++)
+    //    nbv_candidates->vert.push_back(update_temp[k]);
+
+    //  nbv_candidates->vn = nbv_candidates->vert.size(); 
+
+    //  update_temp.clear();
+    //}
   //}while(current_shift >= shift_dist_stop);
-
-
 }
 
 
 void VisibilityBasedNBV::runVisibilityCandidatesPick()
 {
-    //get selected NBV, select the one that has most candidate neighbors
-  double radius = 8 * global_paraMgr.data.getDouble("CGrid Radius");
+  double radius = 1 * global_paraMgr.data.getDouble("CGrid Radius");
   double nbv_select_radius = radius; 
   GlobalFun::computeBallNeighbors(nbv_candidates, NULL, nbv_select_radius, nbv_candidates->bbox);
-  int max_neighbors_num = nbv_candidates->vert[0].neighbors.size();
-  int second_max_neighbors_num = nbv_candidates->vert[0].neighbors.size();
-  int max_vert_index = 0;
-  int second_max_vert_index = 0;
-  for (int i=0; i < nbv_candidates->vert.size(); ++i)
+
+  double near_threshold = 0.00001;
+  double near_threshold2 = near_threshold * near_threshold;
+
+  vector<CVertex> cluster_centers;
+  for (int i = 0; i < nbv_candidates->vn; i++)
   {
-    if (nbv_candidates->vert[i].neighbors.size() > max_neighbors_num)
+    CVertex& v = nbv_candidates->vert[i];
+    v.neighbor_num = 0;
+    for (int j = 0; j < v.neighbors.size(); j++)
     {
-      max_vert_index = i;
-      max_neighbors_num = nbv_candidates->vert[i].neighbors.size();
-      std::cout<< i <<std::endl;
-    }else if (nbv_candidates->vert[i].neighbors.size() > second_max_vert_index)
-    {
-      second_max_vert_index = i;
-      second_max_neighbors_num = nbv_candidates->vert[i].neighbors.size();
+      CVertex& t = nbv_candidates->vert[v.neighbors[j]];
+
+      if (t.is_ignore) continue;
+
+      double dist2 = GlobalFun::computeEulerDistSquare(v.P(), t.P());
+      if (dist2 < near_threshold2)
+      {
+         v.neighbor_num++;
+         t.is_ignore = true;
+      }
     }
+    cluster_centers.push_back(v);
   }
+
   nbv_candidates->vert.clear();
-  nbv_candidates->vert.push_back(nbv_candidates->vert[max_vert_index]);
-  //nbv_candidates->vert.push_back(nbv_candidates->vert[second_max_vert_index]);
-
-  //check the minimum distance and store them in scan_candidates
-  scan_candidates->clear();
-  std::cout << "scan history size: " <<  scan_history->size() << std::endl;
-  for (int i = 0; i < nbv_candidates->vert.size(); ++i)
+  for (int i = 0; i < cluster_centers.size(); i++)
   {
-    CVertex &c = nbv_candidates->vert[i];
-    bool is_qualified = true;
+    nbv_candidates->vert.push_back(cluster_centers[i]);
+  }
+  nbv_candidates->vn = nbv_candidates->vert.size();
 
-    if (scan_history->empty())
+  //sort by the neighbor num
+  int topn = global_paraMgr.nbv.getInt("NBV Top N");
+  sort(nbv_candidates->vert.begin(), nbv_candidates->vert.end(), cmp2);
+  if (nbv_candidates->vert.size() > topn)
+  {
+    for (int i = 0; i < nbv_candidates->vn; i++)
     {
-      ScanCandidate s =  make_pair(nbv_candidates->vert[i].P(), nbv_candidates->vert[i].N());
-      scan_candidates->push_back(s);
-      continue;
-    }
-    
-    /* for (int j = 0; j < scan_history->size() && is_qualified; ++j)
-    {
-    if (GlobalFun::computeEulerDist(c.P(), scan_history->at(j).first) < nbv_minimum_dist)
-    {
-    std::cout<<" too near to former scan positions" <<std::endl;
-    is_qualified = false;
-    }
-    }*/
-
-    if (is_qualified)
-    {
-      ScanCandidate s =  make_pair(nbv_candidates->vert[i].P(), nbv_candidates->vert[i].N());
-      scan_candidates->push_back(s);
+      CVertex& v = nbv_candidates->vert[i];
+      if (i >= topn)
+        v.is_ignore = true;
     }
   }
+  GlobalFun::deleteIgnore(nbv_candidates);
 
-  std::cout<<"scan candidate size:" << scan_candidates->size() <<std::endl;
+  scan_candidates->clear();
+  for ( int i = 0; i < nbv_candidates->vert.size(); ++i)
+  {
+    ScanCandidate s =  make_pair(nbv_candidates->vert[i].P(), nbv_candidates->vert[i].N());
+    scan_candidates->push_back(s);
+  }
+  std::cout<<"scan candidates size: " <<scan_candidates->size() << std::endl;
+
+    //get selected NBV, select the one that has most candidate neighbors
+
+  //int max_neighbors_num = nbv_candidates->vert[0].neighbors.size();
+  //int second_max_neighbors_num = nbv_candidates->vert[0].neighbors.size();
+  //int max_vert_index = 0;
+  //int second_max_vert_index = 0;
+  //for (int i=0; i < nbv_candidates->vert.size(); ++i)
+  //{
+  //  if (nbv_candidates->vert[i].neighbors.size() > max_neighbors_num)
+  //  {
+  //    max_vert_index = i;
+  //    max_neighbors_num = nbv_candidates->vert[i].neighbors.size();
+  //    std::cout<< i <<std::endl;
+  //  }else if (nbv_candidates->vert[i].neighbors.size() > second_max_vert_index)
+  //  {
+  //    second_max_vert_index = i;
+  //    second_max_neighbors_num = nbv_candidates->vert[i].neighbors.size();
+  //  }
+  //}
+  //nbv_candidates->vert.clear();
+  //nbv_candidates->vert.push_back(nbv_candidates->vert[max_vert_index]);
+  ////nbv_candidates->vert.push_back(nbv_candidates->vert[second_max_vert_index]);
+
+  ////check the minimum distance and store them in scan_candidates
+  //scan_candidates->clear();
+  //std::cout << "scan history size: " <<  scan_history->size() << std::endl;
+  //for (int i = 0; i < nbv_candidates->vert.size(); ++i)
+  //{
+  //  CVertex &c = nbv_candidates->vert[i];
+  //  bool is_qualified = true;
+
+  //  if (scan_history->empty())
+  //  {
+  //    ScanCandidate s =  make_pair(nbv_candidates->vert[i].P(), nbv_candidates->vert[i].N());
+  //    scan_candidates->push_back(s);
+  //    continue;
+  //  }
+  //  
+  //  /* for (int j = 0; j < scan_history->size() && is_qualified; ++j)
+  //  {
+  //  if (GlobalFun::computeEulerDist(c.P(), scan_history->at(j).first) < nbv_minimum_dist)
+  //  {
+  //  std::cout<<" too near to former scan positions" <<std::endl;
+  //  is_qualified = false;
+  //  }
+  //  }*/
+
+  //  if (is_qualified)
+  //  {
+  //    ScanCandidate s =  make_pair(nbv_candidates->vert[i].P(), nbv_candidates->vert[i].N());
+  //    scan_candidates->push_back(s);
+  //  }
+  //}
+
+  //std::cout<<"scan candidate size:" << scan_candidates->size() <<std::endl;
   //if no scan_candidate is found, then quit
 
 }
@@ -402,6 +473,7 @@ void VisibilityBasedNBV::runVisibilityMerge()
       v.is_original = true;
       original->vert.push_back(v);
     }
+    std::cout<<original->vert.size() <<std::endl;
   }
   original->vn = original->vert.size();
 }

@@ -295,7 +295,7 @@ void GLArea::paintGL()
         {
           glDrawer.draw(GLDrawer::NORMAL, dataMgr.getNbvCandidates());
           //glDrawer.drawCandidatesAxis(dataMgr.getNbvCandidates());
-          drawCandidatesConnectISO();
+          //drawCandidatesConnectISO();
 
           if (para->getBool("Show NBV Label"))
           {

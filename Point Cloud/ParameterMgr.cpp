@@ -402,8 +402,8 @@ void ParameterMgr::initCameraParameter()
   camera.addParam(new RichBool("Show Camera Border", true));
 
 
-  camera.addParam(new RichDouble("Camera Far Distance", 30.0f));   //cm
-  camera.addParam(new RichDouble("Camera Near Distance", 17.0f));  //cm
+  camera.addParam(new RichDouble("Camera Far Distance", 25.0f));   //cm
+  camera.addParam(new RichDouble("Camera Near Distance", 10.0f));  //cm
   //camera.addParam(new RichDouble("Camera Far Distance", 24.8f));   //cm
   //camera.addParam(new RichDouble("Camera Near Distance", 19.6f));  //cm
   //camera.addParam(new RichDouble("Camera Far Distance", 22.2f));   //cm
@@ -420,7 +420,7 @@ void ParameterMgr::initCameraParameter()
   //20 for sphere test, 30 for dancing children
   camera.addParam(new RichDouble("Camera Dist To Model", 30.0f)); //cm ((30.0f + 17.0f)/2 + 0.6 * 20.0f)
 
-  camera.addParam(new RichDouble("Camera Resolution",1.0f / 100.0f));
+  camera.addParam(new RichDouble("Camera Resolution",1.0f / 110.0f));
   camera.addParam(new RichDouble("Merge Confidence Threshold", 0.9f));
   camera.addParam(new RichDouble("Grid Step Size", -1));
 
@@ -468,7 +468,7 @@ void ParameterMgr::initNBVParameter()
   nbv.addParam(new RichDouble("Propagate One Point Index", 0));
   nbv.addParam(new RichInt("View Bin Each Axis", 10));
   nbv.addParam(new RichDouble("View Prune Confidence Threshold", 0.9));
-  nbv.addParam(new RichInt("NBV Top N", 10));
+  nbv.addParam(new RichInt("NBV Top N", 3));
   nbv.addParam(new RichBool("Need Update Direction With More Overlaps", true));
 }  
 
@@ -477,6 +477,7 @@ void ParameterMgr::initVisibilityBasedNBVParameter()
   visibilityBasedNBV.addParam(new RichString("Algorithm Name", "visibility Based NBV"));
   visibilityBasedNBV.addParam(new RichBool("Run Visibility Propagate", false));
   visibilityBasedNBV.addParam(new RichBool("Run Visibility Candidates Cluster", false));
+  visibilityBasedNBV.addParam(new RichBool("Run Visibility Candidates Pick", false));
   visibilityBasedNBV.addParam(new RichBool("Run Visibility Update", false));
   visibilityBasedNBV.addParam(new RichBool("Run Visibility Merge", false));
   visibilityBasedNBV.addParam(new RichBool("Run Visibility One Key Iteration", false));

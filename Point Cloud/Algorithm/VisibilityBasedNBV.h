@@ -31,6 +31,8 @@ private:
   bool isPointWellVisible(const CVertex &target, const Point3f &view_pos, const Point3f &view_dir, const CMesh* mesh_surface);
   void runComputeCurrentVisibility();
 
+  static bool cmp2(const CVertex &v1, const CVertex &v2);
+
 private:
   RichParameterSet      *para;
   double                optimalDist;
