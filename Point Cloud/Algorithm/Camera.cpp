@@ -94,9 +94,10 @@ void vcc::Camera::runVirtualScan()
   int index = 0; 
   for (int i = - n_point_hr_half; i < n_point_hr_half; ++i)
   {
+    double i_res = i * resolution;
     for (int j = - n_point_ver_half; j < n_point_ver_half; ++j)
     {
-      Point3f viewray_end_iter = viewray_end + right * (i * resolution) + up * (j * resolution);
+      Point3f viewray_end_iter = viewray_end + right * i_res + up * (j * resolution);
       Point3f viewray_iter = viewray_end_iter - pos;
       //line direction vector
       Point3f line_dir = viewray_iter.Normalize();

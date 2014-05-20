@@ -622,8 +622,8 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
       if (k < 10)
         cout<<"sum_confidence: " << v_confidence[k] <<endl;
 
-      if (v_confidence[k] > merge_confidence_threshold 
-        || (1.0f * rand() / (RAND_MAX+1.0) > (pow((1 - v_confidence[k]), merge_pow) + probability_add_by_user))) //pow((1 - v_confidence[k]), merge_pow),(1 - pow(v_confidence[k], merge_pow))
+      if (/*v_confidence[k] > merge_confidence_threshold || */ 
+        (1.0f * rand() / (RAND_MAX+1.0) > (pow((1.0 - v_confidence[k]), merge_pow) + probability_add_by_user))) //pow((1 - v_confidence[k]), merge_pow)
       {
         v.is_ignore = true;
         skip_num++; 
@@ -659,6 +659,7 @@ void CameraParaDlg::mergeScannedMeshWithOriginalByHand()
   vector<CMesh* > *scanned_results = area->dataMgr.getScannedResults();
   double merge_confidence_threshold = global_paraMgr.camera.getDouble("Merge Confidence Threshold");
   int merge_pow = static_cast<int>(global_paraMgr.nbv.getDouble("Merge Probability Pow"));
+  double probability_add_by_user = 0.4;
   cout<< "merge_confidence_threshold: " <<merge_confidence_threshold <<endl;
 
   //wsh added 12-24
@@ -749,7 +750,7 @@ void CameraParaDlg::mergeScannedMeshWithOriginalByHand()
             cout<<"sum_confidence: " << v_confidence[k] <<endl;
 
           if (v_confidence[k] > merge_confidence_threshold 
-            || (1.0f * rand() / (RAND_MAX+1.0) > pow((1 - v_confidence[k]), merge_pow)))
+            || (1.0f * rand() / (RAND_MAX+1.0) > (pow((1.0 - v_confidence[k]), merge_pow) + probability_add_by_user)))
           {
             v.is_ignore = true;
             skip_num++; 
@@ -866,8 +867,7 @@ void CameraParaDlg::getRayResolutionPara(double _val)
 }
 
 
-void
-  CameraParaDlg::buildGrid()
+void CameraParaDlg::buildGrid()
 {
   global_paraMgr.nbv.setValue("Run Build Grid", BoolValue(true));
   area->runNBV();
@@ -1554,6 +1554,7 @@ void CameraParaDlg::runVisibilityOneKeyNbvIteration()
    
     QString file_name;
     file_name.sprintf("\\%d_original.skel", i);
+    std::cout<<i <<"th: save visibility original" <<std::endl;
     file_name = file_location + file_name;
     area->dataMgr.saveSkeletonAsSkel(file_name);
   }
@@ -1641,7 +1642,7 @@ void CameraParaDlg::pvsMerge()
 void CameraParaDlg::pvsOneKeyNbvIteration()
 {
   std::cout <<"One Key PVS NBV Begins:" <<std::endl;
-  int count = 30;
+  int count = 100;
   //save the results
   QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
   if (!file_location.size()) return;

@@ -172,6 +172,7 @@ public:
     float weight_sum; //
     int remember_iso_index;
     float ground_angle;
+    int neighbor_num;
   };
 	
 public:

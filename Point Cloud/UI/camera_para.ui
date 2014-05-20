@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>4</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -1638,7 +1638,7 @@
       <rect>
        <x>170</x>
        <y>70</y>
-       <width>61</width>
+       <width>81</width>
        <height>31</height>
       </rect>
      </property>
@@ -1701,7 +1701,7 @@
     <widget class="QLabel" name="label_24">
      <property name="geometry">
       <rect>
-       <x>300</x>
+       <x>310</x>
        <y>80</y>
        <width>41</width>
        <height>16</height>
@@ -1897,7 +1897,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>563</y>
+       <y>593</y>
        <width>161</width>
        <height>31</height>
       </rect>
@@ -1910,7 +1910,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>606</y>
+       <y>636</y>
        <width>161</width>
        <height>31</height>
       </rect>
@@ -1949,7 +1949,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>650</y>
+       <y>680</y>
        <width>161</width>
        <height>31</height>
       </rect>
@@ -1962,7 +1962,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>690</y>
+       <y>720</y>
        <width>161</width>
        <height>31</height>
       </rect>
@@ -1975,7 +1975,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>720</y>
+       <y>750</y>
        <width>441</width>
        <height>16</height>
       </rect>
@@ -2052,7 +2052,7 @@
       <number>1000</number>
      </property>
      <property name="value">
-      <number>300</number>
+      <number>110</number>
      </property>
     </widget>
     <widget class="QLabel" name="label_27">
@@ -2066,6 +2066,19 @@
      </property>
      <property name="text">
       <string>Camera Res</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_28">
+     <property name="geometry">
+      <rect>
+       <x>12</x>
+       <y>560</y>
+       <width>181</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Poisson surface reconstruction</string>
      </property>
     </widget>
     <widget class="QPushButton" name="pushButton_compute_current_visibility">
@@ -2084,7 +2097,7 @@
     <widget class="QPushButton" name="pushButton_visibility_pick">
      <property name="geometry">
       <rect>
-       <x>240</x>
+       <x>250</x>
        <y>70</y>
        <width>61</width>
        <height>31</height>

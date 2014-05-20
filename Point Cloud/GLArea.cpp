@@ -295,7 +295,7 @@ void GLArea::paintGL()
         {
           glDrawer.draw(GLDrawer::NORMAL, dataMgr.getNbvCandidates());
           //glDrawer.drawCandidatesAxis(dataMgr.getNbvCandidates());
-          drawCandidatesConnectISO();
+          //drawCandidatesConnectISO();
 
           if (para->getBool("Show NBV Label"))
           {
@@ -713,7 +713,6 @@ void GLArea::runPointCloudAlgorithm(PointCloudAlgorithm& algorithm)
   paintMutex.unlock();
 }
 
-
 void GLArea::openByDrop(QString fileName)
 {
   if(fileName.endsWith("ply"))
@@ -806,6 +805,11 @@ void GLArea::openByDrop(QString fileName)
 void GLArea::loadDefaultModel()
 {
   dataMgr.loadPlyToModel("model.ply");
+  vcg::tri::UpdateNormals<CMesh>::PerFace(*dataMgr.getCurrentModel());
+  int f_size = dataMgr.getCurrentModel()->face.size();
+  for (int f = 0; f < f_size; ++f)
+    dataMgr.getCurrentModel()->face[f].N().Normalize();
+
   //dataMgr.loadPlyToModel("box_model.ply");  
   //dataMgr.loadSkeletonFromSkel("child.skel");
   //dataMgr.loadPlyToOriginal("child_original.ply");
@@ -1660,7 +1664,6 @@ void GLArea::runVisibilityBasedNBV()
     std::cout<<"original point empty! Quit!" <<std::endl;
     return;
   }
-
   runPointCloudAlgorithm(visibilityBasedNBV);
 
   para->setValue("Running Algorithm Name", 

@@ -758,7 +758,7 @@ void NBV::viewExtractionIntoBins(int view_bin_each_axis)
     double dist_to_correspondese = GlobalFun::computeEulerDistSquare(v.P(), iso_points->vert[v.remember_iso_index].P());
 
     if ( /*dist_to_correspondese <= camera_near_dist
-         || dist_to_correspondese >= camera_far_dist
+         || dist_to_correspondese >= camera_far_distviewpru
          || */GlobalFun::isPointInBoundingBox(v.P(), model, bin_length_x))
     {
       v.is_ignore = true;
@@ -1029,7 +1029,23 @@ void NBV::viewPrune()
     }
   }
 
+  GlobalFun::deleteIgnore(nbv_candidates);
+  cout << "after View Prune candidates num: " <<nbv_candidates->vert.size() <<endl;
 
+  //get the top n = 4
+  int topn = global_paraMgr.nbv.getInt("NBV Top N");
+  sort(nbv_candidates->vert.begin(), nbv_candidates->vert.end(), cmp);
+  if (nbv_candidates->vert.size() > topn)
+  {
+    for (int i = 0; i < nbv_candidates->vn; i++)
+    {
+      CVertex& v = nbv_candidates->vert[i];
+      if (i >= topn)
+        v.is_ignore = true;
+    }
+  }
+  GlobalFun::deleteIgnore(nbv_candidates);
+  
   vector<CVertex> new_candidates;
   for (int i = 0; i < nbv_candidates->vert.size(); ++i)
   {
@@ -1071,14 +1087,8 @@ void NBV::viewPrune()
     v.N() = new_v.N();
     //new_candidates.push_back(new_v);
   }
-  //for (int i = 0; i < new_candidates.size(); i++)
-  //{
-  //  nbv_candidates->vert.push_back(new_candidates[i]);
-  //}
-
-
   GlobalFun::deleteIgnore(nbv_candidates);
-  cout << "after View Prune candidate num: " <<nbv_candidates->vert.size() <<endl;
+  cout << "after top N candidate num: " <<nbv_candidates->vert.size() <<endl;
 }
 
 //void NBV::viewPrune()
