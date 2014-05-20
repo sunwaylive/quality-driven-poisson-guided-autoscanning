@@ -26,7 +26,7 @@ void CameraParaDlg::initConnects()
   connect(ui->pushButton_view_prune, SIGNAL(clicked()), this, SLOT(runViewPrune()));
   connect(ui->pushButton_show_candidate_index, SIGNAL(clicked()), this, SLOT(showCandidateIndex()));
   connect(ui->pushButton_load_real_initial_scan, SIGNAL(clicked()), this, SLOT(loadRealInitialScan()));
-  connect(ui->pushButton_load_real_scan, SIGNAL(clicked()), this, SLOT(loadRealScan()));
+  connect(ui->pushButton_load_real_scan, SIGNAL(clicked()), this, SLOT(loadRealScans()));
   connect(ui->spinBox_nbv_iteration_count, SIGNAL(valueChanged(int)), this, SLOT(getNbvIterationCount(int)));
   connect(ui->spinBox_nbv_top_n, SIGNAL(valueChanged(int)), this, SLOT(getNBVTopN(int)));
   connect(ui->pushButton_one_key_nbv_iteration, SIGNAL(clicked()), this, SLOT(runOneKeyNbvIteration()));
@@ -323,7 +323,7 @@ void CameraParaDlg::NBVCandidatesScanByHand()
   updateTabelViewScanResults();
 }
 
-void CameraParaDlg::loadRealScan()
+void CameraParaDlg::loadRealScans()
 {
   QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
   if (!file_location.size()) 
@@ -337,8 +337,10 @@ void CameraParaDlg::loadRealScan()
   dir.setSorting(QDir::Name);
   QFileInfoList list = dir.entryInfoList();
 
-  CMesh *original = area->dataMgr.getCurrentOriginal();
-  vector< CMesh* > *sc = area->dataMgr.getScannedResults();
+  CMesh *sample = area->dataMgr.getCurrentSamples();
+  //compute radius
+  area->dataMgr.downSamplesByNum();
+  area->initSetting();
 
   for (int i = 0; i < list.size(); ++i)
   {
@@ -349,15 +351,37 @@ void CameraParaDlg::loadRealScan()
       continue;
 
     f_name = file_location + "\\" + f_name;
-    CMesh *real_scan = new CMesh;
     int mask = tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL;
-    tri::io::ImporterPLY<CMesh>::Open(*real_scan, f_name.toAscii().data(), mask);
-    sc->push_back(real_scan);
+    tri::io::ImporterPLY<CMesh>::Open(*sample, f_name.toAscii().data(), mask);
+    //save black original points and red sample points
+    area->update();
+    area->saveSnapshot();
+    area->update();
 
-    if (original == NULL)
-      cout << "Empty original, real scans unable to ICP on original!" <<endl;
-    else
-      GlobalFun::computeICP(original, real_scan);
+    //save poisson surface reconstruction
+    global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(true));
+    global_paraMgr.poisson.setValue("Run Generate Poisson Field", BoolValue(true));
+    area->runPoisson();
+    global_paraMgr.poisson.setValue("Run Generate Poisson Field", BoolValue(false));
+    global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(false));
+
+    //save poisson surface "copy poisson_out.ply file_location\\%d_poisson_out.ply"
+    cout<<"begin to copy poisson_surface" <<endl;
+    QString s_poisson_surface;
+    s_poisson_surface.sprintf("\\..\\poisson\\%d_poisson_out.ply", i);
+    QString s_cmd_copy_poisson = "copy poisson_out.ply ";
+    s_cmd_copy_poisson += file_location;
+    s_cmd_copy_poisson += s_poisson_surface;
+    cout << s_cmd_copy_poisson.toStdString() <<endl;
+    system(s_cmd_copy_poisson.toAscii().data());
+    cout<<"end to copy poisson_surface" <<endl;
+
+    //save after-merge original points
+    runAddSamplesToOiriginal();
+    GlobalFun::clearCMesh(*sample);
+    area->update();
+    area->saveSnapshot();
+    area->update();
   }
 }
 
@@ -1438,14 +1462,23 @@ void CameraParaDlg::runAddSamplesToOiriginal()
   CMesh* samples = area->dataMgr.getCurrentSamples();
   CMesh* original = area->dataMgr.getCurrentOriginal();
 
+  samples->face.clear();
+  original->face.clear();
+
+  int idx = original->vert.back().m_index + 1;
+
   for (int i = 0; i < samples->vert.size(); i++)
   {
     CVertex t = samples->vert[i];
     t.is_original = true;
-    t.m_index = original->vert.size() + i;
+    t.m_index = idx++;
 
     original->vert.push_back(t);
+    original->bbox.Add(t.P());
   }
+  original->vn = original->vert.size();
+
+
 }
 
 void CameraParaDlg::runICP()

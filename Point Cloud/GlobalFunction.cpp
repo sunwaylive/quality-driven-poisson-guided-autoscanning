@@ -1095,7 +1095,7 @@ GlobalFun::computeICP(CMesh *dst, CMesh *src)
     //t.P()[0] = p[0];
     //t.P()[1] = p[1];
     //t.P()[2] = p[2];
-    //dst->vert.push_back(t);
+    //dst->vert.push_back(t);f
     //dst->bbox.Add(t.P());
   }
   dst->vn = dst->vert.size();

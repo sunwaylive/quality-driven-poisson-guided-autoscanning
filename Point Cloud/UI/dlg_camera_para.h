@@ -30,7 +30,7 @@ public:
     void initialScan();
     void NBVCandidatesScan();
     void NBVCandidatesScanByHand();
-    void loadRealScan();
+    void loadRealScans();
     void loadRealInitialScan();
     void showInitCameras(bool is_show);
     void showCameraBorder(bool is_show);
