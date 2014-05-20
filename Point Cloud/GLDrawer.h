@@ -75,8 +75,10 @@ public:
   void drawCandidatesAxis(CMesh *mesh);
   void drawMeshLables(CMesh *mesh, QPainter *painter);
 
+  GLColor getColorByType(CVertex& v);
+
 private:
-	GLColor getColorByType(CVertex& v);
+	
 	void draw(DrawType type);
 	bool isCanSee(const Point3f& pos,  const Point3f& normal);
 

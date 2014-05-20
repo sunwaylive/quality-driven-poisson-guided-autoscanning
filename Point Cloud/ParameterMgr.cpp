@@ -477,6 +477,8 @@ void ParameterMgr::initVisibilityBasedNBVParameter()
   visibilityBasedNBV.addParam(new RichString("Algorithm Name", "visibility Based NBV"));
   visibilityBasedNBV.addParam(new RichBool("Run Visibility Propagate", false));
   visibilityBasedNBV.addParam(new RichBool("Run Visibility Candidates Cluster", false));
+  visibilityBasedNBV.addParam(new RichBool("Run Visibility Candidates Pick", false));
+  
   visibilityBasedNBV.addParam(new RichBool("Run Visibility Update", false));
   visibilityBasedNBV.addParam(new RichBool("Run Visibility Merge", false));
   visibilityBasedNBV.addParam(new RichBool("Run Visibility One Key Iteration", false));

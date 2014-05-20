@@ -1,4 +1,5 @@
 #include "DataMgr.h"
+#include "GLDrawer.h"
 
 DataMgr::DataMgr(RichParameterSet* _para)
 {
@@ -20,7 +21,9 @@ DataMgr::DataMgr(RichParameterSet* _para)
 
   //scanner_position = Point3f(234, -5, -245); //violin 1-19
 
-  scanner_position = Point3f(232, -21, -243); //church 5-10
+  //scanner_position = Point3f(232, -21, -243); //church 5-10
+
+  scanner_position = Point3f(134, 13, -293); //sheep 5-19
 
   slices.assign(3, Slice());
 }
@@ -724,12 +727,25 @@ void DataMgr::subSamples()
 
 void DataMgr::savePly(QString fileName, CMesh& mesh)
 {
-  int mask= tri::io::Mask::IOM_VERTNORMAL ;
-  mask += tri::io::Mask::IOM_VERTCOLOR;
-  //mask += tri::io::Mask::IOM_ALL;
+  //int mask= tri::io::Mask::IOM_VERTNORMAL ;
+  //mask += tri::io::Mask::IOM_VERTCOLOR;
+  int mask = tri::io::Mask::IOM_ALL;
   //mask += tri::io::Mask::IOM_BITPOLYGONAL;
   //mask += tri::io::Mask::IOM_FACEINDEX;
 
+  //GLDrawer drawer(global_paraMgr.getDrawerParameterSet());
+  //for (int i = 0; i < mesh.vert.size(); i++)
+  //{
+  //  CVertex& v = mesh.vert[i];
+  //  GLColor c = drawer.getColorByType(v);
+  //  ////QColor qc(c.r * 255.0, c.g * 255.0, c.b * 255.0);
+  //  //vcg::Color4f color;
+  //  //color.X() = c.r * 255.0;
+  //  //color.Y() = c.g * 255.0;
+  //  //color.Z() = c.b * 255.0;
+  //  v.C().SetRGB(255, 0, 0);
+
+  //}
   if (fileName.endsWith("ply"))
     tri::io::ExporterPLY<CMesh>::Save(mesh, fileName.toAscii().data(), mask, false);
 }

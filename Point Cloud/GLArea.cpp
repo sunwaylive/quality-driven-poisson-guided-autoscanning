@@ -2948,36 +2948,38 @@ void GLArea::drawCandidatesConnectISO()
 
   glLineWidth(width);
 
+
+
   //CMesh* candidates = dataMgr.getNbvCandidates();
-  CMesh* iso_points = dataMgr.getCurrentIsoPoints();
+  //CMesh* iso_points = dataMgr.getCurrentIsoPoints();
 
-  for (int i = 0; i < candidates->vert.size(); i++)
-  {
-    CVertex& v = candidates->vert[i];
+  //for (int i = 0; i < candidates->vert.size(); i++)
+  //{
+  //  CVertex& v = candidates->vert[i];
 
-    glLineWidth(width); 
-    GLColor color(qcolor);
+  //  glLineWidth(width); 
+  //  GLColor color(qcolor);
 
-    glColor4f(color.r, color.g, color.b, 1);  
-    glColor3f(0, 0, 1);
+  //  glColor4f(color.r, color.g, color.b, 1);  
+  //  glColor3f(0, 0, 1);
 
-    Point3f p = v.P(); 
-    Point3f m0 = v.N();
-    Point3f m1 = v.eigen_vector0;
-    Point3f m2 = v.eigen_vector1;
+  //  Point3f p = v.P(); 
+  //  Point3f m0 = v.N();
+  //  Point3f m1 = v.eigen_vector0;
+  //  Point3f m2 = v.eigen_vector1;
 
-    int remember_index = v.remember_iso_index;
-    if (remember_index < 0 || v.remember_iso_index > iso_points->vert.size())
-    {
-      continue;
-    }
-    CVertex tp = iso_points->vert.at(remember_index);
-    // Z
-    glBegin(GL_LINES);	
-    glVertex3d(p[0], p[1], p[2]);
-    glVertex3f(tp[0], tp[1], tp[2]);
-    glEnd(); 
-  }
+  //  int remember_index = v.remember_iso_index;
+  //  if (remember_index < 0 || v.remember_iso_index > iso_points->vert.size())
+  //  {
+  //    continue;
+  //  }
+  //  CVertex tp = iso_points->vert.at(remember_index);
+  //  // Z
+  //  glBegin(GL_LINES);	
+  //  glVertex3d(p[0], p[1], p[2]);
+  //  glVertex3f(tp[0], tp[1], tp[2]);
+  //  glEnd(); 
+  //}
 
 
 
