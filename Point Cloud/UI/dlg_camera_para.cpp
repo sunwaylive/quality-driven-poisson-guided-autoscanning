@@ -366,7 +366,7 @@ void CameraParaDlg::loadRealScans()
     global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(false));
 
     //save poisson surface "copy poisson_out.ply file_location\\%d_poisson_out.ply"
-    cout<<"begin to copy poisson_surface" <<endl;
+    cout<<"Begin to copy poisson_surface" <<endl;
     QString s_poisson_surface;
     s_poisson_surface.sprintf("\\..\\poisson\\%d_poisson_out.ply", i);
     QString s_cmd_copy_poisson = "copy poisson_out.ply ";
@@ -374,10 +374,15 @@ void CameraParaDlg::loadRealScans()
     s_cmd_copy_poisson += s_poisson_surface;
     cout << s_cmd_copy_poisson.toStdString() <<endl;
     system(s_cmd_copy_poisson.toAscii().data());
-    cout<<"end to copy poisson_surface" <<endl;
+    cout<<"End to copy poisson_surface" <<endl;
 
     //save after-merge original points
     runAddSamplesToOiriginal();
+    QString s_original;
+    s_original.sprintf("\\..\\original\\%d_original.ply", i);
+    s_original = file_location + s_original;
+    area->dataMgr.savePly(s_original, *area->dataMgr.getCurrentOriginal());
+
     GlobalFun::clearCMesh(*sample);
     area->update();
     area->saveSnapshot();
