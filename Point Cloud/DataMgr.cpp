@@ -1,4 +1,5 @@
 #include "DataMgr.h"
+#include "GLDrawer.h"
 
 DataMgr::DataMgr(RichParameterSet* _para)
 {
@@ -13,14 +14,15 @@ DataMgr::DataMgr(RichParameterSet* _para)
 
   loadCommonTransform();
 
-
   //scanner_position = Point3f(184, -7, -254); //gundam 1-18
 
   //scanner_position = Point3f(64, -12, -302); //opera 5-11
 
   //scanner_position = Point3f(234, -5, -245); //violin 1-19
 
-  scanner_position = Point3f(232, -21, -243); //church 5-10
+  //scanner_position = Point3f(232, -21, -243); //church 5-10
+
+  scanner_position = Point3f(134, 13, -293); //sheep 5-19
 
   slices.assign(3, Slice());
 }
@@ -43,23 +45,22 @@ void DataMgr::initDefaultScanCamera()
 {
   double predict_size = global_paraMgr.camera.getDouble("Predicted Model Size");
   double far_dist = global_paraMgr.camera.getDouble("Camera Far Distance") / predict_size;
-  double dist_to_model = global_paraMgr.camera.getDouble("Camera Dist To Model") / predict_size;
   //default cameras for initial scanning, pair<pos, direction>
   //x axis
-  init_scan_candidates.push_back(make_pair(Point3f(1.0f * dist_to_model, 0.0f, 0.0f), Point3f(-1.0f, 0.0f, 0.0f)));
-  init_scan_candidates.push_back(make_pair(Point3f(-1.0f * dist_to_model, 0.0f, 0.0f), Point3f(1.0f, 0.0f, 0.0f)));
+  init_scan_candidates.push_back(make_pair(Point3f(1.0f * far_dist, 0.0f, 0.0f), Point3f(-1.0f, 0.0f, 0.0f)));
+  init_scan_candidates.push_back(make_pair(Point3f(-1.0f * far_dist, 0.0f, 0.0f), Point3f(1.0f, 0.0f, 0.0f)));
   //z axis
-  init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f * dist_to_model), Point3f(0.0f, 0.0f, -1.0f)));
-  init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, -1.0f * dist_to_model), Point3f(0.0f, 0.0f, 1.0f)));
+  init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f * far_dist), Point3f(0.0f, 0.0f, -1.0f)));
+  init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, -1.0f * far_dist), Point3f(0.0f, 0.0f, 1.0f)));
   //y axis
   /*init_scan_candidates.push_back(make_pair(Point3f(0.0f, 1.0f, 0.0f), Point3f(0.0f, -1.0f, 0.0f)));
   init_scan_candidates.push_back(make_pair(Point3f(0.0f, -1.0f, 0.0f), Point3f(0.0f, 1.0f, 0.0f)));*/
 
   //this should be deleted, for UI debug
   //for test
-  scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f * dist_to_model), Point3f(0.0f, 0.0f, -1.0f)));
+  scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f * far_dist), Point3f(0.0f, 0.0f, -1.0f)));
   //x axis
-  scan_candidates.push_back(make_pair(Point3f(1.0f * dist_to_model, 0.0f, 0.0f), Point3f(-1.0f, 0.0f, 0.0f)));
+  scan_candidates.push_back(make_pair(Point3f(1.0f * far_dist, 0.0f, 0.0f), Point3f(-1.0f, 0.0f, 0.0f)));
   //scan_candidates.push_back(make_pair(Point3f(-1.0f, 0.0f, 0.0f), Point3f(1.0f, 0.0f, 0.0f)));
   ////y axis
   //scan_candidates.push_back(make_pair(Point3f(0.0f, 1.0f, 0.0f), Point3f(0.0f, -1.0f, 0.0f)));
@@ -725,12 +726,25 @@ void DataMgr::subSamples()
 
 void DataMgr::savePly(QString fileName, CMesh& mesh)
 {
-  int mask= tri::io::Mask::IOM_VERTNORMAL ;
-  mask += tri::io::Mask::IOM_VERTCOLOR;
-  //mask += tri::io::Mask::IOM_ALL;
+  //int mask= tri::io::Mask::IOM_VERTNORMAL ;
+  //mask += tri::io::Mask::IOM_VERTCOLOR;
+  int mask = tri::io::Mask::IOM_ALL;
   //mask += tri::io::Mask::IOM_BITPOLYGONAL;
   //mask += tri::io::Mask::IOM_FACEINDEX;
 
+  //GLDrawer drawer(global_paraMgr.getDrawerParameterSet());
+  //for (int i = 0; i < mesh.vert.size(); i++)
+  //{
+  //  CVertex& v = mesh.vert[i];
+  //  GLColor c = drawer.getColorByType(v);
+  //  ////QColor qc(c.r * 255.0, c.g * 255.0, c.b * 255.0);
+  //  //vcg::Color4f color;
+  //  //color.X() = c.r * 255.0;
+  //  //color.Y() = c.g * 255.0;
+  //  //color.Z() = c.b * 255.0;
+  //  v.C().SetRGB(255, 0, 0);
+
+  //}
   if (fileName.endsWith("ply"))
     tri::io::ExporterPLY<CMesh>::Save(mesh, fileName.toAscii().data(), mask, false);
 }

@@ -1000,10 +1000,8 @@ void NBV::viewPrune()
   GlobalFun::computeBallNeighbors(nbv_candidates, NULL, view_prune_radius, nbv_candidates->bbox);
   sort(nbv_candidates->vert.begin(), nbv_candidates->vert.end(), cmp);
 
-  ////change 5-14 wsh
-  //vector<CVertex> temp_nbv_candidates;
-  //int start_index = nbv_candidates->vert.size() * prune_confidence_threshold;
-
+  double radius = 10.0 * global_paraMgr.data.getDouble("CGrid Radius");
+  double radius2 = radius * radius;
 
   for (int i = 0; i < nbv_candidates->vert.size(); ++i)
   {
@@ -1013,6 +1011,7 @@ void NBV::viewPrune()
     if (v.is_ignore)
       continue;
 
+    CVertex& v_iso = iso_points->vert.at(v.remember_iso_index);
     if (v.eigen_confidence < prune_confidence_threshold)
     {
       v.is_ignore = true;
@@ -1021,30 +1020,42 @@ void NBV::viewPrune()
 
     for (int j = 0; j < v.neighbors.size(); ++j)
     {
-      CVertex &np = nbv_candidates->vert[v.neighbors[j]];
-      if (np.m_index == v.m_index)
+      CVertex &t = nbv_candidates->vert[v.neighbors[j]];
+      if (t.m_index == v.m_index)
         continue;
       else
-        np.is_ignore = true;
+      {
+        CVertex& t_iso = iso_points->vert.at(t.remember_iso_index);
+        double dist2 = GlobalFun::computeEulerDistSquare(v.P(), t.P());
+
+        if (dist2 > radius2)
+        {
+          continue;
+        }
+        else
+        {
+          t.is_ignore = true;
+        }
+      }
     }
   }
 
   GlobalFun::deleteIgnore(nbv_candidates);
   cout << "after View Prune candidates num: " <<nbv_candidates->vert.size() <<endl;
 
-  //get the top n = 4
-  int topn = global_paraMgr.nbv.getInt("NBV Top N");
-  sort(nbv_candidates->vert.begin(), nbv_candidates->vert.end(), cmp);
-  if (nbv_candidates->vert.size() > topn)
-  {
-    for (int i = 0; i < nbv_candidates->vn; i++)
-    {
-      CVertex& v = nbv_candidates->vert[i];
-      if (i >= topn)
-        v.is_ignore = true;
-    }
-  }
-  GlobalFun::deleteIgnore(nbv_candidates);
+  ////get the top n = 4
+  //int topn = global_paraMgr.nbv.getInt("NBV Top N");
+  //sort(nbv_candidates->vert.begin(), nbv_candidates->vert.end(), cmp);
+  //if (nbv_candidates->vert.size() > topn)
+  //{
+  //  for (int i = 0; i < nbv_candidates->vn; i++)
+  //  {
+  //    CVertex& v = nbv_candidates->vert[i];
+  //    if (i >= topn)
+  //      v.is_ignore = true;
+  //  }
+  //}
+  //GlobalFun::deleteIgnore(nbv_candidates);
   
   vector<CVertex> new_candidates;
   for (int i = 0; i < nbv_candidates->vert.size(); ++i)
@@ -1089,6 +1100,7 @@ void NBV::viewPrune()
   }
   GlobalFun::deleteIgnore(nbv_candidates);
   cout << "after top N candidate num: " <<nbv_candidates->vert.size() <<endl;
+
 }
 
 //void NBV::viewPrune()

@@ -212,6 +212,7 @@ void vcc::Camera::runNBVScan()
 
     scan_history->push_back(*it);
     scanned_results->push_back(current_scanned_mesh);
+    cout << "scanned points:  " << current_scanned_mesh->vert.size() << endl;
   }
 }
 
