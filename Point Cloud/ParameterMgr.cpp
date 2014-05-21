@@ -149,7 +149,7 @@ void ParameterMgr::initDrawerParameter()
 	drawer.addParam(new RichBool("Show Individual Color", true));
 	drawer.addParam(new RichBool("Use Color From Normal", false));
 	drawer.addParam(new RichBool("Use Differ Branch Color", false));
-	drawer.addParam(new RichBool("Show Confidence Color", false));
+	drawer.addParam(new RichBool("Show Confidence Color", true));
 
 	drawer.addParam(new RichDouble("Original Draw Width", 0.0015));
 	drawer.addParam(new RichDouble("Sample Draw Width", 0.005));
@@ -410,7 +410,6 @@ void ParameterMgr::initCameraParameter()
   //camera.addParam(new RichDouble("Camera Near Distance", 17.0f));  //cm
   //camera.addParam(new RichDouble("Camera Far Distance", 23.2f));   //cm
   //camera.addParam(new RichDouble("Camera Near Distance", 19.0f));  //cm
-
 
   camera.addParam(new RichDouble("Optimal Plane Width", 4.0f));    //cm
   camera.addParam(new RichDouble("Predicted Model Size", 37.0f));  //cm lion:20

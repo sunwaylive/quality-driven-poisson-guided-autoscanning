@@ -958,7 +958,7 @@ void Poisson::runPoissonFieldAndExtractIsoPoints_ByEXE()
 
   Timer timer;
   timer.start("write ply file");
-  int mask= tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL;
+  int mask= tri::io::Mask::IOM_VERTNORMAL;// add vertcord will cause crash
   tri::io::ExporterPLY<CMesh>::Save(*target, "poisson_in.ply", mask, false);
   timer.end();
 

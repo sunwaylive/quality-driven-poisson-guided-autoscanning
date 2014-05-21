@@ -351,7 +351,7 @@ void CameraParaDlg::loadRealScans()
       continue;
 
     f_name = file_location + "\\" + f_name;
-    int mask = tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL;
+    int mask = tri::io::Mask::IOM_ALL;
     tri::io::ImporterPLY<CMesh>::Open(*sample, f_name.toAscii().data(), mask);
     //save black original points and red sample points
     area->update();
@@ -1468,7 +1468,9 @@ void CameraParaDlg::runAddSamplesToOiriginal()
   CMesh* original = area->dataMgr.getCurrentOriginal();
 
   samples->face.clear();
+  samples->fn = 0;
   original->face.clear();
+  original->fn = 0;
 
   int idx = original->vert.back().m_index + 1;
 
