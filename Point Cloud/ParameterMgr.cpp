@@ -402,8 +402,12 @@ void ParameterMgr::initCameraParameter()
   camera.addParam(new RichBool("Show Camera Border", true));
 
 
-  camera.addParam(new RichDouble("Camera Far Distance", 25.0f));   //cm
-  camera.addParam(new RichDouble("Camera Near Distance", 10.0f));  //cm
+  camera.addParam(new RichDouble("Camera Far Distance", 30.0f));   //cm
+  camera.addParam(new RichDouble("Camera Near Distance", 9.0f));  //cm
+  camera.addParam(new RichDouble("Predicted Model Size", 37.0f));  //cm lion:20
+  camera.addParam(new RichDouble("Camera Horizon Dist", 25.0f));   //cm
+  camera.addParam(new RichDouble("Camera Vertical Dist", 36.0f));  //cm
+  camera.addParam(new RichDouble("Camera Dist To Model", 35.0f)); //cm ((30.0f + 17.0f)/2 + 0.6 * 20.0f)
   //camera.addParam(new RichDouble("Camera Far Distance", 24.8f));   //cm
   //camera.addParam(new RichDouble("Camera Near Distance", 19.6f));  //cm
   //camera.addParam(new RichDouble("Camera Far Distance", 22.2f));   //cm
@@ -412,12 +416,8 @@ void ParameterMgr::initCameraParameter()
   //camera.addParam(new RichDouble("Camera Near Distance", 19.0f));  //cm
 
   camera.addParam(new RichDouble("Optimal Plane Width", 4.0f));    //cm
-  camera.addParam(new RichDouble("Predicted Model Size", 37.0f));  //cm lion:20
-  camera.addParam(new RichDouble("Camera Horizon Dist", 14.0f));   //cm
-  camera.addParam(new RichDouble("Camera Vertical Dist", 18.0f));  //cm
   camera.addParam(new RichDouble("Camera FOV Angle", 28.07)); // tan-1(Vert_dist/2 / far_dist)
   //20 for sphere test, 30 for dancing children
-  camera.addParam(new RichDouble("Camera Dist To Model", 30.0f)); //cm ((30.0f + 17.0f)/2 + 0.6 * 20.0f)
 
   camera.addParam(new RichDouble("Camera Resolution",1.0f / 110.0f));
   camera.addParam(new RichDouble("Merge Confidence Threshold", 0.9f));
@@ -469,7 +469,8 @@ void ParameterMgr::initNBVParameter()
   nbv.addParam(new RichDouble("View Prune Confidence Threshold", 0.9));
   nbv.addParam(new RichInt("NBV Top N", 3));
   nbv.addParam(new RichBool("Need Update Direction With More Overlaps", true));
-}  
+  nbv.addParam(new RichDouble("Max Displacement", 0.05));
+}
 
 void ParameterMgr::initVisibilityBasedNBVParameter()
 {

@@ -53,8 +53,8 @@ void DataMgr::initDefaultScanCamera()
   init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f * far_dist), Point3f(0.0f, 0.0f, -1.0f)));
   init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, -1.0f * far_dist), Point3f(0.0f, 0.0f, 1.0f)));
   //y axis
-  /*init_scan_candidates.push_back(make_pair(Point3f(0.0f, 1.0f, 0.0f), Point3f(0.0f, -1.0f, 0.0f)));
-  init_scan_candidates.push_back(make_pair(Point3f(0.0f, -1.0f, 0.0f), Point3f(0.0f, 1.0f, 0.0f)));*/
+  init_scan_candidates.push_back(make_pair(Point3f(0.0f, 1.0f * far_dist, 0.0f), Point3f(0.0f, -1.0f * far_dist, 0.0f)));
+  init_scan_candidates.push_back(make_pair(Point3f(0.0f, -1.0f * far_dist, 0.0f), Point3f(0.0f, 1.0f * far_dist, 0.0f)));
 
   //this should be deleted, for UI debug
   //for test
@@ -203,6 +203,7 @@ void DataMgr::loadPlyToSample(QString fileName)
   int mask= tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL ;
   mask += tri::io::Mask::IOM_VERTCOLOR;
   mask += tri::io::Mask::IOM_BITPOLYGONAL;
+  mask += tri::io::Mask::IOM_ALL;
 
   int err = tri::io::Importer<CMesh>::Open(samples, curr_file_name.toAscii().data(), mask);  
   if(err) 

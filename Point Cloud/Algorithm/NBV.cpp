@@ -1000,8 +1000,8 @@ void NBV::viewPrune()
   GlobalFun::computeBallNeighbors(nbv_candidates, NULL, view_prune_radius, nbv_candidates->bbox);
   sort(nbv_candidates->vert.begin(), nbv_candidates->vert.end(), cmp);
 
-  double radius = 10.0 * global_paraMgr.data.getDouble("CGrid Radius");
-  double radius2 = radius * radius;
+  //double radius = 10.0 * global_paraMgr.data.getDouble("CGrid Radius");
+  //double radius2 = radius * radius;
 
   for (int i = 0; i < nbv_candidates->vert.size(); ++i)
   {
@@ -1024,19 +1024,22 @@ void NBV::viewPrune()
       if (t.m_index == v.m_index)
         continue;
       else
-      {
-        CVertex& t_iso = iso_points->vert.at(t.remember_iso_index);
-        double dist2 = GlobalFun::computeEulerDistSquare(v.P(), t.P());
+        t.is_ignore = true;
 
-        if (dist2 > radius2)
-        {
-          continue;
-        }
-        else
-        {
-          t.is_ignore = true;
-        }
-      }
+      //else
+      //{
+      //  CVertex& t_iso = iso_points->vert.at(t.remember_iso_index);
+      //  double dist2 = GlobalFun::computeEulerDistSquare(v.P(), t.P());
+
+      //  if (dist2 > radius2)
+      //  {
+      //    continue;
+      //  }
+      //  else
+      //  {
+      //    t.is_ignore = true;
+      //  }
+      //}
     }
   }
 
@@ -1057,49 +1060,56 @@ void NBV::viewPrune()
   //}
   //GlobalFun::deleteIgnore(nbv_candidates);
   
-  vector<CVertex> new_candidates;
-  for (int i = 0; i < nbv_candidates->vert.size(); ++i)
-  {
-    CVertex &v = nbv_candidates->vert[i];
-    //if the point has been ignored, then skip it
-    if (v.is_ignore)
-      continue;
+  //vector<CVertex> new_candidates;
+  //for (int i = 0; i < nbv_candidates->vert.size(); ++i)
+  //{
+  //  CVertex &v = nbv_candidates->vert[i];
+  //  //if the point has been ignored, then skip it
+  //  if (v.is_ignore)
+  //    continue;
 
-    Point3f vp = v.P();
-    int remember_index = v.remember_iso_index;
-    if (remember_index < 0 || v.remember_iso_index > iso_points->vert.size())
-    {
-      continue;
-    }
-    Point3f tp = iso_points->vert.at(remember_index).P();
-    Point3f plane_point(tp.X(), vp.Y(), vp.Z());
+  //  Point3f vp = v.P();
+  //  int remember_index = v.remember_iso_index;
+  //  if (remember_index < 0 || v.remember_iso_index > iso_points->vert.size())
+  //  {
+  //    continue;
+  //  }
+  //  Point3f tp = iso_points->vert.at(remember_index).P();
+  //  Point3f plane_point(tp.X(), vp.Y(), vp.Z());
 
-    if (vp.X() > tp.X())
-    {
-      Point3f vector0 = (vp - tp).Normalize();
-      Point3f vector1 = (plane_point - tp).Normalize();
-      double angle = GlobalFun::computeRealAngleOfTwoVertor(vector0, vector1);
-      if (angle > 13)
-      {
-        continue;
-      }
-    }
+  //  if (vp.X() > tp.X())
+  //  {
+  //    Point3f vector0 = (vp - tp).Normalize();
+  //    Point3f vector1 = (plane_point - tp).Normalize();
+  //    double angle = GlobalFun::computeRealAngleOfTwoVertor(vector0, vector1);
+  //    if (angle > 13)
+  //    {
+  //      continue;
+  //    }
+  //  }
 
-    //float x_movement;
-    float x_movement = tp.X() - vp.X();
-    float new_x = tp.X() + x_movement;
-    Point3f new_p = Point3f(new_x, plane_point.Y(), plane_point.Z());
+  //  //float x_movement;
+  //  float x_movement = tp.X() - vp.X();
+  //  float new_x = tp.X() + x_movement;
+  //  Point3f new_p = Point3f(new_x, plane_point.Y(), plane_point.Z());
 
-    CVertex new_v = v;
-    new_v.P() = new_p;
-    new_v.N() = (tp - new_p).Normalize();
+  //  CVertex new_v = v;
+  //  new_v.P() = new_p;
+  //  new_v.N() = (tp - new_p).Normalize();
 
-    v.P() = new_v.P();
-    v.N() = new_v.N();
-    //new_candidates.push_back(new_v);
-  }
+  //  v.P() = new_v.P();
+  //  v.N() = new_v.N();
+  //  //new_candidates.push_back(new_v);
+  //}
+
   GlobalFun::deleteIgnore(nbv_candidates);
   cout << "after top N candidate num: " <<nbv_candidates->vert.size() <<endl;
+
+  scan_candidates->clear();
+  for (int i = 0; i < nbv_candidates->vert.size(); ++i)
+  {
+    scan_candidates->push_back(make_pair(nbv_candidates->vert[i].P(), nbv_candidates->vert[i].N()));
+  }
 
 }
 

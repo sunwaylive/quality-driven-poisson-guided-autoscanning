@@ -351,9 +351,29 @@ void CameraParaDlg::loadRealScans()
       continue;
 
     f_name = file_location + "\\" + f_name;
-    int mask = tri::io::Mask::IOM_ALL;
-    tri::io::ImporterPLY<CMesh>::Open(*sample, f_name.toAscii().data(), mask);
+    int mask = tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL;
+    area->dataMgr.loadPlyToSample(f_name);
+    
+
+    for (int s_i = 0; s_i < sample->vert.size(); ++s_i)
+    {
+      sample->vert[s_i].N().Normalize();
+    }
+    //tri::io::ImporterPLY<CMesh>::Open(*sample, f_name.toAscii().data(), mask);
+
     //save black original points and red sample points
+    area->update();
+    area->saveSnapshot();
+    area->update();
+
+    //save after-merge original points
+    runAddSamplesToOiriginal();
+    QString s_original;
+    s_original.sprintf("\\..\\original\\%d_original.ply", i);
+    s_original = file_location + s_original;
+    area->dataMgr.savePly(s_original, *area->dataMgr.getCurrentOriginal());
+
+    GlobalFun::clearCMesh(*sample);
     area->update();
     area->saveSnapshot();
     area->update();
@@ -375,18 +395,6 @@ void CameraParaDlg::loadRealScans()
     cout << s_cmd_copy_poisson.toStdString() <<endl;
     system(s_cmd_copy_poisson.toAscii().data());
     cout<<"End to copy poisson_surface" <<endl;
-
-    //save after-merge original points
-    runAddSamplesToOiriginal();
-    QString s_original;
-    s_original.sprintf("\\..\\original\\%d_original.ply", i);
-    s_original = file_location + s_original;
-    area->dataMgr.savePly(s_original, *area->dataMgr.getCurrentOriginal());
-
-    GlobalFun::clearCMesh(*sample);
-    area->update();
-    area->saveSnapshot();
-    area->update();
   }
 }
 
@@ -688,7 +696,7 @@ void CameraParaDlg::mergeScannedMeshWithOriginalByHand()
   vector<CMesh* > *scanned_results = area->dataMgr.getScannedResults();
   double merge_confidence_threshold = global_paraMgr.camera.getDouble("Merge Confidence Threshold");
   int merge_pow = static_cast<int>(global_paraMgr.nbv.getDouble("Merge Probability Pow"));
-  double probability_add_by_user = 0.4;
+  double probability_add_by_user = 0.0;
   cout<< "merge_confidence_threshold: " <<merge_confidence_threshold <<endl;
 
   //wsh added 12-24
@@ -778,8 +786,8 @@ void CameraParaDlg::mergeScannedMeshWithOriginalByHand()
           if (k < 10)
             cout<<"sum_confidence: " << v_confidence[k] <<endl;
 
-          if (v_confidence[k] > merge_confidence_threshold 
-            || (1.0f * rand() / (RAND_MAX+1.0) > (pow((1.0 - v_confidence[k]), merge_pow) + probability_add_by_user)))
+          if (/*v_confidence[k] > merge_confidence_threshold 
+            || */(1.0f * rand() / (RAND_MAX+1.0) > (pow((1.0 - v_confidence[k]), merge_pow) + probability_add_by_user)))
           {
             v.is_ignore = true;
             skip_num++; 
@@ -893,8 +901,8 @@ void CameraParaDlg::getPropagateIndex(double _val)
 void CameraParaDlg::getRayResolutionPara(double _val)
 {
   global_paraMgr.nbv.setValue("Ray Resolution Para", DoubleValue(_val));
+  //global_paraMgr.nbv.setValue("Max Displacement", DoubleValue(_val));
 }
-
 
 void CameraParaDlg::buildGrid()
 {
@@ -1479,13 +1487,14 @@ void CameraParaDlg::runAddSamplesToOiriginal()
     CVertex t = samples->vert[i];
     t.is_original = true;
     t.m_index = idx++;
-
+    if (i < 10)
+    {
+      GlobalFun::printPoint3(std::cout, t.N());
+    }
     original->vert.push_back(t);
     original->bbox.Add(t.P());
   }
   original->vn = original->vert.size();
-
-
 }
 
 void CameraParaDlg::runICP()

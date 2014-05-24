@@ -1228,15 +1228,17 @@ void MainWindow::computeNormalForPoissonSurface()
 
 void MainWindow::evaluation()
 {
+  //evaluationForDifferentModels();
+
   QString file_name = QFileDialog::getOpenFileName(this, "choose a file to evaluate...", "", "*.ply");
   if (file_name.size() == 0)
   {
     cout<<"can't open file" <<endl;
     return;
   }
-  
-  area->dataMgr.loadPlyToPoisson(file_name);
-  CMesh *target = area->dataMgr.getCurrentPoissonSurface();
+
+  area->dataMgr.loadPlyToISO(file_name);
+  CMesh *target = area->dataMgr.getCurrentIsoPoints();
   CMesh *model = area->dataMgr.getCurrentModel();
 
   GlobalFun::computeAnnNeigbhors(model->vert, target->vert, 1, false, "runEvaluation");
@@ -1249,13 +1251,45 @@ void MainWindow::evaluation()
       CVertex &nearest = model->vert[target->vert[i].neighbors[0]];
       double dist = GlobalFun::computeEulerDist(v.P(), nearest.P());
       v.eigen_confidence = dist;
-     /*Point3f c = GlobalFun::scalar2color(dist);
-      v.C().SetRGB(255 * c[0], 255 * c[1], 255 * c[2]);*/
+      Point3f c = GlobalFun::scalar2color(dist);
+      v.C().SetRGB(255 * c[0], 255 * c[1], 255 * c[2]);
     }
   }
   GlobalFun::normalizeConfidence(target->vert, 0.f);
 }
 
+void MainWindow::evaluationForDifferentModels()
+{
+  QString file_name = QFileDialog::getOpenFileName(this, "choose a file to evaluate...", "", "*.ply");
+  if (file_name.size() == 0)
+  {
+    cout<<"can't open file" <<endl;
+    return;
+  }
+  
+  area->dataMgr.loadPlyToPoisson(file_name);
+  CMesh *target = area->dataMgr.getCurrentPoissonSurface();
+  CMesh *model = area->dataMgr.getCurrentModel();
+
+  GlobalFun::computeAnnNeigbhors(target->vert, model->vert, 1, false, "runEvaluation");
+
+  ofstream f_confidence;
+  f_confidence.open("nearest_dist_to_model_points.txt");
+
+  for (int i = 0; i < model->vert.size(); ++i)
+  {
+    CVertex &v = model->vert[i];
+    if (!v.neighbors.empty())
+    {
+      CVertex &nearest = target->vert[model->vert[i].neighbors[0]];
+      double dist = GlobalFun::computeEulerDist(v.P(), nearest.P());
+      v.eigen_confidence = dist;
+
+      f_confidence << dist <<std::endl;
+    }
+  }
+  f_confidence.close();
+}
 
 void MainWindow::switchHistoryNBV()
 {

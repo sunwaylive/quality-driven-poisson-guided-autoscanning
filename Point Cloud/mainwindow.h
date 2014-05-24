@@ -50,6 +50,7 @@ private slots:
   void computeNormalForPoissonSurface();
   void nbvReOrders();
   void evaluation();
+  void evaluationForDifferentModels();
 
 	void showWLopDlg();
 	void showNormalDlg();

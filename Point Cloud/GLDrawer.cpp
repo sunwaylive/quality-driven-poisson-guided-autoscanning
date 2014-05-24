@@ -275,7 +275,7 @@ GLColor GLDrawer::getColorByType(CVertex& v)
       unsigned int r = 255 * c.r;
       unsigned int g = 255 * c.g;
       unsigned int b = 255 * c.b;
-      v.C().SetRGB(r, g, b);
+      //v.C().SetRGB(r, g, b);
       return isoValue2Color(1 - v.eigen_confidence, iso_color_scale, iso_value_shift, true);
     }
     else

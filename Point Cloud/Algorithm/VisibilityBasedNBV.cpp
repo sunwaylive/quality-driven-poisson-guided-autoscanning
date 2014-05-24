@@ -257,7 +257,9 @@ void VisibilityBasedNBV::runVisibilityCandidatesPick()
     scan_candidates->push_back(s);
   }
   std::cout<<"scan candidates size: " <<scan_candidates->size() << std::endl;
-
+  //for result generate
+  //scan_candidates->push_back(make_pair(Point3f(1.0f, 0.0, 0.4f), Point3f(-1.0f, 0.0f, -0.35f)));
+  //scan_candidates->push_back(make_pair(Point3f(1.0f, 0.3, 0.4f), Point3f(-1.0f, -0.2f, -0.35f)));
     //get selected NBV, select the one that has most candidate neighbors
 
   //int max_neighbors_num = nbv_candidates->vert[0].neighbors.size();
@@ -577,22 +579,22 @@ bool VisibilityBasedNBV::isPointWellVisible(const CVertex &target, const Point3f
     return false;
 }
 
-
 void VisibilityBasedNBV::runComputeCurrentVisibility()
 {
   cout << "runComputeCurrentVisibility" << endl;
-  
-  
+
+
   double camera_fov_angle = global_paraMgr.camera.getDouble("Camera FOV Angle");
   double camera_far_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
     global_paraMgr.camera.getDouble("Predicted Model Size");
   double camera_near_dist = global_paraMgr.camera.getDouble("Camera Near Distance") /
     global_paraMgr.camera.getDouble("Predicted Model Size");
+  double angel_threshold = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
 
   double camera_far_dist2 = camera_far_dist * camera_far_dist;
   double camera_near_dist2 = camera_near_dist * camera_near_dist;
 
-  cout << "histroy  " << scan_history->size() << endl;
+  cout << "history  " << scan_history->size() << endl;
 
   for (int i = 0; i < original->vn; i++)
   {
@@ -611,14 +613,12 @@ void VisibilityBasedNBV::runComputeCurrentVisibility()
       Point3f diff = (t.first-v.P()).Normalize();
       double angle = GlobalFun::computeRealAngleOfTwoVertor(diff, v.N());
 
-      if (angle < 60)
+      if (angle < (90-angel_threshold))
       {
         v.is_barely_visible = false;
         break;
       }
     }
-    
+
   }
-
-
 }
