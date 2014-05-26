@@ -135,6 +135,9 @@ public:
     void pvsOneKeyNbvIteration();
     /*** pvs based NBV ***/
 
+    /* sphere */
+    void runSphere();
+    /* sphere */
     void getModelSize();
 
 private:

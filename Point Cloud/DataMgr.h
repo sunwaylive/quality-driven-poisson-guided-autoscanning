@@ -75,6 +75,7 @@ public:
   void      loadPlyToSample(QString fileName);
   void      loadPlyToISO(QString fileName);
   void      loadPlyToPoisson(QString fileName);
+  void      loadPlyToNBV(QString fileName);
   void      saveParameters(QString fileName);
   void      loadParameters(QString fileName);
 	void      savePly(QString fileName, CMesh& mesh);

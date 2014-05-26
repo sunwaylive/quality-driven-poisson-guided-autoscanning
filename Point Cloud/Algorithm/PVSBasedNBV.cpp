@@ -81,6 +81,11 @@ void PVSBasedNBV::run()
     std::cout<<"Run PVS Merge" <<std::endl;
     runPVSMerge();
   }
+  if (para->getBool("Run Sphere"))
+  {
+    std::cout<<"Run Sphere" <<std::endl;
+    runSphere();
+  }
 }
 
 void PVSBasedNBV::clear()
@@ -679,34 +684,19 @@ void PVSBasedNBV::buildSphereCandidatesIEEE()
   runBuildPVS();
 
   //build candidates sphere
-  double camera_max_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
+  double camera_far_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
     global_paraMgr.camera.getDouble("Predicted Model Size");
 
-  //coarse candidates
-  CMesh *coarse_candidates = new CMesh;
-  vcg::tri::Sphere<CMesh>(*coarse_candidates, 1);
-  //fine candidates
-  vcg::tri::Sphere<CMesh>(*nbv_candidates, 3);
-  //adjust sphere size
-  for (int i = 0; i < coarse_candidates->vert.size(); ++i)
-    coarse_candidates->vert[i].P() = coarse_candidates->vert[i].N().Normalize() * camera_max_dist;
-
+  std::cout<<"nbv candidates size: "<< nbv_candidates->vert.size() <<std::endl;
   for (int i = 0; i < nbv_candidates->vert.size(); ++i)
-    nbv_candidates->vert[i].P() = nbv_candidates->vert[i].N().Normalize() * camera_max_dist;
-
-  //compute relation
-  GlobalFun::computeAnnNeigbhors(nbv_candidates->vert, coarse_candidates->vert, 6, false, "IEEE Sphere");
-  std::cout<<"coarse candidates neighbor size: "<< coarse_candidates->vert[0].original_neighbors.size() <<std::endl;
+    nbv_candidates->vert[i].P() = nbv_candidates->vert[i].N().Normalize() * camera_far_dist;
 }
 
 void PVSBasedNBV::computeScoreIEEE()
 {
-  double alpha_occplane = 0.8;
-  double beta_occupied = 0.2;
-  double occplane_percentage = 0.0;
-  double occupied_percentage = 0.0;
-  double f_area = 0.0;
-  double f_navigation = 0.0;
+  double alpha_occplane = 0.8, beta_occupied = 0.2;
+  double occplane_percentage = 0.0, occupied_percentage = 0.0;
+  double f_area = 0.0, f_navigation = 0.0, f_quality = 0.0f, f_occlusion = 0.0f, f_final = 0.0f;
 
   double resolution = global_paraMgr.camera.getDouble("Camera Resolution");
   double far_horizon_dist = global_paraMgr.camera.getDouble("Camera Horizon Dist") 
@@ -723,17 +713,14 @@ void PVSBasedNBV::computeScoreIEEE()
   int pvs_size = pvs->vert.size();
   ScanCandidate sc = scan_history->back();
 
-  for (int i = 0; i < coarse_candidates->vert.size(); ++i)
+  for (int i = 0; i < nbv_candidates->vert.size(); ++i)
   {
-    CVertex &c = coarse_candidates->vert[i];
+    CVertex &c = nbv_candidates->vert[i];
 
     //step1: Area Factor
     int total_voxels_num = 0;
-    int occplane_num = 0;
-    int occupied_num = 0;
-
-    Point3f x_axis(1.0f, 0.0f, 0.0f);
-    Point3f z_axis(0.0f, 0.0f, 1.0f);
+    int occplane_num = 0, occupied_num = 0;
+    Point3f x_axis(1.0f, 0.0f, 0.0f), z_axis(0.0f, 0.0f, 1.0f);
         
     Point3f pos = c.P();
     Point3f viewray = c.N().Normalize();
@@ -758,9 +745,9 @@ void PVSBasedNBV::computeScoreIEEE()
     int t_indexY = static_cast<int>( ceil((pos[1] - whole_space_box_min.Y()) / grid_step_size ));
     int t_indexZ = static_cast<int>( ceil((pos[2] - whole_space_box_min.Z()) / grid_step_size ));
     //next point index along the ray, pay attention , index should be stored in double ,used in integer
-    double n_indexX, n_indexY, n_indexZ;
+    double n_indexX = 0.0f, n_indexY = 0.0f, n_indexZ = 0.0f;
     //for DDA algorithm
-    double deltaX, deltaY, deltaZ; 
+    double deltaX = 0.0, deltaY = 0.0f, deltaZ = 0.0f; 
     double x = 0.0f, y = 0.f, z = 0.0f;
     double length = 0.0f;
     //sweep
@@ -802,10 +789,17 @@ void PVSBasedNBV::computeScoreIEEE()
           //if the direction is into the model, or has been hit, then stop tracing
           if (pvs->vert[index].is_ray_stop)
           {
-            occupied_num++;
-            total_voxels_num = total_voxels_num + (max_steps - k + 1);
+            total_voxels_num = total_voxels_num + (max_steps - k + 1);//TODO
             if (pvs->vert[index].is_boundary)
+            {
               occplane_num++;
+            }
+            else
+            {
+              occupied_num++;
+              //for compute quality factor
+              f_quality += (-line_dir * pvs->vert[index].N()) / (line_dir.Norm() * pvs->vert[index].N().Norm());
+            }
             break;
           }
           
@@ -823,21 +817,24 @@ void PVSBasedNBV::computeScoreIEEE()
       hit_grid_indexes.clear();
     }
 
-    occplane_percentage = occplane_num / total_voxels_num;
-    occupied_percentage = occupied_num / total_voxels_num;
-    f_area = areaFactorIEEE(occplane_percentage, alpha_occplane) + areaFactorIEEE(occupied_percentage, beta_occupied);
+    if (total_voxels_num != 0)
+    {
+      occplane_percentage = occplane_num / total_voxels_num;
+      occupied_percentage = occupied_num / total_voxels_num;
+      f_area = areaFactorIEEE(occplane_percentage, alpha_occplane) + areaFactorIEEE(occupied_percentage, beta_occupied);
+    }
 
     //step2: navigation factor
     double dist = c.P().Norm() * GlobalFun::computeRealAngleOfTwoVertor(c.P(), sc.first) / 180.0 * PI;
     f_navigation = navigationFactorIEEE(dist);
 
     //step3: Quality factor
+    assert(total_voxels_num != occplane_num);
+    f_quality = f_quality / (total_voxels_num - occplane_num);
 
-
+    f_final = f_area * (f_quality + f_navigation + f_occlusion);
+    c.eigen_confidence = f_final;
   }//for candidates
-
-  //TODO: for select candidate, do fine search
-
 }
 
 void PVSBasedNBV::updateIEEE()
@@ -872,7 +869,7 @@ void PVSBasedNBV::updateIEEE()
       if (index >= pvs_size || index < 0)  break;
       
       pvs->vert[index].is_ray_stop = true;   //the grid is occupied by object, so the ray should stop
-      pvs->vert[index].pvs_value = 0;        //0: pvs grid occupied
+      pvs->vert[index].pvs_value = 0;        //deprecated, 0: pvs grid occupied
       //if the voxel contains a border point, we consider it a occplane voxel
       if (o_v.is_boundary)
         pvs->vert[index].is_boundary = true;
@@ -896,6 +893,19 @@ void PVSBasedNBV::updateIEEE()
     pvs->vert[idx].N() /= pvs->vert[idx].total_point_num;
     pvs->vert[idx].N().Normalize();
   }
+}
+
+void PVSBasedNBV::selectCandidateIEEE()
+{
+  sort(nbv_candidates->vert.begin(), nbv_candidates->vert.end(), cmp);
+  int topN = global_paraMgr.nbv.getInt("NBV Top N");
+
+  for (int i = 0; i < nbv_candidates->vert.size() && i < topN; ++i)
+  {
+    CVertex &c = nbv_candidates->vert[i];
+    scan_candidates->push_back(make_pair(c.P(), c.N()));
+  }
+  std::cout<<"scan candidates size: " <<scan_candidates->size() <<std::endl;
 }
 
 double PVSBasedNBV::areaFactorIEEE(double percentage, double optimum_percentage)
@@ -1118,4 +1128,25 @@ void PVSBasedNBV::runPVSMerge()
     }
   }
   original->vn = original->vert.size();
+}
+
+void PVSBasedNBV::runSphere()
+{
+  std::cout<<"Begin to run build sphere candidates" <<std::endl;
+  buildSphereCandidatesIEEE();
+
+  std::cout<<"Begin to run update for sphere" <<std::endl;
+  updateIEEE();
+
+  std::cout<<"Begin to run compute score for sphere"<<std::endl;
+  computeScoreIEEE();
+
+  std::cout<<"Begin to run select candidate " <<std::endl;
+  selectCandidateIEEE();
+}
+
+bool PVSBasedNBV::cmp(const CVertex &v1, const CVertex &v2)
+{
+  //in ascending order
+  return v1.eigen_confidence > v2.eigen_confidence;
 }

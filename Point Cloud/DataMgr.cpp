@@ -53,8 +53,13 @@ void DataMgr::initDefaultScanCamera()
   init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f * far_dist), Point3f(0.0f, 0.0f, -1.0f)));
   init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, -1.0f * far_dist), Point3f(0.0f, 0.0f, 1.0f)));
   //y axis
-  init_scan_candidates.push_back(make_pair(Point3f(0.0f, 1.0f * far_dist, 0.0f), Point3f(0.0f, -1.0f * far_dist, 0.0f)));
-  init_scan_candidates.push_back(make_pair(Point3f(0.0f, -1.0f * far_dist, 0.0f), Point3f(0.0f, 1.0f * far_dist, 0.0f)));
+  //init_scan_candidates.push_back(make_pair(Point3f(0.0f, 1.0f * far_dist, 0.0f), Point3f(0.0f, -1.0f * far_dist, 0.0f)));
+  //init_scan_candidates.push_back(make_pair(Point3f(0.0f, -1.0f * far_dist, 0.0f), Point3f(0.0f, 1.0f * far_dist, 0.0f)));
+  //another four angles
+  /*init_scan_candidates.push_back(make_pair(Point3f(-1.0f * far_dist / sqrt(2.0f), 0.0f, 1.0f * far_dist / sqrt(2.0f)), Point3f(1.0f , 0.0f, -1.0f )));
+  init_scan_candidates.push_back(make_pair(Point3f(1.0f * far_dist / sqrt(2.0f), 0.0f, 1.0f * far_dist / sqrt(2.0f)), Point3f(-1.0f , 0.0f, -1.0f)));
+  init_scan_candidates.push_back(make_pair(Point3f(1.0f * far_dist / sqrt(2.0f), 0.0f, -1.0f * far_dist / sqrt(2.0f)), Point3f(-1.0f, 0.0f, 1.0f)));
+  init_scan_candidates.push_back(make_pair(Point3f(-1.0f * far_dist / sqrt(2.0f), 0.0f, -1.0f * far_dist / sqrt(2.0f)), Point3f(1.0f, 0.0f, 1.0f)));*/
 
   //this should be deleted, for UI debug
   //for test
@@ -274,6 +279,34 @@ void DataMgr::loadPlyToPoisson(QString fileName)
     poisson_surface.bbox.Add(vi->P());
   }
   poisson_surface.vn = poisson_surface.vert.size();
+}
+
+void DataMgr::loadPlyToNBV(QString fileName)
+{
+  clearCMesh(nbv_candidates);
+  curr_file_name = fileName;
+
+  int mask= tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL ;
+  mask += tri::io::Mask::IOM_VERTCOLOR;
+  mask += tri::io::Mask::IOM_BITPOLYGONAL;
+  mask += tri::io::Mask::IOM_ALL;
+
+  int err = tri::io::Importer<CMesh>::Open(nbv_candidates, curr_file_name.toAscii().data(), mask);  
+  if(err) 
+  {
+    cout << "Failed reading mesh: " << err << "\n";
+    return;
+  }  
+
+  CMesh::VertexIterator vi;
+  int idx = 0;
+  for(vi = nbv_candidates.vert.begin(); vi != nbv_candidates.vert.end(); ++vi)
+  {
+    vi->is_original = false;
+    vi->m_index = idx++;
+    nbv_candidates.bbox.Add(vi->P());
+  }
+  nbv_candidates.vn = nbv_candidates.vert.size();
 }
 
 void DataMgr::loadXYZN(QString fileName)

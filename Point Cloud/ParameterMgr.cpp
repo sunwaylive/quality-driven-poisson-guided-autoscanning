@@ -149,7 +149,7 @@ void ParameterMgr::initDrawerParameter()
 	drawer.addParam(new RichBool("Show Individual Color", true));
 	drawer.addParam(new RichBool("Use Color From Normal", false));
 	drawer.addParam(new RichBool("Use Differ Branch Color", false));
-	drawer.addParam(new RichBool("Show Confidence Color", true));
+	drawer.addParam(new RichBool("Show Confidence Color", false));
 
 	drawer.addParam(new RichDouble("Original Draw Width", 0.0015));
 	drawer.addParam(new RichDouble("Sample Draw Width", 0.005));
@@ -504,4 +504,6 @@ void ParameterMgr::initPVSBasedNBVParameter()
   pvsBasedNBV.addParam(new RichInt("Boundary Search KNN", 20));
   pvsBasedNBV.addParam(new RichInt("Accept Boundary Size", 12));
   pvsBasedNBV.addParam(new RichDouble("PVS Grid Resolution", 50.8));
+
+  pvsBasedNBV.addParam(new RichBool("Run Sphere", false));
 }

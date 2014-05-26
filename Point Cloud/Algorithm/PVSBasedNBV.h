@@ -53,6 +53,7 @@ public:
   //distance should be normalized to 0~1
   double navigationFactorIEEE(double distance, double rho = 0.2);
   void updateIEEE();
+  void selectCandidateIEEE();
 
 private:
   void runSearchNewBoundaries();
@@ -62,6 +63,9 @@ private:
   void runComputeCandidates();
   void runSelectCandidate();
   void runPVSMerge();
+  void runSphere();
+
+  static bool cmp(const CVertex &v1, const CVertex &v2);
   
 private:
   RichParameterSet      *para;

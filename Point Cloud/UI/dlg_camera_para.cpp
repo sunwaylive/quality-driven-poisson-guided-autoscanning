@@ -128,8 +128,10 @@ void CameraParaDlg::initConnects()
   connect(ui->pushButton_pvs_one_key_iteration, SIGNAL(clicked()), this, SLOT(pvsOneKeyNbvIteration()));
   /*** PVS Based NBV ***/
 
+  /* sphere */
+  connect(ui->pushButton_sphere, SIGNAL(clicked()), this, SLOT(runSphere()));
+  /* sphere */
   connect(ui->pushButton_get_model_size, SIGNAL(clicked()), this, SLOT(getModelSize()));
-
 }
 
 bool CameraParaDlg::initWidgets()
@@ -344,39 +346,10 @@ void CameraParaDlg::loadRealScans()
 
   for (int i = 0; i < list.size(); ++i)
   {
-    QFileInfo fileInfo = list.at(i);
-    QString f_name = fileInfo.fileName();
-
-    if (!f_name.endsWith(".ply"))
-      continue;
-
-    f_name = file_location + "\\" + f_name;
-    int mask = tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL;
-    area->dataMgr.loadPlyToSample(f_name);
-    
-
-    for (int s_i = 0; s_i < sample->vert.size(); ++s_i)
-    {
-      sample->vert[s_i].N().Normalize();
-    }
-    //tri::io::ImporterPLY<CMesh>::Open(*sample, f_name.toAscii().data(), mask);
-
-    //save black original points and red sample points
-    area->update();
+    //snapshot original points
+    /*area->update();
     area->saveSnapshot();
-    area->update();
-
-    //save after-merge original points
-    runAddSamplesToOiriginal();
-    QString s_original;
-    s_original.sprintf("\\..\\original\\%d_original.ply", i);
-    s_original = file_location + s_original;
-    area->dataMgr.savePly(s_original, *area->dataMgr.getCurrentOriginal());
-
-    GlobalFun::clearCMesh(*sample);
-    area->update();
-    area->saveSnapshot();
-    area->update();
+    area->update();*/
 
     //save poisson surface reconstruction
     global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(true));
@@ -395,6 +368,34 @@ void CameraParaDlg::loadRealScans()
     cout << s_cmd_copy_poisson.toStdString() <<endl;
     system(s_cmd_copy_poisson.toAscii().data());
     cout<<"End to copy poisson_surface" <<endl;
+
+    QFileInfo fileInfo = list.at(i);
+    QString f_name = fileInfo.fileName();
+    std::cout<<"file name: " << f_name.toStdString() <<std::endl;
+
+    if (!f_name.endsWith(".ply"))
+      continue;
+
+    f_name = file_location + "\\" + f_name;
+    int mask = tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL;
+    area->dataMgr.loadPlyToSample(f_name);
+    //snapshot sample points
+    /*area->update();
+    area->saveSnapshot();
+    area->update();*/
+
+    /*for (int s_i = 0; s_i < sample->vert.size(); ++s_i)
+    sample->vert[s_i].N().Normalize();*/
+
+    //save after-merge original points
+    runAddSamplesToOiriginal();
+    GlobalFun::clearCMesh(*sample);
+    //tri::io::ImporterPLY<CMesh>::Open(*sample, f_name.toAscii().data(), mask);
+
+    /*QString s_original;
+    s_original.sprintf("\\..\\original\\%d_original.ply", i);
+    s_original = file_location + s_original;
+    area->dataMgr.savePly(s_original, *area->dataMgr.getCurrentOriginal());*/
   }
 }
 
@@ -1487,10 +1488,7 @@ void CameraParaDlg::runAddSamplesToOiriginal()
     CVertex t = samples->vert[i];
     t.is_original = true;
     t.m_index = idx++;
-    if (i < 10)
-    {
-      GlobalFun::printPoint3(std::cout, t.N());
-    }
+
     original->vert.push_back(t);
     original->bbox.Add(t.P());
   }
@@ -1732,7 +1730,12 @@ void CameraParaDlg::pvsOneKeyNbvIteration()
   }  
 }
 
-
+void CameraParaDlg::runSphere()
+{
+  global_paraMgr.pvsBasedNBV.setValue("Run Sphere", BoolValue(true));
+  area->runPVSBasedNBV();
+  global_paraMgr.pvsBasedNBV.setValue("Run Sphere", BoolValue(false));
+}
 
 void CameraParaDlg::getModelSize()
 {

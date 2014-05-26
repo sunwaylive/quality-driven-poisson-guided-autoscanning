@@ -1228,9 +1228,9 @@ void MainWindow::computeNormalForPoissonSurface()
 
 void MainWindow::evaluation()
 {
-  //evaluationForDifferentModels();
+  evaluationForDifferentModels();
 
-  QString file_name = QFileDialog::getOpenFileName(this, "choose a file to evaluate...", "", "*.ply");
+ /*QString file_name = QFileDialog::getOpenFileName(this, "choose a file to evaluate...", "", "*.ply");
   if (file_name.size() == 0)
   {
     cout<<"can't open file" <<endl;
@@ -1255,7 +1255,7 @@ void MainWindow::evaluation()
       v.C().SetRGB(255 * c[0], 255 * c[1], 255 * c[2]);
     }
   }
-  GlobalFun::normalizeConfidence(target->vert, 0.f);
+  GlobalFun::normalizeConfidence(target->vert, 0.f);*/
 }
 
 void MainWindow::evaluationForDifferentModels()
@@ -1272,9 +1272,9 @@ void MainWindow::evaluationForDifferentModels()
   CMesh *model = area->dataMgr.getCurrentModel();
 
   GlobalFun::computeAnnNeigbhors(target->vert, model->vert, 1, false, "runEvaluation");
-
-  ofstream f_confidence;
-  f_confidence.open("nearest_dist_to_model_points.txt");
+  
+  double dist_sum = 0.0;
+  double dist_max = 0.0;
 
   for (int i = 0; i < model->vert.size(); ++i)
   {
@@ -1284,18 +1284,20 @@ void MainWindow::evaluationForDifferentModels()
       CVertex &nearest = target->vert[model->vert[i].neighbors[0]];
       double dist = GlobalFun::computeEulerDist(v.P(), nearest.P());
       v.eigen_confidence = dist;
+      if (dist > dist_max) dist_max = dist;
 
-      f_confidence << dist <<std::endl;
+      dist_sum += dist;
     }
   }
-  f_confidence.close();
+
+  std::cout<<"mean: "<<dist_sum / model->vert.size() <<std::endl;
+  std::cout<<"max: "<<dist_max <<std::endl;
 }
 
 void MainWindow::switchHistoryNBV()
 {
-  vector<ScanCandidate> temp_history = *area->dataMgr.getScanHistory();
+  vector<ScanCandidate> temp_history;;
   vector<ScanCandidate>* history = area->dataMgr.getScanHistory();
-  history->clear();
 
   CMesh* candidates = area->dataMgr.getNbvCandidates();
 
@@ -1306,9 +1308,9 @@ void MainWindow::switchHistoryNBV()
   }
 
   candidates->vert.clear();
-  for (int i = 0; i < temp_history.size(); i++)
+  for (int i = 0; i < history->size(); i++)
   {
-    ScanCandidate& s = temp_history[i];
+    ScanCandidate s = history->at(i);
     CVertex new_v;
     new_v.m_index = i;
     new_v.is_view_grid = true;
@@ -1318,6 +1320,12 @@ void MainWindow::switchHistoryNBV()
     candidates->vert.push_back(new_v);
   }
   candidates->vn = candidates->vert.size();
+
+  history->clear();
+  for (int i = 0; i < temp_history.size(); i++)
+  {
+    history->push_back(temp_history[i]);
+  }
 }
 
 void MainWindow::addNBVtoHistory()
@@ -1331,5 +1339,4 @@ void MainWindow::addNBVtoHistory()
     ScanCandidate s =  make_pair(candidates->vert[i].P(), candidates->vert[i].N());
     history->push_back(s);
   }
-
 }
