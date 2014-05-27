@@ -467,7 +467,7 @@ void ParameterMgr::initNBVParameter()
   nbv.addParam(new RichDouble("Propagate One Point Index", 0));
   nbv.addParam(new RichInt("View Bin Each Axis", 10));
   nbv.addParam(new RichDouble("View Prune Confidence Threshold", 0.9));
-  nbv.addParam(new RichInt("NBV Top N", 3));
+  nbv.addParam(new RichInt("NBV Top N", 10));
   nbv.addParam(new RichBool("Need Update Direction With More Overlaps", true));
   nbv.addParam(new RichDouble("Max Displacement", 0.05));
 }
@@ -503,7 +503,7 @@ void ParameterMgr::initPVSBasedNBVParameter()
   pvsBasedNBV.addParam(new RichDouble("Boundary Search Angle", 45.));
   pvsBasedNBV.addParam(new RichInt("Boundary Search KNN", 20));
   pvsBasedNBV.addParam(new RichInt("Accept Boundary Size", 12));
-  pvsBasedNBV.addParam(new RichDouble("PVS Grid Resolution", 50.8));
+  pvsBasedNBV.addParam(new RichDouble("PVS Grid Resolution", 200.1f));
 
   pvsBasedNBV.addParam(new RichBool("Run Sphere", false));
 }

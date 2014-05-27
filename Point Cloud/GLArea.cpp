@@ -339,7 +339,10 @@ void GLArea::paintGL()
           glDrawer.draw(GLDrawer::CIRCLE, dataMgr.getCurrentOriginal());
         if (para->getBool("Show Original Sphere"))
           glDrawer.draw(GLDrawer::SPHERE, dataMgr.getCurrentOriginal());	
-      }		
+      }
+
+      glw.m = dataMgr.getCurrentOriginal();
+      glw.Draw(GLW::DMWire, GLW::CMPerMesh, GLW::TMNone);
     }
 
     if (para->getBool("Show ISO Points"))

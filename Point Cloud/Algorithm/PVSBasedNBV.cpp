@@ -694,24 +694,10 @@ void PVSBasedNBV::buildSphereCandidatesIEEE()
 {
   //build voxels for IEEE Sphere
   runBuildPVS();
-
-  //build candidates sphere
-  double camera_far_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
-    global_paraMgr.camera.getDouble("Predicted Model Size");
-
-  std::cout<<"nbv candidates size: "<< nbv_candidates->vert.size() <<std::endl;
-  /*for (int i = 0; i < nbv_candidates->vert.size(); ++i)
-  {
-    nbv_candidates->vert[i].P() = nbv_candidates->vert[i].N().Normalize() * camera_far_dist;
-    nbv_candidates->vert[i].N() = - nbv_candidates->vert[i].N();
-  }*/
 }
 
 void PVSBasedNBV::computeScoreIEEE()
 {
-  ofstream out;
-  out.open("is_ray_stop2.txt");
-
   double alpha_occplane = 0.8, beta_occupied = 0.2;
   double occplane_percentage = 0.0, occupied_percentage = 0.0;
   double f_area = 0.0, f_navigation = 0.0, f_quality = 0.0f, f_occlusion = 0.0f, f_final = 0.0f;
@@ -814,7 +800,6 @@ void PVSBasedNBV::computeScoreIEEE()
           //if the direction is into the model, or has been hit, then stop tracing
           if (pvs->vert[index].is_ray_stop)
           {
-            out<<index<<std::endl;
             total_voxels_num = total_voxels_num + 1;//(max_steps - k + 1);//TODO
             if (pvs->vert[index].is_boundary)
             {
@@ -835,11 +820,6 @@ void PVSBasedNBV::computeScoreIEEE()
       }//end for j
     }//end for i
 
-    std::cout<<"candidate num: " << i <<std::endl;
-    std::cout<<"occplane num: "<<occplane_num <<std::endl;
-    std::cout<<"occupied num: "<<occupied_num <<std::endl;
-    std::cout<<"total num: "<<total_voxels_num <<std::endl;
-
     if (hit_grid_indexes.size() > 0)
     {
       vector<int>::iterator it;
@@ -852,11 +832,8 @@ void PVSBasedNBV::computeScoreIEEE()
     {
       occplane_percentage = 1.0f * occplane_num / total_voxels_num;
       occupied_percentage = 1.0f * occupied_num / total_voxels_num;
-      std::cout<<"occplane percentage: " <<occplane_percentage <<std::endl;
-      std::cout<<"occupied percentage: " <<occupied_percentage <<std::endl;
       f_area = areaFactorIEEE(occplane_percentage, alpha_occplane) + areaFactorIEEE(occupied_percentage, beta_occupied);
     }
-    std::cout<<"f_area: " <<f_area <<std::endl;
 
     //step2: navigation factor
     double dist = 0.0f;//c.P().Norm() * GlobalFun::computeRealAngleOfTwoVertor(c.P(), sc.first) / 180.0 * PI;
@@ -865,26 +842,28 @@ void PVSBasedNBV::computeScoreIEEE()
     //step3: Quality factor
     if (total_voxels_num > occplane_num)
       f_quality = f_quality / (total_voxels_num - occplane_num);
-    std::cout<<"f_quality: "<< f_quality <<std::endl;
 
     //step4: occlusion factor
     f_occlusion = occplane_num / ( 4 * n_point_hr_half * n_point_ver_half);
-    std::cout<<"f_occlusion: "<<f_occlusion <<std::endl;
 
     f_final = f_area * (f_quality + f_navigation + f_occlusion);
     c.eigen_confidence = f_final;
-    std::cout<<"candidate confidence: "<<c.eigen_confidence <<std::endl;
   }//for candidates
-
-  out.close();
 }
 
 void PVSBasedNBV::updateIEEE()
 {
-  ofstream out;
-  out.open("is_ray_hit1.txt");
-
-  findBoarderPoints();
+  //find boarder points 
+  //copy point from original to sample
+  GlobalFun::clearCMesh(*detect_result);
+  detect_result = original;
+  vcg::tri::UpdateFlags<CMesh>::VertexBorderFromNone(*detect_result); 
+  //select the border vertexes
+  std::cout<<"selected boarder points: " <<tri::UpdateSelection<CMesh>::VertexFromBorderFlag(*detect_result) << std::endl;
+  //print them out
+  for (int i = 0; (i < detect_result->vert.size()); ++i)
+    if(detect_result->vert[i].IsB())
+      detect_result->vert[i].is_boundary = true;
 
   double resolution = global_paraMgr.camera.getDouble("Camera Resolution");
   double far_horizon_dist = global_paraMgr.camera.getDouble("Camera Horizon Dist") 
@@ -915,7 +894,6 @@ void PVSBasedNBV::updateIEEE()
       
       pvs->vert[index].is_ray_stop = true;   //the grid is occupied by object, so the ray should stop
       pvs->vert[index].pvs_value = 1.0f; 
-      out<<index <<std::endl;
 
       //if the voxel contains a border point, we consider it a occplane voxel
       if (o_v.is_boundary)
@@ -929,7 +907,6 @@ void PVSBasedNBV::updateIEEE()
       pvs->vert[index].total_point_num += 1;
       v_pvs_occupied_index.insert(index);
     }
-    out.close();
   }
 
   //called "surface normal" in IEEE Sphere
@@ -960,7 +937,18 @@ void PVSBasedNBV::selectCandidateIEEE()
     scan_candidates->push_back(make_pair(c.P(), c.N()));
   }
   std::cout<<"scan candidates size: " <<scan_candidates->size() <<std::endl;
-
+  
+  GlobalFun::clearCMesh(*nbv_candidates);
+  for (int i = 0; i < scan_candidates->size(); ++i)
+  {
+    CVertex v;
+    v.m_index = i;
+    v.P() = scan_candidates->at(i).first;
+    v.N() = scan_candidates->at(i).second;
+    nbv_candidates->vert.push_back(v);
+    nbv_candidates->bbox.Add(v.P());
+  }
+  nbv_candidates->vn = nbv_candidates->vert.size();
 }
 
 double PVSBasedNBV::areaFactorIEEE(double percentage, double optimum_percentage)
@@ -977,7 +965,6 @@ double PVSBasedNBV::areaFactorIEEE(double percentage, double optimum_percentage)
     f = - 2 / cube * percentage * percentage * percentage + 3 * (optimum_percentage + 1) / cube * percentage * percentage
             - 6 * optimum_percentage / cube * percentage + (3 * optimum_percentage - 1) / cube;
   }
-  std::cout<<"f_area: " <<f <<std::endl;;
   return f;
 }
 
@@ -1190,16 +1177,12 @@ void PVSBasedNBV::runPVSMerge()
 
 void PVSBasedNBV::runSphere()
 {
-  std::cout<<"Begin to run build sphere candidates" <<std::endl;
   buildSphereCandidatesIEEE();
 
-  std::cout<<"Begin to run update for sphere" <<std::endl;
   updateIEEE();
 
-  std::cout<<"Begin to run compute score for sphere"<<std::endl;
   computeScoreIEEE();
 
-  std::cout<<"Begin to run select candidate " <<std::endl;
   selectCandidateIEEE();
 }
 
