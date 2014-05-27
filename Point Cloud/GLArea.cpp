@@ -808,7 +808,6 @@ void GLArea::loadDefaultModel()
   for (int f = 0; f < f_size; ++f)
     dataMgr.getCurrentModel()->face[f].N().Normalize();
 
-  dataMgr.loadPlyToNBV("sphere_candidates.ply");
   //dataMgr.loadPlyToModel("box_model.ply");  
   //dataMgr.loadSkeletonFromSkel("child.skel");
   //dataMgr.loadPlyToOriginal("child_original.ply");

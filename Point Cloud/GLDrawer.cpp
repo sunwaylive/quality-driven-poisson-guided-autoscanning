@@ -306,6 +306,10 @@ void GLDrawer::drawDot(CVertex& v)
 	//{
 	//  return;
 	//}
+  if (v.is_pvs && !v.is_ray_stop)
+  {
+    return;
+  }
 
 	int size;
 	if (v.is_model)
