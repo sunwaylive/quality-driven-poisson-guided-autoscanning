@@ -19,7 +19,7 @@ void GLDrawer::updateDrawer(vector<int>& pickList)
 	bShowSlice = global_paraMgr.poisson.getBool("Show Slices Mode");
 
 	original_draw_width = para->getDouble("Original Draw Width");
-	sample_draw_width = para->getDouble("Sample Draw Width");
+	sample_draw_width = 50 * para->getDouble("Sample Draw Width");
 
 	original_color = para->getColor("Original Point Color");
 	sample_color = para->getColor("Sample Point Color");

@@ -340,9 +340,6 @@ void GLArea::paintGL()
         if (para->getBool("Show Original Sphere"))
           glDrawer.draw(GLDrawer::SPHERE, dataMgr.getCurrentOriginal());	
       }
-
-      glw.m = dataMgr.getCurrentOriginal();
-      glw.Draw(GLW::DMWire, GLW::CMPerMesh, GLW::TMNone);
     }
 
     if (para->getBool("Show ISO Points"))
@@ -2677,13 +2674,17 @@ void GLArea::removePickPoint()
 
       CVertex &v = samples->vert[pickList[i]]; 
       samples->vert.erase(samples->vert.begin() + v.m_index);
-
     }
   }
   else
   {		
+    double prob = global_paraMgr.nbv.getDouble("View Prune Confidence Threshold");
+
     for (int i = 0; i < pickList.size(); i++)
     {
+      if (1.0f * rand() / (RAND_MAX+1.0) > (1 - prob))
+        continue;
+
       samples->vert[pickList[i]].is_ignore = true;
     }
 
@@ -2702,10 +2703,7 @@ void GLArea::removePickPoint()
     {
       samples->vert.push_back(save_sample_vert[i]);
     }
-
   }
-
-
   samples->vn = samples->vert.size();
 
   j = 0;

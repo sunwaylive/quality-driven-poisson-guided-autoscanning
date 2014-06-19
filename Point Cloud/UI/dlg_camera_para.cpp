@@ -347,27 +347,27 @@ void CameraParaDlg::loadRealScans()
   for (int i = 0; i < list.size(); ++i)
   {
     //snapshot original points
-    /*area->update();
+    area->update();
     area->saveSnapshot();
-    area->update();*/
-
+    area->update();
+    Sleep(1500);
     //save poisson surface reconstruction
-    global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(true));
-    global_paraMgr.poisson.setValue("Run Generate Poisson Field", BoolValue(true));
-    area->runPoisson();
-    global_paraMgr.poisson.setValue("Run Generate Poisson Field", BoolValue(false));
-    global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(false));
+    //global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(true));
+    ////global_paraMgr.poisson.setValue("Run Generate Poisson Field", BoolValue(true));
+    //area->runPoisson();
+    ////global_paraMgr.poisson.setValue("Run Generate Poisson Field", BoolValue(false));
+    //global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(false));
 
-    //save poisson surface "copy poisson_out.ply file_location\\%d_poisson_out.ply"
-    cout<<"Begin to copy poisson_surface" <<endl;
-    QString s_poisson_surface;
-    s_poisson_surface.sprintf("\\..\\poisson\\%d_poisson_out.ply", i);
-    QString s_cmd_copy_poisson = "copy poisson_out.ply ";
-    s_cmd_copy_poisson += file_location;
-    s_cmd_copy_poisson += s_poisson_surface;
-    cout << s_cmd_copy_poisson.toStdString() <<endl;
-    system(s_cmd_copy_poisson.toAscii().data());
-    cout<<"End to copy poisson_surface" <<endl;
+    ////save poisson surface "copy poisson_out.ply file_location\\%d_poisson_out.ply"
+    //cout<<"Begin to copy poisson_surface" <<endl;
+    //QString s_poisson_surface;
+    //s_poisson_surface.sprintf("\\..\\poisson\\%d_poisson_out.ply", i);
+    //QString s_cmd_copy_poisson = "copy poisson_out.ply ";
+    //s_cmd_copy_poisson += file_location;
+    //s_cmd_copy_poisson += s_poisson_surface;
+    //cout << s_cmd_copy_poisson.toStdString() <<endl;
+    //system(s_cmd_copy_poisson.toAscii().data());
+    //cout<<"End to copy poisson_surface" <<endl;
 
     QFileInfo fileInfo = list.at(i);
     QString f_name = fileInfo.fileName();
@@ -380,10 +380,10 @@ void CameraParaDlg::loadRealScans()
     int mask = tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL;
     area->dataMgr.loadPlyToSample(f_name);
     //snapshot sample points
-    /*area->update();
+    area->update();
     area->saveSnapshot();
-    area->update();*/
-
+    area->update();
+    Sleep(1500);
     /*for (int s_i = 0; s_i < sample->vert.size(); ++s_i)
     sample->vert[s_i].N().Normalize();*/
 

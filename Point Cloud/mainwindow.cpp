@@ -1275,6 +1275,8 @@ void MainWindow::evaluationForDifferentModels()
   
   double dist_sum = 0.0;
   double dist_max = 0.0;
+  ofstream out;
+  out.open("dist.txt");
 
   for (int i = 0; i < model->vert.size(); ++i)
   {
@@ -1283,13 +1285,14 @@ void MainWindow::evaluationForDifferentModels()
     {
       CVertex &nearest = target->vert[model->vert[i].neighbors[0]];
       double dist = GlobalFun::computeEulerDist(v.P(), nearest.P());
+      out<<dist <<std::endl;
       v.eigen_confidence = dist;
       if (dist > dist_max) dist_max = dist;
 
       dist_sum += dist;
     }
   }
-
+  out.close();
   std::cout<<"mean: "<<dist_sum / model->vert.size() <<std::endl;
   std::cout<<"max: "<<dist_max <<std::endl;
 }

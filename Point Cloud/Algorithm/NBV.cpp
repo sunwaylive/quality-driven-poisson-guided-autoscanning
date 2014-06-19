@@ -1108,6 +1108,11 @@ void NBV::viewPrune()
   scan_candidates->clear();
   for (int i = 0; i < nbv_candidates->vert.size(); ++i)
     scan_candidates->push_back(make_pair(nbv_candidates->vert[i].P(), nbv_candidates->vert[i].N()));
+
+  scan_candidates->clear();
+  scan_candidates->push_back(make_pair(Point3f(-0.676, 0.100, 0.200), Point3f(1.000, 0.000, 0.000)));
+  scan_candidates->push_back(make_pair(Point3f(-0.05, -0.0300, 0.676), Point3f(0.000, 0.000, -1.000)));
+
 }
 
 //void NBV::viewPrune()
