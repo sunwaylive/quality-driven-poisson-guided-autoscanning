@@ -5,7 +5,7 @@
 
 #include "TriMesh.h"
 #include "TriMesh_algo.h"
-#include "ICP.h"
+//#include "ICP.h"
 #include "vcg/complex/trimesh/create/ball_pivoting.h"//#include "LAP_Others/eigen.h"
 #include "Algorithm/pointcloud_normal.h"
 #include <fstream>
