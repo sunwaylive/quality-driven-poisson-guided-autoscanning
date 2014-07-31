@@ -1,11 +1,12 @@
 #pragma once
+#ifndef GLOBALFUNCTION_H
+#define GLOBALFUNCTION_H
 #include <vector>
 #include "CMesh.h"
 #include "grid.h"
 
 #include "TriMesh.h"
 #include "TriMesh_algo.h"
-//#include "ICP.h"
 #include "vcg/complex/trimesh/create/ball_pivoting.h"//#include "LAP_Others/eigen.h"
 #include "Algorithm/pointcloud_normal.h"
 #include <fstream>
@@ -86,7 +87,7 @@ namespace GlobalFun
 
   void removeOutliers(CMesh *mesh, double radius, double remove_percent);
   void removeOutliers(CMesh *mesh, double radius, int remove_num);
-  void computeICP(CMesh *dst, CMesh *src);
+  void computeICP(CMesh *target, CMesh *src);
   void downSample(CMesh *dst, CMesh *src, double sample_ratio, bool use_random_downsample = true);
   void clearCMesh(CMesh &mesh);
 
@@ -113,7 +114,7 @@ class Timer
 {
 public:
 
-	void start(const string& str)
+	inline void start(const string& str)
 	{
 		cout << endl;
 		starttime = clock();
@@ -123,7 +124,7 @@ public:
 		_str = str;
 	}
 
-	void insert(const string& str)
+	inline void insert(const string& str)
 	{
 		mid_end = clock();
 		timeused = mid_end - mid_start;
@@ -131,7 +132,7 @@ public:
 		mid_start = clock();
 	}
 
-	void end()
+	inline void end()
 	{
 		stoptime = clock();
 		timeused = stoptime - starttime;
@@ -200,4 +201,4 @@ count += (p0 - v.P()).SquaredNorm();
 cout << count << endl;
 time.end();
 */
-
+#endif

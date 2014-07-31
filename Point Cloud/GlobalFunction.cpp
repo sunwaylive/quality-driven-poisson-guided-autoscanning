@@ -7,6 +7,7 @@
 
 #include "grid.h"
 #include "GlobalFunction.h"
+#include "SparseICP.h"
 
 #define LINKED_WITH_TBB
 //#ifdef LINKED_WITH_TBB
@@ -17,11 +18,9 @@ using namespace vcg;
 using namespace std;
 using namespace tri;
 
-
 void GlobalFun::find_original_neighbors(CGrid::iterator starta, CGrid::iterator enda, 
 	CGrid::iterator startb, CGrid::iterator endb, double radius) 
 {	
-
 	double radius2 = radius*radius;
 	double iradius16 = -4/radius2;
 	//const double PI = 3.1415926;
@@ -974,9 +973,47 @@ void GlobalFun::removeOutliers(CMesh *mesh, double radius, int remove_num)
   GlobalFun::removeOutliers(mesh, radius, remove_percent);
 }
 
-void GlobalFun::computeICP(CMesh *dst, CMesh *src)
+void GlobalFun::computeICP(CMesh *target, CMesh *src)
 {
-  cout<<"Beign to Compute ICP "<<endl;
+  cout<<"Begin to Compute ICP "<<endl;
+  Eigen::MatrixXd SrCloud;
+  Eigen::MatrixXd TgCloud;
+  Eigen::MatrixXd verterMap;//点之间的对应
+
+  int srVerNum = src->vert.size(); 
+  int tgVerNum = target->vert.size();
+  SrCloud.resize(3,srVerNum);
+  TgCloud.resize(3,tgVerNum);
+  verterMap.resize(1,srVerNum);
+
+  for(int i = 0; i < srVerNum; i++)
+  {
+    CVertex& v = src->vert[i];
+    SrCloud(0,i) = v.P()[0];
+    SrCloud(1,i) = v.P()[1];
+    SrCloud(2,i) = v.P()[2];
+  }
+
+  for(int i = 0; i < tgVerNum; i++)
+  {
+    CVertex& v = target->vert[i];
+    TgCloud(0,i) = v.P()[0];
+    TgCloud(1,i) = v.P()[1];
+    TgCloud(2,i) = v.P()[2];
+  }
+  cout<<"before ,first point "<<SrCloud.col(0)<<endl;
+  SparseICP::SICP::Parameters pa;
+  SparseICP::SICP::point_to_point(SrCloud,TgCloud,verterMap,pa);
+
+  //update the sourse coor
+  for(int i = 0; i < srVerNum; i++)
+  {
+    CVertex& v = src->vert[i];
+    v.P()[0] = SrCloud(0,i);
+    v.P()[1] = SrCloud(1,i);
+    v.P()[2] = SrCloud(2,i);
+  }
+  cout<<"after,first point "<<SrCloud.col(0)<<endl;
   return;
 }
 
