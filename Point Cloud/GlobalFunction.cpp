@@ -975,7 +975,6 @@ void GlobalFun::removeOutliers(CMesh *mesh, double radius, int remove_num)
 
 void GlobalFun::computeICP(CMesh *target, CMesh *src)
 {
-  cout<<"Begin to Compute ICP "<<endl;
   Eigen::MatrixXd SrCloud;
   Eigen::MatrixXd TgCloud;
   Eigen::MatrixXd verterMap;//点之间的对应
@@ -1001,11 +1000,10 @@ void GlobalFun::computeICP(CMesh *target, CMesh *src)
     TgCloud(1,i) = v.P()[1];
     TgCloud(2,i) = v.P()[2];
   }
-  cout<<"before ,first point "<<SrCloud.col(0)<<endl;
   SparseICP::SICP::Parameters pa;
   SparseICP::SICP::point_to_point(SrCloud,TgCloud,verterMap,pa);
 
-  //update the sourse coor
+  //update the source coordinate
   for(int i = 0; i < srVerNum; i++)
   {
     CVertex& v = src->vert[i];
@@ -1013,7 +1011,6 @@ void GlobalFun::computeICP(CMesh *target, CMesh *src)
     v.P()[1] = SrCloud(1,i);
     v.P()[2] = SrCloud(2,i);
   }
-  cout<<"after,first point "<<SrCloud.col(0)<<endl;
   return;
 }
 

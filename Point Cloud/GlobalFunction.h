@@ -23,20 +23,16 @@
 #define EIGEN_DEFAULT_TO_ROW_MAJOR
 #define EIGEN_EXCEPTIONS
 
+using namespace std;
+using namespace vcg;
+
+#define MyMax(a,b) (((a) > (b)) ? (a) : (b))  
+#define MyMin(a,b) (((a) < (b)) ? (a) : (b))  
+
 const double PI = 3.1415926;
 const double EPS_SUN = 1e-8;    //lion: 1e-8, dc: 1e-10, sphere: 1e-7, anno:1e-7
 const double EPS_VISIBILITY = 1e-4;
 const double BIG = 100000;
-
-//#include <Eigen/Dense>
-
-using namespace std;
-using namespace vcg;
-
-//typedef Eigen::MatrixXd Matrix;
-
-#define MyMax(a,b) (((a) > (b)) ? (a) : (b))  
-#define MyMin(a,b) (((a) < (b)) ? (a) : (b))  
 
 namespace GlobalFun
 {
