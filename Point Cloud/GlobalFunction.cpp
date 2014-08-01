@@ -976,6 +976,7 @@ void GlobalFun::removeOutliers(CMesh *mesh, double radius, int remove_num)
 //transform should be 3*4 matrix
 void GlobalFun::computeICP( CMesh *src, CMesh *target, Eigen::MatrixXd &transform)
 {
+  cout<<"******************************Begin SICP***********************"<<endl;
   Eigen::MatrixXd SrCloud;
   Eigen::MatrixXd TgCloud;
   Eigen::MatrixXd verterMap;//点之间的对应
@@ -1004,28 +1005,24 @@ void GlobalFun::computeICP( CMesh *src, CMesh *target, Eigen::MatrixXd &transfor
 
   SparseICP::SICP::Parameters pa;
   SparseICP::SICP::point_to_point(SrCloud, TgCloud, verterMap, transform, pa);
-  return;
-
-  //update the original points
-
-  //update the source coordinate
-  /* for(int i = 0; i < srVerNum; i++)
+  //update the moved points
+  for(int i = 0; i < srVerNum; i++)
   {
   CVertex& v = src->vert[i];
   v.P()[0] = SrCloud(0,i);
   v.P()[1] = SrCloud(1,i);
   v.P()[2] = SrCloud(2,i);
   }
-  */
+  cout<<"******************************End SICP***********************"<<endl;
 }
 
 //no face will be exist after the merge
-void GlobalFun::mergeMesh(CMesh *target, CMesh *src )
+void GlobalFun::mergeMesh(CMesh *src, CMesh *target)
 {
-  src->face.clear();
-  src->fn = 0;
   target->face.clear();
   target->fn = 0;
+  src->face.clear();
+  src->fn = 0;
 
   int idx = target->vert.back().m_index + 1;
 

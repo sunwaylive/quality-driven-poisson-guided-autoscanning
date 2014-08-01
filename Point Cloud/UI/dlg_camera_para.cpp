@@ -1508,9 +1508,17 @@ void CameraParaDlg::runICP()
   dir.setFilter(QDir::Files);
   dir.setSorting(QDir::Name);
   QFileInfoList list = dir.entryInfoList();
+  //compute the wlop result for the first 360бу mesh
   CMesh *target = area->dataMgr.getCurrentOriginal();
-  CMesh *src = area->dataMgr.getCurrentSamples();
+  CMesh *target_wlop = new CMesh;
+  GlobalFun::downSample(target_wlop, target, 0.2);
+  area->dataMgr.temperal_original = target;
+  area->dataMgr.temperal_sample = target_wlop;
+  global_paraMgr.wLop.setValue("Run Wlop On Scanned Mesh", BoolValue(true));
+  area->runWlop();
+  global_paraMgr.wLop.setValue("Run Wlop On Scanned Mesh", BoolValue(false));
 
+  //*************************** preprocess data for wlop
   for (int i = 0; i < list.size(); ++i)
   {
     QFileInfo fileInfo = list.at(i);
@@ -1523,23 +1531,67 @@ void CameraParaDlg::runICP()
     f_name = file_location + "\\" + f_name;
     int mask = tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL;
     area->dataMgr.loadPlyToSample(f_name);
-    //snapshot points before ICP
+    //snapshot
     area->update();
     area->saveSnapshot();
     area->update();
     Sleep(1500);
 
+    CMesh *src = area->dataMgr.getCurrentSamples();
+    CMesh *src_wlop = new CMesh;
+    GlobalFun::downSample(src_wlop, src, 0.2);
+    area->dataMgr.temperal_original = src;
+    area->dataMgr.temperal_sample = src_wlop;
+    global_paraMgr.wLop.setValue("Run Wlop On Scanned Mesh", BoolValue(true));
+    area->runWlop();
+    global_paraMgr.wLop.setValue("Run Wlop On Scanned Mesh", BoolValue(false));
+
     //do the registration
-    //GlobalFun::computeICP(target, src);
-    //snapshot after before ICP
+    Eigen::MatrixXd transform;
+    transform.resize(3, 4);
+    GlobalFun::computeICP(src_wlop, target_wlop, transform);
+    GlobalFun::mergeMesh(src_wlop, target_wlop);
+    //apply the transformation on the noised data, and merge them
+    Eigen::MatrixXd rot;
+    rot.resize(3, 3);
+    rot = transform.block(0, 0, 3, 3);
+
+    Eigen::MatrixXd trans;
+    trans.resize(3, 1);
+    trans = transform.block(0, 3 , 3, 1);
+    //transform point cloud data into Eigen::MatrixXd
+    Eigen::MatrixXd src_matrix;    
+    const int src_size = src->vert.size();    
+    src_matrix.resize(3, src_size);   
+    for(int j = 0; j < src_size; ++j){
+      CVertex &v = src->vert[j];
+      src_matrix(0, j) = v.P()[0];
+      src_matrix(1, j) = v.P()[1];
+      src_matrix(2, j) = v.P()[2];
+    }
+    for (int j = 0; j < src_size; ++j)
+      src_matrix.col(j) += trans;
+    src_matrix = rot * src_matrix;
+
+    //transform back
+    for(int j = 0; j < src_size; j++)
+    {
+      CVertex& v = src->vert[j];
+      v.P()[0] = src_matrix(0,j);
+      v.P()[1] = src_matrix(1,j);
+      v.P()[2] = src_matrix(2,j);
+    }
+    GlobalFun::mergeMesh(src, target);
+    //snapshot
     area->update();
     area->saveSnapshot();
     area->update();
     Sleep(1500);
-    //merge sample to original
-    GlobalFun::mergeMesh(target, src);
+
+    delete src_wlop;
   }
   cout<<"done!"<<endl;
+  delete target_wlop;
 }
 
 void CameraParaDlg::moveTranslation()

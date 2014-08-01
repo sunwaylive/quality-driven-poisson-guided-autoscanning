@@ -85,7 +85,7 @@ namespace GlobalFun
   void removeOutliers(CMesh *mesh, double radius, double remove_percent);
   void removeOutliers(CMesh *mesh, double radius, int remove_num);
   void computeICP(CMesh *target, CMesh *src, Eigen::MatrixXd &transform);
-  void mergeMesh(CMesh *target, CMesh *src);
+  void mergeMesh(CMesh *src, CMesh *target);
   void downSample(CMesh *dst, CMesh *src, double sample_ratio, bool use_random_downsample = true);
   void clearCMesh(CMesh &mesh);
 
