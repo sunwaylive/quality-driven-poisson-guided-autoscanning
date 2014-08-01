@@ -973,7 +973,8 @@ void GlobalFun::removeOutliers(CMesh *mesh, double radius, int remove_num)
   GlobalFun::removeOutliers(mesh, radius, remove_percent);
 }
 
-void GlobalFun::computeICP(CMesh *target, CMesh *src)
+//transform should be 3*4 matrix
+void GlobalFun::computeICP( CMesh *src, CMesh *target, Eigen::MatrixXd &transform)
 {
   Eigen::MatrixXd SrCloud;
   Eigen::MatrixXd TgCloud;
@@ -1000,146 +1001,45 @@ void GlobalFun::computeICP(CMesh *target, CMesh *src)
     TgCloud(1,i) = v.P()[1];
     TgCloud(2,i) = v.P()[2];
   }
+
   SparseICP::SICP::Parameters pa;
-  SparseICP::SICP::point_to_point(SrCloud,TgCloud,verterMap,pa);
+  SparseICP::SICP::point_to_point(SrCloud, TgCloud, verterMap, transform, pa);
+  return;
+
+  //update the original points
 
   //update the source coordinate
-  for(int i = 0; i < srVerNum; i++)
+  /* for(int i = 0; i < srVerNum; i++)
   {
-    CVertex& v = src->vert[i];
-    v.P()[0] = SrCloud(0,i);
-    v.P()[1] = SrCloud(1,i);
-    v.P()[2] = SrCloud(2,i);
+  CVertex& v = src->vert[i];
+  v.P()[0] = SrCloud(0,i);
+  v.P()[1] = SrCloud(1,i);
+  v.P()[2] = SrCloud(2,i);
   }
-  return;
+  */
 }
 
-//void
-//GlobalFun::computeICP(CMesh *dst, CMesh *src)
-//{
-//  if (dst->vert.empty() || src->vert.empty())
-//  {
-//    cout<< "compute ICP Error : " <<"Empty meshes!" <<endl;
-//    return;
-//  }
-//
-//  int verbose = 0;
-//  bool do_scale = false;
-//  bool do_affine = false;
-//  bool bulkmode = false;
-//
-//  int c;
-//
-//  princeton::TriMesh::set_verbose(verbose);
-//
-//  //******************** for test *****************************
-//  //const char *filename1 = "1.ply", *filename2 = "2.ply";
-//  //princeton::TriMesh *raw1 = princeton::TriMesh::read(filename1);
-//  //princeton::TriMesh *raw2 = princeton::TriMesh::read(filename2);
-// 
-//  //CMesh *cm1 = new CMesh;
-//  //CMesh *cm2 = new CMesh;
-//  //int index = 0;
-//  //for (int i = 0; i < raw1->vertices.size(); ++i)
-//  //{
-//  //  point &p = raw1->vertices[i];
-//  //  CVertex t;
-//  //  t.m_index = index++;
-//  //  t.P()[0] = p[0];
-//  //  t.P()[1] = p[1];
-//  //  t.P()[2] = p[2];
-//  //  cm1->vert.push_back(t);
-//  //  cm1->bbox.Add(t.P());
-//  //}
-//  //cm1->vn = cm1->vert.size();
-//
-//  //for (int j = 0; j < raw2->vertices.size(); ++j)
-//  //{
-//  //  point &p = raw2->vertices[j];
-//  //  CVertex t;
-//  //  t.P()[0] = p[0];
-//  //  t.P()[1] = p[1];
-//  //  t.P()[2] = p[2];
-//  //  cm2->vert.push_back(t);
-//  //  cm2->bbox.Add(t.P());
-//  //}
-//  //cm2->vn = cm2->vert.size();
-//  //*********************************************************
-//
-//  princeton::TriMesh *mesh1 = new princeton::TriMesh;
-//  princeton::TriMesh *mesh2 = new princeton::TriMesh;
-//
-//  //set two tri-meshes
-//  for (int i = 0; i < dst->vert.size(); ++i)
-//  {
-//    CVertex &v = dst->vert[i];
-//    point p(v.P()[0], v.P()[1], v.P()[2]);
-//    mesh1->vertices.push_back(p);
-//  }
-//
-//  for (int j = 0; j < src->vert.size(); ++j)
-//  {
-//    CVertex &v = src->vert[j];
-//    point p(v.P()[0], v.P()[1], v.P()[2]);
-//    mesh2->vertices.push_back(p);
-//  }
-//
-//  xform xf1, xf2;
-//  
-//  KDtree *kd1 = new KDtree(mesh1->vertices);
-//  KDtree *kd2 = new KDtree(mesh2->vertices);
-//  vector<float> weights1, weights2;
-//
-//  if (bulkmode) {
-//    float area1 = mesh1->stat(princeton::TriMesh::STAT_TOTAL, princeton::TriMesh::STAT_FACEAREA);
-//    float area2 = mesh2->stat(princeton::TriMesh::STAT_TOTAL, princeton::TriMesh::STAT_FACEAREA);
-//    float overlap_area, overlap_dist;
-//    find_overlap(mesh1, mesh2, xf1, xf2, kd1, kd2,
-//      overlap_area, overlap_dist);
-//    float frac_overlap = overlap_area / min(area1, area2);
-//    if (frac_overlap < 0.1f) {
-//      printf("Insufficient overlap\n");
-//      exit(1);
-//    } else {
-//      printf("%.1f%% overlap\n",
-//        frac_overlap * 100.0);
-//    }
-//  }
-//
-//  float err = ICP(mesh1, mesh2, xf1, xf2, kd1, kd2, weights1, weights2,
-//    verbose, do_scale, do_affine);
-//  if (err >= 0.0f)
-//    err = ICP(mesh1, mesh2, xf1, xf2, kd1, kd2, weights1, weights2,
-//    verbose, do_scale, do_affine);
-//  
-//  if (err < 0.0f) {
-//    printf("ICP failed\n");
-//    exit(1);
-//  }
-//
-//  printf("ICP succeeded - distance = %f\n", err);
-//  
-//  //add new points to dst
-//  int index = (dst->vert.empty()) ? 0 : (dst->vert.back()).m_index;
-//  cout <<"original index: "<<index <<endl;;
-//  for (int i = 0; i < mesh2->vertices.size(); ++i)
-//  {
-//    point p = xf2 * mesh2->vertices[i];
-//    CVertex& t = src->vert[i];
-//
-//    t.P()[0] = p[0];
-//    t.P()[1] = p[1];
-//    t.P()[2] = p[2];
-//    //CVertex t;
-//    //t.m_index = ++index;
-//    //t.P()[0] = p[0];
-//    //t.P()[1] = p[1];
-//    //t.P()[2] = p[2];
-//    //dst->vert.push_back(t);f
-//    //dst->bbox.Add(t.P());
-//  }
-//  dst->vn = dst->vert.size();
-//}
+//no face will be exist after the merge
+void GlobalFun::mergeMesh(CMesh *target, CMesh *src )
+{
+  src->face.clear();
+  src->fn = 0;
+  target->face.clear();
+  target->fn = 0;
+
+  int idx = target->vert.back().m_index + 1;
+
+  for (int i = 0; i < src->vert.size(); i++)
+  {
+    CVertex t = src->vert[i];
+    t.is_original = true;
+    t.m_index = idx++;
+
+    target->vert.push_back(t);
+    target->bbox.Add(t.P());
+  }
+  target->vn = target->vert.size();
+}
 
 void GlobalFun::downSample(CMesh *dst, CMesh *src, double sample_ratio, bool use_random_downsample)
 {

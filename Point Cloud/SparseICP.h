@@ -74,10 +74,11 @@ namespace SparseICP
 		/// @param Target (one 3D point per column)
 		/// @param Confidence weights
 		//求旋转矩阵和平移向量
-		template <typename Derived1, typename Derived2, typename Derived3>
+		template <typename Derived1, typename Derived2, typename Derived3, typename Derived4>
 		Eigen::Affine3d point_to_point(Eigen::MatrixBase<Derived1>& X,
 			Eigen::MatrixBase<Derived2>& Y,
-			const Eigen::MatrixBase<Derived3>& w) 
+      Eigen::MatrixBase<Derived3>& T,
+			const Eigen::MatrixBase<Derived4>& w) 
 		{
 			/// Normalize weight vector----等权重
 			Eigen::VectorXd w_normalized = w/w.sum();
@@ -107,7 +108,8 @@ namespace SparseICP
 				//cout<<transformation.linear()<<endl;
 			}
 			transformation.translation().noalias() = Y_mean - transformation.linear()*X_mean;//计算平移向量
-			//cout<<"平移向量"<<endl;
+			//T
+      //cout<<"平移向量"<<endl;
 			//cout<<transformation.translation()<<endl;
 			/// Apply transformation
 			//X = transformation * X;//对sourse点云做变形--靠近target点云
@@ -139,11 +141,12 @@ namespace SparseICP
 		}
 		/// @param Source (one 3D point per column)
 		/// @param Target (one 3D point per column)
-		template <typename Derived1, typename Derived2>
+		template <typename Derived1, typename Derived2, typename Derived3>
 		inline Eigen::Affine3d point_to_point(Eigen::MatrixBase<Derived1>& X,
-			Eigen::MatrixBase<Derived2>& Y) 
+			Eigen::MatrixBase<Derived2>& Y,
+      Eigen::MatrixBase<Derived3>& T) 
 		{
-			return point_to_point(X, Y, Eigen::VectorXd::Ones(X.cols()));
+			return point_to_point(X, Y, T, Eigen::VectorXd::Ones(X.cols()));
 		}
 		/// @param Source (one 3D point per column)
 		/// @param Target (one 3D point per column)
@@ -297,10 +300,11 @@ namespace SparseICP
 		/// @param Source (one 3D point per column)
 		/// @param Target (one 3D point per column)
 		/// @param Parameters
-		template <typename Derived1, typename Derived2,typename Derived3>
+		template <typename Derived1, typename Derived2,typename Derived3, typename Derived4>
 		void point_to_point(Eigen::MatrixBase<Derived1>& X,
 			Eigen::MatrixBase<Derived2>& Y,
 			Eigen::MatrixBase<Derived3> & verMap,
+      Eigen::MatrixBase<Derived4> &T,
 			Parameters par = Parameters()) 
 		{
 			/// Build kd-tree
@@ -337,7 +341,7 @@ namespace SparseICP
 						//cout<<"更新后的残差Step1"<<Z<<endl;
 						/// Rotation and translation update
 						Eigen::Matrix3Xd U = Q+Z-C/mu;
-						RigidMotionEstimator::point_to_point(X, U);//一直更新X点云的坐标----- Step   2.2
+						RigidMotionEstimator::point_to_point(X, U, T);//一直更新X点云的坐标----- Step   2.2
 						/// Stopping criteria
 						dual = (X-Xo1).colwise().norm().maxCoeff();
 						Xo1 = X;

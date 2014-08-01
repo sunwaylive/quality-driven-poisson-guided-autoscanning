@@ -935,7 +935,6 @@ void MainWindow::runWLop()
 	global_paraMgr.glarea.setValue("Running Algorithm Name", StringValue("WLOP"));
 	calculation_thread.setArea(area);
 	calculation_thread.start();
-
 }
 
 void MainWindow::runPCA_Normal()
@@ -948,15 +947,11 @@ void MainWindow::runPCA_Normal()
 void MainWindow::reorientateNormal()
 {
 	if (area->dataMgr.isSamplesEmpty())
-	{
 		return;
-	}
 
 	CMesh* samples = area->dataMgr.getCurrentSamples();
 	for (int i = 0; i < samples->vert.size(); i++)
-	{
 		samples->vert[i].N() *= -1;
-	}
 }
 
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)

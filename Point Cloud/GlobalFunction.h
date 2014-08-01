@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <math.h>
 #include "ANN/ANN.h"
+#include <eigenlib/Eigen/Dense>
 
 #define EIGEN_DEFAULT_TO_ROW_MAJOR
 #define EIGEN_EXCEPTIONS
@@ -83,7 +84,8 @@ namespace GlobalFun
 
   void removeOutliers(CMesh *mesh, double radius, double remove_percent);
   void removeOutliers(CMesh *mesh, double radius, int remove_num);
-  void computeICP(CMesh *target, CMesh *src);
+  void computeICP(CMesh *target, CMesh *src, Eigen::MatrixXd &transform);
+  void mergeMesh(CMesh *target, CMesh *src);
   void downSample(CMesh *dst, CMesh *src, double sample_ratio, bool use_random_downsample = true);
   void clearCMesh(CMesh &mesh);
 

@@ -440,7 +440,7 @@ void CameraParaDlg::loadRealInitialScan()
     {
       CMesh* iso_points = area->dataMgr.getCurrentIsoPoints();
       tri::io::ImporterPLY<CMesh>::Open(*iso_points, f_name.toAscii().data(), mask);
-      GlobalFun::computeICP(original, iso_points);
+      //GlobalFun::computeICP(original, iso_points);
       //tri::io::ImporterPLY<CMesh>::Open(initial_scan, f_name.toAscii().data(), mask);
       //GlobalFun::computeICP(original, &initial_scan);
     }
@@ -1060,7 +1060,7 @@ void CameraParaDlg::runWlopOnScannedMesh()
     area->runWlop();
     global_paraMgr.wLop.setValue("Run Wlop On Scanned Mesh", BoolValue(false));
     //we should deal with wlop result, ICP with 
-    GlobalFun::computeICP(area->dataMgr.getCurrentSamples(), area->dataMgr.getCurrentTemperalSamples());
+    //GlobalFun::computeICP(area->dataMgr.getCurrentSamples(), area->dataMgr.getCurrentTemperalSamples());
 
     delete temperal_sample;
   }
@@ -1497,7 +1497,49 @@ void CameraParaDlg::runAddSamplesToOiriginal()
 
 void CameraParaDlg::runICP()
 {
-  GlobalFun::computeICP(area->dataMgr.getCurrentOriginal(), area->dataMgr.getCurrentSamples());
+  QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
+  if (!file_location.size()) 
+    return;
+
+  QDir dir(file_location);
+  if (!dir.exists()) 
+    return;
+
+  dir.setFilter(QDir::Files);
+  dir.setSorting(QDir::Name);
+  QFileInfoList list = dir.entryInfoList();
+  CMesh *target = area->dataMgr.getCurrentOriginal();
+  CMesh *src = area->dataMgr.getCurrentSamples();
+
+  for (int i = 0; i < list.size(); ++i)
+  {
+    QFileInfo fileInfo = list.at(i);
+    QString f_name = fileInfo.fileName();
+    std::cout<<"file name: " << f_name.toStdString() <<std::endl;
+
+    if (!f_name.endsWith(".ply"))
+      continue;
+
+    f_name = file_location + "\\" + f_name;
+    int mask = tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL;
+    area->dataMgr.loadPlyToSample(f_name);
+    //snapshot points before ICP
+    area->update();
+    area->saveSnapshot();
+    area->update();
+    Sleep(1500);
+
+    //do the registration
+    //GlobalFun::computeICP(target, src);
+    //snapshot after before ICP
+    area->update();
+    area->saveSnapshot();
+    area->update();
+    Sleep(1500);
+    //merge sample to original
+    GlobalFun::mergeMesh(target, src);
+  }
+  cout<<"done!"<<endl;
 }
 
 void CameraParaDlg::moveTranslation()
