@@ -440,7 +440,7 @@ void CameraParaDlg::loadRealInitialScan()
     {
       CMesh* iso_points = area->dataMgr.getCurrentIsoPoints();
       tri::io::ImporterPLY<CMesh>::Open(*iso_points, f_name.toAscii().data(), mask);
-      GlobalFun::computeICP(original, iso_points);
+      //GlobalFun::computeICP(original, iso_points);
       //tri::io::ImporterPLY<CMesh>::Open(initial_scan, f_name.toAscii().data(), mask);
       //GlobalFun::computeICP(original, &initial_scan);
     }
@@ -1060,7 +1060,7 @@ void CameraParaDlg::runWlopOnScannedMesh()
     area->runWlop();
     global_paraMgr.wLop.setValue("Run Wlop On Scanned Mesh", BoolValue(false));
     //we should deal with wlop result, ICP with 
-    GlobalFun::computeICP(area->dataMgr.getCurrentSamples(), area->dataMgr.getCurrentTemperalSamples());
+    //GlobalFun::computeICP(area->dataMgr.getCurrentSamples(), area->dataMgr.getCurrentTemperalSamples());
 
     delete temperal_sample;
   }
@@ -1497,7 +1497,191 @@ void CameraParaDlg::runAddSamplesToOiriginal()
 
 void CameraParaDlg::runICP()
 {
-  GlobalFun::computeICP(area->dataMgr.getCurrentOriginal(), area->dataMgr.getCurrentSamples());
+  QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
+  if (!file_location.size()) 
+    return;
+
+  QDir dir(file_location);
+  if (!dir.exists()) 
+    return;
+
+  /*QString s_log = "\\log.txt";
+  s_log = file_location + s_log;
+  ofstream log;
+  log.open(s_log.toAscii().data());
+  cout.rdbuf(log.rdbuf());*/
+
+  dir.setFilter(QDir::Files);
+  dir.setSorting(QDir::Name);
+  QFileInfoList list = dir.entryInfoList();
+  const float sample_ratio = 0.05;
+  //compute the wlop result for the first 360° mesh
+  CMesh *target = area->dataMgr.getCurrentOriginal();
+  CMesh *target_wlop = target;
+
+  /*CMesh *target_wlop = new CMesh;
+  GlobalFun::downSample(target_wlop, target, sample_ratio);
+  area->dataMgr.temperal_original = target;
+  area->dataMgr.temperal_sample = target_wlop;
+  global_paraMgr.wLop.setValue("Run Wlop On Scanned Mesh", BoolValue(true));
+  area->runWlop();
+  global_paraMgr.wLop.setValue("Run Wlop On Scanned Mesh", BoolValue(false));*/
+
+  //preprocess data for wlop
+  for (int i = 0; i < list.size(); ++i)
+  {
+    QFileInfo fileInfo = list.at(i);
+    QString f_name = fileInfo.fileName();
+    std::cout<<"file name: " << f_name.toStdString() <<std::endl;
+
+    if (!f_name.endsWith(".ply"))
+      continue;
+
+    f_name = file_location + "\\" + f_name;
+    int mask = tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL;
+    area->dataMgr.loadPlyToSample(f_name);
+    //snapshot
+    area->update();
+    area->saveSnapshot();
+    area->update();
+    Sleep(1500);
+
+    CMesh *src = area->dataMgr.getCurrentSamples();
+    CMesh *src_wlop = src;
+
+    /*CMesh *src_wlop = new CMesh;
+    GlobalFun::downSample(src_wlop, src, sample_ratio);
+    area->dataMgr.temperal_original = src;
+    area->dataMgr.temperal_sample = src_wlop;
+    global_paraMgr.wLop.setValue("Run Wlop On Scanned Mesh", BoolValue(true));
+    area->runWlop();
+    global_paraMgr.wLop.setValue("Run Wlop On Scanned Mesh", BoolValue(false));*/
+
+    //do the registration
+    //********************************************************************
+    Eigen::MatrixXd transform;
+    transform.resize(3, 4);
+    transform(0, 0) = transform(1, 1) = transform(2, 2) = 1;
+    GlobalFun::computeICP(src_wlop, target_wlop, transform);
+    //GlobalFun::mergeMesh(src_wlop, target_wlop);
+    cout<<"变换举证"<<endl <<transform<<endl;
+    cout<<"src_wlop vert[0]"<<endl;
+    GlobalFun::printPoint3(cout, src_wlop->vert[0]);
+
+    //Eigen::Affine3d trans = transform;
+    Eigen::MatrixXd rot;
+    rot.resize(3, 3);
+    rot = transform.block(0, 0, 3, 3);
+
+    Eigen::MatrixXd trans;
+    trans.resize(3, 1);
+    trans = transform.block(0, 3 , 3, 1);
+
+    Eigen::MatrixXd src_matrix;    
+    const int src_size = src_wlop->vert.size();    
+    src_matrix.resize(3, src_size);   
+    for(int j = 0; j < src_size; ++j){
+      CVertex &v = src_wlop->vert[j];
+      src_matrix(0, j) = v.P()[0];
+      src_matrix(1, j) = v.P()[1];
+      src_matrix(2, j) = v.P()[2];
+    }
+    cout<<"平移矩阵：" <<trans(0, 0) <<" "<<trans(1, 0)<<" "<<trans(2, 0)<<endl;
+    cout<<src_matrix(0, 0)<<endl;
+    for (int j = 0; j < src_size; ++j)
+      src_matrix.col(j) += trans;
+    cout<<src_matrix(0, 0)<<endl;
+
+    Eigen::MatrixXd temp;
+    temp.resize(3, src_size);
+
+    temp = rot * src_matrix;
+    src_matrix = temp;
+
+    //transform back
+    for(int j = 0; j < src_size; j++)
+    {
+      CVertex& v = src_wlop->vert[j];
+      if(j < 10)
+        cout<<"After move noise src points: "<<v.P()[0]<<" "<<v.P()[1]<<" "<<v.P()[2]<<endl;        
+      v.P()[0] = src_matrix(0,j);
+      v.P()[1] = src_matrix(1,j);
+      v.P()[2] = src_matrix(2,j);
+      if(j < 10)
+        cout<<"After move noise src points: "<<v.P()[0]<<" "<<v.P()[1]<<" "<<v.P()[2]<<endl;
+    }
+    cout<<"Before merge Original size: "<<target->vert.size()<<endl;
+    GlobalFun::mergeMesh(src_wlop, target_wlop);
+    cout<<"After merge Original size: " <<target->vert.size()<<endl;
+
+    return;
+    //******************************************
+    //apply the transformation on the noised data, and merge them
+    /*Eigen::MatrixXd rot;
+    rot.resize(3, 3);
+    rot = transform.block(0, 0, 3, 3);
+
+    Eigen::MatrixXd trans;
+    trans.resize(3, 1);
+    trans = transform.block(0, 3 , 3, 1);
+    //transform point cloud data into Eigen::MatrixXd
+    Eigen::MatrixXd src_matrix;    
+    const int src_size = src->vert.size();    
+    src_matrix.resize(3, src_size);   
+    for(int j = 0; j < src_size; ++j){
+      CVertex &v = src->vert[j];
+      src_matrix(0, j) = v.P()[0];
+      src_matrix(1, j) = v.P()[1];
+      src_matrix(2, j) = v.P()[2];
+    }
+    cout<<"平移矩阵：" <<trans(0, 0) <<" "<<trans(1, 0)<<" "<<trans(2, 0)<<endl;
+    for (int j = 0; j < src_size; ++j)
+      src_matrix.col(j) += trans;
+
+    Eigen::MatrixXd temp;
+    temp.resize(3, src_size);
+
+    temp = rot * src_matrix;
+    src_matrix = temp;
+
+    //transform back
+    for(int j = 0; j < src_size; j++)
+    {
+      CVertex& v = src->vert[j];
+      if(j < 10)
+        cout<<"After move noise src points: "<<src_matrix(0, j)<<" "<<src_matrix(1, j) <<" "<<src_matrix(2, j)<<endl;
+      v.P()[0] = src_matrix(0,j);
+      v.P()[1] = src_matrix(1,j);
+      v.P()[2] = src_matrix(2,j);
+      if(j < 10)
+        cout<<"After move noise src points: "<<src_matrix(0, j)<<" "<<src_matrix(1, j) <<" "<<src_matrix(2, j)<<endl;
+    }
+    cout<<"Before merge Original size: "<<target->vert.size()<<endl;
+    GlobalFun::mergeMesh(src, target);
+    cout<<"After merge Original size: " <<target->vert.size()<<endl;
+    //snapshot
+    area->update();
+    area->saveSnapshot();
+    area->update();
+    Sleep(1500);
+
+    delete src_wlop;*/
+  }
+  delete target_wlop;
+}
+
+void CameraParaDlg::runICP2()
+{
+  CMesh *src = area->dataMgr.getCurrentSamples();
+  CMesh *target = area->dataMgr.getCurrentOriginal();
+
+  Eigen::MatrixXd transform;
+  transform.resize(3, 4);
+  GlobalFun::computeICP(src, target, transform);
+  GlobalFun::mergeMesh(src, target);
+  cout<<"变换举证"<<endl <<transform<<endl;
+  cout<<"src_wlop vert[0]"<<endl;
+  GlobalFun::printPoint3(cout, src->vert[0]);
 }
 
 void CameraParaDlg::moveTranslation()

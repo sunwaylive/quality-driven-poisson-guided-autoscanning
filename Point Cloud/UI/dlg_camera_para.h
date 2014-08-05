@@ -89,6 +89,7 @@ public:
     //add samples
     void runRemoveSampleOutliers();
     void runICP();
+    void runICP2();
     void runRemoveSamplesWithLowConfidence();
     void runAddSamplesToOiriginal();
 
