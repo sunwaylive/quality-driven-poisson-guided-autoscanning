@@ -73,9 +73,6 @@ public:
 	//	cmeshO.bbox.Import(cmesh.bbox);
 	//}
 
-
-
-
 	//static void ComputeAPcaNormalsByGrid(CMeshO& cmeshO)
 	//{
 	//	CMesh cmesh;

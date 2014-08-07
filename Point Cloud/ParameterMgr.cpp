@@ -181,7 +181,7 @@ void ParameterMgr::initWLopParameter()
 	wLop.addParam(new RichString("Algorithm Name", "WLOP") );
 	wLop.addParam(new RichBool("Run One Key WLOP", false));
 
-	wLop.addParam(new RichDouble("Num Of Iterate Time", 5));
+	wLop.addParam(new RichDouble("Num Of Iterate Time", 20));
 
 	wLop.addParam(new RichDouble("CGrid Radius", grid_r));
 	wLop.addParam(new RichDouble("H Gaussian Para", 4));

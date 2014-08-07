@@ -8,6 +8,7 @@
 #include "TriMesh.h"
 #include "TriMesh_algo.h"
 #include "vcg/complex/trimesh/create/ball_pivoting.h"//#include "LAP_Others/eigen.h"
+#include "vcg/complex/trimesh/autoalign_4pcs.h"
 #include "Algorithm/pointcloud_normal.h"
 #include <fstream>
 #include <float.h>
@@ -19,6 +20,7 @@
 #include <algorithm>
 #include <math.h>
 #include "ANN/ANN.h"
+#include <eigenlib/Eigen/Dense>
 
 #define EIGEN_DEFAULT_TO_ROW_MAJOR
 #define EIGEN_EXCEPTIONS
@@ -83,7 +85,9 @@ namespace GlobalFun
 
   void removeOutliers(CMesh *mesh, double radius, double remove_percent);
   void removeOutliers(CMesh *mesh, double radius, int remove_num);
-  void computeICP(CMesh *target, CMesh *src);
+  void computeICP(CMesh *src, CMesh *target, CMesh *noised);
+  void computeICPMeshlab(CMesh *src, CMesh *dst);
+  void mergeMesh(CMesh *src, CMesh *target);
   void downSample(CMesh *dst, CMesh *src, double sample_ratio, bool use_random_downsample = true);
   void clearCMesh(CMesh &mesh);
 
@@ -104,6 +108,8 @@ namespace GlobalFun
   vcg::Matrix33f getMat33FromMat44(vcg::Matrix44f mat44);
   Point3f getVectorFromMat44(vcg::Matrix44f mat44);
   vcg::Matrix44f getMat44FromMat33AndVector(vcg::Matrix33f mat33, Point3f vec);
+  void convertCMeshO2CMesh(CMeshO &src, CMesh &dst);
+  void convertCMesh2CMeshO(CMesh &src, CMeshO &dst);
 }
 
 class Timer
