@@ -89,7 +89,7 @@ public:
     //add samples
     void runRemoveSampleOutliers();
     void runICP();
-    void runICP2();
+    void runICPMeshLab();
     void runRemoveSamplesWithLowConfidence();
     void runAddSamplesToOiriginal();
 
