@@ -905,6 +905,9 @@ void GlobalFun::removeOutliers(CMesh *mesh, double radius, double remove_percent
     cout<<"Empty Mesh, When Remove Outliers!"<<endl;
     return;
   }
+  if(radius <= 0.0f) radius = 0.1;
+  mesh->face.clear();
+  mesh->fn = 0;
 
   double radius2 = radius * radius; 
   double iradius16 = .0f - 4.0f / radius2;
@@ -984,10 +987,8 @@ void GlobalFun::computeICP( CMesh *src, CMesh *target, CMesh *noised)
 
   const int srVerNum = src->vert.size(); 
   const int tgVerNum = target->vert.size();
-  const int noiseVerNum = noised->vert.size();
   SrCloud.resize(3,srVerNum);
   TgCloud.resize(3,tgVerNum);
-  noisedSrcCloud.resize(3, noiseVerNum);
   verterMap.resize(1,srVerNum);
 
   for(int i = 0; i < srVerNum; i++){
@@ -1004,16 +1005,22 @@ void GlobalFun::computeICP( CMesh *src, CMesh *target, CMesh *noised)
     TgCloud(2,i) = v.P()[2];
   }
 
-  for(int i = 0; i < noiseVerNum; ++i)
-  {
-    CVertex &v = noised->vert[i];
-    noisedSrcCloud(0, i) = v.P()[0];
-    noisedSrcCloud(1, i) = v.P()[1];
-    noisedSrcCloud(2, i) = v.P()[2];
+  int noiseVerNum = 0;
+  if(noised != NULL){
+    noiseVerNum = noised->vert.size();
+    noisedSrcCloud.resize(3, noiseVerNum);
+    for(int i = 0; i < noiseVerNum; ++i)
+    {
+      CVertex &v = noised->vert[i];
+      noisedSrcCloud(0, i) = v.P()[0];
+      noisedSrcCloud(1, i) = v.P()[1];
+      noisedSrcCloud(2, i) = v.P()[2];
+    }
   }
 
+  double error;
   SparseICP::SICP::Parameters pa;
-  SparseICP::SICP::point_to_point(SrCloud, TgCloud, verterMap, noisedSrcCloud, pa);
+  SparseICP::SICP::point_to_point(SrCloud, TgCloud, verterMap, noisedSrcCloud, error, pa);
   //update the moved points
   for(int i = 0; i < srVerNum; i++)
   {
@@ -1022,13 +1029,112 @@ void GlobalFun::computeICP( CMesh *src, CMesh *target, CMesh *noised)
     v.P()[1] = SrCloud(1,i);
     v.P()[2] = SrCloud(2,i);
   }
-  for(int i = 0; i < noiseVerNum; ++i){
-    CVertex &v = noised->vert[i];
-    v.P()[0] = noisedSrcCloud(0, i);
-    v.P()[1] = noisedSrcCloud(1, i);
-    v.P()[2] = noisedSrcCloud(2, i);
+
+  if(noised != NULL){
+    for(int i = 0; i < noiseVerNum; ++i){
+      CVertex &v = noised->vert[i];
+      v.P()[0] = noisedSrcCloud(0, i);
+      v.P()[1] = noisedSrcCloud(1, i);
+      v.P()[2] = noisedSrcCloud(2, i);
+    }
   }
   cout<<"******************************End SICP***********************"<<endl;
+}
+
+void GlobalFun::computeICP(CMesh *src, CMesh *target, double &error)
+{
+  cout<<"******************************Begin SICP GETTING ERROR******************"<<endl;
+  Eigen::MatrixXd SrCloud;
+  Eigen::MatrixXd TgCloud;
+  Eigen::MatrixXd noisedSrcCloud;
+  Eigen::MatrixXd verterMap;//点之间的对应
+
+  const int srVerNum = src->vert.size(); 
+  const int tgVerNum = target->vert.size();
+  SrCloud.resize(3,srVerNum);
+  TgCloud.resize(3,tgVerNum);
+  verterMap.resize(1,srVerNum);
+
+  for(int i = 0; i < srVerNum; i++){
+    CVertex &v = src->vert[i];
+    SrCloud(0,i) = v.P()[0];
+    SrCloud(1,i) = v.P()[1];
+    SrCloud(2,i) = v.P()[2];
+  }
+
+  for(int i = 0; i < tgVerNum; i++){
+    CVertex &v = target->vert[i];
+    TgCloud(0,i) = v.P()[0];
+    TgCloud(1,i) = v.P()[1];
+    TgCloud(2,i) = v.P()[2];
+  }
+
+  SparseICP::SICP::Parameters pa;
+  pa.max_icp = 2000;
+  pa.use_penalty = true;
+  pa.max_inner = 2; //use ALM
+  SparseICP::SICP::point_to_point(SrCloud, TgCloud, verterMap, noisedSrcCloud, error, pa);
+  //update the moved points
+  for(int i = 0; i < srVerNum; i++)
+  {
+    CVertex& v = src->vert[i];
+    v.P()[0] = SrCloud(0,i);
+    v.P()[1] = SrCloud(1,i);
+    v.P()[2] = SrCloud(2,i);
+  }
+  cout<<"pa.alpha: " <<pa.alpha<<endl;
+  cout<<"pa.max_icp: " <<pa.max_icp<<endl;
+  cout<<"pa.max_inner: " <<pa.max_inner<<endl;
+  cout<<"pa.max_mu: "<<pa.max_mu<<endl;
+  cout<<"pa.max_outer: " <<pa.max_outer<<endl;
+  cout<<"pa.p: " <<pa.p<<endl;
+  cout<<"pa.stop"<<pa.stop<<endl;
+  cout<<"pa.use_penalty: " <<pa.use_penalty<<endl;
+  cout<<"******************************End SICP GETTING ERROR******************"<<endl;
+}
+
+void GlobalFun::computerICPWithNormal( CMesh *src, CMesh *dst)
+{
+  cout<<"******************************Begin SICP USING NORMAL***********************"<<endl;
+  Eigen::Matrix3Xd SrCloud;
+  Eigen::Matrix3Xd TgCloud;
+  Eigen::Matrix3Xd NormCloud;//the normal of target cloud
+
+  const int srVerNum = src->vert.size(); 
+  const int tgVerNum = dst->vert.size();
+  SrCloud.resize(3,srVerNum);
+  TgCloud.resize(3,tgVerNum);
+  NormCloud.resize(3, tgVerNum);
+
+  for(int i = 0; i < srVerNum; i++){
+    CVertex &v = src->vert[i];
+    SrCloud(0,i) = v.P()[0];
+    SrCloud(1,i) = v.P()[1];
+    SrCloud(2,i) = v.P()[2];
+  }
+
+  for(int i = 0; i < tgVerNum; i++){
+    CVertex &v = dst->vert[i];
+    TgCloud(0,i) = v.P()[0];
+    TgCloud(1,i) = v.P()[1];
+    TgCloud(2,i) = v.P()[2];
+
+    NormCloud(0, i) = v.N()[0];
+    NormCloud(1, i) = v.N()[1];
+    NormCloud(2, i) = v.N()[2];
+  }
+  
+  SparseICP::SICP::Parameters pa;
+  SparseICP::SICP::point_to_plane(SrCloud, TgCloud, NormCloud, pa);
+  //update the moved points
+  for(int i = 0; i < srVerNum; i++)
+  {
+    CVertex& v = src->vert[i];
+    v.P()[0] = SrCloud(0,i);
+    v.P()[1] = SrCloud(1,i);
+    v.P()[2] = SrCloud(2,i);
+  }
+  cout<<"******************************End SICP USING NORMAL***********************"<<endl;
 }
 
 void GlobalFun::computeICPMeshlab( CMesh *src, CMesh *dst )
@@ -1041,13 +1147,24 @@ void GlobalFun::computeICPMeshlab( CMesh *src, CMesh *dst )
   vcg::tri::FourPCS<CMeshO> *fpcs ;
   fpcs = new vcg::tri::FourPCS<CMeshO>();
   fpcs->prs.Default();
-  fpcs->prs.f = 0.5;
-  fpcs->Init(*first,*second);
-  bool res = fpcs->Align(0, first->Tr, NULL);
 
-  GlobalFun::convertCMeshO2CMesh(*first, *src);
-  GlobalFun::convertCMeshO2CMesh(*second, *dst);
+  first->vert.EnableMark();
+  second->vert.EnableMark();
+  fpcs->Init(*first, *second);
+  bool res = fpcs->Align(0, first->Tr, NULL);
+  first->vert.DisableMark();
+  second->vert.DisableMark();
+
+  if(!res){
+    cout<<"MeshLab ICP failed!"<<endl;
+  }else{
+    cout<<"MeshLab ICP succeed!" <<endl;
+    GlobalFun::convertCMeshO2CMesh(*first, *src);
+    GlobalFun::convertCMeshO2CMesh(*second, *dst);
+  }
+
   delete fpcs;
+  return;
 }
 //no face will be exist after the merge
 void GlobalFun::mergeMesh(CMesh *src, CMesh *target)
@@ -1298,29 +1415,60 @@ vcg::Matrix44f GlobalFun::getMat44FromMat33AndVector(vcg::Matrix33f mat33, Point
 
 void GlobalFun::convertCMesh2CMeshO(CMesh &src, CMeshO &dst)
 {
-  CMesh::ConstVertexIterator vi;
-  CMeshO::VertexIterator viO;
-  for(vi = src.vert.begin(), viO = dst.vert.begin(); vi != src.vert.end(); ++vi, ++viO)
+  const int src_len = src.vert.size();
+  dst.vert.resize(src_len);
+  for(int i = 0; i < src_len; ++i)
   {
-    viO->P().Import(vi->P());
-    viO->N().Import(vi->cN());
-    viO->N().Normalize();
+    CVertex &v = src.vert[i];
+    dst.vert[i].P() = v.P();
+    dst.vert[i].N() = v.N();
+    dst.vert[i].N().Normalize();
   }
   dst.vn = src.vn;
-  dst.bbox.Import(src.bbox);
+  dst.bbox = src.bbox;
+
+  //CMesh::ConstVertexIterator vi;
+  //CMeshO::VertexIterator viO;
+  //for(vi = src.vert.begin(), viO = dst.vert.begin(); vi != src.vert.end(); ++vi, ++viO)
+  //{
+  //  //viO->P() = vi->P();
+  //  //viO->N() = vi->cN();
+  //  //viO->N().Normalize();
+
+  //  viO->P()[0] = vi->P()[0];
+  //  viO->P()[1] = vi->P()[1];
+  //  viO->P()[2] = vi->P()[2];
+  //  viO->N()[0] = vi->cN()[0];
+  //  viO->N()[1] = vi->cN()[1];
+  //  viO->N()[2] = vi->cN()[2];
+  //  viO->N().Normalize();
+  //}
+  //dst.vn = src.vn;
+  //dst.bbox = src.bbox;
 }
 
 void GlobalFun::convertCMeshO2CMesh(CMeshO &src, CMesh &dst)
 {
-  CMesh::VertexIterator vi;
-  CMeshO::VertexIterator viO;
-  for(viO = src.vert.begin(), vi = dst.vert.begin(); viO != src.vert.end(); ++viO, ++vi){
-    vi->P().Import(viO->P());
-    vi->N().Import(viO->cN());
-    vi->N().Normalize();
+  const int src_len = src.vert.size();
+  dst.vert.resize(src_len);
+  for(int i = 0; i < src_len; ++i){
+    CVertexO &v = src.vert[i];
+    dst.vert[i].P() = v.P();
+    dst.vert[i].N() = v.N();
+    dst.vert[i].N().Normalize();
   }
   dst.vn = src.vn;
-  dst.bbox.Import(src.bbox);
+  dst.bbox = src.bbox;
+
+  /*CMesh::VertexIterator vi;
+  CMeshO::VertexIterator viO;
+  for(viO = src.vert.begin(), vi = dst.vert.begin(); viO != src.vert.end(); ++viO, ++vi){
+  vi->P() = viO->P();
+  vi->N() = viO->cN();
+  vi->N().Normalize();
+  }
+  dst.vn = src.vn;
+  dst.bbox = src.bbox;*/
 }
 
 //void Slice::build_slice(Point3f a, Point3f b, Point3f c, float c_length)

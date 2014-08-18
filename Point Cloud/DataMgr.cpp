@@ -174,8 +174,8 @@ void DataMgr::loadPlyToOriginal(QString fileName)
   clearCMesh(original);
   curr_file_name = fileName;
 
-  int mask= tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL 
-    + tri::io::Mask::IOM_ALL + tri::io::Mask::IOM_FACEINDEX;
+  int mask= tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL; 
+    //+ tri::io::Mask::IOM_ALL + tri::io::Mask::IOM_FACEINDEX;
 
   int err = tri::io::Importer<CMesh>::Open(original, curr_file_name.toAscii().data(), mask);  
   if(err) 

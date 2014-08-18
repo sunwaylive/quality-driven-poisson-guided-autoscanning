@@ -424,8 +424,8 @@
     <widget class="QPushButton" name="pushButton_compute_confidence_original">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>150</y>
+       <x>20</x>
+       <y>220</y>
        <width>201</width>
        <height>31</height>
       </rect>
@@ -437,8 +437,8 @@
     <widget class="QPushButton" name="pushButton_compute_confidence_samples">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>200</y>
+       <x>20</x>
+       <y>260</y>
        <width>201</width>
        <height>31</height>
       </rect>
@@ -451,7 +451,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>250</y>
+       <y>300</y>
        <width>211</width>
        <height>31</height>
       </rect>
@@ -464,7 +464,7 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>300</y>
+       <y>340</y>
        <width>231</width>
        <height>31</height>
       </rect>
@@ -476,8 +476,8 @@
     <widget class="QPushButton" name="pushButton_add_samples_to_iso_points">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>340</y>
+       <x>20</x>
+       <y>380</y>
        <width>201</width>
        <height>31</height>
       </rect>
@@ -489,8 +489,8 @@
     <widget class="QDoubleSpinBox" name="original_knn_number">
      <property name="geometry">
       <rect>
-       <x>118</x>
-       <y>393</y>
+       <x>110</x>
+       <y>420</y>
        <width>101</width>
        <height>20</height>
       </rect>
@@ -515,7 +515,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>390</y>
+       <y>420</y>
        <width>102</width>
        <height>26</height>
       </rect>
@@ -528,7 +528,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>420</y>
+       <y>450</y>
        <width>201</width>
        <height>31</height>
       </rect>
@@ -540,8 +540,8 @@
     <widget class="QPushButton" name="pushButton_label_smooth">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>470</y>
+       <x>20</x>
+       <y>490</y>
        <width>191</width>
        <height>23</height>
       </rect>
@@ -561,6 +561,32 @@
      </property>
      <property name="text">
       <string>Ball Pivoting Reconstruction</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBox_use_confidence5">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>134</y>
+       <width>231</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>use confidence 5 (hole)</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_compute_hole_confidence">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>180</y>
+       <width>201</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Compute Hole Confidence</string>
      </property>
     </widget>
    </widget>

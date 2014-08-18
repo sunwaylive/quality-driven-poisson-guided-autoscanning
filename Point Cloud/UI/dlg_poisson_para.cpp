@@ -58,12 +58,14 @@ void PoissonParaDlg::initConnects()
   connect(ui->checkBox_use_confidence2,SIGNAL(clicked(bool)),this,SLOT(useConfidence2(bool)));
   connect(ui->checkBox_use_confidence3,SIGNAL(clicked(bool)),this,SLOT(useConfidence3(bool)));
   connect(ui->checkBox_use_confidence4,SIGNAL(clicked(bool)),this,SLOT(useConfidence4(bool)));
+  connect(ui->checkBox_use_confidence5, SIGNAL(clicked(bool)), this, SLOT(useConfidence5(bool)));
   connect(ui->checkBox_parallel_slice_mode,SIGNAL(clicked(bool)),this,SLOT(showParallerSlice(bool)));
   connect(ui->checkBox_show_view_grid_slice,SIGNAL(clicked(bool)),this,SLOT(showViewGridSlice(bool)));
 
   connect(ui->pushButton_compute_confidence_original,SIGNAL(clicked()),this,SLOT(computeOriginalConfidence()));
   connect(ui->pushButton_compute_confidence_samples,SIGNAL(clicked()),this,SLOT(computeSamplesConfidence()));
   connect(ui->pushButton_compute_confidence_iso,SIGNAL(clicked()),this,SLOT(computeIsoConfidence()));
+  connect(ui->pushButton_compute_hole_confidence, SIGNAL(clicked()), this, SLOT(computeHoleConfidence()));
   connect(ui->pushButton_compute_confidence_iso_new,SIGNAL(clicked()),this,SLOT(computeNewIsoConfidence()));  
   connect(ui->pushButton_clear_slice,SIGNAL(clicked()),this,SLOT(runClearSlice()));
   connect(ui->pushButton_smooth_grid_confidence,SIGNAL(clicked()),this,SLOT(runSmoothGridConfidence()));
@@ -348,6 +350,11 @@ void PoissonParaDlg::useConfidence4(bool _val)
   global_paraMgr.poisson.setValue("Use Confidence 4", BoolValue(_val));  
 }
 
+void PoissonParaDlg::useConfidence5(bool _val)
+{
+  global_paraMgr.poisson.setValue("Use Confidence 5", BoolValue(_val));  
+}
+
 void PoissonParaDlg::computeOriginalConfidence()
 {
   global_paraMgr.poisson.setValue("Compute Original Confidence", BoolValue(true)); 
@@ -367,6 +374,13 @@ void PoissonParaDlg::computeIsoConfidence()
   global_paraMgr.poisson.setValue("Compute ISO Confidence", BoolValue(true));  
   area->runPoisson();
   global_paraMgr.poisson.setValue("Compute ISO Confidence", BoolValue(false));  
+}
+
+void PoissonParaDlg::computeHoleConfidence()
+{
+  global_paraMgr.poisson.setValue("Compute Hole Confidence", BoolValue(true));
+  area->runPoisson();
+  global_paraMgr.poisson.setValue("Compute Hole Confidence", BoolValue(false));
 }
 
 void PoissonParaDlg::computeNewIsoConfidence()

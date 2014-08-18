@@ -120,9 +120,10 @@ namespace SparseICP
 			
       X.colwise() += transformation.translation();
 			X = transformation.linear() * X;
-      N.colwise() += transformation.translation();
-      N = transformation.linear() * N;
-
+      if(N.rows() != 0){
+        N.colwise() += transformation.translation();
+        N = transformation.linear() * N;
+      }
       //cout<<"linear: "<<endl<<transformation.linear()<<endl;
       //cout<<"translation: "<<endl<<transformation.translation()<<endl;
       //Eigen::Matrix3d temp;
@@ -315,6 +316,7 @@ namespace SparseICP
 			Eigen::MatrixBase<Derived2>& Y,
 			Eigen::MatrixBase<Derived3> & verMap,
       Eigen::MatrixBase<Derived4> & N,
+      double &error,
 			Parameters par = Parameters()) 
 		{
 			/// Build kd-tree
@@ -369,8 +371,11 @@ namespace SparseICP
 				/// Stopping criteria
 				double stop = (X-Xo2).colwise().norm().maxCoeff();
 				Xo2 = X;
-				if(stop < par.stop) break;
+        if(stop < par.stop) {
+          break;
+        }
 			}
+      error = Z.colwise().norm().sum() / Z.cols();
 		}
 		/// Sparse ICP with point to plane
 		/// @param Source (one 3D point per column)

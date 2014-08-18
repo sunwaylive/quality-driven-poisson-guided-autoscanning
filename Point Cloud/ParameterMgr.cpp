@@ -193,7 +193,7 @@ void ParameterMgr::initWLopParameter()
 	wLop.addParam(new RichDouble("Repulsion Mu2", 0.0));
 	wLop.addParam(new RichBool("Run Anisotropic LOP", false));
 	wLop.addParam(new RichDouble("Current Movement Error", 0.0));
-  wLop.addParam(new RichDouble("Outlier Percentage", 0.01));
+  wLop.addParam(new RichDouble("Outlier Percentage", 0.05));
   wLop.addParam(new RichBool("Run Wlop On Scanned Mesh", false));
 }
 
@@ -373,15 +373,17 @@ void ParameterMgr::initPoissonParameter()
 	poisson.addParam(new RichDouble("Current Z Slice Position", 0.5));
 	poisson.addParam(new RichDouble("Show Slice Percentage", 0.75));
 	poisson.addParam(new RichDouble("Poisson Disk Sample Number", 10000));
-  poisson.addParam(new RichDouble("Original KNN", 551));
+  poisson.addParam(new RichDouble("Original KNN", 251));
 
 	poisson.addParam(new RichBool("Use Confidence 1", false));
 	poisson.addParam(new RichBool("Use Confidence 2", false));
 	poisson.addParam(new RichBool("Use Confidence 3", false));
 	poisson.addParam(new RichBool("Use Confidence 4", true));
+  poisson.addParam(new RichBool("Use Confidence 5", false));
 	poisson.addParam(new RichBool("Compute Original Confidence", false));
 	poisson.addParam(new RichBool("Compute Sample Confidence", false));
 	poisson.addParam(new RichBool("Compute ISO Confidence", false));
+  poisson.addParam(new RichBool("Compute Hole Confidence", false));
 	poisson.addParam(new RichBool("Use Sort Confidence Combination", true));
   poisson.addParam(new RichBool("Compute New ISO Confidence", false));
   poisson.addParam(new RichBool("Run Smooth Grid Confidence", false));

@@ -72,12 +72,14 @@ void CameraParaDlg::initConnects()
 
   connect(ui->pushButton_setup_initial_scans, SIGNAL(clicked()), this, SLOT(runSetupInitialScanns()));
   connect(ui->step1_run_WLOP, SIGNAL(clicked()), this, SLOT(runStep1WLOP()));
-  connect(ui->step2_run_Poisson_Confidence, SIGNAL(clicked()), this, SLOT(runStep2PoissonConfidence()));
+  connect(ui->step2_run_Poisson_Confidence, SIGNAL(clicked()), this, SLOT(runStep2CombinedPoissonConfidence()));
   connect(ui->step2_run_Poisson_Confidence_original, SIGNAL(clicked()), this, SLOT(runStep2PoissonConfidenceViaOiginal()));
   connect(ui->step3_run_NBV, SIGNAL(clicked()), this, SLOT(runStep3NBVcandidates()));
   connect(ui->step4_run_New_Scan, SIGNAL(clicked()), this, SLOT(runStep4NewScans()));
   connect(ui->pushButton_wlop_on_scanned_mesh, SIGNAL(clicked()), this, SLOT(runWlopOnScannedMesh()));
   connect(ui->pushButton_ICP, SIGNAL(clicked()), this, SLOT(runICP()));
+  connect(ui->pushButton_ICP_With_Normal_No_WLop, SIGNAL(clicked()), this, SLOT(runICPWithNormalNoWlop()));
+  connect(ui->pushButton_ICP_No_Wlop, SIGNAL(clicked()), this, SLOT(runICPNoWlop()));  
   connect(ui->pushButton_ICP_MeshLab, SIGNAL(clicked()), this, SLOT(runICPMeshLab()));
   connect(ui->pushButton_remove_sample_outliers, SIGNAL(clicked()), this, SLOT(runRemoveSampleOutliers()));
   connect(ui->pushButton_remove_low_confidence_samples, SIGNAL(clicked()), this, SLOT(runRemoveSamplesWithLowConfidence()));
@@ -1008,7 +1010,7 @@ void CameraParaDlg::runStep1WLOP()
   GlobalFun::removeOutliers(samples, global_paraMgr.data.getDouble("CGrid Radius"), 0.001);
 }
 
-void CameraParaDlg::runStep2PoissonConfidence()
+void CameraParaDlg::runStep2CombinedPoissonConfidence()
 {
   global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(true));
   global_paraMgr.poisson.setValue("Run Extract MC Points", BoolValue(true));
@@ -1017,6 +1019,17 @@ void CameraParaDlg::runStep2PoissonConfidence()
   global_paraMgr.poisson.setValue("Run Extract MC Points", BoolValue(false));
   global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(false));
   global_paraMgr.poisson.setValue("Run One Key PoissonConfidence", BoolValue(false));
+}
+
+void CameraParaDlg::runStep2HolePoissonConfidence()
+{
+  global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(true));
+  global_paraMgr.poisson.setValue("Run Extract MC Points", BoolValue(true));
+  global_paraMgr.poisson.setValue("Compute Hole Confidence", BoolValue(true));
+  area->runPoisson();
+  global_paraMgr.poisson.setValue("Run Extract MC Points", BoolValue(false));
+  global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(false));
+  global_paraMgr.poisson.setValue("Compute Hole Confidence", BoolValue(false));
 }
 
 void CameraParaDlg::runStep2PoissonConfidenceViaOiginal()
@@ -1083,6 +1096,7 @@ void CameraParaDlg::runOneKeyNbvIteration()
   area->dataMgr.saveParameters(para);
 
   int iteration_cout = global_paraMgr.nbv.getInt("NBV Iteration Count");
+  const int holeFrequence = 2;
   CMesh *original = area->dataMgr.getCurrentOriginal();
   for (int ic = 0; ic < iteration_cout; ++ic)
   {
@@ -1119,9 +1133,16 @@ void CameraParaDlg::runOneKeyNbvIteration()
     area->dataMgr.downSamplesByNum();
     area->initSetting();
 
-    cout<<"begin to run poisson confidence" <<endl;
-    runStep2PoissonConfidence();
-    cout<<"end run poisson confidence" <<endl;
+    if(ic % holeFrequence == 0)
+    {
+      cout<<"begin to run hole poisson confidence" <<endl;
+      runStep2HolePoissonConfidence();
+      cout<<"begin to run hole poisson confidence" <<endl;
+    }else{
+      cout<<"begin to run combined poisson confidence" <<endl;
+      runStep2CombinedPoissonConfidence();
+      cout<<"end run combined poisson confidence" <<endl;
+    }
     //save poisson surface "copy poisson_out.ply file_location\\%d_poisson_out.ply"
     cout<<"begin to copy poisson_surface" <<endl;
     QString s_poisson_surface;
@@ -1568,9 +1589,151 @@ void CameraParaDlg::runICP()
   delete target_wlop;
 }
 
+void CameraParaDlg::runICPWithNormalNoWlop()
+{
+  QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
+  if (!file_location.size()) 
+    return;
+
+  QDir dir(file_location);
+  if (!dir.exists()) 
+    return;
+
+  dir.setFilter(QDir::Files);
+  dir.setSorting(QDir::Name);
+  QFileInfoList list = dir.entryInfoList();
+  const float sample_ratio = 0.05;
+  const int sample_num = 5000;
+  CMesh *original = area->dataMgr.getCurrentOriginal();
+  CMesh *sample = area->dataMgr.getCurrentSamples();
+
+  for (int i = 0; i < list.size(); ++i)
+  {
+    QFileInfo fileInfo = list.at(i);
+    QString f_name = fileInfo.fileName();
+    std::cout<<"file name: " << f_name.toStdString() <<std::endl;
+
+    if (!f_name.endsWith(".ply"))
+      continue;
+
+    f_name = file_location + "\\" + f_name;
+    int mask = tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL;
+    area->dataMgr.loadPlyToSample(f_name);
+    area->update();
+    area->saveSnapshot();
+    area->update();
+
+    GlobalFun::computerICPWithNormal(sample, original);
+    GlobalFun::mergeMesh(sample, original);
+    area->update();
+    area->saveSnapshot();
+    area->update();
+  }
+}
+
+void CameraParaDlg::runICPNoWlop()
+{
+  QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
+  if (!file_location.size()) 
+    return;
+
+  QDir dir(file_location);
+  if (!dir.exists()) 
+    return;
+
+  QString s_log = "\\log.txt";
+  s_log = file_location + s_log;
+  ofstream log;
+  log.open(s_log.toAscii().data());
+  cout.rdbuf(log.rdbuf());
+
+  dir.setFilter(QDir::Files);
+  dir.setSorting(QDir::Name);
+  QFileInfoList list = dir.entryInfoList();
+  const float sample_ratio = 0.05;
+  const int sample_num = 5000;
+  CMesh *original = area->dataMgr.getCurrentOriginal();
+  CMesh *sample = area->dataMgr.getCurrentSamples();
+
+  for (int i = 0; i < list.size(); ++i)
+  {
+    QFileInfo fileInfo = list.at(i);
+    QString f_name = fileInfo.fileName();
+    if (!f_name.endsWith(".ply"))
+      continue;
+
+    std::cout<<"file name: " << f_name.toStdString() <<std::endl;
+    f_name = file_location + "\\" + f_name;
+    int mask = tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL;
+    area->dataMgr.loadPlyToSample(f_name);
+    //remove outlier
+    double outlier_percentage = global_paraMgr.wLop.getDouble("Outlier Percentage");
+    std::cout<<"Outlier percentage: " <<outlier_percentage <<endl;
+    GlobalFun::removeOutliers(area->dataMgr.getCurrentSamples(), global_paraMgr.data.getDouble("CGrid Radius"), outlier_percentage);
+    cout<<"Has removed samples outliers."<<endl;
+
+    area->update();
+    area->saveSnapshot();
+    area->update();
+
+    double error = 0.0f;
+    GlobalFun::computeICP(sample, original, error);
+    cout<<" ICP error: " <<error <<endl;
+    if(error > 0.6f){
+      cout<<"Error two big, skip this scan"<<endl;
+      continue;
+    }else{
+      GlobalFun::mergeMesh(sample, original);
+    }
+    //area->update();
+    //area->saveSnapshot();
+    //area->update();
+  }
+  log.close();
+}
+
 void CameraParaDlg::runICPMeshLab()
 {
+  QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
+  if (!file_location.size()) 
+    return;
 
+  QDir dir(file_location);
+  if (!dir.exists()) 
+    return;
+
+  CMesh *original = area->dataMgr.getCurrentOriginal();
+  CMesh *sample = area->dataMgr.getCurrentSamples();
+  assert(original != NULL);
+  dir.setFilter(QDir::Files);
+  dir.setSorting(QDir::Name);
+  QFileInfoList list = dir.entryInfoList();
+  for (int i = 0; i < list.size(); ++i)
+  {
+    QFileInfo fileInfo = list.at(i);
+    QString f_name = fileInfo.fileName();
+    std::cout<<"file name: " << f_name.toStdString() <<std::endl;
+
+    if (!f_name.endsWith(".ply"))
+      continue;
+
+    f_name = file_location + "\\" + f_name;
+    int mask = tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL;
+    area->dataMgr.loadPlyToSample(f_name);
+
+    area->update();
+    area->saveSnapshot();
+    area->update();
+
+    //do the registration
+    GlobalFun::computeICPMeshlab(sample, original);
+    //merge
+    GlobalFun::mergeMesh(sample, original);
+
+    area->update();
+    area->saveSnapshot();
+    area->update();
+  }
 }
 
 void CameraParaDlg::moveTranslation()

@@ -171,6 +171,12 @@ void Poisson::run()
     return;
   }
 
+  if(para->getBool("Compute Hole Confidence"))
+  {
+    runComputeIsoHoleConfidence();
+    return;
+  }
+
   if (para->getBool("Run Clear Slice"))
   {
     slices->clear();
@@ -238,27 +244,31 @@ void Poisson::runOneKeyPoissonConfidence()
     runComputeSampleConfidence();
   }
 
-  para->setValue("Use Confidence 1",BoolValue(false));
-  para->setValue("Use Confidence 2",BoolValue(false));
-  para->setValue("Use Confidence 3",BoolValue(false));
-  para->setValue("Use Confidence 4",BoolValue(true));
-  runComputeIsoSmoothnessConfidence();
+  if (para->getBool("Use Confidence 5"))
+  {
+    runComputeIsoHoleConfidence();
+  }else{
+    para->setValue("Use Confidence 1",BoolValue(false));
+    para->setValue("Use Confidence 2",BoolValue(false));
+    para->setValue("Use Confidence 3",BoolValue(false));
+    para->setValue("Use Confidence 4",BoolValue(true));
+    runComputeIsoSmoothnessConfidence();
 
-  Timer timer;
-  timer.start("runComputeIsoGradientConfidence");
-  para->setValue("Use Confidence 1",BoolValue(false));
-  para->setValue("Use Confidence 2",BoolValue(false));
-  para->setValue("Use Confidence 3",BoolValue(false));
-  para->setValue("Use Confidence 4", BoolValue(true));
-  runComputeIsoGradientConfidence();
-  timer.end();
-
+    Timer timer;
+    timer.start("runComputeIsoGradientConfidence");
+    para->setValue("Use Confidence 1",BoolValue(false));
+    para->setValue("Use Confidence 2",BoolValue(false));
+    para->setValue("Use Confidence 3",BoolValue(false));
+    para->setValue("Use Confidence 4", BoolValue(true));
+    runComputeIsoGradientConfidence();
+    timer.end();
+  }
   //timer.start("Run Iso Smooth");
   //runIsoSmooth();
   //timer.end();
 }
 
-//ole method
+//old method
 //void Poisson::runOneKeyPoissonConfidence()
 //{
 //  runPoissonFieldAndExtractIsoPoints();
@@ -2010,12 +2020,11 @@ void Poisson::runComputeSampleConfidence()
   //    //cout << "combine confidence" << v.eigen_confidence << endl;
   //  }
   //}
-
 }
 
 void Poisson::runComputeIsoSmoothnessConfidence()
 {
-  vector< vector<float>>confidences;
+  vector<vector<float> >confidences;
 
   int factors = 0;
   if (para->getBool("Use Confidence 1")) factors++;
@@ -2396,6 +2405,31 @@ void Poisson::runComputeIsoGradientConfidence()
   //    //file3 << v.eigen_confidence << endl;
   //  }
   //}
+}
+
+void Poisson::runComputeIsoHoleConfidence()
+{
+  assert(!original->vert.empty());
+  global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(true));
+  global_paraMgr.poisson.setValue("Run Extract MC Points", BoolValue(true));
+  runPoissonFieldAndExtractIsoPoints_ByEXE();
+  global_paraMgr.poisson.setValue("Run Extract MC Points", BoolValue(false));
+  global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(false));
+
+  assert(!iso_points->vert.empty());
+  GlobalFun::computeAnnNeigbhors(original->vert, iso_points->vert, 1, false, "runComputeIsoSmoothnessConfidence");
+
+  for(int i = 0; i < iso_points->vert.size(); ++i){
+    CVertex& v = iso_points->vert[i];
+    double dist = GlobalFun::computeEulerDist(v.P(), original->vert[v.neighbors[0]]);
+    v.eigen_confidence = dist;
+  }
+
+  GlobalFun::normalizeConfidence(iso_points->vert, 0);
+  for(int i = 0; i < iso_points->vert.size(); ++i){
+    iso_points->vert[i].eigen_confidence = 1 - iso_points->vert[i].eigen_confidence;
+  }
+  runIsoSmooth();
 }
 
 void Poisson::runAddWLOPtoISO()

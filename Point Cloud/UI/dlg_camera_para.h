@@ -79,7 +79,8 @@ public:
 
     void runSetupInitialScanns();
     void runStep1WLOP();
-    void runStep2PoissonConfidence();
+    void runStep2CombinedPoissonConfidence();
+    void runStep2HolePoissonConfidence();
     void runStep2PoissonConfidenceViaOiginal();
     void runStep3NBVcandidates();
     void runWlopOnScannedMesh();
@@ -89,6 +90,8 @@ public:
     //add samples
     void runRemoveSampleOutliers();
     void runICP();
+    void runICPWithNormalNoWlop();
+    void runICPNoWlop();
     void runICPMeshLab();
     void runRemoveSamplesWithLowConfidence();
     void runAddSamplesToOiriginal();

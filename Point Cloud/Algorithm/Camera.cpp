@@ -82,7 +82,7 @@ void vcc::Camera::runVirtualScan()
 {
   //point current_scanned_mesh to a new address
   current_scanned_mesh = new CMesh;
-  double max_displacement = global_paraMgr.nbv.getDouble("Max Displacement"); //resolution * 2; //for adding noise
+  double max_displacement = resolution * 8.0; //8.0f;//global_paraMgr.nbv.getDouble("Max Displacement"); //resolution * 2; //for adding noise
   computeUpAndRight();
   Point3f viewray = direction.Normalize();
   //compute the end point of viewray
@@ -108,17 +108,17 @@ void vcc::Camera::runVirtualScan()
       if ( dist <= far_distance && dist >= near_distance)
       {
         //add some random noise
-        /*srand(time(NULL)); 
+        srand(time(NULL)); 
         double rndax = (double(2.0f * rand()) / RAND_MAX - 1.0f ) * max_displacement;
         double rnday = (double(2.0f * rand()) / RAND_MAX - 1.0f ) * max_displacement;
-        double rndaz = (double(2.0f * rand()) / RAND_MAX - 1.0f ) * max_displacement;*/
+        double rndaz = (double(2.0f * rand()) / RAND_MAX - 1.0f ) * max_displacement;
 
         CVertex t;
         t.is_scanned = true;
         t.is_barely_visible= is_barely_visible;
          
         t.m_index = index++;
-        t.P() = intersect_point;// + Point3f(rndax, rnday, rndaz);
+        t.P() = intersect_point + Point3f(rndax, rnday, rndaz);
         t.N() = intersect_point_normal; //set out direction as approximate normal
         current_scanned_mesh->vert.push_back(t);
         current_scanned_mesh->bbox.Add(t.P());

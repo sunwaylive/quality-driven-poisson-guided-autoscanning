@@ -1046,19 +1046,19 @@ void NBV::viewPrune()
   GlobalFun::deleteIgnore(nbv_candidates);
   cout << "after View Prune candidates num: " <<nbv_candidates->vert.size() <<endl;
 
-  ////get the top n = 4
-  //int topn = global_paraMgr.nbv.getInt("NBV Top N");
-  //sort(nbv_candidates->vert.begin(), nbv_candidates->vert.end(), cmp);
-  //if (nbv_candidates->vert.size() > topn)
-  //{
-  //  for (int i = 0; i < nbv_candidates->vn; i++)
-  //  {
-  //    CVertex& v = nbv_candidates->vert[i];
-  //    if (i >= topn)
-  //      v.is_ignore = true;
-  //  }
-  //}
-  //GlobalFun::deleteIgnore(nbv_candidates);
+  //get the top n = 4
+  int topn = global_paraMgr.nbv.getInt("NBV Top N");
+  sort(nbv_candidates->vert.begin(), nbv_candidates->vert.end(), cmp);
+  if (nbv_candidates->vert.size() > topn)
+  {
+    for (int i = 0; i < nbv_candidates->vn; i++)
+    {
+      CVertex& v = nbv_candidates->vert[i];
+      if (i >= topn)
+        v.is_ignore = true;
+    }
+  }
+  GlobalFun::deleteIgnore(nbv_candidates);
   
   //vector<CVertex> new_candidates;
   //for (int i = 0; i < nbv_candidates->vert.size(); ++i)
@@ -1101,18 +1101,12 @@ void NBV::viewPrune()
   //  v.N() = new_v.N();
   //  //new_candidates.push_back(new_v);
   //}
-
-  GlobalFun::deleteIgnore(nbv_candidates);
+  //GlobalFun::deleteIgnore(nbv_candidates);
   cout << "after top N candidate num: " <<nbv_candidates->vert.size() <<endl;
 
   scan_candidates->clear();
   for (int i = 0; i < nbv_candidates->vert.size(); ++i)
     scan_candidates->push_back(make_pair(nbv_candidates->vert[i].P(), nbv_candidates->vert[i].N()));
-
-  scan_candidates->clear();
-  scan_candidates->push_back(make_pair(Point3f(-0.676, 0.100, 0.200), Point3f(1.000, 0.000, 0.000)));
-  scan_candidates->push_back(make_pair(Point3f(-0.05, -0.0300, 0.676), Point3f(0.000, 0.000, -1.000)));
-
 }
 
 //void NBV::viewPrune()

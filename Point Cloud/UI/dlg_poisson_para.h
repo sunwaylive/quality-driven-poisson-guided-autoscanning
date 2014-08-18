@@ -64,10 +64,12 @@ public:
     void useConfidence2(bool _val);
     void useConfidence3(bool _val);
     void useConfidence4(bool _val);
+    void useConfidence5(bool _val);
 
     void computeOriginalConfidence();
     void computeSamplesConfidence();
     void computeIsoConfidence();
+    void computeHoleConfidence();
     void computeNewIsoConfidence();
 
 
