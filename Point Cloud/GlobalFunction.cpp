@@ -1129,10 +1129,10 @@ void GlobalFun::computerICPWithNormal( CMesh *src, CMesh *dst)
   //update the moved points
   for(int i = 0; i < srVerNum; i++)
   {
-    CVertex& v = src->vert[i];
-    v.P()[0] = SrCloud(0,i);
-    v.P()[1] = SrCloud(1,i);
-    v.P()[2] = SrCloud(2,i);
+  CVertex& v = src->vert[i];
+  v.P()[0] = SrCloud(0,i);
+  v.P()[1] = SrCloud(1,i);
+  v.P()[2] = SrCloud(2,i);
   }
   cout<<"******************************End SICP USING NORMAL***********************"<<endl;
 }
