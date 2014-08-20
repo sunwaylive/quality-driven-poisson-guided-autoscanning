@@ -91,7 +91,7 @@ void GLArea::initializeGL()
   glEnable(GL_NORMALIZE);
 
   glDisable(GL_CULL_FACE);
-  glColor4f(1, 1, 1, 1);   
+  glColor4f(1, 1, 1, 1);
 
   glEnable(GL_LIGHTING);
 
@@ -153,11 +153,10 @@ void GLArea::paintGL()
 {
   paintMutex.lock();{
 
-    if (is_paintGL_locked)
-    {
+    if (is_paintGL_locked){
       goto PAINT_RETURN;
     }
-
+    
     lightOnOff(para->getBool("Light On or Off"));
 
     GLColor color(global_paraMgr.drawer.getColor("Background Color"));
@@ -327,7 +326,7 @@ void GLArea::paintGL()
     }
 
 
-    if(para->getBool("Show Original"))
+    if(!global_paraMgr.nbv.getBool("NBV Lock PaintGL") && para->getBool("Show Original"))
     {
       if(!dataMgr.isOriginalEmpty())
       {
@@ -598,8 +597,6 @@ void GLArea::paintGL()
       //glEnable(GL_CULL_FACE);
     }
 
-
-
     if (para->getBool("Show NBV Candidates")
       && para->getBool("Show NBV Ball")) 
     {
@@ -631,10 +628,7 @@ void GLArea::paintGL()
       global_paraMgr.drawer.setValue("ISO Dot Size", DoubleValue(iso_size / (SnapResolutionScale * SnapResolutionScale * snapDrawScal)));		
       global_paraMgr.drawer.setValue("Original Dot Size", DoubleValue(original_dot_size / (SnapResolutionScale * SnapResolutionScale * snapDrawScal)));
     }
-
   }
-
-
 
 PAINT_RETURN:
   paintMutex.unlock();

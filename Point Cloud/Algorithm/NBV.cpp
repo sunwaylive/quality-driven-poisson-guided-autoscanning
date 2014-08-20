@@ -347,7 +347,6 @@ void NBV::buildGrid()
   }
 }
 
-
 void NBV::propagate()
 {
   bool use_propagate_one_point = para->getBool("Run Propagate One Point");
@@ -561,7 +560,7 @@ void NBV::propagate()
         //reset the next grid indexes
         n_indexX = t_indexX; n_indexY = t_indexY; n_indexZ = t_indexZ;
         //2. compute the next grid indexes
-        length = getAbsMax(x, y, z);
+        length = GlobalFun::getAbsMax(x, y, z);
         deltaX = x / length; 
         deltaY = y / length;
         deltaZ = z / length;
@@ -1006,7 +1005,7 @@ void NBV::viewPrune()
   for (int i = 0; i < nbv_candidates->vert.size(); ++i)
   {
     CVertex &v = nbv_candidates->vert[i];
-    cout << "candidate confidence:  " << v.eigen_confidence << endl;
+    //cout << "candidate confidence:  " << v.eigen_confidence << endl;
     //if the point has been ignored, then skip it
     if (v.is_ignore)
       continue;

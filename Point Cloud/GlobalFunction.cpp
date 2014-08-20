@@ -9,11 +9,6 @@
 #include "GlobalFunction.h"
 #include "SparseICP.h"
 
-#define LINKED_WITH_TBB
-//#ifdef LINKED_WITH_TBB
-//#undef  LINKED_WITH_TBB
-//#endif
-
 using namespace vcg;
 using namespace std;
 using namespace tri;
@@ -974,6 +969,25 @@ void GlobalFun::removeOutliers(CMesh *mesh, double radius, int remove_num)
   double remove_percent = 1.0f * remove_num / mesh->vert.size();
 
   GlobalFun::removeOutliers(mesh, radius, remove_percent);
+}
+
+void GlobalFun::addOutliers(CMesh *mesh, int add_num, double max_move_dist)
+{
+  assert(mesh != NULL);
+  for(int i = 0; i < add_num; ++i){
+    int idx = rand() % mesh->vert.size();
+    CVertex &v = mesh->vert[idx];
+
+    Point3f move_dir(rand() / RAND_MAX, rand() / RAND_MAX, rand() / RAND_MAX);
+    v.P() += move_dir * max_move_dist * (rand() / RAND_MAX + 0.5);
+  }
+}
+
+void GlobalFun::addOutliers(CMesh *mesh, double outlier_percent, double max_move_dist)
+{
+  assert(mesh != NULL);
+  int outlier_num =  outlier_percent * mesh->vert.size();
+  GlobalFun::addOutliers(mesh, outlier_num, max_move_dist);
 }
 
 //transform should be 3*4 matrix

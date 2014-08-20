@@ -943,7 +943,6 @@ void Poisson::samplePointsFromMesh(CMesh& mesh, CMesh* points)
   BaseSampler mps(points);
   tri::SurfaceSampling<CMesh,BaseSampler>::PoissonDiskParam pp;
   tri::SurfaceSampling<CMesh,BaseSampler>::PoissonDisk(mesh, mps, *presampledMesh, radius,pp);
-
 }
 
 void Poisson::runPoissonFieldAndExtractIsoPoints_ByEXE()
@@ -1058,7 +1057,6 @@ void Poisson::runPoissonFieldAndExtractIsoPoints_ByEXE()
       return;
     }
 
-
     iso_points->vert.clear();
     samplePointsFromMesh(tentative_mesh, iso_points);
 
@@ -1074,8 +1072,6 @@ void Poisson::runPoissonFieldAndExtractIsoPoints_ByEXE()
     iso_points->vn = iso_points->vert.size();
     timer.end();
   }
-
- 
 }
 
 void Poisson::runPoissonFieldAndExtractIsoPoints()

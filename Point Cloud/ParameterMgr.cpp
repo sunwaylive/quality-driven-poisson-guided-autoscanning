@@ -67,23 +67,23 @@ void ParameterMgr::initGlareaParameter()
 {
 	glarea.addParam(new RichString("Running Algorithm Name", "") );
 	glarea.addParam(new RichBool("Light On or Off", true) );
-	glarea.addParam(new RichBool("Show Normal", true) );
-	glarea.addParam(new RichBool("Show Samples", true) );
+	glarea.addParam(new RichBool("Show Normal", false) );
+	glarea.addParam(new RichBool("Show Samples", false) );
 	glarea.addParam(new RichBool("Show Samples Quad", false) );
 	glarea.addParam(new RichBool("Show Samples Dot", true) );
 	glarea.addParam(new RichBool("Show Samples Circle", false) );
 	glarea.addParam(new RichBool("Show Samples Sphere", false) );
-	glarea.addParam(new RichBool("Show ISO Points", true) );
+	glarea.addParam(new RichBool("Show ISO Points", false) );
 	glarea.addParam(new RichBool("Use ISO Interval", false) );
 
 	glarea.addParam(new RichBool("Show View Grids", false));
-	glarea.addParam(new RichBool("Show NBV Candidates", true));
-	glarea.addParam(new RichBool("Show Scan Candidates", true));
-  glarea.addParam(new RichBool("Show Scan History", true));
-	glarea.addParam(new RichBool("Show Scanned Mesh", true));
+	glarea.addParam(new RichBool("Show NBV Candidates", false));
+	glarea.addParam(new RichBool("Show Scan Candidates", false));
+  glarea.addParam(new RichBool("Show Scan History", false));
+	glarea.addParam(new RichBool("Show Scanned Mesh", false));
 
 	glarea.addParam(new RichBool("Show Model", false));
-	glarea.addParam(new RichBool("Show Original", true) );
+	glarea.addParam(new RichBool("Show Original", false) );
 	glarea.addParam(new RichBool("Show Original Quad", false) );
 	glarea.addParam(new RichBool("Show Original Dot", true) );
 	glarea.addParam(new RichBool("Show Original Circle", false) );
@@ -91,7 +91,7 @@ void ParameterMgr::initGlareaParameter()
 
 	glarea.addParam(new RichBool("Show Skeleton", false));
 
-	glarea.addParam(new RichBool("Show Radius", true));
+	glarea.addParam(new RichBool("Show Radius", false));
 	glarea.addParam(new RichBool("Show All Radius", false));
 	glarea.addParam(new RichBool("Show Radius Use Pick", true));
 	glarea.addParam(new RichBool("Show Red Radius Line", true));
@@ -372,7 +372,7 @@ void ParameterMgr::initPoissonParameter()
 	poisson.addParam(new RichDouble("Current Y Slice Position", 0.5));
 	poisson.addParam(new RichDouble("Current Z Slice Position", 0.5));
 	poisson.addParam(new RichDouble("Show Slice Percentage", 0.75));
-	poisson.addParam(new RichDouble("Poisson Disk Sample Number", 10000));
+	poisson.addParam(new RichDouble("Poisson Disk Sample Number", 3000));
   poisson.addParam(new RichDouble("Original KNN", 251));
 
 	poisson.addParam(new RichBool("Use Confidence 1", false));
@@ -472,6 +472,7 @@ void ParameterMgr::initNBVParameter()
   nbv.addParam(new RichInt("NBV Top N", 10));
   nbv.addParam(new RichBool("Need Update Direction With More Overlaps", true));
   nbv.addParam(new RichDouble("Max Displacement", 0.05));
+  nbv.addParam(new RichBool("NBV Lock PaintGL", false));
 }
 
 void ParameterMgr::initVisibilityBasedNBVParameter()

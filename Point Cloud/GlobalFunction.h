@@ -24,6 +24,7 @@
 
 #define EIGEN_DEFAULT_TO_ROW_MAJOR
 #define EIGEN_EXCEPTIONS
+#define LINKED_WITH_TBB
 
 using namespace std;
 using namespace vcg;
@@ -85,6 +86,8 @@ namespace GlobalFun
 
   void removeOutliers(CMesh *mesh, double radius, double remove_percent);
   void removeOutliers(CMesh *mesh, double radius, int remove_num);
+  void addOutliers(CMesh *mesh, double outlier_percent, double max_move_dist);
+  void addOutliers(CMesh *mesh, int add_num, double max_move_dist);
   void computeICP(CMesh *src, CMesh *target, CMesh *noised = NULL);
   void computeICP(CMesh *src, CMesh *target, double &error);
   void computerICPWithNormal(CMesh *src, CMesh *dst);

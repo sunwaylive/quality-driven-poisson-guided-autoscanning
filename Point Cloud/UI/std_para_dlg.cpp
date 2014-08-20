@@ -182,6 +182,7 @@ void StdParaDlg::loadCameraFrame()
   setWindowTitle("Camera Parameters");
 
   para_camera = new CameraParaDlg(this, paras, gla);
+
   para_camera->setFrameConent();
 
   gridLayout->setRowMinimumHeight(2, 380);

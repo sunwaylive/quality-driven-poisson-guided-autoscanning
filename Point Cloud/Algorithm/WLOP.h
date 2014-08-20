@@ -13,11 +13,6 @@
 using namespace std;
 using namespace vcg;
 
-#define  LINKED_WITH_TBB
-//#ifdef LINKED_WITH_TBB
-//  #undef LINKED_WITH_TBB
-//#endif
-
 // better code is going to be in CGAL 
 class WLOP : public PointCloudAlgorithm
 {

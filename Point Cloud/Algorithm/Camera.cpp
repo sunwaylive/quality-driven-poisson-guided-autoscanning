@@ -82,7 +82,7 @@ void vcc::Camera::runVirtualScan()
 {
   //point current_scanned_mesh to a new address
   current_scanned_mesh = new CMesh;
-  double max_displacement = resolution * 8.0; //8.0f;//global_paraMgr.nbv.getDouble("Max Displacement"); //resolution * 2; //for adding noise
+  double max_displacement = resolution * 4.0f; //8.0f;//global_paraMgr.nbv.getDouble("Max Displacement"); //resolution * 2; //for adding noise
   computeUpAndRight();
   Point3f viewray = direction.Normalize();
   //compute the end point of viewray

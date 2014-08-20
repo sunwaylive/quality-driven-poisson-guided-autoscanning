@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>4</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -1223,6 +1223,19 @@
      </property>
      <property name="text">
       <string>ICP With Normal No Wlop</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_add_outlier_to_original">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>830</y>
+       <width>191</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Add outlier to Original</string>
      </property>
     </widget>
    </widget>

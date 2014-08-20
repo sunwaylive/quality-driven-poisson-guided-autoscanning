@@ -5,11 +5,14 @@
 #include "DataMgr.h"
 #include "ParameterMgr.h"
 #include "glarea.h"
+#include "OneKeyNBVBack.h"
 
 #include <QtGui>
 #include <QtGui/QFrame>
 #include <QtGui/QWidget>
 #include <iostream>
+#include <QtCore/QDebug> 
+#include <QThread>
 
 using namespace std;
 
@@ -20,9 +23,12 @@ class CameraParaDlg : public QFrame
 public:
   CameraParaDlg(QWidget *p, ParameterMgr * _paras, GLArea * _area);
   ~CameraParaDlg();
-
+  
+  friend OneKeyNBVBack;
   void initConnects();
   void setFrameConent();
+signals:
+  void sig_runOneKeyNbvIterationBack(QString, GLArea*);
 
   private slots:
     bool initWidgets();
@@ -86,9 +92,11 @@ public:
     void runWlopOnScannedMesh();
     void runStep4NewScans();
     void runOneKeyNbvIteration();
+    void runOneKeyNbvIterationBack();
 
     //add samples
     void runRemoveSampleOutliers();
+    void runAddOutlierToOriginal();
     void runICP();
     void runICPWithNormalNoWlop();
     void runICPNoWlop();
@@ -112,7 +120,7 @@ public:
     void sliceAnimation();
     void loadPoissonSurface();
     void moveTranslation();
-    
+
     /*** visibility based NBV ***/
     void visibilityFirstScan();
     void visibilityPropagate();
@@ -148,4 +156,18 @@ private:
   Ui::camera_paras * ui;
   ParameterMgr * m_paras;
   GLArea * area;
+  OneKeyNBVBack m_nbv;
+  QReadWriteLock nbv_mutex;
 };
+
+//class ThreadObject:public QObject 
+//{ 
+//  Q_OBJECT 
+//public: 
+//  ThreadObject(){} 
+//  public slots: 
+//    void slot() 
+//    { 
+//      qDebug()<<"from thread slot:" <<QThread::currentThreadId(); 
+//    } 
+//}; 

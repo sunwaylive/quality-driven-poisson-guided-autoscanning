@@ -16,6 +16,7 @@
 #include <wrap/io_trimesh/export.h>
 #include <iostream>
 
+#include "Algorithm/pointcloud_normal.h"
 #include "Algorithm/NormalSmoother.h"
 #include "DataMgr.h"
 #include "GLDrawer.h"

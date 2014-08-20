@@ -271,6 +271,18 @@
     <ClCompile Include="Algorithm\RIMLS\rimls.cpp">
       <Filter>Algorithm\RIMLS</Filter>
     </ClCompile>
+    <ClCompile Include="OneKeyNBVBack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_OneKeyNBVBack.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release_debug\moc_OneKeyNBVBack.cpp">
+      <Filter>Generated Files\Release_debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_OneKeyNBVBack.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="mainwindow.h">
@@ -326,6 +338,9 @@
     </CustomBuild>
     <CustomBuild Include="UI\camera_para.ui">
       <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="OneKeyNBVBack.h">
+      <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

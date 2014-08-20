@@ -25,7 +25,7 @@ void CalculationThread::run( void )
 	}
 }
 
-void CalculationThread::setArea( GLArea* area )
+void CalculationThread::setArea(GLArea* area)
 {
 	this->area = area;
 }
