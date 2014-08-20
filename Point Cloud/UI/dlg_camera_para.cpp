@@ -571,7 +571,6 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
 {
   /*QModelIndexList sil = ui->tableView_scan_results->selectionModel()->selectedRows();
   if (sil.isEmpty()) return;*/
-  nbv_mutex.lockForWrite();
     CMesh* original = area->dataMgr.getCurrentOriginal();
     vector<CMesh* > *scanned_results = area->dataMgr.getScannedResults();
     double merge_confidence_threshold = global_paraMgr.camera.getDouble("Merge Confidence Threshold");
@@ -615,8 +614,7 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
 
       cout<<"Before merge with original: " << original->vert.size() <<endl;
       cout<<"scanned mesh num: "<<(*it)->vert.size() <<endl;
-      int skip_num = 0;
-
+      
       vector<double> v_confidence;
       double max_confidence = 0.0f;
       double min_confidence = BIG;
@@ -657,6 +655,7 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
       for (vector<double>::iterator it = v_confidence.begin(); it != v_confidence.end(); ++it)
         *it = (*it - min_confidence) / (max_confidence - min_confidence);
 
+      int skip_num = 0;
       int index = original->vert.empty() ? 0 : (original->vert.back().m_index + 1);
       for (int k = 0;  k < (*it)->vert.size(); ++k)
       {
@@ -686,9 +685,52 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
       //}
       // }//end for sil
     }
-    nbv_mutex.unlock();
 }
 
+void CameraParaDlg::mergeScannedMeshWithOriginalUsingHoleConfidence()
+{
+  CMesh* original = area->dataMgr.getCurrentOriginal();
+  CMesh* iso_points = area->dataMgr.getCurrentIsoPoints();
+  assert(original != NULL);
+  assert(iso_points != NULL);
+  vector<CMesh* > *scanned_results = area->dataMgr.getScannedResults();
+  for (vector<CMesh* >::iterator it = scanned_results->begin(); it != scanned_results->end(); ++it) 
+  {
+    if ((*it)->vert.empty())
+      continue;
+
+    GlobalFun::computeAnnNeigbhors(iso_points->vert, it->vert, 1, false, "runComputeIsoSmoothnessConfidence");
+
+    (*it)->vert[0].is_scanned_visible = false;
+    cout<<"Before merge with original: " << original->vert.size() <<endl;
+    cout<<"scanned mesh num: "<<(*it)->vert.size() <<endl;
+
+    int skip_num = 0;
+    int index = original->vert.empty() ? 0 : (original->vert.back().m_index + 1);
+    const double skip_conf = 0.95f;
+    for (int k = 0; k < (*it)->vert.size(); ++k)
+    {
+      CVertex& v = (*it)->vert[k];
+      double nei_confidence = iso_points->vert[v.neighbors[0]].eigen_confidence;
+      if(nei_confidence > skip_conf){
+        v.is_ignore = true;
+        skip_num ++;
+        continue;
+      }
+
+      CVertex new_v;
+      new_v.m_index = index++;
+      new_v.is_original = true;
+      new_v.P() = v.P();
+      new_v.N() = v.N();
+      original->vert.push_back(new_v);
+      original->bbox.Add(new_v.P());
+    }
+    original->vn = original->vert.size();
+    cout<<"skip points num:" <<skip_num <<endl;
+    cout<<"After merge with original: " << original->vert.size() <<endl <<endl;
+  }
+}
 
 void CameraParaDlg::mergeScannedMeshWithOriginalByHand()
 {
@@ -1113,10 +1155,16 @@ void CameraParaDlg::runOneKeyNbvIteration()
   area->dataMgr.saveParameters(para);
 
   int iteration_cout = global_paraMgr.nbv.getInt("NBV Iteration Count");
-  const int holeFrequence = 3;
+  const int holeFrequence = 2; //once every holeFrequence(2, 3, ...)
+  bool use_hole_confidence = false;
   CMesh *original = area->dataMgr.getCurrentOriginal();
   for (int ic = 0; ic < iteration_cout; ++ic)
   {
+    if (ic % holeFrequence == 0){
+      use_hole_confidence = true;
+    }else{
+      use_hole_confidence = false;
+    }
     //save original
     QString s_original;
     s_original.sprintf("\\%d_original.ply", ic);
@@ -1150,7 +1198,7 @@ void CameraParaDlg::runOneKeyNbvIteration()
     area->dataMgr.downSamplesByNum();
     area->initSetting();
 
-    if(ic % holeFrequence != 0)
+    if(use_hole_confidence)
     {
       cout<<"begin to run hole poisson confidence" <<endl;
       runStep2HolePoissonConfidence();
@@ -1194,7 +1242,11 @@ void CameraParaDlg::runOneKeyNbvIteration()
     s_nbv.replace(".skel", ".View");
     area->saveView(s_nbv);
 
-    mergeScannedMeshWithOriginal();
+    if (use_hole_confidence){
+      mergeScannedMeshWithOriginalUsingHoleConfidence();
+    }else{
+      mergeScannedMeshWithOriginal();
+    }
     //save merged scan
     cout<<"begin to save merged mesh" <<endl;
     QString s_merged_mesh;
@@ -1436,7 +1488,7 @@ void CameraParaDlg::runAddOutlierToOriginal()
   assert(original != NULL);
   double max_distance = global_paraMgr.camera.getDouble("Camera Far Distance") 
     / global_paraMgr.camera.getDouble("Predicted Model Size");
-  GlobalFun::addOutliers(original, 0.01f , max_distance);
+  GlobalFun::addOutliers(original, 100 , max_distance);
   cout<<"Outliers added!" <<endl;
 }
 

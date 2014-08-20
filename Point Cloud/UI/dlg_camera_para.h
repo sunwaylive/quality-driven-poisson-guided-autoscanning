@@ -52,6 +52,7 @@ signals:
     void showSelectedScannCandidates(QModelIndex index);
     void showSelectedScannedMesh(QModelIndex index);
     void mergeScannedMeshWithOriginal();
+    void mergeScannedMeshWithOriginalUsingHoleConfidence();
     void mergeScannedMeshWithOriginalByHand();
     void getViewPruneConfidenceThreshold(double _val);
     void getMergeConfidenceThreshold(double _val);
