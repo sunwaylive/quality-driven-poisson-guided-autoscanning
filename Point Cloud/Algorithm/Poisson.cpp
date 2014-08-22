@@ -2425,7 +2425,7 @@ void Poisson::runComputeIsoHoleConfidence()
   for(int i = 0; i < iso_points->vert.size(); ++i){
     iso_points->vert[i].eigen_confidence = 1 - iso_points->vert[i].eigen_confidence;
   }
-  runIsoSmooth();
+  //runIsoSmooth();
 }
 
 void Poisson::runAddWLOPtoISO()

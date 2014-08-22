@@ -98,6 +98,7 @@ signals:
     //add samples
     void runRemoveSampleOutliers();
     void runAddOutlierToOriginal();
+    void runAddNoiseToOriginal();
     void runICP();
     void runICPWithNormalNoWlop();
     void runICPNoWlop();

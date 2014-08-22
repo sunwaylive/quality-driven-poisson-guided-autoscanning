@@ -469,7 +469,7 @@ void ParameterMgr::initNBVParameter()
   nbv.addParam(new RichDouble("Propagate One Point Index", 0));
   nbv.addParam(new RichInt("View Bin Each Axis", 10));
   nbv.addParam(new RichDouble("View Prune Confidence Threshold", 0.9));
-  nbv.addParam(new RichInt("NBV Top N", 10));
+  nbv.addParam(new RichInt("NBV Top N", 90));
   nbv.addParam(new RichBool("Need Update Direction With More Overlaps", true));
   nbv.addParam(new RichDouble("Max Displacement", 0.05));
   nbv.addParam(new RichBool("NBV Lock PaintGL", false));

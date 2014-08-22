@@ -84,6 +84,7 @@ void CameraParaDlg::initConnects()
   connect(ui->pushButton_ICP_MeshLab, SIGNAL(clicked()), this, SLOT(runICPMeshLab()));
   connect(ui->pushButton_remove_sample_outliers, SIGNAL(clicked()), this, SLOT(runRemoveSampleOutliers()));
   connect(ui->pushButton_add_outlier_to_original, SIGNAL(clicked()), this, SLOT(runAddOutlierToOriginal()));
+  connect(ui->pushButton_add_noise_to_original, SIGNAL(clicked()), this, SLOT(runAddNoiseToOriginal()));
   connect(ui->pushButton_remove_low_confidence_samples, SIGNAL(clicked()), this, SLOT(runRemoveSamplesWithLowConfidence()));
   connect(ui->pushButton_add_samples_to_original, SIGNAL(clicked()), this, SLOT(runAddSamplesToOiriginal()));
 
@@ -699,7 +700,7 @@ void CameraParaDlg::mergeScannedMeshWithOriginalUsingHoleConfidence()
     if ((*it)->vert.empty())
       continue;
 
-    GlobalFun::computeAnnNeigbhors(iso_points->vert, it->vert, 1, false, "runComputeIsoSmoothnessConfidence");
+    GlobalFun::computeAnnNeigbhors(iso_points->vert, (*it)->vert, 1, false, "runComputeIsoSmoothnessConfidence");
 
     (*it)->vert[0].is_scanned_visible = false;
     cout<<"Before merge with original: " << original->vert.size() <<endl;
@@ -711,6 +712,9 @@ void CameraParaDlg::mergeScannedMeshWithOriginalUsingHoleConfidence()
     for (int k = 0; k < (*it)->vert.size(); ++k)
     {
       CVertex& v = (*it)->vert[k];
+      if(v.neighbors.empty())
+        continue;
+
       double nei_confidence = iso_points->vert[v.neighbors[0]].eigen_confidence;
       if(nei_confidence > skip_conf){
         v.is_ignore = true;
@@ -1490,6 +1494,14 @@ void CameraParaDlg::runAddOutlierToOriginal()
     / global_paraMgr.camera.getDouble("Predicted Model Size");
   GlobalFun::addOutliers(original, 100 , max_distance);
   cout<<"Outliers added!" <<endl;
+}
+
+void CameraParaDlg::runAddNoiseToOriginal()
+{
+  CMesh *original = area->dataMgr.getCurrentOriginal();
+  assert(original != NULL);
+  double noise_size = global_paraMgr.camera.getDouble("Camera Resolution");
+  GlobalFun::addNoise(original, noise_size);
 }
 
 void CameraParaDlg::runRemoveSamplesWithLowConfidence()

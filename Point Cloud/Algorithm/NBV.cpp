@@ -137,6 +137,10 @@ void NBV::runOneKeyNBV()
   viewPrune();
   timer.end();
 
+  timer.start("view clustering");
+  viewClustering();
+  timer.end();
+
   scan_candidates->clear();
   for (int i = 0; i < nbv_candidates->vert.size(); ++i)
   {
@@ -1002,50 +1006,33 @@ void NBV::viewPrune()
   //double radius = 10.0 * global_paraMgr.data.getDouble("CGrid Radius");
   //double radius2 = radius * radius;
 
-  for (int i = 0; i < nbv_candidates->vert.size(); ++i)
-  {
-    CVertex &v = nbv_candidates->vert[i];
-    //cout << "candidate confidence:  " << v.eigen_confidence << endl;
-    //if the point has been ignored, then skip it
-    if (v.is_ignore)
-      continue;
+  //for (int i = 0; i < nbv_candidates->vert.size(); ++i)
+  //{
+  //  CVertex &v = nbv_candidates->vert[i];
+  //  //cout << "!!!!!!!!!!!!!!!!!!candidate confidence: " << v.eigen_confidence << endl;
+  //  //if the point has been ignored, then skip it
+  //  if (v.is_ignore)
+  //    continue;
 
-    CVertex& v_iso = iso_points->vert.at(v.remember_iso_index);
-    if (v.eigen_confidence < prune_confidence_threshold)
-    {
-      v.is_ignore = true;
-      continue;
-    }
+  //  CVertex& v_iso = iso_points->vert.at(v.remember_iso_index);
+  //  if (v.eigen_confidence < prune_confidence_threshold)
+  //  {
+  //    v.is_ignore = true;
+  //    continue;
+  //  }
 
-    for (int j = 0; j < v.neighbors.size(); ++j)
-    {
-      CVertex &t = nbv_candidates->vert[v.neighbors[j]];
-      if (t.m_index == v.m_index)
-        continue;
-      else
-        t.is_ignore = true;
+  //  for (int j = 0; j < v.neighbors.size(); ++j)
+  //  {
+  //    CVertex &t = nbv_candidates->vert[v.neighbors[j]];
+  //    if (t.m_index == v.m_index)
+  //      continue;
+  //    else
+  //      t.is_ignore = true;
+  //  }
+  //}
+  //GlobalFun::deleteIgnore(nbv_candidates);
+  //cout << "after View Prune candidates num: " <<nbv_candidates->vert.size() <<endl;
 
-      //else
-      //{
-      //  CVertex& t_iso = iso_points->vert.at(t.remember_iso_index);
-      //  double dist2 = GlobalFun::computeEulerDistSquare(v.P(), t.P());
-
-      //  if (dist2 > radius2)
-      //  {
-      //    continue;
-      //  }
-      //  else
-      //  {
-      //    t.is_ignore = true;
-      //  }
-      //}
-    }
-  }
-
-  GlobalFun::deleteIgnore(nbv_candidates);
-  cout << "after View Prune candidates num: " <<nbv_candidates->vert.size() <<endl;
-
-  //get the top n = 4
   int topn = global_paraMgr.nbv.getInt("NBV Top N");
   sort(nbv_candidates->vert.begin(), nbv_candidates->vert.end(), cmp);
   if (nbv_candidates->vert.size() > topn)
@@ -1103,6 +1090,7 @@ void NBV::viewPrune()
   //GlobalFun::deleteIgnore(nbv_candidates);
   cout << "after top N candidate num: " <<nbv_candidates->vert.size() <<endl;
 
+  //any two nbv should not scan the same two points
   scan_candidates->clear();
   for (int i = 0; i < nbv_candidates->vert.size(); ++i)
     scan_candidates->push_back(make_pair(nbv_candidates->vert[i].P(), nbv_candidates->vert[i].N()));

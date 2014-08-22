@@ -46,6 +46,7 @@ namespace GlobalFun
 
   bool cmp(DesityAndIndex &a, DesityAndIndex &b);
   double getAbsMax(double x, double y, double z);
+  float tinyrand();
 
 	void computeKnnNeigbhors(vector<CVertex> &datapts, vector<CVertex> &querypts, int numKnn, bool need_self_included, QString purpose);
 	void computeEigen(CMesh* _samples);
@@ -88,6 +89,7 @@ namespace GlobalFun
   void removeOutliers(CMesh *mesh, double radius, int remove_num);
   void addOutliers(CMesh *mesh, double outlier_percent, double max_move_dist);
   void addOutliers(CMesh *mesh, int add_num, double max_move_dist);
+  void addNoise(CMesh *mesh, float noise_size);
   void computeICP(CMesh *src, CMesh *target, CMesh *noised = NULL);
   void computeICP(CMesh *src, CMesh *target, double &error);
   void computerICPWithNormal(CMesh *src, CMesh *dst);

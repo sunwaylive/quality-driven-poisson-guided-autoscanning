@@ -893,6 +893,14 @@ double GlobalFun::getAbsMax(double x, double y, double z)
   return std::max(abs(x), std::max(abs(y), abs(z)));
 }
 
+//code from http://www.cs.utah.edu/~bergerm/recon_bench/  registration\trimesh2\include\noise3d.h
+float GlobalFun::tinyrand()
+{
+  static unsigned trand = 0;
+  trand = 1664525u * trand + 1013904223u;
+  return (float) trand / 4294967296.0f;
+}
+
 void GlobalFun::removeOutliers(CMesh *mesh, double radius, double remove_percent)
 {
   if (NULL == mesh) 
@@ -978,7 +986,8 @@ void GlobalFun::addOutliers(CMesh *mesh, int add_num, double max_move_dist)
     int idx = rand() % mesh->vert.size();
     CVertex &v = mesh->vert[idx];
 
-    Point3f move_dir(rand() / RAND_MAX, rand() / RAND_MAX, rand() / RAND_MAX);
+    Point3f move_dir = Point3f(rand() * 1.0f / RAND_MAX, rand() * 1.0f / RAND_MAX, rand() * 1.0f / RAND_MAX)
+                    - Point3f(0.5f, 0.5f, 0.5f);
     v.P() += move_dir * max_move_dist * (rand() / RAND_MAX + 0.5);
   }
 }
@@ -988,6 +997,36 @@ void GlobalFun::addOutliers(CMesh *mesh, double outlier_percent, double max_move
   assert(mesh != NULL);
   int outlier_num =  outlier_percent * mesh->vert.size();
   GlobalFun::addOutliers(mesh, outlier_num, max_move_dist);
+}
+
+void GlobalFun::addNoise(CMesh *mesh, float noise_size)
+{
+  assert(mesh != NULL);
+  int knn = 50; //para->getDouble("Original KNN");
+  cout << "Noise Knn: " << knn << endl;
+  Point3f *disp = new Point3f[mesh->vert.size()];
+
+  GlobalFun::computeAnnNeigbhors(mesh->vert, mesh->vert, knn, false, "add Noise");
+  for(int i = 0; i < mesh->vert.size(); ++i){
+    CVertex &v = mesh->vert[i];
+    disp[i] = Point3f(0, 0, 0); //initialize
+    for(int j = 0; j < v.neighbors.size(); ++j){
+      const CVertex &n = mesh->vert[v.neighbors[j]];
+      double dist = GlobalFun::computeEulerDist(v.P(), n.P());
+      double scale = noise_size / (noise_size + dist);
+      disp[i] += (n.P() - v.P()) * (float)tinyrand() * scale;
+    }
+    if(v.neighbors.size() != 0){
+      disp[i] /= float(v.neighbors.size());
+    }
+    //normal
+    disp[i] += v.N() * (2.0f * (float) tinyrand() - 1.0f) * noise_size;
+  }
+  //update
+  for (int i = 0; i < mesh->vert.size(); ++i){
+    mesh->vert[i].P() += disp[i];
+  }
+  delete disp;
 }
 
 //transform should be 3*4 matrix
