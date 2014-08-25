@@ -181,7 +181,7 @@ void GlobalFun::computeAnnNeigbhors(vector<CVertex> &datapts, vector<CVertex> &q
 		cout << "Too many data" << endl;
 		return;
 	}
-
+  cout<<1<<endl;
 	queryPt = annAllocPt(dim);					// allocate query point
 	dataPts = annAllocPts(maxPts, dim);	// allocate data points
 	nnIdx   = new ANNidx[k];						// allocate near neigh indices
@@ -196,13 +196,13 @@ void GlobalFun::computeAnnNeigbhors(vector<CVertex> &datapts, vector<CVertex> &q
 
 		index++;
 	}
-
+  cout<<2<<endl;
   nPts = datapts.size();	 // read data points
 	kdTree = new ANNkd_tree( // build search structure
 		dataPts,					     // the data points
 		nPts,						       // number of points
 		dim);						       // dimension of space
-
+  cout<<3<<endl;
 	for (vi = querypts.begin(); vi != querypts.end(); ++vi) 
 	{
 		vi->neighbors.clear();
@@ -219,11 +219,12 @@ void GlobalFun::computeAnnNeigbhors(vector<CVertex> &datapts, vector<CVertex> &q
 		for (int k = 1; k < numKnn; k++)
 			vi->neighbors.push_back(nnIdx[k]);
 	}
-
+  cout<<4<<endl;
 	delete [] nnIdx; // clean things up
 	delete [] dists;
 	delete kdTree;
 	annClose();			 // done with ANN
+  cout<<5<<endl;
 }
 
 
@@ -1002,11 +1003,15 @@ void GlobalFun::addOutliers(CMesh *mesh, double outlier_percent, double max_move
 void GlobalFun::addNoise(CMesh *mesh, float noise_size)
 {
   assert(mesh != NULL);
-  int knn = 50; //para->getDouble("Original KNN");
-  cout << "Noise Knn: " << knn << endl;
+  if (mesh == NULL)  {
+    return ;
+  }
+
+  double radius = 0.1;
   Point3f *disp = new Point3f[mesh->vert.size()];
 
-  GlobalFun::computeAnnNeigbhors(mesh->vert, mesh->vert, knn, false, "add Noise");
+  GlobalFun::computeBallNeighbors(mesh, NULL, radius, mesh->bbox);
+  cout<<"end ball neighbor" <<endl;
   for(int i = 0; i < mesh->vert.size(); ++i){
     CVertex &v = mesh->vert[i];
     disp[i] = Point3f(0, 0, 0); //initialize
@@ -1023,6 +1028,7 @@ void GlobalFun::addNoise(CMesh *mesh, float noise_size)
     disp[i] += v.N() * (2.0f * (float) tinyrand() - 1.0f) * noise_size;
   }
   //update
+  cout<<"before update" <<endl;
   for (int i = 0; i < mesh->vert.size(); ++i){
     mesh->vert[i].P() += disp[i];
   }

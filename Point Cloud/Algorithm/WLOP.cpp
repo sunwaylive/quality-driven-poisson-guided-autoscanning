@@ -28,8 +28,6 @@ void WLOP::setFirstIterate()
 
 void WLOP::setInput(DataMgr* pData)
 {
-  if(!pData->isSamplesEmpty() && !pData->isOriginalEmpty())
-  {
     CMesh *_samples = NULL;
     CMesh *_original = NULL;
 
@@ -43,7 +41,7 @@ void WLOP::setInput(DataMgr* pData)
       _original = pData->getCurrentOriginal();
     }
 
-    if(_samples == NULL || _original == NULL)
+    if(_samples == NULL || _original == NULL || _samples->vert.empty() || _original->vert.empty())
     {
       cout << "ERROR: WLOP::setInput == NULL!!" << endl;
       return;
@@ -54,12 +52,6 @@ void WLOP::setInput(DataMgr* pData)
     original = _original;
 
     samples_density.assign(samples->vn, 1);
-  }
-  else
-  {
-    cout << "ERROR: WLOP::setInput: empty!!" << endl;
-    return;
-  }
 }
 
 void WLOP::initVertexes()

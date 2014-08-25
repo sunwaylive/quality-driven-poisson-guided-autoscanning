@@ -82,7 +82,7 @@ void vcc::Camera::runVirtualScan()
 {
   //point current_scanned_mesh to a new address
   current_scanned_mesh = new CMesh;
-  double max_displacement = resolution * 0.5f; //8.0f;//global_paraMgr.nbv.getDouble("Max Displacement"); //resolution * 2; //for adding noise
+  double max_displacement = resolution * 0.0f; //8.0f;//global_paraMgr.nbv.getDouble("Max Displacement"); //resolution * 2; //for adding noise
   computeUpAndRight();
   Point3f viewray = direction.Normalize();
   //compute the end point of viewray
@@ -118,7 +118,7 @@ void vcc::Camera::runVirtualScan()
         t.is_barely_visible= is_barely_visible;
          
         t.m_index = index++;
-        t.P() = intersect_point + Point3f(rndax, rnday, rndaz);
+        t.P() = intersect_point + Point3f(rndax, rnday, rndaz);//noise 1
         t.N() = intersect_point_normal; //set out direction as approximate normal
         current_scanned_mesh->vert.push_back(t);
         current_scanned_mesh->bbox.Add(t.P());
@@ -126,6 +126,11 @@ void vcc::Camera::runVirtualScan()
     }
   }
   current_scanned_mesh->vn = current_scanned_mesh->vert.size();
+
+  //noise 2
+  double noise_size = global_paraMgr.camera.getDouble("Camera Resolution") * 1.0f;
+  GlobalFun::addNoise(current_scanned_mesh, noise_size);
+
   //increase the scan count;
   (*scan_count)++;
   std::cout<<"scan count right after virtual scan: "<<*scan_count <<std::endl;

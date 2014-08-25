@@ -93,6 +93,7 @@ signals:
     void runWlopOnScannedMesh();
     void runStep4NewScans();
     void runOneKeyNbvIteration();
+    void runOneKeyNbvIterationWlop();
     void runOneKeyNbvIterationBack();
 
     //add samples
@@ -153,6 +154,8 @@ signals:
     void runSphere();
     /* sphere */
     void getModelSize();
+
+    void runTest();
 
 private:
   Ui::camera_paras * ui;

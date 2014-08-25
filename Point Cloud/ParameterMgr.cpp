@@ -195,6 +195,7 @@ void ParameterMgr::initWLopParameter()
 	wLop.addParam(new RichDouble("Current Movement Error", 0.0));
   wLop.addParam(new RichDouble("Outlier Percentage", 0.05));
   wLop.addParam(new RichBool("Run Wlop On Scanned Mesh", false));
+  wLop.addParam(new RichDouble("One Key NBV Wlop percentage", 0.6));
 }
 
 void ParameterMgr::initSkeletonParameter()
@@ -421,7 +422,7 @@ void ParameterMgr::initCameraParameter()
   camera.addParam(new RichDouble("Camera FOV Angle", 28.07)); // tan-1(Vert_dist/2 / far_dist)
   //20 for sphere test, 30 for dancing children
 
-  camera.addParam(new RichDouble("Camera Resolution",1.0f / 110.0f));
+  camera.addParam(new RichDouble("Camera Resolution",1.0f / 50.0f));
   camera.addParam(new RichDouble("Merge Confidence Threshold", 0.9f));
   camera.addParam(new RichDouble("Grid Step Size", -1));
 

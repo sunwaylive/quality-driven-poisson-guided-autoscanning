@@ -1251,6 +1251,19 @@
       <string>Add Noise to Original</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="pushButton_test">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>880</y>
+       <width>191</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Test</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="tab_4">
     <attribute name="title">
