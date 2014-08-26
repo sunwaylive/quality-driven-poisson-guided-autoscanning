@@ -1035,6 +1035,65 @@ void GlobalFun::addNoise(CMesh *mesh, float noise_size)
   delete disp;
 }
 
+double GlobalFun::gaussian_beam(double _x, double _sigma)  {
+  return exp((-2.0 * (_x * _x)) / (_sigma * _sigma));
+}
+
+double GlobalFun::sampleNormalDistribution(double _sigma, double _magnitude)  {
+	/*
+	double rand_val = _sigma*((double)rand() / (double)RAND_MAX);
+	double gaussian_val = _magnitude*exp(-(2.0*rand_val*rand_val)/(_sigma*_sigma));
+	double neg_val = (double)rand() / (double)RAND_MAX;
+	return neg_val < 0.5 ? -gaussian_val : gaussian_val;
+	*/
+	double rand_val = 0;
+	for(int i = 0; i < 12; i++)
+		rand_val += ((double)rand() / (double)RAND_MAX);
+	rand_val -= 6;
+
+	double normal_x = rand_val*_sigma;
+	double gaussian_val = _magnitude*exp(-(2.0*normal_x*normal_x)/(_sigma*_sigma));
+	double neg_val = (double)rand() / (double)RAND_MAX;
+	//return neg_val < 0.5 ? -gaussian_val : gaussian_val;
+	return -gaussian_val;
+}
+
+void GlobalFun::addBenchmarkNoise(CMesh *mesh, Point3f &camera_pos, Point3f &view_ray, double noise_magnitude) //in angle
+{
+  assert(mesh != NULL);
+  if (mesh == NULL){
+    return;
+  }
+
+  for (int i = 0;i < mesh->vert.size(); ++i){
+    CVertex &v = mesh->vert[i];
+    Point3f laser_dir = v.P() - camera_pos;
+    double angle = GlobalFun::computeRealAngleOfTwoVertor(laser_dir, view_ray);
+    double light_sigma = GlobalFun::computeEulerDist(v.P(), camera_pos)
+                          * tan(angle / 180.0f * PI);
+    //TODO: we should get the dist from the point to the central laser beam
+    double pulse_dist = GlobalFun::computeEulerDist(v.P(), camera_pos);
+    double luminance = GlobalFun::gaussian_beam(pulse_dist, 2.0f * light_sigma);
+    luminance = luminance < 0 ? 0 : luminance;
+
+    double noise_scale = (1.0 - luminance);
+    double gaussian_noise = GlobalFun::sampleNormalDistribution(noise_scale, noise_magnitude);
+
+    Point3f laser_ray = camera_pos - v.P();
+    laser_ray.Normalize();
+    Point3f pt_normal = v.N();
+    double cos_falloff = abs(laser_ray * pt_normal);
+
+    double radiance = luminance * cos_falloff + gaussian_noise;
+    radiance = radiance > 1 ? 1 : radiance;
+    radiance = radiance < 0 ? 0 : radiance;
+    int quantized_radiance = 255 * radiance;
+    radiance = quantized_radiance / 255.0;
+    cout<<"radiance: " <<radiance <<endl;
+    v.P() = v.P() + v.N() * radiance;
+  }
+}
+
 //transform should be 3*4 matrix
 void GlobalFun::computeICP( CMesh *src, CMesh *target, CMesh *noised)
 {

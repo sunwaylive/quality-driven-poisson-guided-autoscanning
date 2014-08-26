@@ -30,7 +30,7 @@ void CameraParaDlg::initConnects()
   connect(ui->pushButton_load_real_scan, SIGNAL(clicked()), this, SLOT(loadRealScans()));
   connect(ui->spinBox_nbv_iteration_count, SIGNAL(valueChanged(int)), this, SLOT(getNbvIterationCount(int)));
   connect(ui->spinBox_nbv_top_n, SIGNAL(valueChanged(int)), this, SLOT(getNBVTopN(int)));
-  connect(ui->pushButton_one_key_nbv_iteration, SIGNAL(clicked()), this, SLOT(runOneKeyNbvIteration()));
+  connect(ui->pushButton_one_key_nbv_iteration, SIGNAL(clicked()), this, SLOT(runOneKeyNbvIterationWlop()));
   connect(ui->checkBox_show_init_cameras,SIGNAL(clicked(bool)),this,SLOT(showInitCameras(bool)));
   connect(ui->checkBox_show_camera_border, SIGNAL(clicked(bool)), this, SLOT(showCameraBorder(bool)));
   connect(ui->pushButton_scan, SIGNAL(clicked()), this, SLOT(NBVCandidatesScanByHand()));
@@ -1108,10 +1108,14 @@ void CameraParaDlg::runWlopOnScannedMesh()
 {
   vector< CMesh* > scanned_results = area->dataMgr.scanned_results;
   vector< CMesh* >::iterator it = scanned_results.begin();
-  const double ratio = global_paraMgr.wLop.getDouble("One Key NBV Wlop percentage");
+  const double ratio = global_paraMgr.wLop.getDouble("One Key NBV Wlop Percentage");
 
   for (; it != scanned_results.end(); ++it)
   {
+    if ((*it)->vert.empty()){
+      continue;
+    }
+
     CMesh *temperal_sample = new CMesh;
     CMesh *temperal_original = *it;
     GlobalFun::downSample(temperal_sample, temperal_original, ratio);
@@ -1123,7 +1127,7 @@ void CameraParaDlg::runWlopOnScannedMesh()
     area->runWlop();
     global_paraMgr.wLop.setValue("Run Wlop On Scanned Mesh", BoolValue(false));
     
-    area->dataMgr.replaceMesh(*temperal_sample, *temperal_original, false);
+    area->dataMgr.replaceMesh(*temperal_sample, **it, false);
     delete temperal_sample;
   }
 }
@@ -1295,18 +1299,20 @@ void CameraParaDlg::runOneKeyNbvIterationWlop()
 
   int iteration_cout = global_paraMgr.nbv.getInt("NBV Iteration Count");
   const int holeFrequence = 2; //once every holeFrequence(2, 3, ...)
-  const double ratio = global_paraMgr.wLop.getDouble("One Key NBV Percentage");
+  const double ratio = global_paraMgr.wLop.getDouble("One Key NBV Wlop Percentage");
   bool use_hole_confidence = false;
 
   CMesh *original = area->dataMgr.getCurrentOriginal();
   //1.change run wlop
+  cout<<"before wlop original number: " <<original->vert.size() <<endl;
   CMesh *sample = area->dataMgr.getCurrentSamples();
-  GlobalFun::downSample(sample, original, 0.7);
+  GlobalFun::downSample(sample, original, ratio);
   area->runWlop();
 
   area->cleanPickPoints();
   area->dataMgr.switchSampleToOriginal();
   area->updateUI();
+  cout<<"after wlop original number: " <<original->vert.size() <<endl;
 
   for (int ic = 0; ic < iteration_cout; ++ic)
   {

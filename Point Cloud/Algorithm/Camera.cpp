@@ -127,9 +127,12 @@ void vcc::Camera::runVirtualScan()
   }
   current_scanned_mesh->vn = current_scanned_mesh->vert.size();
 
-  //noise 2
-  double noise_size = global_paraMgr.camera.getDouble("Camera Resolution") * 1.0f;
-  GlobalFun::addNoise(current_scanned_mesh, noise_size);
+  //noise 2 from trimesh2
+  //double noise_size = global_paraMgr.camera.getDouble("Camera Resolution") * 1.0f;
+  //GlobalFun::addNoise(current_scanned_mesh, noise_size);
+
+  //noise 3 from benchmark
+  GlobalFun::addBenchmarkNoise(current_scanned_mesh, this->pos, viewray, 1.0f);
 
   //increase the scan count;
   (*scan_count)++;

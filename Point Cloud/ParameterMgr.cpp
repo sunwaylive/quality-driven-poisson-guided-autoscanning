@@ -195,7 +195,7 @@ void ParameterMgr::initWLopParameter()
 	wLop.addParam(new RichDouble("Current Movement Error", 0.0));
   wLop.addParam(new RichDouble("Outlier Percentage", 0.05));
   wLop.addParam(new RichBool("Run Wlop On Scanned Mesh", false));
-  wLop.addParam(new RichDouble("One Key NBV Wlop percentage", 0.6));
+  wLop.addParam(new RichDouble("One Key NBV Wlop Percentage", 0.6));
 }
 
 void ParameterMgr::initSkeletonParameter()

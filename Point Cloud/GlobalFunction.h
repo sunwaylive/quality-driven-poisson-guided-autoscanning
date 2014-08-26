@@ -90,6 +90,9 @@ namespace GlobalFun
   void addOutliers(CMesh *mesh, double outlier_percent, double max_move_dist);
   void addOutliers(CMesh *mesh, int add_num, double max_move_dist);
   void addNoise(CMesh *mesh, float noise_size);
+  double sampleNormalDistribution(double _sigma, double _magnitude);
+  double gaussian_beam(double _x, double _sigma);
+  void addBenchmarkNoise(CMesh *mesh, Point3f &camera_pos, Point3f &view_ray, double noise_magnitude = 0.0f);
   void computeICP(CMesh *src, CMesh *target, CMesh *noised = NULL);
   void computeICP(CMesh *src, CMesh *target, double &error);
   void computerICPWithNormal(CMesh *src, CMesh *dst);
