@@ -45,16 +45,17 @@ void DataMgr::initDefaultScanCamera()
 {
   double predict_size = global_paraMgr.camera.getDouble("Predicted Model Size");
   double far_dist = global_paraMgr.camera.getDouble("Camera Far Distance") / predict_size;
+  double camera_dist_to_model = global_paraMgr.camera.getDouble("Camera Dist To Model") / predict_size;
   //default cameras for initial scanning, pair<pos, direction>
   //x axis
-  init_scan_candidates.push_back(make_pair(Point3f(1.0f * far_dist, 0.0f, 0.0f), Point3f(-1.0f, 0.0f, 0.0f)));
-  init_scan_candidates.push_back(make_pair(Point3f(-1.0f * far_dist, 0.0f, 0.0f), Point3f(1.0f, 0.0f, 0.0f)));
+  init_scan_candidates.push_back(make_pair(Point3f(1.0f * camera_dist_to_model, 0.0f, 0.0f), Point3f(-1.0f, 0.0f, 0.0f)));
+  init_scan_candidates.push_back(make_pair(Point3f(-1.0f * camera_dist_to_model, 0.0f, 0.0f), Point3f(1.0f, 0.0f, 0.0f)));
   //z axis
-  init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f * far_dist), Point3f(0.0f, 0.0f, -1.0f)));
-  init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, -1.0f * far_dist), Point3f(0.0f, 0.0f, 1.0f)));
+  init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f * camera_dist_to_model), Point3f(0.0f, 0.0f, -1.0f)));
+  init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, -1.0f * camera_dist_to_model), Point3f(0.0f, 0.0f, 1.0f)));
   //y axis
-  //init_scan_candidates.push_back(make_pair(Point3f(0.0f, 1.0f * far_dist, 0.0f), Point3f(0.0f, -1.0f * far_dist, 0.0f)));
-  //init_scan_candidates.push_back(make_pair(Point3f(0.0f, -1.0f * far_dist, 0.0f), Point3f(0.0f, 1.0f * far_dist, 0.0f)));
+  init_scan_candidates.push_back(make_pair(Point3f(0.0f, 1.0f * camera_dist_to_model, 0.0f), Point3f(0.0f, -1.0f * camera_dist_to_model, 0.0f)));
+  init_scan_candidates.push_back(make_pair(Point3f(0.0f, -1.0f * camera_dist_to_model, 0.0f), Point3f(0.0f, 1.0f * camera_dist_to_model, 0.0f)));
   //another four angles
   /*init_scan_candidates.push_back(make_pair(Point3f(-1.0f * far_dist / sqrt(2.0f), 0.0f, 1.0f * far_dist / sqrt(2.0f)), Point3f(1.0f , 0.0f, -1.0f )));
   init_scan_candidates.push_back(make_pair(Point3f(1.0f * far_dist / sqrt(2.0f), 0.0f, 1.0f * far_dist / sqrt(2.0f)), Point3f(-1.0f , 0.0f, -1.0f)));

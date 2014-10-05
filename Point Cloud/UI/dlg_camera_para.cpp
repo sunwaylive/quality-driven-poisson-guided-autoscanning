@@ -1167,7 +1167,7 @@ void CameraParaDlg::runOneKeyNbvIteration()
   area->dataMgr.saveParameters(para);
 
   int iteration_cout = global_paraMgr.nbv.getInt("NBV Iteration Count");
-  const int holeFrequence = 2; //once every holeFrequence(2, 3, ...)
+  const int holeFrequence = 3; //once every holeFrequence(2, 3, ...)
   bool use_hole_confidence = false;
   CMesh *original = area->dataMgr.getCurrentOriginal();
   //run wlop 
@@ -1634,7 +1634,7 @@ void CameraParaDlg::runRemoveSampleOutliers()
 {
   //area->removeOutliers();
   double outlier_percentage = global_paraMgr.wLop.getDouble("Outlier Percentage");
-  GlobalFun::removeOutliers(area->dataMgr.getCurrentSamples(), global_paraMgr.data.getDouble("CGrid Radius"), outlier_percentage);
+  GlobalFun::removeOutliers(area->dataMgr.getCurrentSamples(), global_paraMgr.data.getDouble("CGrid Radius"), outlier_percentage);//
   cout<<"has removed samples outliers"<<endl;
 
   area->initView();
@@ -1656,7 +1656,7 @@ void CameraParaDlg::runAddNoiseToOriginal()
   CMesh *original = area->dataMgr.getCurrentOriginal();
   assert(original != NULL);
   double noise_size = global_paraMgr.camera.getDouble("Camera Resolution");
-  GlobalFun::addNoise(original, noise_size);
+  GlobalFun::addBenchmarkNoiseAfterwards(original, 0.75f);
 }
 
 void CameraParaDlg::runRemoveSamplesWithLowConfidence()

@@ -1258,16 +1258,17 @@ void MainWindow::evaluationForDifferentModels()
   QString file_name = QFileDialog::getOpenFileName(this, "choose a file to evaluate...", "", "*.ply");
   if (file_name.size() == 0)
   {
-    cout<<"can't open file" <<endl;
-    return;
+  cout<<"can't open file" <<endl;
+  return;
   }
-  
   area->dataMgr.loadPlyToPoisson(file_name);
   CMesh *target = area->dataMgr.getCurrentPoissonSurface();
+  //CMesh *target = area->dataMgr.getCurrentOriginal();
   CMesh *model = area->dataMgr.getCurrentModel();
 
   GlobalFun::computeAnnNeigbhors(target->vert, model->vert, 1, false, "runEvaluation");
-  
+  //GlobalFun::computeAnnNeigbhors(model->vert, target->vert, 1, false, "runEvaluation");
+
   double dist_sum = 0.0;
   double dist_max = 0.0;
   ofstream out;
@@ -1278,7 +1279,7 @@ void MainWindow::evaluationForDifferentModels()
     CVertex &v = model->vert[i];
     if (!v.neighbors.empty())
     {
-      CVertex &nearest = target->vert[model->vert[i].neighbors[0]];
+      CVertex &nearest = target->vert[v.neighbors[0]];
       double dist = GlobalFun::computeEulerDist(v.P(), nearest.P());
       out<<dist <<std::endl;
       v.eigen_confidence = dist;

@@ -57,11 +57,10 @@ void ParameterMgr::setGlobalParameter(QString paraName,Value& val)
 void ParameterMgr::initDataMgrParameter()
 {
 	data.addParam(new RichDouble("Init Radius Para", 2.0));
-	data.addParam(new RichDouble("Down Sample Num", 20000));
+	data.addParam(new RichDouble("Down Sample Num", 500000));//370000
 	data.addParam(new RichDouble("CGrid Radius", grid_r));
   data.addParam(new RichDouble("Max Normalize Length", -1.0f));
 }
-
 
 void ParameterMgr::initGlareaParameter()
 {
@@ -193,7 +192,7 @@ void ParameterMgr::initWLopParameter()
 	wLop.addParam(new RichDouble("Repulsion Mu2", 0.0));
 	wLop.addParam(new RichBool("Run Anisotropic LOP", false));
 	wLop.addParam(new RichDouble("Current Movement Error", 0.0));
-  wLop.addParam(new RichDouble("Outlier Percentage", 0.05));
+  wLop.addParam(new RichDouble("Outlier Percentage", 0.01));
   wLop.addParam(new RichBool("Run Wlop On Scanned Mesh", false));
   wLop.addParam(new RichDouble("One Key NBV Wlop Percentage", 0.6));
 }
@@ -401,16 +400,16 @@ void ParameterMgr::initCameraParameter()
 	camera.addParam(new RichBool("Run Initial Scan", false));
 	camera.addParam(new RichBool("Run NBV Scan", false));
 	camera.addParam(new RichBool("Run Virtual Scan", false));
-	camera.addParam(new RichBool("Is Init Camera Show", false));
+  camera.addParam(new RichBool("Is Init Camera Show", false));
   camera.addParam(new RichBool("Show Camera Border", true));
 
 
-  camera.addParam(new RichDouble("Camera Far Distance", 25.0f));   //cm
-  camera.addParam(new RichDouble("Camera Near Distance", 10.0f));  //cm
-  camera.addParam(new RichDouble("Predicted Model Size", 37.0f));  //cm lion:20
-  camera.addParam(new RichDouble("Camera Horizon Dist", 14.0f));   //cm
-  camera.addParam(new RichDouble("Camera Vertical Dist", 18.0f));  //cm
-  camera.addParam(new RichDouble("Camera Dist To Model", 30.0f)); //cm ((30.0f + 17.0f)/2 + 0.6 * 20.0f)
+  camera.addParam(new RichDouble("Camera Far Distance", 30.0f));   //cm anno 25
+  camera.addParam(new RichDouble("Camera Near Distance", 10.0f));  //cm anno: 10
+  camera.addParam(new RichDouble("Predicted Model Size", 37.0f));  //cm anno: 37 lion:20
+  camera.addParam(new RichDouble("Camera Horizon Dist", 20.0f));   //cm anno: 14
+  camera.addParam(new RichDouble("Camera Vertical Dist", 18.0f));  //cm anno: 18
+  camera.addParam(new RichDouble("Camera Dist To Model", 30.0f)); //cm  anno: 30 ((30.0f + 17.0f)/2 + 0.6 * 20.0f)
   //camera.addParam(new RichDouble("Camera Far Distance", 24.8f));   //cm
   //camera.addParam(new RichDouble("Camera Near Distance", 19.6f));  //cm
   //camera.addParam(new RichDouble("Camera Far Distance", 22.2f));   //cm

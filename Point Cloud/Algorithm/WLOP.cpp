@@ -321,6 +321,9 @@ void WLOP::computeDensity(bool isOriginal, double radius)
 
 double WLOP::iterate()
 {
+  if (samples == NULL || original == NULL || samples->vert.empty() || original->vert.empty())
+    return error_x;
+
   Timer time;
 
   initVertexes();

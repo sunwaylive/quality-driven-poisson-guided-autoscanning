@@ -126,13 +126,17 @@ void vcc::Camera::runVirtualScan()
     }
   }
   current_scanned_mesh->vn = current_scanned_mesh->vert.size();
-
+  //remove outlier
+  double outlier_percentage = 0.02f;//global_paraMgr.wLop.getDouble("Outlier Percentage");
+  std::cout<<"Outlier percentage: " <<outlier_percentage <<endl;
+  GlobalFun::removeOutliers(current_scanned_mesh, 0.03, outlier_percentage);
+  cout<<"Has removed samples outliers."<<endl;
   //noise 2 from trimesh2
   //double noise_size = global_paraMgr.camera.getDouble("Camera Resolution") * 1.0f;
   //GlobalFun::addNoise(current_scanned_mesh, noise_size);
 
   //noise 3 from benchmark
-  GlobalFun::addBenchmarkNoise(current_scanned_mesh, this->pos, viewray, 1.0f);
+  GlobalFun::addBenchmarkNoise(current_scanned_mesh, this->pos, viewray, 0.75f);
 
   //increase the scan count;
   (*scan_count)++;
