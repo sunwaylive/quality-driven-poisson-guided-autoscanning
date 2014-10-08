@@ -134,7 +134,6 @@ public:
   bool is_ray_hit;
   bool is_ray_stop;
   bool is_view_grid;// should change name to is_view_grid
-  bool is_pvs;
   bool is_field_grid;
   bool is_model;
   bool is_scanned;
@@ -156,16 +155,7 @@ public:
 	Point3f eigen_vector0; //Associate with the biggest eigen value
 	Point3f eigen_vector1; // Also use for remember last better virtual point
 	//Point3f eigen_vector2; //The smallest eigen value : should be PCA normal N()
-	
-  //for pvsBasedNBV
-  double pvs_value;
-  double pvs_density;
-  int total_point_num;
-  int boarder_point_num;
-  bool is_skel_virtual; //in our papaer, we said bridge point instead of virtual point
-	bool is_skel_branch;
-  bool is_fixed_original; 
-  
+		
   union
   {
     float skel_radius; // remember radius for branches
@@ -174,7 +164,7 @@ public:
     float ground_angle;
     int neighbor_num;
   };
-	
+
 public:
 	operator Point3f &()
 	{
@@ -196,7 +186,6 @@ public:
     is_visible(false),
     is_barely_visible(false),
     is_view_grid(false),
-    is_pvs(false),
     is_ray_stop(false),
     is_ray_hit(false),
     is_model(false),
@@ -209,18 +198,10 @@ public:
 		is_fixed_sample(false),
     is_boundary(false),
 		eigen_confidence(-1),
-		is_skel_branch(false),
 		is_ignore(false),
-		is_skel_virtual(false),
-    is_fixed_original(false),
     is_field_grid(false),
 		eigen_vector0(Point3f(1, 0, 0)),
-		eigen_vector1(Point3f(0, 1, 0)),
-    pvs_value(0.5f),
-    pvs_density(0.0f),
-    total_point_num(0),
-    boarder_point_num(0),
-    skel_radius(-1.0)
+		eigen_vector1(Point3f(0, 1, 0))
 		{
 			N() = Point3f(0,0,0);
       //C().SetRGB(0, 0, 255);
@@ -237,55 +218,47 @@ public:
 
 	bool isSample_Moving()
 	{
-		return (!is_ignore && !is_fixed_sample && !is_skel_branch);
+		return (!is_ignore && !is_fixed_sample);
 	}
 
 	bool isSample_JustMoving()
 	{
-		return (!is_ignore && !is_fixed_sample && !is_skel_virtual && !is_skel_branch);
+		return (!is_ignore && !is_fixed_sample);
 	}
 
 	bool isSample_MovingAndVirtual()
 	{
-		return (!is_ignore && !is_fixed_sample && is_skel_virtual && !is_skel_branch);
+		return (!is_ignore && !is_fixed_sample);
 	}
 
 	bool isSample_JustFixed()
 	{
-		return (!is_ignore && is_fixed_sample && !is_skel_virtual && !is_skel_branch);
+		return (!is_ignore && is_fixed_sample);
 	}
 
 	bool isSample_FixedAndBranched()
 	{
-		return (!is_ignore && is_fixed_sample && !is_skel_virtual && is_skel_branch);
+		return (!is_ignore && is_fixed_sample);
 	}
 
 	void setSample_JustMoving()
 	{
 		is_fixed_sample = false;
-		is_skel_virtual = false;
-		is_skel_branch  = false;
 	}
 
 	void setSample_MovingAndVirtual()
 	{
 		is_fixed_sample = false;
-		is_skel_virtual = true;
-		is_skel_branch  = false;
 	}
 
 	void setSample_JustFixed()
 	{
 		is_fixed_sample = true;
-		is_skel_virtual = false;
-		is_skel_branch  = false;
 	}
 
 	void setSample_FixedAndBranched()
 	{
 		is_fixed_sample = true;
-		is_skel_virtual = false;
-		is_skel_branch  = true;
 	}
 
 	void recompute_m_render()

@@ -37,7 +37,6 @@ void CameraParaDlg::initConnects()
   connect(ui->horizon_dist, SIGNAL(valueChanged(double)), this, SLOT(getCameraHorizonDist(double)));
   connect(ui->vertical_dist, SIGNAL(valueChanged(double)), this, SLOT(getCameraVerticalDist(double)));
   connect(ui->dist_to_model, SIGNAL(valueChanged(double)), this, SLOT(getCameraDistToModel(double)));
-  connect(ui->spinBox_camera_resolution, SIGNAL(valueChanged(int)), this, SLOT(getCameraResolution(int)));
   connect(ui->tableView_scan_candidates, SIGNAL(clicked(QModelIndex)), this, SLOT(showSelectedScannCandidates(QModelIndex)));
   connect(ui->tableView_scan_results, SIGNAL(clicked(QModelIndex)), this, SLOT(showSelectedScannedMesh(QModelIndex)));
   connect(ui->pushButton_merge_with_original, SIGNAL(clicked()), this, SLOT(mergeScannedMeshWithOriginalByHand()));
@@ -105,36 +104,6 @@ void CameraParaDlg::initConnects()
   connect(ui->pushButton_load_poisson_surface, SIGNAL(clicked()), this, SLOT(loadPoissonSurface()));
 
   connect(ui->pushButton_pick_center, SIGNAL(clicked()), this, SLOT(moveTranslation()));
-
-  /********visibility based NBV*******/
-  connect(ui->pushButton_visibility_first_scan, SIGNAL(clicked()), this, SLOT(visibilityFirstScan()));
-  connect(ui->pushButton_visibility_propagete, SIGNAL(clicked()), this, SLOT(visibilityPropagate()));
-  connect(ui->pushButton_visibility_cluster, SIGNAL(clicked()), this, SLOT(visibilityCandidatesCluster()));
-  connect(ui->pushButton_visibility_pick, SIGNAL(clicked()), this, SLOT(visibilityCandidatesPick()));
-
-  connect(ui->pushButton_visibility_NBV_scan, SIGNAL(clicked()), this, SLOT(visibilityCandidateScan()));
-  connect(ui->pushButton_visibility_merge, SIGNAL(clicked()), this, SLOT(visibilityMerge()));
-  connect(ui->pushButton_visibility_update, SIGNAL(clicked()), this, SLOT(visibilityUpdate()));
-  connect(ui->pushButton_visibility_one_key_iteration, SIGNAL(clicked()), this, SLOT(runVisibilityOneKeyNbvIteration()));
-  connect(ui->pushButton_visibility_smooth, SIGNAL(clicked()), this, SLOT(runVisibilitySmooth()));
-  connect(ui->pushButton_compute_current_visibility, SIGNAL(clicked()), this, SLOT(computeCurrentVisibility()));
-
-  /********visibility based NBV*******/
-
-  /*** PVS Based NBV ***/
-  connect(ui->pushButton_pvs_first_scan, SIGNAL(clicked()), this, SLOT(pvsFirstScan()));
-  connect(ui->pushButton_compute_all_candidates, SIGNAL(clicked()), this, SLOT(pvsComputeCandidates()));
-  connect(ui->pushButton_select_candidate, SIGNAL(clicked()), this, SLOT(pvsSelectCandidate()));
-  connect(ui->pushButton_build_pvs, SIGNAL(clicked()), this, SLOT(pvsBuildPVS()));
-  connect(ui->pushButton_update_pvs, SIGNAL(clicked()), this, SLOT(pvsUpdatePVS()));
-  connect(ui->pushButton_pvs_NBV_scan, SIGNAL(clicked()), this, SLOT(pvsNBVScan()));
-  connect(ui->pushButton_pvs_merge, SIGNAL(clicked()), this, SLOT(pvsMerge()));
-  connect(ui->pushButton_pvs_one_key_iteration, SIGNAL(clicked()), this, SLOT(pvsOneKeyNbvIteration()));
-  /*** PVS Based NBV ***/
-
-  /* sphere */
-  connect(ui->pushButton_sphere, SIGNAL(clicked()), this, SLOT(runSphere()));
-  /* sphere */
   connect(ui->pushButton_get_model_size, SIGNAL(clicked()), this, SLOT(getModelSize()));
 }
 
@@ -156,7 +125,6 @@ bool CameraParaDlg::initWidgets()
   ui->doubleSpinBox_predicted_model_size->setValue(m_paras->camera.getDouble("Predicted Model Size"));
   ui->doubleSpinBox_optimal_plane_width->setValue(m_paras->camera.getDouble("Optimal Plane Width"));
   ui->propagate_one_point_index->setValue(m_paras->nbv.getDouble("Propagate One Point Index"));
-  ui->spinBox_camera_resolution->setValue(round(1.0 / m_paras->camera.getDouble("Camera Resolution")));
   ui->ray_resolution_para->setValue(m_paras->nbv.getDouble("Ray Resolution Para"));
 
   Qt::CheckState state = m_paras->nbv.getBool("Test Other Inside Segment") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
@@ -1988,172 +1956,6 @@ void CameraParaDlg::moveTranslation()
     v.P() -= movement;
   }
   return;
-}
-
-void CameraParaDlg::visibilityFirstScan()
-{
-  global_paraMgr.camera.setValue("Run Visibility First Scan", BoolValue(true));
-  area->runCamera();
-  global_paraMgr.camera.setValue("Run Visibility First Scan", BoolValue(false));
-
-  updateTabelViewScanResults();
-}
-
-void CameraParaDlg::visibilityPropagate()
-{
-  global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Propagate", BoolValue(true));
-  area->runVisibilityBasedNBV();
-  global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Propagate", BoolValue(false));
-}
-
-void CameraParaDlg::visibilityCandidatesCluster()
-{
-  global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Candidates Cluster", BoolValue(true));
-  area->runVisibilityBasedNBV();
-  global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Candidates Cluster", BoolValue(false));
-  updateTableViewNBVCandidate();
-}
-
-//void CameraParaDlg::visibilityCandidatesCluster()
-//{
-//  global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Candidates Cluster", BoolValue(true));
-//  area->runVisibilityBasedNBV();
-//  global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Candidates Cluster", BoolValue(false));
-//  updateTableViewNBVCandidate();
-//}
-
-void CameraParaDlg::visibilityCandidatesPick()
-{
-  global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Candidates Pick", BoolValue(true));
-  area->runVisibilityBasedNBV();
-  global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Candidates Pick", BoolValue(false));
-  updateTableViewNBVCandidate();
-}
-
-void CameraParaDlg::visibilityCandidateScan()
-{
-  global_paraMgr.camera.setValue("Run NBV Scan", BoolValue(true));
-  area->runCamera();
-  global_paraMgr.camera.setValue("Run NBV Scan", BoolValue(false));
-  updateTabelViewScanResults();
-}
-
-void CameraParaDlg::visibilityMerge()
-{
-  global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Merge", BoolValue(true));
-  area->runVisibilityBasedNBV();
-  global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Merge", BoolValue(false));
-}
-
-void CameraParaDlg::visibilityUpdate()
-{
-  global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Update", BoolValue(true));
-  area->runVisibilityBasedNBV();
-  global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Update", BoolValue(false));
-}
-
-void CameraParaDlg::runVisibilityOneKeyNbvIteration()
-{
-  std::cout <<"One key visibility NBV begins:" <<std::endl;
-  int count = 100;
-  //save the results
-  QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
-  if (!file_location.size()) return;
-
-  for (int i = 2; i < count; ++i)
-  {
-    visibilityPropagate();
-    visibilityCandidatesCluster();
-    visibilityCandidatesPick();
-    visibilityCandidateScan();
-    //merge scanned point to original
-    visibilityMerge();
-
-    //update original visibility
-    visibilityUpdate();
-
-    QString file_name;
-    file_name.sprintf("\\%d_original.skel", i);
-    std::cout<<i <<"th: save visibility original" <<std::endl;
-    file_name = file_location + file_name;
-  }
-}
-
-void CameraParaDlg::runVisibilitySmooth()
-{
-  global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Smooth", BoolValue(true));
-  area->runVisibilityBasedNBV();
-  global_paraMgr.visibilityBasedNBV.setValue("Run Visibility Smooth", BoolValue(false));
-}
-
-void CameraParaDlg::computeCurrentVisibility()
-{
-  global_paraMgr.visibilityBasedNBV.setValue("Compute Current Visibility", BoolValue(true));
-  area->runVisibilityBasedNBV();
-  global_paraMgr.visibilityBasedNBV.setValue("Compute Current Visibility", BoolValue(false));
-}
-
-void CameraParaDlg::pvsFirstScan()
-{
-  global_paraMgr.camera.setValue("Run PVS First Scan", BoolValue(true));
-  area->runCamera();
-  global_paraMgr.camera.setValue("Run PVS First Scan", BoolValue(false));
-}
-
-void CameraParaDlg::pvsBuildPVS()
-{
-  global_paraMgr.pvsBasedNBV.setValue("Run Build PVS", BoolValue(true));
-  area->runPVSBasedNBV();
-  global_paraMgr.pvsBasedNBV.setValue("Run Build PVS", BoolValue(false));
-}
-
-void CameraParaDlg::pvsUpdatePVS()
-{
-  global_paraMgr.pvsBasedNBV.setValue("Run Update PVS", BoolValue(true));
-  area->runPVSBasedNBV();
-  global_paraMgr.pvsBasedNBV.setValue("Run Update PVS", BoolValue(false));
-}
-
-void CameraParaDlg::pvsComputeCandidates()
-{
-  global_paraMgr.pvsBasedNBV.setValue("Run PVS Compute Candidates", BoolValue(true));
-  area->runPVSBasedNBV();
-  global_paraMgr.pvsBasedNBV.setValue("Run PVS Compute Candidates", BoolValue(false));
-  updateTableViewNBVCandidate();
-}
-
-void CameraParaDlg::pvsSelectCandidate()
-{
-  global_paraMgr.pvsBasedNBV.setValue("Run PVS Select Candidate", BoolValue(true));
-  area->runPVSBasedNBV();
-  global_paraMgr.pvsBasedNBV.setValue("Run PVS Select Candidate", BoolValue(false));
-}
-
-void CameraParaDlg::pvsNBVScan()
-{
-  global_paraMgr.camera.setValue("Run NBV Scan", BoolValue(true));
-  area->runCamera();
-  global_paraMgr.camera.setValue("Run NBV Scan", BoolValue(false));
-  updateTabelViewScanResults();
-}
-
-void CameraParaDlg::pvsMerge()
-{
-  global_paraMgr.pvsBasedNBV.setValue("Run PVS Merge", BoolValue(true));
-  area->runPVSBasedNBV();
-  global_paraMgr.pvsBasedNBV.setValue("Run PVS Merge", BoolValue(false));
-}
-
-void CameraParaDlg::pvsOneKeyNbvIteration()
-{
-  
-}
-
-void CameraParaDlg::runSphere()
-{
-  global_paraMgr.pvsBasedNBV.setValue("Run Sphere", BoolValue(true));
-  area->runPVSBasedNBV();
-  global_paraMgr.pvsBasedNBV.setValue("Run Sphere", BoolValue(false));
 }
 
 void CameraParaDlg::getModelSize()

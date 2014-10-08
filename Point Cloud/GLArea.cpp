@@ -13,9 +13,7 @@ GLArea::GLArea(QWidget *parent): QGLWidget(/*QGLFormat(QGL::DoubleBuffer | QGL::
   poisson(global_paraMgr.getPoissonParameterSet()),
   camera(global_paraMgr.getCameraParameterSet()),
   paintMutex(QMutex::NonRecursive),
-  nbv(global_paraMgr.getNBVParameterSet()),
-  visibilityBasedNBV(global_paraMgr.getVisibilityBasedNBVParameterSet()), 
-  pvsBasedNBV(global_paraMgr.getPVSBasedNBVParameterSet())
+  nbv(global_paraMgr.getNBVParameterSet())
 {
   setMouseTracking(true); 
   isDragging = false;
@@ -374,9 +372,6 @@ void GLArea::paintGL()
           glDrawer.draw(GLDrawer::DOT, field_points);
         }
       }
-      //draw pvs grids for PVSBasedNBV
-      if (!pvs->vert.empty())
-        glDrawer.draw(GLDrawer::DOT, pvs);
     }
 
     if (para->getBool("Show NBV Candidates"))
@@ -1540,34 +1535,6 @@ void GLArea::runNBV()
 
   para->setValue("Running Algorithm Name", 
     StringValue(camera.getParameterSet()->getString("Algorithm Name")));
-  emit needUpdateStatus();
-}
-
-void GLArea::runVisibilityBasedNBV()
-{
-  if (dataMgr.isOriginalEmpty()) 
-  {
-    std::cout<<"original point empty! Quit!" <<std::endl;
-    return;
-  }
-  runPointCloudAlgorithm(visibilityBasedNBV);
-
-  para->setValue("Running Algorithm Name", 
-    StringValue(visibilityBasedNBV.getParameterSet()->getString("Algorithm Name")));
-  emit needUpdateStatus();
-}
-
-void GLArea::runPVSBasedNBV()
-{
-  if (dataMgr.isOriginalEmpty())
-  {
-    std::cout << "original points empty for PVS!" <<std::endl;
-    return;
-  }
-  
-  runPointCloudAlgorithm(pvsBasedNBV);
-  para->setValue("Running Algorithm Name", 
-    StringValue(pvsBasedNBV.getParameterSet()->getString("Algorithm Name")));
   emit needUpdateStatus();
 }
 

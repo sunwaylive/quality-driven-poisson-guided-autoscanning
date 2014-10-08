@@ -15,7 +15,6 @@ void vcc::Camera::setInput(DataMgr* pData)
     scan_count = pData->getScanCount();
     init_scan_candidates = pData->getInitCameraScanCandidates();
     visibility_first_scan_candidates = pData->getVisibilityFirstScanCandidates();
-    pvs_first_scan_candidates = pData->getPVSFirstScanCandidates();
     //candidates for nbv computing
     scan_candidates = pData->getScanCandidates();
     scan_history = pData->getScanHistory();
@@ -69,11 +68,6 @@ void vcc::Camera::run()
   if (para->getBool("Run Visibility First Scan"))
   {
     runVisibilityFirstScan();
-    return;
-  }
-  if (para->getBool("Run PVS First Scan"))
-  {
-    runPVSFirstScan();
     return;
   }
 }
@@ -310,56 +304,4 @@ void vcc::Camera::runVisibilityFirstScan()
   
   int knn = global_paraMgr.norSmooth.getInt("PCA KNN");
   GlobalFun::computePCANormal(original, knn);
-}
-
-void vcc::Camera::runPVSFirstScan()
-{
-  //clear original points
-  GlobalFun::clearCMesh(*original);
-
-  //release scanned_result
-  vector<CMesh* >::iterator it_scanned_result = scanned_results->begin();
-  for (; it_scanned_result != scanned_results->end(); ++it_scanned_result)
-  {
-    if ( (*it_scanned_result) != NULL)
-    {
-      delete (*it_scanned_result);
-      (*it_scanned_result) = NULL;
-    }
-  }
-  scanned_results->clear();
-
-  //release scan history
-  scan_history->clear();
-
-  vector<ScanCandidate>::iterator it = pvs_first_scan_candidates->begin();
-  int i = 1;
-  for (; it != pvs_first_scan_candidates->end(); ++it)
-  {
-    pos = it->first;
-    direction = it->second;
-    /******* call runVirtualScan() *******/
-    cout<<i << "th initial scan begin" <<endl;
-    runVirtualScan();
-    cout<<i <<"th initial scan done!" <<endl;
-    
-    //add to scan history
-    scan_history->push_back(*it);
-    //merge scanned mesh with original
-    int index = 0;
-    if (!original->vert.empty()) index = original->vert.back().m_index + 1;
-
-    std::cout<< i++ <<"th initial scan points num: " <<current_scanned_mesh->vert.size() << std::endl;
-    for (int j = 0; j < current_scanned_mesh->vert.size(); ++j)
-    {
-      CVertex t = current_scanned_mesh->vert[j];
-      t.m_index = index++;
-      t.is_original = true;
-      original->vert.push_back(t);
-      original->bbox.Add(t.P());
-    }
-    original->vn = original->vert.size();
-    //add scanned points to scanned_resultd for computing pvs grid value
-    scanned_results->push_back(current_scanned_mesh);
-  }
 }

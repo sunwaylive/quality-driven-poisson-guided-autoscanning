@@ -17,8 +17,6 @@ public:
   RichParameterSet* getPoissonParameterSet()           { return &poisson; }
   RichParameterSet* getCameraParameterSet()            { return &camera; }
   RichParameterSet* getNBVParameterSet()               { return &nbv;   }
-  RichParameterSet* getVisibilityBasedNBVParameterSet(){ return &visibilityBasedNBV;}
-  RichParameterSet* getPVSBasedNBVParameterSet()       { return &pvsBasedNBV;}
 
 	void setGlobalParameter(QString paraName,Value& val);
 	typedef enum {GLAREA, DATA, DRAWER, WLOP, NOR_SMOOTH, SKELETON, UPSAMPLING, POISSON}ParaType;
@@ -34,8 +32,6 @@ private:
   void initPoissonParameter();
   void initCameraParameter();
   void initNBVParameter();
-  void initVisibilityBasedNBVParameter();
-  void initPVSBasedNBVParameter();
 
 public:
 	RichParameterSet glarea;
@@ -48,8 +44,6 @@ public:
   RichParameterSet poisson;
   RichParameterSet camera;
   RichParameterSet nbv;
-  RichParameterSet visibilityBasedNBV;
-  RichParameterSet pvsBasedNBV;
 
 private:
 	static int init_time;

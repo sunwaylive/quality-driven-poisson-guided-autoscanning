@@ -124,33 +124,6 @@ signals:
     void loadPoissonSurface();
     void moveTranslation();
 
-    /*** visibility based NBV ***/
-    void visibilityFirstScan();
-    void visibilityPropagate();
-    void visibilityCandidatesCluster();
-    void visibilityCandidatesPick();
-    void visibilityCandidateScan();
-    void visibilityUpdate();
-    void visibilityMerge();
-    void runVisibilityOneKeyNbvIteration();
-    void runVisibilitySmooth();
-    void computeCurrentVisibility();
-    /*** visibility based NBV ***/
-
-    /*** pvs based NBV ***/
-    void pvsFirstScan();
-    void pvsBuildPVS();
-    void pvsUpdatePVS();
-    void pvsComputeCandidates();
-    void pvsSelectCandidate();
-    void pvsNBVScan();
-    void pvsMerge();
-    void pvsOneKeyNbvIteration();
-    /*** pvs based NBV ***/
-
-    /* sphere */
-    void runSphere();
-    /* sphere */
     void getModelSize();
 
     void runTest();

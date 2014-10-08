@@ -259,12 +259,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_OneKeyNBVBack.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="Algorithm\PVSBasedNBV.cpp">
-      <Filter>Algorithm</Filter>
-    </ClCompile>
-    <ClCompile Include="Algorithm\VisibilityBasedNBV.cpp">
-      <Filter>Algorithm</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="mainwindow.h">
@@ -501,12 +495,6 @@
       <Filter>Algorithm\RIMLS</Filter>
     </ClInclude>
     <ClInclude Include="SparseICP.h">
-      <Filter>Algorithm</Filter>
-    </ClInclude>
-    <ClInclude Include="Algorithm\PVSBasedNBV.h">
-      <Filter>Algorithm</Filter>
-    </ClInclude>
-    <ClInclude Include="Algorithm\VisibilityBasedNBV.h">
       <Filter>Algorithm</Filter>
     </ClInclude>
   </ItemGroup>

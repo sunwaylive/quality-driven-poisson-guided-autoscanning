@@ -249,12 +249,10 @@
     <ClCompile Include="Algorithm\NBV.cpp" />
     <ClCompile Include="Algorithm\NormalSmoother.cpp" />
     <ClCompile Include="Algorithm\Poisson.cpp" />
-    <ClCompile Include="Algorithm\PVSBasedNBV.cpp" />
     <ClCompile Include="Algorithm\RIMLS\apss.cpp" />
     <ClCompile Include="Algorithm\RIMLS\kdtree.cpp" />
     <ClCompile Include="Algorithm\RIMLS\rimls.cpp" />
     <ClCompile Include="Algorithm\Upsampler.cpp" />
-    <ClCompile Include="Algorithm\VisibilityBasedNBV.cpp" />
     <ClCompile Include="Algorithm\WLOP.cpp" />
     <ClCompile Include="calculationthread.cpp" />
     <ClCompile Include="Console.cpp" />
@@ -545,7 +543,6 @@
     <ClInclude Include="Algorithm\PointCloudAlgorithm.h" />
     <ClInclude Include="Algorithm\pointcloud_normal.h" />
     <ClInclude Include="Algorithm\Poisson.h" />
-    <ClInclude Include="Algorithm\PVSBasedNBV.h" />
     <ClInclude Include="Algorithm\RIMLS\apss.h" />
     <ClInclude Include="Algorithm\RIMLS\balltree.h" />
     <ClInclude Include="Algorithm\RIMLS\implicits.h" />
@@ -557,7 +554,6 @@
     <ClInclude Include="Algorithm\RIMLS\rimls.h" />
     <ClInclude Include="Algorithm\RIMLS\smallcomponentselection.h" />
     <ClInclude Include="Algorithm\Upsampler.h" />
-    <ClInclude Include="Algorithm\VisibilityBasedNBV.h" />
     <ClInclude Include="Algorithm\WLOP.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="coordinateframe.h" />

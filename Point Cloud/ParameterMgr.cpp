@@ -25,8 +25,6 @@ ParameterMgr::ParameterMgr(void)
 	initPoissonParameter();
 	initCameraParameter();
 	initNBVParameter();
-  initVisibilityBasedNBVParameter();
-  initPVSBasedNBVParameter();
 }
 
 ParameterMgr::~ParameterMgr(void)
@@ -473,40 +471,4 @@ void ParameterMgr::initNBVParameter()
   nbv.addParam(new RichBool("Need Update Direction With More Overlaps", true));
   nbv.addParam(new RichDouble("Max Displacement", 0.05));
   nbv.addParam(new RichBool("NBV Lock PaintGL", false));
-}
-
-void ParameterMgr::initVisibilityBasedNBVParameter()
-{
-  visibilityBasedNBV.addParam(new RichString("Algorithm Name", "visibility Based NBV"));
-  visibilityBasedNBV.addParam(new RichBool("Run Visibility Propagate", false));
-  visibilityBasedNBV.addParam(new RichBool("Run Visibility Candidates Cluster", false));
-  visibilityBasedNBV.addParam(new RichBool("Run Visibility Candidates Pick", false));
-  
-  visibilityBasedNBV.addParam(new RichBool("Run Visibility Update", false));
-  visibilityBasedNBV.addParam(new RichBool("Run Visibility Merge", false));
-  visibilityBasedNBV.addParam(new RichBool("Run Visibility One Key Iteration", false));
-  visibilityBasedNBV.addParam(new RichBool("Run Visibility Smooth", false));
-  visibilityBasedNBV.addParam(new RichBool("Compute Current Visibility", false));
-}
-
-void ParameterMgr::initPVSBasedNBVParameter()
-{
-  pvsBasedNBV.addParam(new RichString("Algorithm Name", "PVS Based NBV"));
-
-  pvsBasedNBV.addParam(new RichBool("Run PVS Detect Boundary", false));
-  pvsBasedNBV.addParam(new RichBool("Run PVS Search New Boundaries", false));
-  pvsBasedNBV.addParam(new RichBool("Run PVS Search New Boundaries By Ballpivoting", false));
-  pvsBasedNBV.addParam(new RichBool("Run PVS Compute Candidates", false));
-  pvsBasedNBV.addParam(new RichBool("Run PVS Select Candidate", false));
-  pvsBasedNBV.addParam(new RichBool("Run Build PVS", false));
-  pvsBasedNBV.addParam(new RichBool("Run Update PVS", false));
-  pvsBasedNBV.addParam(new RichBool("Run PVS Merge", false));
-  pvsBasedNBV.addParam(new RichBool("Is PVS Stop", false));
-
-  pvsBasedNBV.addParam(new RichDouble("Boundary Search Angle", 45.));
-  pvsBasedNBV.addParam(new RichInt("Boundary Search KNN", 20));
-  pvsBasedNBV.addParam(new RichInt("Accept Boundary Size", 12));
-  pvsBasedNBV.addParam(new RichDouble("PVS Grid Resolution", 200.1f));
-
-  pvsBasedNBV.addParam(new RichBool("Run Sphere", false));
 }

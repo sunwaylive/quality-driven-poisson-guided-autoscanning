@@ -254,11 +254,7 @@ GLColor GLDrawer::getColorByType(CVertex& v)
     if (v.is_ray_stop) return cOrange;
     else return isoValue2Color(v.eigen_confidence, grid_color_scale, grid_value_shift, true);
   }
-
-  //probabilistic value decides its value
-  if (v.is_pvs)
-    return pvsValue2Color(v.pvs_value);
-
+  
 	if (v.is_iso)
 	{
     if (bUseConfidenceColor)
@@ -306,7 +302,7 @@ void GLDrawer::drawDot(CVertex& v)
 	//{
 	//  return;
 	//}
-  if (v.is_pvs && !v.is_ray_stop)
+  if (!v.is_ray_stop)
   {
     return;
   }

@@ -29,8 +29,6 @@
 #include "wrap/gui/coordinateframe.h"
 #include "Algorithm/Camera.h"
 #include "Algorithm/NBV.h"
-#include "Algorithm/VisibilityBasedNBV.h"
-#include "Algorithm/PVSBasedNBV.h"
 
 //#include "Poisson/Geometry.h"
 //#include "Poisson/PoissonParam.h"
@@ -73,8 +71,6 @@ public:
 	void runPoisson();
 	void runCamera();
 	void runNBV();
-  void runVisibilityBasedNBV();
-  void runPVSBasedNBV();
 
 	void cleanPickPoints();
 
@@ -207,9 +203,6 @@ public:
   Poisson            poisson;
   vcc::Camera        camera;
   NBV                nbv;
-  VisibilityBasedNBV visibilityBasedNBV;
-  PVSBasedNBV        pvsBasedNBV;
-
 	RichParameterSet* para;
 };
 
