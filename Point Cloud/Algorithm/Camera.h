@@ -10,11 +10,10 @@ namespace vcc{
   class Camera : public PointCloudAlgorithm
   {
   public :
-    Camera():pos(Point3f(0.0f, 0.0f, 1.0f)), 
-      direction(Point3f(0.0f, 0.0f, -1.0f)),
-      up(0.0f, 1.0f, 0.0f),
-      right(1.0f, 0.0f, 0.0f)
-    {
+    Camera() : pos(Point3f(0.0f, 0.0f, 1.0f)), 
+               direction(Point3f(0.0f, 0.0f, -1.0f)),
+               up(0.0f, 1.0f, 0.0f),
+               right(1.0f, 0.0f, 0.0f){
     }
 
     Camera(RichParameterSet* _para);
@@ -50,27 +49,12 @@ namespace vcc{
     double                   far_vertical_dist;  //far vertical range
     double                   near_horizon_dist;
     double                   near_vertical_dist;
-
-    /*** visibility based NBV ***/
-    vector<ScanCandidate>*   visibility_first_scan_candidates;
-    /*** visibility based NBV ***/
-
-    /***pvs based NBV ***/
-    vector<ScanCandidate>*   pvs_first_scan_candidates;
     int *                    scan_count;
-    /***pvs based NBV ***/
 
   private:
     void runInitialScan();
     void runNBVScan();
     void runVirtualScan();
     void runOneKeyNewScan();
-
-    /* visibility based NBV*/
-    void runVisibilityFirstScan();
-    /* visibility based NBV*/
-
-    /* pvs based NBV*/
-    void runPVSFirstScan();
   };
 }

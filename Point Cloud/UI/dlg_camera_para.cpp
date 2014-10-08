@@ -965,6 +965,9 @@ void CameraParaDlg::runSetupInitialScanns()
   area->runCamera();
   global_paraMgr.camera.setValue("Run Initial Scan", BoolValue(false));
   updateTableViewNBVCandidate();
+  //get initial radius
+  area->dataMgr.downSamplesByNum();
+  area->updateGL();
 }
 
 void CameraParaDlg::runStep1WLOP()

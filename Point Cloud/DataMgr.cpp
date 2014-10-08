@@ -50,12 +50,12 @@ void DataMgr::initDefaultScanCamera()
   //x axis
   init_scan_candidates.push_back(make_pair(Point3f(1.0f * camera_dist_to_model, 0.0f, 0.0f), Point3f(-1.0f, 0.0f, 0.0f)));
   init_scan_candidates.push_back(make_pair(Point3f(-1.0f * camera_dist_to_model, 0.0f, 0.0f), Point3f(1.0f, 0.0f, 0.0f)));
-  //z axis
-  init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f * camera_dist_to_model), Point3f(0.0f, 0.0f, -1.0f)));
-  init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, -1.0f * camera_dist_to_model), Point3f(0.0f, 0.0f, 1.0f)));
+  ////z axis
+  //init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, 1.0f * camera_dist_to_model), Point3f(0.0f, 0.0f, -1.0f)));
+  //init_scan_candidates.push_back(make_pair(Point3f(0.0f, 0.0f, -1.0f * camera_dist_to_model), Point3f(0.0f, 0.0f, 1.0f)));
   //y axis
-  init_scan_candidates.push_back(make_pair(Point3f(0.0f, 1.0f * camera_dist_to_model, 0.0f), Point3f(0.0f, -1.0f * camera_dist_to_model, 0.0f)));
-  init_scan_candidates.push_back(make_pair(Point3f(0.0f, -1.0f * camera_dist_to_model, 0.0f), Point3f(0.0f, 1.0f * camera_dist_to_model, 0.0f)));
+  //init_scan_candidates.push_back(make_pair(Point3f(0.0f, 1.0f * camera_dist_to_model, 0.0f), Point3f(0.0f, -1.0f * camera_dist_to_model, 0.0f)));
+  //init_scan_candidates.push_back(make_pair(Point3f(0.0f, -1.0f * camera_dist_to_model, 0.0f), Point3f(0.0f, 1.0f * camera_dist_to_model, 0.0f)));
   //another four angles
   /*init_scan_candidates.push_back(make_pair(Point3f(-1.0f * far_dist / sqrt(2.0f), 0.0f, 1.0f * far_dist / sqrt(2.0f)), Point3f(1.0f , 0.0f, -1.0f )));
   init_scan_candidates.push_back(make_pair(Point3f(1.0f * far_dist / sqrt(2.0f), 0.0f, 1.0f * far_dist / sqrt(2.0f)), Point3f(-1.0f , 0.0f, -1.0f)));
@@ -409,30 +409,14 @@ void DataMgr::setCurrentTemperalSample(CMesh *mesh)
 
 CMesh* DataMgr::getCurrentIsoPoints()
 {
-  if(&iso_points == NULL)
-  {
-    return NULL;
-  }
-
-  if(iso_points.vert.empty())
-  {
-    return & iso_points;
-  }
+  if(&iso_points == NULL) return NULL;
 
   return & iso_points;
 }
 
 CMesh* DataMgr::getCurrentFieldPoints()
 {
-  if(&field_points == NULL)
-  {
-    return NULL;
-  }
-
-  if(field_points.vert.empty())
-  {
-    return & field_points;
-  }
+  if(&field_points == NULL) return NULL;
 
   return & field_points;
 }
@@ -440,18 +424,7 @@ CMesh* DataMgr::getCurrentFieldPoints()
 
 CMesh* DataMgr::getCurrentSamples()
 {
-  if(&samples == NULL)
-  {
-    //cout << "DataMgr::getCurrentSamples samples = NULL!!" <<endl;
-    return NULL;
-  }
-
-  if(samples.vert.empty())
-  {
-    //cout << "DataMgr::getCurrentSamples samples.vert.empty()!!" <<endl;
-    //return NULL;
-    return & samples;
-  }
+  if(&samples == NULL) return NULL;
 
   return & samples;
 }
@@ -473,17 +446,7 @@ CMesh* DataMgr::getCurrentPoissonSurface()
 
 CMesh* DataMgr::getCurrentOriginal()
 {
-  if(&original == NULL)
-  {
-    //cout << "DataMgr::getCurrentOriginal() samples = NULL!!" <<endl;
-    return NULL;
-  }
-
-  if(original.vert.empty())
-  {
-    //cout << "DataMgr::getCurrentOriginal() original.vert.empty()!!" <<endl;
-    return & original;
-  }
+  if(&original == NULL) return NULL;
 
   return & original;
 }
@@ -685,17 +648,12 @@ void DataMgr::downSamplesByNum(bool use_random_downsample)
     return;
   }
 
-  if (isOriginalEmpty())
-  {
-    return;
-  }
+  if (isOriginalEmpty())  return;
 
   int want_sample_num = para->getDouble("Down Sample Num");
 
   if (want_sample_num > original.vn)
-  {
     want_sample_num = original.vn;
-  }
 
   clearCMesh(samples);
   samples.vn = want_sample_num;

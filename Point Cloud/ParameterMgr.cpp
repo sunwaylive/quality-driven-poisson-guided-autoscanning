@@ -385,7 +385,7 @@ void ParameterMgr::initCameraParameter()
   camera.addParam(new RichDouble("Camera FOV Angle", 28.07)); // tan-1(Vert_dist/2 / far_dist)
   //20 for sphere test, 30 for dancing children
 
-  camera.addParam(new RichDouble("Camera Resolution",1.0f / 50.0f));
+  camera.addParam(new RichDouble("Camera Resolution",1.0f / 30.0f));
   camera.addParam(new RichDouble("Merge Confidence Threshold", 0.9f));
   camera.addParam(new RichDouble("Grid Step Size", -1));
 

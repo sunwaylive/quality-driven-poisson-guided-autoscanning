@@ -309,8 +309,7 @@ void GLArea::paintGL()
           glDrawer.draw(GLDrawer::NORMAL, dataMgr.getCurrentOriginal());
       }
     }
-
-
+    
     if(!global_paraMgr.nbv.getBool("NBV Lock PaintGL") && para->getBool("Show Original"))
     {
       if(!dataMgr.isOriginalEmpty())
@@ -436,19 +435,6 @@ void GLArea::paintGL()
       }
     }
 
-    /*
-    if(para->getBool("Show Samples"))  
-    {
-    if(para->getBool("Show Samples Quad"))
-    glDrawer.draw(GLDrawer::QUADE, dataMgr.getCurrentSamples());
-    if(para->getBool("Show Samples Dot"))
-    glDrawer.draw(GLDrawer::DOT, dataMgr.getCurrentSamples());
-    if(para->getBool("Show Samples Circle"))
-    glDrawer.draw(GLDrawer::CIRCLE, dataMgr.getCurrentSamples());	
-    if (para->getBool("Show Samples Sphere"))
-    glDrawer.draw(GLDrawer::SPHERE, dataMgr.getCurrentSamples());	
-    }
-    */
     if (para->getBool("Show Scanned Mesh"))
     {
       //draw scanned mesh

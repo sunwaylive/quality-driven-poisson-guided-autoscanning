@@ -14,7 +14,6 @@ void vcc::Camera::setInput(DataMgr* pData)
     //scan candidates for initialing
     scan_count = pData->getScanCount();
     init_scan_candidates = pData->getInitCameraScanCandidates();
-    visibility_first_scan_candidates = pData->getVisibilityFirstScanCandidates();
     //candidates for nbv computing
     scan_candidates = pData->getScanCandidates();
     scan_history = pData->getScanHistory();
@@ -63,11 +62,6 @@ void vcc::Camera::run()
   if (para->getBool("Run One Key NewScans"))
   {
     runOneKeyNewScan();
-    return;
-  }
-  if (para->getBool("Run Visibility First Scan"))
-  {
-    runVisibilityFirstScan();
     return;
   }
 }
@@ -120,18 +114,6 @@ void vcc::Camera::runVirtualScan()
     }
   }
   current_scanned_mesh->vn = current_scanned_mesh->vert.size();
-  //remove outlier
-  double outlier_percentage = 0.02f;//global_paraMgr.wLop.getDouble("Outlier Percentage");
-  std::cout<<"Outlier percentage: " <<outlier_percentage <<endl;
-  GlobalFun::removeOutliers(current_scanned_mesh, 0.03, outlier_percentage);
-  cout<<"Has removed samples outliers."<<endl;
-  //noise 2 from trimesh2
-  //double noise_size = global_paraMgr.camera.getDouble("Camera Resolution") * 1.0f;
-  //GlobalFun::addNoise(current_scanned_mesh, noise_size);
-
-  //noise 3 from benchmark
-  GlobalFun::addBenchmarkNoise(current_scanned_mesh, this->pos, viewray, 0.75f);
-
   //increase the scan count;
   (*scan_count)++;
   std::cout<<"scan count right after virtual scan: "<<*scan_count <<std::endl;
@@ -248,60 +230,4 @@ void vcc::Camera::computeUpAndRight()
 
   up = up.Normalize();
   right = right.Normalize();
-}
-
-void vcc::Camera::runVisibilityFirstScan()
-{
-  //clear original points
-  GlobalFun::clearCMesh(*original);
-
-  //release scanned_result
-  vector<CMesh* >::iterator it_scanned_result = scanned_results->begin();
-  for (; it_scanned_result != scanned_results->end(); ++it_scanned_result)
-  {
-    if ( (*it_scanned_result) != NULL)
-    {
-      delete (*it_scanned_result);
-      (*it_scanned_result) = NULL;
-    }
-  }
-  scanned_results->clear();
-
-  //release scan history
-  scan_history->clear();
-
-  //run visibility first scan
-  vector<ScanCandidate>::iterator it = visibility_first_scan_candidates->begin();
-  int i = 1;
-  for (; it != visibility_first_scan_candidates->end(); ++it)
-  {
-    pos = it->first;
-    direction = it->second;
-    /******* call runVirtualScan() *******/
-    cout<<i << "th initial scan begin" <<endl;
-    runVirtualScan();
-    cout<<i <<"th initial scan done!" <<endl;
-
-    //add to scan history
-    scan_history->push_back(*it);
-
-    //merge scanned mesh with original
-    int index = 0;
-    if (!original->vert.empty()) index = original->vert.back().m_index + 1;
-
-    std::cout<< i++ <<"th initial scan points num: " <<current_scanned_mesh->vert.size() << std::endl;
-    for (int j = 0; j < current_scanned_mesh->vert.size(); ++j)
-    {
-      CVertex& v = current_scanned_mesh->vert[j];
-      CVertex t = v;
-      t.m_index = index++;
-      t.is_original = true;
-      original->vert.push_back(t);
-      original->bbox.Add(t.P());
-    }
-    original->vn = original->vert.size();
-  }
-  
-  int knn = global_paraMgr.norSmooth.getInt("PCA KNN");
-  GlobalFun::computePCANormal(original, knn);
 }

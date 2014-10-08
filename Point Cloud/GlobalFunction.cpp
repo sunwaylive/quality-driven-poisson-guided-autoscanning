@@ -180,7 +180,6 @@ void GlobalFun::computeAnnNeigbhors(vector<CVertex> &datapts, vector<CVertex> &q
 		cout << "Too many data" << endl;
 		return;
 	}
-  cout<<1<<endl;
 	queryPt = annAllocPt(dim);					// allocate query point
 	dataPts = annAllocPts(maxPts, dim);	// allocate data points
 	nnIdx   = new ANNidx[k];						// allocate near neigh indices
@@ -195,13 +194,11 @@ void GlobalFun::computeAnnNeigbhors(vector<CVertex> &datapts, vector<CVertex> &q
 
 		index++;
 	}
-  cout<<2<<endl;
   nPts = datapts.size();	 // read data points
 	kdTree = new ANNkd_tree( // build search structure
 		dataPts,					     // the data points
 		nPts,						       // number of points
 		dim);						       // dimension of space
-  cout<<3<<endl;
 	for (vi = querypts.begin(); vi != querypts.end(); ++vi) 
 	{
 		vi->neighbors.clear();
@@ -218,14 +215,11 @@ void GlobalFun::computeAnnNeigbhors(vector<CVertex> &datapts, vector<CVertex> &q
 		for (int k = 1; k < numKnn; k++)
 			vi->neighbors.push_back(nnIdx[k]);
 	}
-  cout<<4<<endl;
 	delete [] nnIdx; // clean things up
 	delete [] dists;
 	delete kdTree;
 	annClose();			 // done with ANN
-  cout<<5<<endl;
 }
-
 
 void GlobalFun::computeKnnNeigbhors(vector<CVertex> &datapts, vector<CVertex> &querypts, int numKnn, bool need_self_included = false, QString purpose = "?_?")
 {
@@ -1080,7 +1074,6 @@ void GlobalFun::addBenchmarkNoise(CMesh *mesh, Point3f &camera_pos, Point3f &vie
     luminance = luminance < 0 ? 0 : luminance;
 
     double noise_scale = (1.0 - luminance);
-    cout<<"noise_scale: " <<noise_scale <<endl;
     double noise_magnitude = 0.02f;//reasonable
     double gaussian_noise = GlobalFun::sampleNormalDistribution(noise_scale, noise_magnitude);
 

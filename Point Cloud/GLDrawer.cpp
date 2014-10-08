@@ -298,15 +298,6 @@ GLColor GLDrawer::getColorByType(CVertex& v)
 
 void GLDrawer::drawDot(CVertex& v)
 {
-	//if (bShowGridCenters && v.is_view_grid && !v.is_ray_stop)
-	//{
-	//  return;
-	//}
-  if (!v.is_ray_stop)
-  {
-    return;
-  }
-
 	int size;
 	if (v.is_model)
 	{
