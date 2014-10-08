@@ -64,13 +64,9 @@
     <addaction name="actionSwitch_Sample_Original"/>
     <addaction name="actionSwitch_Sample_with_ISO"/>
     <addaction name="actionSwitch_Sample_NBV"/>
-    <addaction name="actionTransform"/>
     <addaction name="actionAdd_Sample_To_Original"/>
     <addaction name="actionRemove_Ignore"/>
     <addaction name="actionRecover_Ignore"/>
-    <addaction name="actionSave_Grid_As_Points"/>
-    <addaction name="actionNBV_ReOrders"/>
-    <addaction name="actionSwitch_History_NBV"/>
     <addaction name="actionAdd_NBV_To_History"/>
    </widget>
    <widget class="QMenu" name="menuAlgorithom">
@@ -225,12 +221,9 @@
    <addaction name="actionSave_Ply"/>
    <addaction name="actionSave_Skel"/>
    <addaction name="actionSave_Parameter"/>
-   <addaction name="actionTransform"/>
    <addaction name="actionSnapShot"/>
    <addaction name="actionClear_Data"/>
    <addaction name="actionNormalize"/>
-   <addaction name="actionSave_NBV"/>
-   <addaction name="actionSwitch_Sample_NBV"/>
    <addaction name="separator"/>
    <addaction name="actionDownSample"/>
    <addaction name="actionPoisson"/>

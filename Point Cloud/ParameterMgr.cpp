@@ -46,7 +46,7 @@ void ParameterMgr::setGlobalParameter(QString paraName,Value& val)
 void ParameterMgr::initDataMgrParameter()
 {
 	data.addParam(new RichDouble("Init Radius Para", 2.0));
-	data.addParam(new RichDouble("Down Sample Num", 500000));//370000
+	data.addParam(new RichDouble("Down Sample Num", 10000));
 	data.addParam(new RichDouble("CGrid Radius", grid_r));
   data.addParam(new RichDouble("Outlier Percentage", 0.01));
   data.addParam(new RichDouble("H Gaussian Para", 4));

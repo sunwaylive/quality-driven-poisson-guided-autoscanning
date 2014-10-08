@@ -87,13 +87,10 @@ void MainWindow::initConnect()
   connect(ui.actionSave_NBV_Grids, SIGNAL(triggered()), this, SLOT(saveViewGridsForVoreen()));
 	connect(ui.actionSave_Skel, SIGNAL(triggered()), this, SLOT(saveSkel()));
   connect(ui.actionQianSample, SIGNAL(triggered()), this, SLOT(getQianSample()));
-  connect(ui.actionSave_Grid_As_Points, SIGNAL(triggered()), this, SLOT(saveGridAsPoints()));
-  connect(ui.actionNBV_ReOrders, SIGNAL(triggered()), this, SLOT(nbvReOrders()));
 
 	connect(ui.actionSnapShot, SIGNAL(triggered()), this, SLOT(saveSnapshot()));
 	connect(ui.actionRun_PCA, SIGNAL(triggered()), this, SLOT(runPCA_Normal()));
 	connect(ui.actionReorientate, SIGNAL(triggered()), this, SLOT(reorientateNormal()));
-	connect(ui.actionNormal_Setting, SIGNAL(triggered()), this, SLOT(showNormalDlg()));
   connect(ui.actionPoisson, SIGNAL(triggered()), this, SLOT(showPoissonParaDlg()));
   connect(ui.actionCamera, SIGNAL(triggered()), this, SLOT(showCameraParaDlg()));
 
@@ -151,7 +148,6 @@ void MainWindow::initConnect()
   connect(ui.actionSwitch_Sample_with_ISO,SIGNAL(triggered()),this,SLOT(switchSampleISO()));
   connect(ui.actionSwitch_Sample_NBV,SIGNAL(triggered()),this,SLOT(switchSampleNBV()));
   
-  connect(ui.actionTransform,SIGNAL(triggered()),this,SLOT(coordinateTransform()));
   connect(ui.actionAdd_Sample_To_Original,SIGNAL(triggered()),this,SLOT(addSamplesToOriginal()));
   
   connect(ui.actionRemove_Ignore,SIGNAL(triggered()),this,SLOT(deleteIgnore()));
@@ -521,24 +517,6 @@ void MainWindow::saveSkel()
 	area->updateGL();
 }
 
-void MainWindow::saveGridAsPoints()
-{
-  QString file;
-  if (global_paraMgr.glarea.getBool("Show View Grid Slice"))
-  {
-     file = QFileDialog::getSaveFileName(this, "Save samples as", "", "*.viewgrid");
-  }
-  else
-  {
-     file = QFileDialog::getSaveFileName(this, "Save samples as", "", "*.poissonfield");
-  }
-  if(!file.size()) return;
-
-  area->dataMgr.saveGridPoints(file);
-
-  area->updateGL();
-}
-
 void MainWindow::saveFieldPoints()
 {
   global_paraMgr.poisson.setValue("Run Normalize Field Confidence", BoolValue(true));  
@@ -558,11 +536,6 @@ void MainWindow::savePara()
   area->dataMgr.saveParameters("parameter.para");
 }
 
-void MainWindow::nbvReOrders()
-{
-  area->dataMgr.nbvReoders();
-  area->updateGL();
-}
 
 void MainWindow::saveViewGridsForVoreen()
 {
@@ -961,13 +934,6 @@ void MainWindow::switchSampleNBV()
 {
   area->cleanPickPoints();
   area->dataMgr.switchSampleToNBV();
-  area->updateUI();
-}
-
-void MainWindow::coordinateTransform()
-{
-  area->cleanPickPoints();
-  area->dataMgr.coordinateTransform();
   area->updateUI();
 }
 

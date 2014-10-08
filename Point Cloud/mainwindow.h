@@ -46,7 +46,6 @@ private slots:
   void savePara();
   void convertPlyToObj();
   void computeNormalForPoissonSurface();
-  void nbvReOrders();
   void evaluation();
   void evaluationForDifferentModels();
 
@@ -67,9 +66,7 @@ private slots:
   void switchHistoryNBV();
   void addNBVtoHistory();
   
-  void coordinateTransform();
   void addSamplesToOriginal();
-  void saveGridAsPoints();
   void deleteIgnore();
   void recoverIgnore();
 

@@ -353,7 +353,6 @@ void GLArea::paintGL()
     if (para->getBool("Show View Grids"))
     {
       CMesh *nbv_grids = dataMgr.getViewGridPoints();
-      CMesh *pvs = dataMgr.getPVS();
 
       if (NULL == nbv_grids) return;
 
@@ -705,38 +704,11 @@ void GLArea::openByDrop(QString fileName)
   {
     dataMgr.loadXYZN(fileName);
   }
-
-  if(fileName.endsWith("viewgrid"))
-  {
-    dataMgr.LoadGridPoints(fileName, false);
-  }
-
-  if(fileName.endsWith("poissonfield"))
-  {
-    dataMgr.LoadGridPoints(fileName, true);
-  }
-
   if (fileName.endsWith("para"))
   {
     dataMgr.loadParameters(fileName);
   }
-
-  if (fileName.endsWith("tf"))
-  {
-    dataMgr.loadCurrentTF(fileName);
-    dataMgr.coordinateTransform();
-  }
-
-  if (fileName.endsWith("mat44"))
-  {
-    dataMgr.loadNBVformMartrix44(fileName);
-  }
-
-  if (fileName.endsWith("xf"))
-  {
-    dataMgr.loadArtectXfAndTransform(fileName);
-  }
-
+  
   emit needUpdateStatus();
 
   //initAfterOpenFile();
@@ -1553,8 +1525,7 @@ void GLArea::saveView(QString fileName)
   outfile.close();
 }
 
-void
-  GLArea::saveNBV(QString fileName)
+void  GLArea::saveNBV(QString fileName)
 {
   CMesh* nbv_candidates = dataMgr.getNbvCandidates();
   if (nbv_candidates == NULL) cout<<"No NBV!"<<endl;
@@ -1586,98 +1557,6 @@ void
 
   QString fileName_commands = fileName;
   fileName_commands.replace(".ply", ".txt");
-
-  dataMgr.savePR2_orders(fileName_commands);
-
-  //QString fileName_nbv = fileName;
-  //fileName_nbv.replace(".ply", ".nbv");
-  //for (int i = 0; i < nbv_candidates->vert.size(); ++i)
-  //{
-  //  CVertex &v = nbv_candidates->vert[i];
-
-  //  
-  //}
-
-  //QString fileName_nbs = fileName;
-  //fileName_nbs.replace(".ply", ".nbs");
-
-  //ofstream outfile;
-  //outfile.open(fileName_nbs.toStdString().c_str());
-
-  //ostringstream strStream; 
-  //strStream << nbv_candidates->vert.size() << endl << endl;
-  //for (int i = 0; i < nbv_candidates->vert.size(); ++i)
-  //{
-  //  CVertex v = nbv_candidates->vert[i];
-
-  //  v.P() = (v.P() + original_center_point) * max_normalize_length;
-  //  v.N().Normalize();
-
-  //  Matrix33f T_to_S_Rotation_mat33 = GlobalFun::axisToMatrix33(v);
-  //  T_to_S_Rotation_mat33 = T_to_S_Rotation_mat33.Transpose();
-
-  //   Matrix44f T_to_S_Rotation_mat44;
-  //   T_to_S_Rotation_mat44.SetIdentity();
-  //   for (int i = 0; i < 3; i++)
-  //   {
-  //     for (int j = 0; j < 3; j++)
-  //     {
-  //       T_to_S_Rotation_mat44[i][j] = T_to_S_Rotation_mat33[i][j];
-  //     }
-  //   }
-  //   T_to_S_Rotation_mat44[0][3] = v.P().X();
-  //   T_to_S_Rotation_mat44[1][3] = v.P().Y();
-  //   T_to_S_Rotation_mat44[2][3] = v.P().Z();
-
-  //   strStream << i << endl;
-  //   for (int i = 0; i < 4; i++)
-  //   {
-  //     for (int j = 0; j < 4; j++)
-  //     {
-  //       strStream << T_to_S_Rotation_mat44[i][j] << "\t\t ";
-  //     }
-  //     strStream << endl;
-  //   }
-  //   strStream << endl;
-
-  //}
-
-  //for (int i = 0; i < nbv_candidates->vert.size(); ++i)
-  //{
-  //  CVertex v = nbv_candidates->vert[i];
-
-  //  v.P() = (v.P() + original_center_point) * max_normalize_length;
-  //  v.N().Normalize();
-
-  //  strStream << i << ":" << endl;
-  //  strStream << "T_to_S_translation: " << v.P().X() << " " << v.P().Y() << " " << v.P().Z() << endl;
-  //  strStream << endl;
-
-  //  Matrix33f T_to_S_Rotation_mat = GlobalFun::axisToMatrix33(v);
-  //  strStream << "T_to_S_rotation_matrix: " << endl;
-  //  for (int i = 0; i < 3; i++)
-  //  {
-  //    for (int j = 0; j < 3; j++)
-  //    {
-  //      strStream << T_to_S_Rotation_mat[i][j] << "\t\t ";
-  //    }
-  //    strStream << endl;
-  //  }
-  //  strStream << endl;
-
-  //  strStream << "T_to_S_rotation_Quaternion: " << endl;
-  //  Quaternionf qua;
-  //  qua.FromMatrix(T_to_S_Rotation_mat);
-  //  strStream << qua.X() << "   " << qua.Y() << "   " << qua.Z() << "   " << qua.W() << endl << endl;
-
-  //  strStream << "T_to_S_rotation_Angle: " << endl;
-  //  Point3f angle;
-  //  qua.ToEulerAngles(angle.X(), angle.Y(), angle.Z());
-  //  strStream << angle.X() << "   " << angle.Y() << "   " << angle.Z() << endl << endl;
-
-  //}
-  //outfile.write( strStream.str().c_str(), strStream.str().size() ); 
-  //outfile.close();
 }
 
 void GLArea::loadView(QString fileName)
@@ -2664,74 +2543,6 @@ void GLArea::drawCandidatesConnectISO()
   }
 
   glLineWidth(width);
-
-
-
-  //CMesh* candidates = dataMgr.getNbvCandidates();
-  //CMesh* iso_points = dataMgr.getCurrentIsoPoints();
-
-  //for (int i = 0; i < candidates->vert.size(); i++)
-  //{
-  //  CVertex& v = candidates->vert[i];
-
-  //  glLineWidth(width); 
-  //  GLColor color(qcolor);
-
-  //  glColor4f(color.r, color.g, color.b, 1);  
-  //  glColor3f(0, 0, 1);
-
-  //  Point3f p = v.P(); 
-  //  Point3f m0 = v.N();
-  //  Point3f m1 = v.eigen_vector0;
-  //  Point3f m2 = v.eigen_vector1;
-
-  //  int remember_index = v.remember_iso_index;
-  //  if (remember_index < 0 || v.remember_iso_index > iso_points->vert.size())
-  //  {
-  //    continue;
-  //  }
-  //  CVertex tp = iso_points->vert.at(remember_index);
-  //  // Z
-  //  glBegin(GL_LINES);	
-  //  glVertex3d(p[0], p[1], p[2]);
-  //  glVertex3f(tp[0], tp[1], tp[2]);
-  //  glEnd(); 
-  //}
-
-
-
-  //double width = global_paraMgr.drawer.getDouble("Normal Line Width");
-  //double length = global_paraMgr.drawer.getDouble("Normal Line Length");
-  ////double half_length = normal_length / 2.0;
-  //QColor qcolor = global_paraMgr.drawer.getDouble("Normal Line Color");
-
-  //CMesh* candidates = dataMgr.getNbvCandidates();
-  //CMesh* iso_points = dataMgr.getCurrentIsoPoints();
-
-  //for (int i = 0; i < candidates->vert.size(); i++)
-  //{
-  //  CVertex& v = candidates->vert[i];
-
-  //  glLineWidth(width); 
-  //  GLColor color(qcolor);
-
-  //  glColor4f(color.r, color.g, color.b, 1);  
-  //  glColor3f(0, 0, 1);
-
-  //  Point3f p = v.P(); 
-  //  Point3f m0 = v.N();
-  //  Point3f m1 = v.eigen_vector0;
-  //  Point3f m2 = v.eigen_vector1;
-
-  //  int remember_index = v.remember_iso_index;
-  //  CVertex tp = iso_points->vert.at(remember_index);
-  //  // Z
-  //  glBegin(GL_LINES);	
-  //  glVertex3d(p[0], p[1], p[2]);
-  //  glVertex3f(tp[0], tp[1], tp[2]);
-  //  glEnd(); 
-  //}
-
 }
 
 
@@ -2751,41 +2562,4 @@ void GLArea::moveAllCandidates(bool is_forward)
       v.P() -= v.N() * step;
     }
   }
-}
-
-void DataMgr::loadArtectXfAndTransform(QString fileName)
-{
-  ifstream infile;
-  infile.open(fileName.toStdString().c_str());
-
-  std::string temp_str;
-
-  Point3f artect_trans(0., 0., 0.);
-  for (int i = 0; i < 3; i++)
-  {
-    infile >> temp_str;
-  }
-  infile >> artect_trans[0];
-
-  for (int i = 0; i < 3; i++)
-  {
-    infile >> temp_str;
-  }
-  infile >> artect_trans[1];
-
-  for (int i = 0; i < 3; i++)
-  {
-    infile >> temp_str;
-  }
-  infile >> artect_trans[2];
-
-  infile.close();
-
-  artect_trans *= -1.0;
-  for (int i = 0; i < samples.vert.size(); i++)
-  {
-    samples.vert[i].P() += artect_trans;
-  }
-
-  cout << "finished artect transform" << endl;
 }
