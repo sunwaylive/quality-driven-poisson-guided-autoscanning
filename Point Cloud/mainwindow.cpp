@@ -277,27 +277,9 @@ void MainWindow::createActionGroups()
 void MainWindow::init()
 {
 	strTitle = "Point Cloud";
-	paraDlg_Normal = NULL;
   paraDlg_Poisson = NULL;
   paraDlg_Camera = NULL;
 	paras = &global_paraMgr;
-}
-
-void MainWindow::showNormalDlg()
-{
-	if(paraDlg_Normal != 0)
-	{
-		paraDlg_Normal->close();
-		delete paraDlg_Normal;
-	}
-
-	paraDlg_Normal = new StdParaDlg(paras, area, this);
-	paraDlg_Normal->setAllowedAreas(Qt::LeftDockWidgetArea
-		| Qt::RightDockWidgetArea);
-	addDockWidget(Qt::RightDockWidgetArea,paraDlg_Normal);
-	paraDlg_Normal->setFloating(false);
-	paraDlg_Normal->hide();
-	paraDlg_Normal->showNormalParaDlg();
 }
 
 void MainWindow::showPoissonParaDlg()

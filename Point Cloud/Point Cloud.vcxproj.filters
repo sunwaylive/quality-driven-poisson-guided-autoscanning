@@ -85,9 +85,6 @@
     <ClCompile Include="grid.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UI\dlg_normal_para.cpp">
-      <Filter>UI</Filter>
-    </ClCompile>
     <ClCompile Include="UI\std_para_dlg.cpp">
       <Filter>UI</Filter>
     </ClCompile>
@@ -131,15 +128,6 @@
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release_debug\moc_GLArea.cpp">
-      <Filter>Generated Files\Release_debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_dlg_normal_para.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_dlg_normal_para.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release_debug\moc_dlg_normal_para.cpp">
       <Filter>Generated Files\Release_debug</Filter>
     </ClCompile>
     <ClCompile Include="Poisson\Factor.cpp">
@@ -231,15 +219,6 @@
     <CustomBuild Include="GLArea.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="UI\para_wlop.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="UI\dlg_normal_para.h">
-      <Filter>UI</Filter>
-    </CustomBuild>
-    <CustomBuild Include="UI\normal_para.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="UI\std_para_dlg.h">
       <Filter>UI</Filter>
     </CustomBuild>
@@ -289,12 +268,6 @@
     </ClInclude>
     <ClInclude Include="Algorithm\normal_extrapolation.h">
       <Filter>Algorithm</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_para_wlop.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_normal_para.h">
-      <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="Algorithm\NormalSmoother.h">
       <Filter>Algorithm</Filter>

@@ -233,7 +233,6 @@
    <addaction name="actionSwitch_Sample_NBV"/>
    <addaction name="separator"/>
    <addaction name="actionDownSample"/>
-   <addaction name="actionNormal_Setting"/>
    <addaction name="actionPoisson"/>
    <addaction name="actionCamera"/>
    <addaction name="separator"/>

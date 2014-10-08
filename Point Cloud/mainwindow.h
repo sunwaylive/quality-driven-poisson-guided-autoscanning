@@ -50,7 +50,6 @@ private slots:
   void evaluation();
   void evaluationForDifferentModels();
 
-	void showNormalDlg();
   void showPoissonParaDlg();
 	void showCameraParaDlg();
 
@@ -133,7 +132,6 @@ private:
   QLabel * iteration_label;
 
 	ParameterMgr * paras;
-	StdParaDlg * paraDlg_Normal;
   StdParaDlg * paraDlg_Poisson;
   StdParaDlg * paraDlg_Camera;
 
