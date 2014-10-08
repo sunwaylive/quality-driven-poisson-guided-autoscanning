@@ -38,7 +38,6 @@ public:
 
     void runSlice();
     void runClearSlice();
-    void runAddWLOPtoISO();
     void runEstimateOriginalSize();
     void runSmoothGridConfidence();
     void runCutPointSlice();

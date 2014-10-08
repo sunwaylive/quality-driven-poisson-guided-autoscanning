@@ -9,7 +9,6 @@
 #include <QtGui/QGridLayout>
 
 #include "ParameterMgr.h"
-#include "UI/dlg_wlop_para.h"
 #include "UI/dlg_normal_para.h"
 #include "UI/dlg_poisson_para.h"
 #include "UI/dlg_camera_para.h"
@@ -25,7 +24,6 @@ public:
   StdParaDlg(ParameterMgr* _paras, GLArea * _area, QWidget* parent = 0);
   ~StdParaDlg();
 
-  bool showWlopParaDialog();
   bool showNormalParaDlg();
   bool showUpsamplingParaDlg();
   bool showPoissonParaDlg();
@@ -34,7 +32,6 @@ public:
 private:
   void init();
   void createFrame();
-  void loadWlopFrame();
   void loadNormalFrame();
   void loadPoissonFrame();
   void loadCameraFrame();
@@ -43,7 +40,6 @@ private:
     void closeClick();
 
 private:
-  WlopParaDlg          * para_wlop;
   NormalParaDlg        * para_normal;
   PoissonParaDlg       * para_poisson;
   CameraParaDlg        * para_camera; 

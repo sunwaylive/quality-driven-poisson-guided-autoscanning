@@ -22,7 +22,7 @@
      <x>10</x>
      <y>10</y>
      <width>271</width>
-     <height>821</height>
+     <height>781</height>
     </rect>
    </property>
    <property name="currentIndex">
@@ -298,19 +298,6 @@
        <width>231</width>
        <height>171</height>
       </rect>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_wlop_on_scanned_mesh">
-     <property name="geometry">
-      <rect>
-       <x>36</x>
-       <y>751</y>
-       <width>191</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Wlop On Scanned Mesh</string>
      </property>
     </widget>
     <widget class="Line" name="line_4">
@@ -900,37 +887,24 @@
     <attribute name="title">
      <string>AutoScan</string>
     </attribute>
-    <widget class="QPushButton" name="step1_run_WLOP">
-     <property name="geometry">
-      <rect>
-       <x>30</x>
-       <y>80</y>
-       <width>181</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Step1: WLOP</string>
-     </property>
-    </widget>
     <widget class="QPushButton" name="step2_run_Poisson_Confidence">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>130</y>
+       <x>20</x>
+       <y>80</y>
        <width>221</width>
        <height>31</height>
       </rect>
      </property>
      <property name="text">
-      <string>Step2: Poisson-Confidence(Sample)</string>
+      <string>Step1: Poisson-Confidence(Sample)</string>
      </property>
     </widget>
     <widget class="QPushButton" name="step3_run_NBV">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>220</y>
+       <x>40</x>
+       <y>170</y>
        <width>181</width>
        <height>31</height>
       </rect>
@@ -942,8 +916,8 @@
     <widget class="QPushButton" name="step4_run_New_Scan">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>270</y>
+       <x>40</x>
+       <y>220</y>
        <width>181</width>
        <height>31</height>
       </rect>
@@ -981,21 +955,21 @@
     <widget class="QPushButton" name="step2_run_Poisson_Confidence_original">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>170</y>
+       <x>20</x>
+       <y>120</y>
        <width>221</width>
        <height>31</height>
       </rect>
      </property>
      <property name="text">
-      <string>Step2: Poisson-Confidence(Original)</string>
+      <string>Step1: Poisson-Confidence(Original)</string>
      </property>
     </widget>
     <widget class="Line" name="line_5">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>310</y>
+       <x>20</x>
+       <y>260</y>
        <width>231</width>
        <height>16</height>
       </rect>
@@ -1007,8 +981,8 @@
     <widget class="QPushButton" name="pushButton_one_key_nbv_iteration">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>390</y>
+       <x>40</x>
+       <y>340</y>
        <width>191</width>
        <height>31</height>
       </rect>
@@ -1020,8 +994,8 @@
     <widget class="QSpinBox" name="spinBox_nbv_iteration_count">
      <property name="geometry">
       <rect>
-       <x>80</x>
-       <y>330</y>
+       <x>90</x>
+       <y>280</y>
        <width>42</width>
        <height>22</height>
       </rect>
@@ -1030,8 +1004,8 @@
     <widget class="Line" name="line_6">
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>420</y>
+       <x>30</x>
+       <y>370</y>
        <width>221</width>
        <height>16</height>
       </rect>
@@ -1043,8 +1017,8 @@
     <widget class="QPushButton" name="pushButton_load_real_scan">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>480</y>
+       <x>40</x>
+       <y>430</y>
        <width>191</width>
        <height>31</height>
       </rect>
@@ -1056,8 +1030,8 @@
     <widget class="QPushButton" name="pushButton_load_real_initial_scan">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>440</y>
+       <x>40</x>
+       <y>390</y>
        <width>191</width>
        <height>31</height>
       </rect>
@@ -1069,8 +1043,8 @@
     <widget class="QSpinBox" name="spinBox_nbv_top_n">
      <property name="geometry">
       <rect>
-       <x>200</x>
-       <y>330</y>
+       <x>210</x>
+       <y>280</y>
        <width>42</width>
        <height>22</height>
       </rect>
@@ -1079,8 +1053,8 @@
     <widget class="QLabel" name="label_16">
      <property name="geometry">
       <rect>
-       <x>140</x>
-       <y>330</y>
+       <x>150</x>
+       <y>280</y>
        <width>51</width>
        <height>16</height>
       </rect>
@@ -1092,8 +1066,8 @@
     <widget class="QLabel" name="label_17">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>330</y>
+       <x>20</x>
+       <y>280</y>
        <width>71</width>
        <height>16</height>
       </rect>
@@ -1105,8 +1079,8 @@
     <widget class="QDoubleSpinBox" name="nbv_confidence_threshold">
      <property name="geometry">
       <rect>
-       <x>180</x>
-       <y>360</y>
+       <x>190</x>
+       <y>310</y>
        <width>62</width>
        <height>22</height>
       </rect>
@@ -1127,8 +1101,8 @@
     <widget class="QLabel" name="label_18">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>360</y>
+       <x>20</x>
+       <y>310</y>
        <width>161</width>
        <height>16</height>
       </rect>
@@ -1140,8 +1114,8 @@
     <widget class="QPushButton" name="pushButton_remove_low_confidence_samples">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>562</y>
+       <x>40</x>
+       <y>512</y>
        <width>191</width>
        <height>31</height>
       </rect>
@@ -1153,8 +1127,8 @@
     <widget class="QPushButton" name="pushButton_add_samples_to_original">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>602</y>
+       <x>40</x>
+       <y>552</y>
        <width>191</width>
        <height>31</height>
       </rect>
@@ -1166,8 +1140,8 @@
     <widget class="QPushButton" name="pushButton_remove_sample_outliers">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>520</y>
+       <x>40</x>
+       <y>470</y>
        <width>191</width>
        <height>31</height>
       </rect>
@@ -1179,8 +1153,8 @@
     <widget class="QPushButton" name="pushButton_add_outlier_to_original">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>640</y>
+       <x>40</x>
+       <y>590</y>
        <width>191</width>
        <height>31</height>
       </rect>
@@ -1192,8 +1166,8 @@
     <widget class="QPushButton" name="pushButton_add_noise_to_original">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>680</y>
+       <x>40</x>
+       <y>630</y>
        <width>191</width>
        <height>31</height>
       </rect>
@@ -1205,8 +1179,8 @@
     <widget class="QPushButton" name="pushButton_test">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>720</y>
+       <x>40</x>
+       <y>670</y>
        <width>191</width>
        <height>31</height>
       </rect>

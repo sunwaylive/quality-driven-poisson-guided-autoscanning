@@ -6,9 +6,7 @@
 #include "ui_mainwindow.h"
 #include "GLArea.h"
 #include "UI/std_para_dlg.h"
-#include "UI/dlg_wlop_para.h"
 #include "ParameterMgr.h"
-#include "calculationthread.h"
 
 //MainWindow类主要用来消息响应
 class MainWindow : public QMainWindow
@@ -52,7 +50,6 @@ private slots:
   void evaluation();
   void evaluationForDifferentModels();
 
-	void showWLopDlg();
 	void showNormalDlg();
   void showPoissonParaDlg();
 	void showCameraParaDlg();
@@ -76,10 +73,6 @@ private slots:
   void saveGridAsPoints();
   void deleteIgnore();
   void recoverIgnore();
-
-
-private slots:
-	void runWLop();
 
 public slots:
 	void runPCA_Normal();
@@ -130,8 +123,6 @@ private slots:
 
 private:
 	GLArea* area;
-	CalculationThread calculation_thread;
-
 	QString strTitle;
 	QLabel * original_size_label;
 	QLabel * sample_size_lable;
@@ -142,7 +133,6 @@ private:
   QLabel * iteration_label;
 
 	ParameterMgr * paras;
-	StdParaDlg * paraDlg_WLOP;
 	StdParaDlg * paraDlg_Normal;
   StdParaDlg * paraDlg_Poisson;
   StdParaDlg * paraDlg_Camera;

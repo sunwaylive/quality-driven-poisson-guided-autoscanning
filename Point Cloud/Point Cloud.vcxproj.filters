@@ -85,20 +85,11 @@
     <ClCompile Include="grid.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Algorithm\WLOP.cpp">
-      <Filter>Algorithm</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\dlg_wlop_para.cpp">
-      <Filter>UI</Filter>
-    </ClCompile>
     <ClCompile Include="UI\dlg_normal_para.cpp">
       <Filter>UI</Filter>
     </ClCompile>
     <ClCompile Include="UI\std_para_dlg.cpp">
       <Filter>UI</Filter>
-    </ClCompile>
-    <ClCompile Include="calculationthread.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Algorithm\NormalSmoother.cpp">
       <Filter>Algorithm</Filter>
@@ -142,15 +133,6 @@
     <ClCompile Include="GeneratedFiles\Release_debug\moc_GLArea.cpp">
       <Filter>Generated Files\Release_debug</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_dlg_wlop_para.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_dlg_wlop_para.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release_debug\moc_dlg_wlop_para.cpp">
-      <Filter>Generated Files\Release_debug</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_dlg_normal_para.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -158,15 +140,6 @@
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release_debug\moc_dlg_normal_para.cpp">
-      <Filter>Generated Files\Release_debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_calculationthread.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_calculationthread.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release_debug\moc_calculationthread.cpp">
       <Filter>Generated Files\Release_debug</Filter>
     </ClCompile>
     <ClCompile Include="Poisson\Factor.cpp">
@@ -258,9 +231,6 @@
     <CustomBuild Include="GLArea.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="UI\dlg_wlop_para.h">
-      <Filter>UI</Filter>
-    </CustomBuild>
     <CustomBuild Include="UI\para_wlop.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
@@ -272,9 +242,6 @@
     </CustomBuild>
     <CustomBuild Include="UI\std_para_dlg.h">
       <Filter>UI</Filter>
-    </CustomBuild>
-    <CustomBuild Include="calculationthread.h">
-      <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="UI\dlg_poisson_para.h">
       <Filter>UI</Filter>
@@ -318,9 +285,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Algorithm\PointCloudAlgorithm.h">
-      <Filter>Algorithm</Filter>
-    </ClInclude>
-    <ClInclude Include="Algorithm\WLOP.h">
       <Filter>Algorithm</Filter>
     </ClInclude>
     <ClInclude Include="Algorithm\normal_extrapolation.h">

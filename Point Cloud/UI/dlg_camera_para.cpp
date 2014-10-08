@@ -29,7 +29,6 @@ void CameraParaDlg::initConnects()
   connect(ui->pushButton_load_real_scan, SIGNAL(clicked()), this, SLOT(loadRealScans()));
   connect(ui->spinBox_nbv_iteration_count, SIGNAL(valueChanged(int)), this, SLOT(getNbvIterationCount(int)));
   connect(ui->spinBox_nbv_top_n, SIGNAL(valueChanged(int)), this, SLOT(getNBVTopN(int)));
-  connect(ui->pushButton_one_key_nbv_iteration, SIGNAL(clicked()), this, SLOT(runOneKeyNbvIterationWlop()));
   connect(ui->checkBox_show_init_cameras,SIGNAL(clicked(bool)),this,SLOT(showInitCameras(bool)));
   connect(ui->checkBox_show_camera_border, SIGNAL(clicked(bool)), this, SLOT(showCameraBorder(bool)));
   connect(ui->pushButton_scan, SIGNAL(clicked()), this, SLOT(NBVCandidatesScanByHand()));
@@ -70,16 +69,13 @@ void CameraParaDlg::initConnects()
   connect(ui->update_view_directions, SIGNAL(clicked()), this, SLOT(runUpdateViewDirections()));
 
   connect(ui->pushButton_setup_initial_scans, SIGNAL(clicked()), this, SLOT(runSetupInitialScanns()));
-  connect(ui->step1_run_WLOP, SIGNAL(clicked()), this, SLOT(runStep1WLOP()));
   connect(ui->step2_run_Poisson_Confidence, SIGNAL(clicked()), this, SLOT(runStep2CombinedPoissonConfidence()));
   connect(ui->step2_run_Poisson_Confidence_original, SIGNAL(clicked()), this, SLOT(runStep2PoissonConfidenceViaOiginal()));
   connect(ui->step3_run_NBV, SIGNAL(clicked()), this, SLOT(runStep3NBVcandidates()));
   connect(ui->step4_run_New_Scan, SIGNAL(clicked()), this, SLOT(runStep4NewScans()));
-  connect(ui->pushButton_wlop_on_scanned_mesh, SIGNAL(clicked()), this, SLOT(runWlopOnScannedMesh()));
   connect(ui->pushButton_remove_sample_outliers, SIGNAL(clicked()), this, SLOT(runRemoveSampleOutliers()));
   connect(ui->pushButton_add_outlier_to_original, SIGNAL(clicked()), this, SLOT(runAddOutlierToOriginal()));
   connect(ui->pushButton_add_noise_to_original, SIGNAL(clicked()), this, SLOT(runAddNoiseToOriginal()));
-  connect(ui->pushButton_test, SIGNAL(clicked()), this, SLOT(runTest()));
   connect(ui->pushButton_remove_low_confidence_samples, SIGNAL(clicked()), this, SLOT(runRemoveSamplesWithLowConfidence()));
   connect(ui->pushButton_add_samples_to_original, SIGNAL(clicked()), this, SLOT(runAddSamplesToOiriginal()));
   connect(ui->pushButton_get_model_size, SIGNAL(clicked()), this, SLOT(getModelSize()));
@@ -507,7 +503,7 @@ void CameraParaDlg::mergeScannedMeshWithOriginal()
     double probability_add_by_user = 0.0;
 
     //wsh added 12-24
-    double radius_threshold = global_paraMgr.wLop.getDouble("CGrid Radius");
+    double radius_threshold = global_paraMgr.data.getDouble("CGrid Radius");
     double radius2 = radius_threshold * radius_threshold;
     double iradius16 = -4/radius2;
 
@@ -677,7 +673,7 @@ void CameraParaDlg::mergeScannedMeshWithOriginalByHand()
   cout<< "merge_confidence_threshold: " <<merge_confidence_threshold <<endl;
 
   //wsh added 12-24
-  double radius_threshold = global_paraMgr.wLop.getDouble("CGrid Radius");
+  double radius_threshold = global_paraMgr.data.getDouble("CGrid Radius");
   double radius2 = radius_threshold * radius_threshold;
   double iradius16 = -4/radius2;
 
@@ -970,22 +966,6 @@ void CameraParaDlg::runSetupInitialScanns()
   area->updateGL();
 }
 
-void CameraParaDlg::runStep1WLOP()
-{
-  area->dataMgr.downSamplesByNum();
-  //area->initSetting();
-
-  global_paraMgr.wLop.setValue("Run One Key WLOP", BoolValue(true));
-  area->runWlop();
-  global_paraMgr.wLop.setValue("Run One Key WLOP", BoolValue(false));
-
-  int knn = global_paraMgr.norSmooth.getInt("PCA KNN");
-  CMesh* samples = area->dataMgr.getCurrentSamples();
-  vcg::NormalExtrapolation<vector<CVertex> >::ExtrapolateNormals(samples->vert.begin(), samples->vert.end(), knn, -1);
-  area->dataMgr.recomputeQuad();
-  GlobalFun::removeOutliers(samples, global_paraMgr.data.getDouble("CGrid Radius"), 0.001);
-}
-
 void CameraParaDlg::runStep2CombinedPoissonConfidence()
 {
   global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(true));
@@ -1032,34 +1012,6 @@ void CameraParaDlg::runStep4NewScans()
   area->runCamera();
   global_paraMgr.camera.setValue("Run One Key NewScans", BoolValue(false));
   updateTabelViewScanResults();
-}
-
-void CameraParaDlg::runWlopOnScannedMesh()
-{
-  vector< CMesh* > scanned_results = area->dataMgr.scanned_results;
-  vector< CMesh* >::iterator it = scanned_results.begin();
-  const double ratio = global_paraMgr.wLop.getDouble("One Key NBV Wlop Percentage");
-
-  for (; it != scanned_results.end(); ++it)
-  {
-    if ((*it)->vert.empty()){
-      continue;
-    }
-
-    CMesh *temperal_sample = new CMesh;
-    CMesh *temperal_original = *it;
-    GlobalFun::downSample(temperal_sample, temperal_original, ratio);
-
-    area->dataMgr.temperal_original = *it;
-    area->dataMgr.temperal_sample = temperal_sample;
-    //in wlop::setInput you should make sure that  sample and original is not empty
-    global_paraMgr.wLop.setValue("Run Wlop On Scanned Mesh", BoolValue(true));
-    area->runWlop();
-    global_paraMgr.wLop.setValue("Run Wlop On Scanned Mesh", BoolValue(false));
-    
-    area->dataMgr.replaceMesh(*temperal_sample, **it, false);
-    delete temperal_sample;
-  }
 }
 
 //put it in the other thread
@@ -1207,153 +1159,10 @@ void CameraParaDlg::runOneKeyNbvIteration()
   log.close();
 }
 
-void CameraParaDlg::runOneKeyNbvIterationWlop()
-{
-  QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
-  if (!file_location.size()) return;
-
-  QString s_log = "\\log.txt";
-  s_log = file_location + s_log;
-  ofstream log;
-  log.open(s_log.toAscii().data());
-  cout.rdbuf(log.rdbuf());
-
-  QString para = "\\parameter.para";
-  para = file_location + para;
-  area->dataMgr.saveParameters(para);
-
-  int iteration_cout = global_paraMgr.nbv.getInt("NBV Iteration Count");
-  const int holeFrequence = 2; //once every holeFrequence(2, 3, ...)
-  const double ratio = global_paraMgr.wLop.getDouble("One Key NBV Wlop Percentage");
-  bool use_hole_confidence = false;
-
-  CMesh *original = area->dataMgr.getCurrentOriginal();
-  //1.change run wlop
-  cout<<"before wlop original number: " <<original->vert.size() <<endl;
-  CMesh *sample = area->dataMgr.getCurrentSamples();
-  GlobalFun::downSample(sample, original, ratio);
-  area->runWlop();
-
-  area->cleanPickPoints();
-  area->dataMgr.switchSampleToOriginal();
-  area->updateUI();
-  cout<<"after wlop original number: " <<original->vert.size() <<endl;
-
-  for (int ic = 0; ic < iteration_cout; ++ic)
-  {
-    if (ic % holeFrequence == 0){
-      use_hole_confidence = true;
-    }else{
-      use_hole_confidence = false;
-    }
-    //save original
-    QString s_original;
-    s_original.sprintf("\\%d_original.ply", ic);
-    s_original = file_location + s_original;
-    area->dataMgr.savePly(s_original, *area->dataMgr.getCurrentOriginal());
-
-    //compute normal on original
-    vector<Point3f> before_normal;
-    for (int i = 0; i < original->vert.size(); ++i)
-      before_normal.push_back(original->vert[i].N()); 
-
-    int knn = global_paraMgr.norSmooth.getInt("PCA KNN");
-    vcg::tri::PointCloudNormal<CMesh>::Param pca_para;
-    pca_para.fittingAdjNum = knn;
-    //fixme: a debug error in compute
-    vcg::tri::PointCloudNormal<CMesh>::Compute(*original, pca_para, NULL);
-
-    for (int i = 0; i < original->vert.size(); ++i)
-    {
-      if (before_normal[i] * original->vert[i].N() < 0.0f)
-        original->vert[i].N() *= -1;
-    }
-
-    //save normalized original
-    QString s_normal_original;
-    s_normal_original.sprintf("\\%d_normal_original.ply", ic);
-    s_normal_original = file_location + s_normal_original;
-    area->dataMgr.savePly(s_normal_original, *area->dataMgr.getCurrentOriginal());
-
-    //compute radius
-    area->dataMgr.downSamplesByNum();
-    area->initSetting();
-
-    if(use_hole_confidence)
-    {
-      cout<<"begin to run hole poisson confidence" <<endl;
-      runStep2HolePoissonConfidence();
-      cout<<"begin to run hole poisson confidence" <<endl;
-    }else{
-      cout<<"begin to run combined poisson confidence" <<endl;
-      runStep2CombinedPoissonConfidence();
-      cout<<"end run combined poisson confidence" <<endl;
-    }
-    //save poisson surface "copy poisson_out.ply file_location\\%d_poisson_out.ply"
-    cout<<"begin to copy poisson_surface" <<endl;
-    QString s_poisson_surface;
-    s_poisson_surface.sprintf("\\%d_poisson_out.ply", ic);
-    QString s_cmd_copy_poisson = "copy poisson_out.ply ";
-    s_cmd_copy_poisson += file_location;
-    s_cmd_copy_poisson += s_poisson_surface;
-    cout << s_cmd_copy_poisson.toStdString() <<endl;
-    system(s_cmd_copy_poisson.toAscii().data());
-    cout<<"end to copy poisson_surface" <<endl;
-    //save iso-skel and view
-    QString s_iso;
-    s_iso.sprintf("\\%d_iso.skel", ic);
-    s_iso = file_location + s_iso;
-    s_iso.replace(".skel", ".View");
-    area->saveView(s_iso);
-    //save iso dat and raw
-    s_iso.replace(".View", ".raw");
-    global_paraMgr.poisson.setValue("Run Normalize Field Confidence", BoolValue(true));  
-    area->runPoisson();
-    global_paraMgr.poisson.setValue("Run Normalize Field Confidence", BoolValue(false));  
-    area->dataMgr.saveFieldPoints(s_iso);    
-
-    runStep3NBVcandidates();
-    
-    NBVCandidatesScan();
-    runWlopOnScannedMesh();
-
-    //save nbv skel and view
-    QString s_nbv;
-    s_nbv.sprintf("\\%d_nbv.skel", ic);
-    s_nbv = file_location + s_nbv;
-    s_nbv.replace(".skel", ".View");
-    area->saveView(s_nbv);
-
-    if (use_hole_confidence){
-      mergeScannedMeshWithOriginalUsingHoleConfidence();
-    }else{
-      mergeScannedMeshWithOriginal();
-    }
-    //save merged scan
-    cout<<"begin to save merged mesh" <<endl;
-    QString s_merged_mesh;
-    s_merged_mesh.sprintf("\\%d_merged_mesh", ic);
-    s_merged_mesh = file_location + s_merged_mesh;
-    area->dataMgr.saveMergedMesh(s_merged_mesh);
-    cout<< "end save merged mesh" <<endl;
-
-    /* cout << "Begin remove outliers!" <<endl;
-    GlobalFun::removeOutliers(original, global_paraMgr.data.getDouble("CGrid Radius") * 2, 10);
-    cout << "End remove outliers!" <<endl;*/
-  }
-
-  QString last_original = "\\ultimate_original.ply";
-  last_original = file_location + last_original;
-  area->dataMgr.savePly(last_original, *area->dataMgr.getCurrentOriginal());
-
-  cout << "All is done!" <<endl;
-  log.close();
-}
-
 void CameraParaDlg::runRemoveSampleOutliers()
 {
   //area->removeOutliers();
-  double outlier_percentage = global_paraMgr.wLop.getDouble("Outlier Percentage");
+  double outlier_percentage = global_paraMgr.data.getDouble("Outlier Percentage");
   GlobalFun::removeOutliers(area->dataMgr.getCurrentSamples(), global_paraMgr.data.getDouble("CGrid Radius"), outlier_percentage);//
   cout<<"has removed samples outliers"<<endl;
 
@@ -1391,7 +1200,7 @@ void CameraParaDlg::runRemoveSamplesWithLowConfidence()
   double merge_confidence_threshold = global_paraMgr.camera.getDouble("Merge Confidence Threshold");
   int merge_pow = static_cast<int>(global_paraMgr.nbv.getDouble("Merge Probability Pow"));
 
-  double radius_threshold = global_paraMgr.wLop.getDouble("CGrid Radius");
+  double radius_threshold = global_paraMgr.data.getDouble("CGrid Radius");
   double radius2 = radius_threshold * radius_threshold;
   double iradius16 = -4/radius2;
 
@@ -1508,9 +1317,4 @@ void CameraParaDlg::getModelSize()
   update();
 
   //m_paras->camera.getDouble("Predicted Model Size")
-}
-
-void CameraParaDlg::runTest()
-{
-  runWlopOnScannedMesh();
 }

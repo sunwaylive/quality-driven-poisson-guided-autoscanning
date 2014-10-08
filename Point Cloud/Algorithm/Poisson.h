@@ -44,7 +44,6 @@ private:
   void runComputeIsoGradientConfidence();
   void runComputeIsoSmoothnessConfidence();
   void runComputeIsoHoleConfidence();
-  void runAddWLOPtoISO();
   void runSmoothGridConfidence();
 
   void runSlicePoints();

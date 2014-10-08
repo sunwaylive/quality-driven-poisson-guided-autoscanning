@@ -85,15 +85,12 @@ signals:
     void runUpdateViewDirections();
 
     void runSetupInitialScanns();
-    void runStep1WLOP();
     void runStep2CombinedPoissonConfidence();
     void runStep2HolePoissonConfidence();
     void runStep2PoissonConfidenceViaOiginal();
     void runStep3NBVcandidates();
-    void runWlopOnScannedMesh();
     void runStep4NewScans();
     void runOneKeyNbvIteration();
-    void runOneKeyNbvIterationWlop();
     void runOneKeyNbvIterationBack();
 
     //add samples
@@ -104,7 +101,6 @@ signals:
     void runAddSamplesToOiriginal();
     
     void getModelSize();
-    void runTest();
 
 private:
   Ui::camera_paras * ui;

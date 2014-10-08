@@ -7,7 +7,6 @@ GLArea::GLArea(QWidget *parent): QGLWidget(/*QGLFormat(QGL::DoubleBuffer | QGL::
   para(global_paraMgr.getGlareaParameterSet()),
   glDrawer(global_paraMgr.getDrawerParameterSet()),
   dataMgr(global_paraMgr.getDataParameterSet()),
-  wlop(global_paraMgr.getWLopParameterSet()),
   norSmoother(global_paraMgr.getNormalSmootherParameterSet()),
   poisson(global_paraMgr.getPoissonParameterSet()),
   camera(global_paraMgr.getCameraParameterSet()),
@@ -485,7 +484,7 @@ void GLArea::paintGL()
       glLineWidth(3);
 
       Box3f box = dataMgr.getCurrentSamples()->bbox;
-      double radius = global_paraMgr.wLop.getDouble("CGrid Radius") * 2;
+      double radius = global_paraMgr.data.getDouble("CGrid Radius") * 2;
       Point3f shift_positive(radius, radius, radius);
       Point3f shift_negtive(-radius, -radius, -radius);
       Box3f shift_box;
@@ -621,7 +620,6 @@ void GLArea::initSetting()
 {
   dataMgr.recomputeQuad();
   initView();
-  wlop.setFirstIterate();
   emit needUpdateStatus();
 }
 
@@ -745,7 +743,6 @@ void GLArea::openByDrop(QString fileName)
   dataMgr.getInitRadiuse();
   //dataMgr.recomputeQuad();
   initView();
-  wlop.setFirstIterate();
   emit needUpdateStatus();
 
   updateGL();
@@ -958,7 +955,7 @@ void GLArea::drawNeighborhoodRadius()
     p = dataMgr.getCurrentSamples()->vert[0].P();
   }
 
-  double h_Gaussian_para = global_paraMgr.wLop.getDouble("H Gaussian Para");
+  double h_Gaussian_para = global_paraMgr.data.getDouble("H Gaussian Para");
   double grid_radius = global_paraMgr.data.getDouble("CGrid Radius");
 
   if (!takeSnapTile && para->getBool("Show Red Radius Line"))
@@ -1019,22 +1016,6 @@ void GLArea::drawNeighborhoodRadius()
       glutSolidSphere(grid_radius  / sqrt(h_Gaussian_para), 40, 40);
       glPopMatrix();
     }
-  }
-  else
-  {
-    glPushMatrix();
-    glTranslatef(p[0], p[1], p[2]);
-    glutSolidSphere(grid_radius  / sqrt(h_Gaussian_para), 40, 40);
-
-    if (para->getBool("Show Red Radius Line") 
-      && para->getBool("Show Skeleton"))
-    {
-      double branch_merge_radius = global_paraMgr.skeleton.getDouble("Branches Merge Max Dist");
-      glColor4f(0,1,0.5,0.4);
-      glutSolidSphere(branch_merge_radius, 40, 40);
-
-    }
-    glPopMatrix();
   }
 
   if (para->getBool("Show Samples Dot"))
@@ -1420,56 +1401,6 @@ void GLArea::saveSnapshot()
   is_paintGL_locked = false;
 }
 
-void GLArea::runWlop()
-{
-  if (dataMgr.isOriginalEmpty())
-  {
-    dataMgr.subSamples();
-  }
-
-  global_paraMgr.glarea.setValue("GLarea Busying", BoolValue(true));
-
-  bool is_break = false;
-  int iterate_time = global_paraMgr.wLop.getDouble("Num Of Iterate Time");
-  if (global_paraMgr.wLop.getBool("Run One Key WLOP"))
-  {
-    iterate_time = 1.0;
-  }
-
-  for (int i = 0; i < iterate_time; i++)
-  {
-    if (global_paraMgr.glarea.getBool("Algorithm Stop") || is_break)
-    {
-      is_break = true;
-      break;
-    }
-
-    runPointCloudAlgorithm(wlop);
-    if (para->getBool("SnapShot Each Iteration"))
-    {
-      saveSnapshot();
-    }
-    emit needUpdateStatus();
-  }
-
-  if (is_break)
-  {
-    global_paraMgr.skeleton.setValue("The Skeletonlization Process Should Stop", BoolValue(false));
-    global_paraMgr.glarea.setValue("Algorithm Stop", BoolValue(false));
-    global_paraMgr.glarea.setValue("GLarea Busying", BoolValue(false));
-    return;
-  }
-
-  para->setValue("Running Algorithm Name",
-    StringValue(wlop.getParameterSet()->getString("Algorithm Name")));
-
-  //if (para->getBool("SnapShot Each Iteration"))
-  //{
-  //	saveSnapshot();
-  //}
-  global_paraMgr.wLop.setValue("Run Anisotropic LOP", BoolValue(false));
-}
-
 void GLArea::runPoisson()
 {
   //if (dataMgr.isOriginalEmpty())
@@ -1582,31 +1513,20 @@ void GLArea::saveView(QString fileName)
   outputColor(outfile, global_paraMgr.drawer.getColor("Normal Line Color"));
 
 
-  outfile << global_paraMgr.wLop.getDouble("CGrid Radius") << endl;
-  //outfile << global_paraMgr.wLop.getDouble("Local Density Radius") << endl;
+  outfile << global_paraMgr.data.getDouble("CGrid Radius") << endl;
+  //outfile << global_paraMgr.data.getDouble("Local Density Radius") << endl;
   //outfile << global_paraMgr.skeleton.getDouble("Snake Search Max Dist Blue") << endl;
   //outfile << global_paraMgr.skeleton.getDouble("Branch Search Max Dist Yellow") << endl;
   //outfile << global_paraMgr.skeleton.getDouble("Branches Merge Max Dist Orange") << endl;
 
   outfile << -1 << " " << -1 << " " << -1 << " " << -1 << endl;
 
-  outfile << global_paraMgr.wLop.getDouble("Repulsion Mu") << endl;
-  outfile << global_paraMgr.wLop.getDouble("Repulsion Mu2") << endl;
+  outfile << global_paraMgr.data.getDouble("Repulsion Mu") << endl;
+  outfile << global_paraMgr.data.getDouble("Repulsion Mu2") << endl;
 
 
   trackball_light.ToAscii(viewStr);
   outfile << viewStr << endl;
-
-
-  double init_radius = global_paraMgr.skeleton.getDouble("Initial Radius") ;
-  if (init_radius > 0)
-  {
-    outfile << global_paraMgr.skeleton.getDouble("Initial Radius") << endl;
-  }
-  else
-  {
-    outfile << global_paraMgr.skeleton.getDouble("CGrid Radius") << endl;
-  }
 
   outfile << global_paraMgr.glarea.getDouble("Radius Ball Transparency") <<endl;
 
@@ -1843,18 +1763,7 @@ void GLArea::loadView(QString fileName)
     infile >> temp;
     //global_paraMgr.skeleton.setValue("Branches Merge Max Dist Orange", DoubleValue(temp));
   }
-
-  if (!infile.eof())
-  {
-    infile >> temp;
-    global_paraMgr.wLop.setValue("Repulsion Mu", DoubleValue(temp));
-
-    infile >> temp;
-    global_paraMgr.wLop.setValue("Repulsion Mu2", DoubleValue(temp));
-
-    infile >> viewStr;
-    trackball_light.SetFromAscii(viewStr.c_str());
-  }
+  
   initLight();
 
   if (!infile.eof())
@@ -1867,7 +1776,7 @@ void GLArea::loadView(QString fileName)
     }
     else
     {
-      global_paraMgr.setGlobalParameter("Initial Radius", DoubleValue(global_paraMgr.wLop.getDouble("CGrid Radius")));
+      global_paraMgr.setGlobalParameter("Initial Radius", DoubleValue(global_paraMgr.data.getDouble("CGrid Radius")));
     }
   }
 
@@ -2140,11 +2049,6 @@ void GLArea::wheelEvent(QWheelEvent *e)
         moveAllCandidates(false);
       }
 
-    }
-    else if (para->getBool("Show Skeleton") /*&& !dataMgr.isSkeletonEmpty()*/)
-    {
-      size_temp = global_paraMgr.skeleton.getDouble("Branches Merge Max Dist");
-      global_paraMgr.skeleton.setValue("Branches Merge Max Dist", DoubleValue(size_temp * change));
     }
     if (global_paraMgr.drawer.getBool("Show Confidence Color"))
     {
@@ -2440,7 +2344,7 @@ void GLArea::keyReleaseEvent ( QKeyEvent * e )
 void
   GLArea::removeOutliers()
 {
-  double outlier_percentage = global_paraMgr.wLop.getDouble("Outlier Percentage");
+  double outlier_percentage = global_paraMgr.data.getDouble("Outlier Percentage");
   int outlie_num = 20;
 
   if (global_paraMgr.glarea.getBool("Show Original"))

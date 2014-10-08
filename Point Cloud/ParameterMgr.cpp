@@ -18,9 +18,7 @@ ParameterMgr::ParameterMgr(void)
 	initDataMgrParameter();
 	initDrawerParameter();		
 	initGlareaParameter();
-	initWLopParameter();
 	initNormalSmootherParameter();
-	initSkeletonParameter();
 	initPoissonParameter();
 	initCameraParameter();
 	initNBVParameter();
@@ -39,14 +37,8 @@ void ParameterMgr::setGlobalParameter(QString paraName,Value& val)
 		data.setValue(paraName, val);
 	if(drawer.hasParameter(paraName))
 		drawer.setValue(paraName, val);
-	if(wLop.hasParameter(paraName))
-		wLop.setValue(paraName, val);
 	if(norSmooth.hasParameter(paraName))
 		norSmooth.setValue(paraName, val);
-	if (skeleton.hasParameter(paraName))
-		skeleton.setValue(paraName, val);
-	if (upsampling.hasParameter(paraName))
-		upsampling.setValue(paraName, val);
 	if (poisson.hasParameter(paraName))
 		poisson.setValue(paraName, val);
 }
@@ -56,6 +48,8 @@ void ParameterMgr::initDataMgrParameter()
 	data.addParam(new RichDouble("Init Radius Para", 2.0));
 	data.addParam(new RichDouble("Down Sample Num", 500000));//370000
 	data.addParam(new RichDouble("CGrid Radius", grid_r));
+  data.addParam(new RichDouble("Outlier Percentage", 0.01));
+  data.addParam(new RichDouble("H Gaussian Para", 4));
   data.addParam(new RichDouble("Max Normalize Length", -1.0f));
 }
 
@@ -134,7 +128,6 @@ void ParameterMgr::initGlareaParameter()
   glarea.addParam(new RichBool("Show Poisson Surface", false));
 }
 
-
 void ParameterMgr::initDrawerParameter()
 {
 	drawer.addParam(new RichBool("Doing Pick", false));
@@ -171,120 +164,6 @@ void ParameterMgr::initDrawerParameter()
 	drawer.addParam(new RichDouble("Skeleton Branch Size", 30)); // abandoned
 }
 
-
-void ParameterMgr::initWLopParameter()
-{
-	wLop.addParam(new RichString("Algorithm Name", "WLOP") );
-	wLop.addParam(new RichBool("Run One Key WLOP", false));
-
-	wLop.addParam(new RichDouble("Num Of Iterate Time", 20));
-
-	wLop.addParam(new RichDouble("CGrid Radius", grid_r));
-	wLop.addParam(new RichDouble("H Gaussian Para", 4));
-	wLop.addParam(new RichDouble("Repulsion Power", 1.0));
-	wLop.addParam(new RichDouble("Average Power", 1.0));
-	wLop.addParam(new RichBool("Need Compute Density", true));
-	wLop.addParam(new RichBool("Need Compute PCA", false));
-	wLop.addParam(new RichDouble("Repulsion Mu", 0.5));
-	wLop.addParam(new RichDouble("Repulsion Mu2", 0.0));
-	wLop.addParam(new RichBool("Run Anisotropic LOP", false));
-	wLop.addParam(new RichDouble("Current Movement Error", 0.0));
-  wLop.addParam(new RichDouble("Outlier Percentage", 0.01));
-  wLop.addParam(new RichBool("Run Wlop On Scanned Mesh", false));
-  wLop.addParam(new RichDouble("One Key NBV Wlop Percentage", 0.6));
-}
-
-void ParameterMgr::initSkeletonParameter()
-{
-	/// 
-	skeleton.addParam(new RichDouble("Repulsion Power", 1.0));
-	skeleton.addParam(new RichDouble("Average Power", 2.0));
-
-
-	/// 
-	skeleton.addParam(new RichDouble("Num Of Iterate Time", 1));
-	skeleton.addParam(new RichString("Algorithm Name", "Skeletonization") );
-
-	skeleton.addParam(new RichDouble("CGrid Radius", grid_r));
-	skeleton.addParam(new RichDouble("H Gaussian Para", 4));
-	skeleton.addParam(new RichBool("Need Compute Density", true));
-
-	skeleton.addParam(new RichDouble("Current Movement Error", 0.0));
-	skeleton.addParam(new RichBool("Run Auto Wlop One Step", false));
-	skeleton.addParam(new RichBool("Run Auto Wlop One Stage", false));
-	skeleton.addParam(new RichBool("The Skeletonlization Process Should Stop", false));
-
-	skeleton.addParam(new RichBool("Step1 Detect Skeleton Feature", false));
-	skeleton.addParam(new RichBool("Step2 Run Search New Branchs", false));
-	skeleton.addParam(new RichBool("Step3 Clean And Update Radius", false));
-	skeleton.addParam(new RichBool("Run Skeletonlization", false));
-
-	//init
-	skeleton.addParam(new RichDouble("Max Iterate Time", 55));
-	skeleton.addParam(new RichDouble("Stop And Grow Error", 0.0005));
-	skeleton.addParam(new RichDouble("Initial Radius", -1.));
-	skeleton.addParam(new RichDouble("Radius Update Speed", 0.5));
-
-	//step0
-	skeleton.addParam(new RichDouble("Repulsion Mu", 0.35));
-	skeleton.addParam(new RichDouble("Repulsion Mu2", 0.15));
-	skeleton.addParam(new RichDouble("Follow Sample Radius", 0.33));
-	skeleton.addParam(new RichDouble("Follow Sample Max Angle", 80));// should add to UI
-	skeleton.addParam(new RichDouble("Inactive And Keep Virtual Angle", 60)); // should add to UI
-	skeleton.addParam(new RichDouble("Save Virtual Angle", 30)); // should add to UI
-
-	skeleton.addParam(new RichDouble("Grow Accept Sigma", 0.8));// should add to UI
-	skeleton.addParam(new RichDouble("Bad Virtual Angle", 101));// 2013-7-12
-
-	//step1
-	skeleton.addParam(new RichDouble("Combine Too Close Threshold", 0.01));
-	skeleton.addParam(new RichDouble("Sigma KNN", 6));//this one is hard to determine, should be small for narrow region, but will lead to unnecessary small branches
-	skeleton.addParam(new RichDouble("Eigen Feature Identification Threshold", 0.901));
-
-	//step2
-	skeleton.addParam(new RichDouble("Branches Search Angle", 25));
-	skeleton.addParam(new RichDouble("Virtual Head Accept Angle", 25));
-	skeleton.addParam(new RichDouble("Snake Search Max Dist Blue", 0.4));
-	skeleton.addParam(new RichDouble("Accept Branch Size", 6)); // important, and hard to determine
-	skeleton.addParam(new RichDouble("Branch Search Max Dist Yellow", 0.1));
-
-	skeleton.addParam(new RichDouble("Branches Merge Max Dist", 0.08));
-	skeleton.addParam(new RichDouble("Branch Search KNN", 12));
-	skeleton.addParam(new RichDouble("Combine Similar Angle", 140));
-	skeleton.addParam(new RichDouble("Grow Search Radius", 0.15));
-	skeleton.addParam(new RichDouble("Add Accept Branch Size", 1));
-
-
-	//step3
-	skeleton.addParam(new RichDouble("Clean Near Branches Dist", 0.05));
-	skeleton.addParam(new RichDouble("Fix Original Weight", 0.91));
-	skeleton.addParam(new RichDouble("Curve Segment Length", 0.051));
-	skeleton.addParam(new RichInt("Fix Original Mode", 4)); // 1 for noisy , 4 for clean
-
-	skeleton.addParam(new RichBool("Run ALL Segment", false));
-	skeleton.addParam(new RichBool("Need Segment Right Away", true));
-	skeleton.addParam(new RichDouble("Max Stop Radius", 1.99));
-
-	//strategy...
-	skeleton.addParam(new RichBool("Use Nearby Combine Strategy", true));
-	skeleton.addParam(new RichBool("Use Go Through Strategy", false));
-	skeleton.addParam(new RichBool("Use Aggresive Growth Strategy", false));
-	skeleton.addParam(new RichBool("Use Clean Points When Following Strategy", true));
-	skeleton.addParam(new RichBool("Use All Connect Strategy", true));
-	skeleton.addParam(new RichBool("Use Plus Perpendicular Dist Strategy", false));
-	skeleton.addParam(new RichBool("Use Kill Too Close Strategy", false));
-	skeleton.addParam(new RichBool("Use Compute Eigen Ignore Branch Strategy", true));
-	skeleton.addParam(new RichBool("Use Virtual Group Merge Strategy", false));
-	skeleton.addParam(new RichBool("Use Final Merge Strategy", true));
-	skeleton.addParam(new RichBool("Use Search New Twice Strategy", false));
-	skeleton.addParam(new RichBool("Inactive Overlap Strategy", false));
-	skeleton.addParam(new RichBool("Move Overlap Strategy", false));
-	skeleton.addParam(new RichBool("Use Virtual Near Body Stop Strategy", true));
-	skeleton.addParam(new RichBool("Need To Keep Big Bug", false));
-	skeleton.addParam(new RichDouble("Change Strategy Radius", 0.45));
-	skeleton.addParam(new RichBool("Need Recentering", true));
-}
-
 void ParameterMgr::initNormalSmootherParameter()
 {
 	norSmooth.addParam(new RichString("Algorithm Name", "NormalSmooth") );
@@ -318,7 +197,6 @@ void ParameterMgr::initPoissonParameter()
 	poisson.addParam(new RichBool("Run Compute View Candidates", false));
 	poisson.addParam(new RichBool("Run View Candidates Clustering", false));
   poisson.addParam(new RichBool("Run Normalize Field Confidence", false));
-  poisson.addParam(new RichBool("Run Add WLOP to ISO", false));
 
 	poisson.addParam(new RichBool("Run Slice", false));
 	poisson.addParam(new RichBool("Run Clear Slice", false));

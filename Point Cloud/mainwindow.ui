@@ -77,13 +77,6 @@
     <property name="title">
      <string>Algorithom</string>
     </property>
-    <widget class="QMenu" name="menuWLOP">
-     <property name="title">
-      <string>WLOP</string>
-     </property>
-     <addaction name="actionRun_Wlop"/>
-     <addaction name="actionWLOP_Setting"/>
-    </widget>
     <widget class="QMenu" name="menuNormal">
      <property name="title">
       <string>Normal</string>
@@ -106,7 +99,6 @@
      <addaction name="actionPoisson_test"/>
      <addaction name="actionPoisson_test_all"/>
     </widget>
-    <addaction name="menuWLOP"/>
     <addaction name="menuNormal"/>
     <addaction name="menuEAR"/>
     <addaction name="menuPoisson"/>
@@ -244,7 +236,6 @@
    <addaction name="separator"/>
    <addaction name="actionDownSample"/>
    <addaction name="actionUpsample_Setting"/>
-   <addaction name="actionWLOP_Setting"/>
    <addaction name="actionNormal_Setting"/>
    <addaction name="actionPoisson"/>
    <addaction name="actionCamera"/>

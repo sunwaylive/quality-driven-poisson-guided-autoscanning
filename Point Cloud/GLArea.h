@@ -22,7 +22,6 @@
 #include "CMesh.h"
 #include "ParameterMgr.h"
 #include "Algorithm/PointCloudAlgorithm.h"
-#include "Algorithm/WLOP.h"
 #include "Algorithm/Poisson.h"
 #include "wrap/gui/coordinateframe.h"
 #include "Algorithm/Camera.h"
@@ -55,9 +54,7 @@ public:
 	void initView();
 	void initSetting();
 
-	void runWlop();
 	void runNormalSmoothing();
-	void runUpsampling();
 	void runPoisson();
 	void runCamera();
 	void runNBV();
@@ -187,7 +184,6 @@ public:
 	DataMgr dataMgr;
 	GLDrawer glDrawer;	
 
-  WLOP               wlop;
   NormalSmoother     norSmoother;
   Poisson            poisson;
   vcc::Camera        camera;

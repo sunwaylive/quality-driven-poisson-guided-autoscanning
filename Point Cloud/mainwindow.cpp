@@ -91,10 +91,8 @@ void MainWindow::initConnect()
   connect(ui.actionNBV_ReOrders, SIGNAL(triggered()), this, SLOT(nbvReOrders()));
 
 	connect(ui.actionSnapShot, SIGNAL(triggered()), this, SLOT(saveSnapshot()));
-	connect(ui.actionRun_Wlop, SIGNAL(triggered()), this, SLOT(runWLop()));
 	connect(ui.actionRun_PCA, SIGNAL(triggered()), this, SLOT(runPCA_Normal()));
 	connect(ui.actionReorientate, SIGNAL(triggered()), this, SLOT(reorientateNormal()));
-	connect(ui.actionWLOP_Setting, SIGNAL(triggered()), this, SLOT(showWLopDlg()));
 	connect(ui.actionNormal_Setting, SIGNAL(triggered()), this, SLOT(showNormalDlg()));
   connect(ui.actionPoisson, SIGNAL(triggered()), this, SLOT(showPoissonParaDlg()));
   connect(ui.actionCamera, SIGNAL(triggered()), this, SLOT(showCameraParaDlg()));
@@ -253,29 +251,6 @@ void MainWindow::updateStatusBar()
 	QString strRadius = "Radius: " + QString::number(radius);
 	radius_label->setText(strRadius);
 
-  int iteration_unm = 0;
-  QString running_name = global_paraMgr.glarea.getString("Running Algorithm Name");
-  if (running_name == QString("WLOP"))
-  {
-    iteration_unm = area->wlop.getIterateNum();
-  }
-  QString iterateNum= "Iterate: " + QString::number(iteration_unm);
-  iteration_label->setText(iterateNum);
-
-	double error = 0;
-	//QString running_name = global_paraMgr.glarea.getString("Running Algorithm Name");
-	if (running_name == QString("WLOP"))
-	{
-		error = global_paraMgr.wLop.getDouble("Current Movement Error");
-	}
-	else if (running_name == QString("Skeletonization"))
-	{
-		error = global_paraMgr.skeleton.getDouble("Current Movement Error");
-	}
-	
-	QString strError = "Movement: " + QString::number(error);
-	error_label->setText(strError);
-
 	update();
 	repaint();
 }
@@ -302,29 +277,10 @@ void MainWindow::createActionGroups()
 void MainWindow::init()
 {
 	strTitle = "Point Cloud";
-	paraDlg_WLOP = NULL;
 	paraDlg_Normal = NULL;
   paraDlg_Poisson = NULL;
   paraDlg_Camera = NULL;
 	paras = &global_paraMgr;
-}
-
-void MainWindow::showWLopDlg()
-{
-
-	if(paraDlg_WLOP != 0)
-	{
-		paraDlg_WLOP->close();
-		delete paraDlg_WLOP;
-	}
-
-	paraDlg_WLOP = new StdParaDlg(paras, area, this);
-	paraDlg_WLOP->setAllowedAreas(Qt::LeftDockWidgetArea
-		| Qt::RightDockWidgetArea);
-	addDockWidget(Qt::RightDockWidgetArea,paraDlg_WLOP);
-	paraDlg_WLOP->setFloating(false);
-	paraDlg_WLOP->hide();
-	paraDlg_WLOP->showWlopParaDialog();
 }
 
 void MainWindow::showNormalDlg()
@@ -877,13 +833,6 @@ void MainWindow::setOriginalType(QAction * action)
 		paras->glarea.setValue("Show Original Sphere",BoolValue(true));
 	}
 	area->updateGL();
-}
-
-void MainWindow::runWLop()
-{
-	global_paraMgr.glarea.setValue("Running Algorithm Name", StringValue("WLOP"));
-	calculation_thread.setArea(area);
-	calculation_thread.start();
 }
 
 void MainWindow::runPCA_Normal()

@@ -1242,10 +1242,11 @@ bool NBV::updateViewDirections()
 
   return have_direction_move;
 }
+
 //void NBV::viewClustering()
 //{
 //  //double radius = para->getDouble("CGrid Radius"); 
-//  double radius = global_paraMgr.wLop.getDouble("CGrid Radius"); 
+//  double radius = global_paraMgr.data.getDouble("CGrid Radius"); 
 //  
 //  double radius2 = radius * radius;
 //  double iradius16 = -4/radius2;

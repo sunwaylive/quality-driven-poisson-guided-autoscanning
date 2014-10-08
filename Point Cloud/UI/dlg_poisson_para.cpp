@@ -45,7 +45,6 @@ void PoissonParaDlg::initConnects()
   //connect(ui->pushButton_clear_label,SIGNAL(clicked()),this,SLOT(clearLabel()));
   connect(ui->pushButton_slice,SIGNAL(clicked()),this,SLOT(runSlice()));
   //connect(ui->pushButton_view_candidates_clustering,SIGNAL(clicked()),this,SLOT(viewCandidatesClustering()));
-  connect(ui->pushButton_add_samples_to_iso_points,SIGNAL(clicked()),this,SLOT(runAddWLOPtoISO()));
   connect(ui->pushButton_estimate_original_knn,SIGNAL(clicked()),this,SLOT(runEstimateOriginalSize()));
 
   connect(ui->checkBox_show_slices,SIGNAL(clicked(bool)),this,SLOT(showSlices(bool)));
@@ -197,14 +196,6 @@ void PoissonParaDlg::runClearSlice()
   global_paraMgr.poisson.setValue("Run Clear Slice", BoolValue(false));
 }
 
-void PoissonParaDlg::runAddWLOPtoISO()
-{
-  cout << "runAddWLOPtoISO: 000" << endl;
-  global_paraMgr.poisson.setValue("Run Add WLOP to ISO", BoolValue(true));
-  area->runPoisson();
-  global_paraMgr.poisson.setValue("Run Add WLOP to ISO", BoolValue(false));
-}
-
 void PoissonParaDlg::runEstimateOriginalSize()
 {
   if (area->dataMgr.isOriginalEmpty() || area->dataMgr.isSamplesEmpty())
@@ -214,7 +205,7 @@ void PoissonParaDlg::runEstimateOriginalSize()
 
   double estimate_knn = GlobalFun::estimateKnnSize(area->dataMgr.getCurrentSamples(),
                                                    area->dataMgr.getCurrentOriginal(),
-                                                   global_paraMgr.wLop.getDouble("CGrid Radius"),
+                                                   global_paraMgr.data.getDouble("CGrid Radius"),
                                                    area->dataMgr.getCurrentSamples()->bbox);
 
   global_paraMgr.poisson.setValue("Original KNN", DoubleValue(estimate_knn));
