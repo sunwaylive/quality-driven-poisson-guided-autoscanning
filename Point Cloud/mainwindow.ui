@@ -219,15 +219,13 @@
    </attribute>
    <addaction name="actionImport_Ply"/>
    <addaction name="actionSave_Ply"/>
-   <addaction name="actionSave_Skel"/>
-   <addaction name="actionSave_Parameter"/>
+   <addaction name="actionCamera"/>
+   <addaction name="actionPoisson"/>
    <addaction name="actionSnapShot"/>
    <addaction name="actionClear_Data"/>
    <addaction name="actionNormalize"/>
    <addaction name="separator"/>
    <addaction name="actionDownSample"/>
-   <addaction name="actionPoisson"/>
-   <addaction name="actionCamera"/>
    <addaction name="separator"/>
    <addaction name="actionShow_Neighborhood_Ball"/>
    <addaction name="actionShow_Normals"/>
@@ -723,7 +721,7 @@
   <action name="actionPoisson">
    <property name="icon">
     <iconset resource="mainwindow.qrc">
-     <normaloff>:/mainwindow/Icons/upsample-xw5.jpg</normaloff>:/mainwindow/Icons/upsample-xw5.jpg</iconset>
+     <normaloff>:/mainwindow/Icons/poisson.png</normaloff>:/mainwindow/Icons/poisson.png</iconset>
    </property>
    <property name="text">
     <string>Poisson</string>
@@ -766,7 +764,7 @@
   <action name="actionCamera">
    <property name="icon">
     <iconset resource="mainwindow.qrc">
-     <normaloff>:/mainwindow/Icons/apn.ico</normaloff>:/mainwindow/Icons/apn.ico</iconset>
+     <normaloff>:/mainwindow/Icons/camera.png</normaloff>:/mainwindow/Icons/camera.png</iconset>
    </property>
    <property name="text">
     <string>Camera</string>
