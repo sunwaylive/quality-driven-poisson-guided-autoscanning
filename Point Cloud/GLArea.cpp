@@ -9,7 +9,6 @@ GLArea::GLArea(QWidget *parent): QGLWidget(/*QGLFormat(QGL::DoubleBuffer | QGL::
   dataMgr(global_paraMgr.getDataParameterSet()),
   wlop(global_paraMgr.getWLopParameterSet()),
   norSmoother(global_paraMgr.getNormalSmootherParameterSet()),
-  upsampler(global_paraMgr.getUpsamplingParameterSet()),
   poisson(global_paraMgr.getPoissonParameterSet()),
   camera(global_paraMgr.getCameraParameterSet()),
   paintMutex(QMutex::NonRecursive),
@@ -1483,21 +1482,6 @@ void GLArea::runWlop()
   //	saveSnapshot();
   //}
   global_paraMgr.wLop.setValue("Run Anisotropic LOP", BoolValue(false));
-}
-
-void GLArea::runUpsampling()
-{
-  if (dataMgr.isSamplesEmpty())
-  {
-    return;
-  }
-
-  runPointCloudAlgorithm(upsampler);
-
-  para->setValue("Running Algorithm Name",
-    StringValue(upsampler.getParameterSet()->getString("Algorithm Name")));
-
-  emit needUpdateStatus();
 }
 
 void GLArea::runPoisson()

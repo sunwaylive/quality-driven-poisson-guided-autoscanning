@@ -13,7 +13,6 @@ void StdParaDlg::init()
 {
   para_wlop = NULL;
   para_normal = NULL;
-  para_upsampling = NULL;
   para_camera = NULL;
   mainFrame = NULL;
 }
@@ -30,13 +29,6 @@ bool StdParaDlg::showNormalParaDlg()
 {
   createFrame();
   loadNormalFrame();
-  return true;
-}
-
-bool StdParaDlg::showUpsamplingParaDlg()
-{	
-  createFrame();
-  loadUpsamplingFrame();
   return true;
 }
 
@@ -86,30 +78,6 @@ void StdParaDlg::loadWlopFrame()
   //set the minimum size so it will shrink down to the right size
   this->setMinimumSize(mainFrame->sizeHint());
 
-  this->showNormal();
-  this->adjustSize();
-}
-
-void StdParaDlg::loadUpsamplingFrame()
-{
-  assert(mainFrame);
-  mainFrame->hide();
-  QGridLayout *gridLayout = new QGridLayout(mainFrame);
-  mainFrame->setLayout(gridLayout);
-  setWindowTitle("Upsampling Parameters");
-
-  para_upsampling = new UpsamplingParaDlg(this, paras, gla);
-  para_upsampling->setFrameConent();
-
-  gridLayout->setRowMinimumHeight(2,380);
-  gridLayout->setColumnMinimumWidth(1,180);
-
-  gridLayout->addWidget(para_upsampling,1,0,13,12);
-
-  mainFrame->showNormal();
-  mainFrame->adjustSize();
-  //set the minimum size so it will shrink down to the right size
-  this->setMinimumSize(mainFrame->sizeHint());
   this->showNormal();
   this->adjustSize();
 }
@@ -208,9 +176,6 @@ StdParaDlg::~StdParaDlg()
     delete para_normal;
   para_normal = NULL;
   
-  if (para_upsampling)
-    delete para_upsampling;
-  para_upsampling = NULL;
 
   if (para_camera)
     delete para_camera;

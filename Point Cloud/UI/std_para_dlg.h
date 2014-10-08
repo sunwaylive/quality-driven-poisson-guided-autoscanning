@@ -11,7 +11,6 @@
 #include "ParameterMgr.h"
 #include "UI/dlg_wlop_para.h"
 #include "UI/dlg_normal_para.h"
-#include "UI/dlg_upsampling_para.h"
 #include "UI/dlg_poisson_para.h"
 #include "UI/dlg_camera_para.h"
 
@@ -37,7 +36,6 @@ private:
   void createFrame();
   void loadWlopFrame();
   void loadNormalFrame();
-  void loadUpsamplingFrame();
   void loadPoissonFrame();
   void loadCameraFrame();
 
@@ -47,7 +45,6 @@ private:
 private:
   WlopParaDlg          * para_wlop;
   NormalParaDlg        * para_normal;
-  UpsamplingParaDlg    * para_upsampling;
   PoissonParaDlg       * para_poisson;
   CameraParaDlg        * para_camera; 
 

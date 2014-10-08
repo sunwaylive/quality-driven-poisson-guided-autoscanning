@@ -21,7 +21,6 @@ ParameterMgr::ParameterMgr(void)
 	initWLopParameter();
 	initNormalSmootherParameter();
 	initSkeletonParameter();
-	initUpsamplingParameter();
 	initPoissonParameter();
 	initCameraParameter();
 	initNBVParameter();
@@ -300,50 +299,17 @@ void ParameterMgr::initNormalSmootherParameter()
 	norSmooth.addParam(new RichDouble("PCA Threshold", 0.8));
 }
 
-
-void ParameterMgr::initUpsamplingParameter()
-{
-	upsampling.addParam(new RichString("Algorithm Name", "Upsampling") );
-
-	upsampling.addParam(new RichDouble("CGrid Radius", 0.08) );
-	upsampling.addParam(new RichInt("Number of Add Point", 50000) );
-	upsampling.addParam(new RichDouble("Feature Sigma", 30));
-
-	upsampling.addParam(new RichBool("Using Threshold Process", true) );
-	upsampling.addParam(new RichDouble("Dist Threshold", 0.02));
-	upsampling.addParam(new RichDouble("Edge Parameter", 0.0));
-	upsampling.addParam(new RichDouble("Z Parameter", 0.1));
-
-	upsampling.addParam(new RichBool("Auto Recompute Radius For Dist", true) );
-	upsampling.addParam(new RichDouble("Min Dist Rate", 2.0));
-
-	upsampling.addParam(new RichDouble("New Point Avg Sigma", 15));
-	upsampling.addParam(new RichBool("Use Avg Normal Method", false) );
-	upsampling.addParam(new RichBool("Use Max Theta Psi Method", false));
-	upsampling.addParam(new RichBool("Use Sigma Threshold Method", true));
-	upsampling.addParam(new RichBool("Use No Psi Method", false));
-
-	upsampling.addParam(new RichDouble("Upsample Radius", grid_r * 0.5) );
-	upsampling.addParam(new RichBool("Use Proj New Term", false));
-	upsampling.addParam(new RichBool("Run Projection", false));
-}
-
 void ParameterMgr::initPoissonParameter()
 {
 	poisson.addParam(new RichString("Algorithm Name", "Poisson") );
 	poisson.addParam(new RichDouble("CGrid Radius", 0.08) );
 	poisson.addParam(new RichDouble("View Candidates Distance", 0.85));
-
 	poisson.addParam(new RichBool("Run One Key PoissonConfidence", false));
-
 	poisson.addParam(new RichBool("Run Extract All Octree Nodes", false));
 	poisson.addParam(new RichBool("Run Extract MC Points", false));
-
 	poisson.addParam(new RichBool("Run Poisson On Original", false));
 	poisson.addParam(new RichBool("Run Generate Poisson Field", false));
   poisson.addParam(new RichBool("Run Cut Slice Points", false));
-
-
 
 	poisson.addParam(new RichBool("Run Poisson On Samples", false));  
 	poisson.addParam(new RichBool("Run Label ISO Points", false));

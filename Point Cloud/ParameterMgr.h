@@ -28,7 +28,6 @@ private:
 	void initWLopParameter();
 	void initSkeletonParameter();
 	void initNormalSmootherParameter();
-	void initUpsamplingParameter();
   void initPoissonParameter();
   void initCameraParameter();
   void initNBVParameter();

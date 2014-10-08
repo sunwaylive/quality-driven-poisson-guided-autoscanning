@@ -169,21 +169,6 @@
     <ClCompile Include="GeneratedFiles\Release_debug\moc_calculationthread.cpp">
       <Filter>Generated Files\Release_debug</Filter>
     </ClCompile>
-    <ClCompile Include="UI\dlg_upsampling_para.cpp">
-      <Filter>UI</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_dlg_upsampling_para.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release_debug\moc_dlg_upsampling_para.cpp">
-      <Filter>Generated Files\Release_debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_dlg_upsampling_para.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Algorithm\Upsampler.cpp">
-      <Filter>Algorithm</Filter>
-    </ClCompile>
     <ClCompile Include="Poisson\Factor.cpp">
       <Filter>Poisson</Filter>
     </ClCompile>
@@ -291,12 +276,6 @@
     <CustomBuild Include="calculationthread.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="UI\upsampling_para.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="UI\dlg_upsampling_para.h">
-      <Filter>UI</Filter>
-    </CustomBuild>
     <CustomBuild Include="UI\dlg_poisson_para.h">
       <Filter>UI</Filter>
     </CustomBuild>
@@ -373,12 +352,6 @@
     </ClInclude>
     <ClInclude Include="Console.h">
       <Filter>Helper</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_upsampling_para.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Algorithm\Upsampler.h">
-      <Filter>Algorithm</Filter>
     </ClInclude>
     <ClInclude Include="Poisson\Allocator.h">
       <Filter>Poisson</Filter>

@@ -54,7 +54,6 @@ private slots:
 
 	void showWLopDlg();
 	void showNormalDlg();
-	void showUpsampleDlg();
   void showPoissonParaDlg();
 	void showCameraParaDlg();
 
@@ -143,7 +142,6 @@ private:
   QLabel * iteration_label;
 
 	ParameterMgr * paras;
-	StdParaDlg * paraDlg_Upsample;
 	StdParaDlg * paraDlg_WLOP;
 	StdParaDlg * paraDlg_Normal;
   StdParaDlg * paraDlg_Poisson;

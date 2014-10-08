@@ -96,7 +96,6 @@ void MainWindow::initConnect()
 	connect(ui.actionReorientate, SIGNAL(triggered()), this, SLOT(reorientateNormal()));
 	connect(ui.actionWLOP_Setting, SIGNAL(triggered()), this, SLOT(showWLopDlg()));
 	connect(ui.actionNormal_Setting, SIGNAL(triggered()), this, SLOT(showNormalDlg()));
-	connect(ui.actionUpsample_Setting, SIGNAL(triggered()), this, SLOT(showUpsampleDlg()));
   connect(ui.actionPoisson, SIGNAL(triggered()), this, SLOT(showPoissonParaDlg()));
   connect(ui.actionCamera, SIGNAL(triggered()), this, SLOT(showCameraParaDlg()));
 
@@ -303,7 +302,6 @@ void MainWindow::createActionGroups()
 void MainWindow::init()
 {
 	strTitle = "Point Cloud";
-	paraDlg_Upsample = NULL;
 	paraDlg_WLOP = NULL;
 	paraDlg_Normal = NULL;
   paraDlg_Poisson = NULL;
@@ -344,23 +342,6 @@ void MainWindow::showNormalDlg()
 	paraDlg_Normal->setFloating(false);
 	paraDlg_Normal->hide();
 	paraDlg_Normal->showNormalParaDlg();
-}
-
-void MainWindow::showUpsampleDlg()
-{
-	if(paraDlg_Upsample != 0)
-	{
-		paraDlg_Upsample->close();
-		delete paraDlg_Upsample;
-	}
-
-	paraDlg_Upsample = new StdParaDlg(paras, area, this);
-	paraDlg_Upsample->setAllowedAreas(Qt::LeftDockWidgetArea
-		| Qt::RightDockWidgetArea);
-	addDockWidget(Qt::LeftDockWidgetArea,paraDlg_Upsample);
-	paraDlg_Upsample->setFloating(false);
-	paraDlg_Upsample->hide();
-	paraDlg_Upsample->showUpsamplingParaDlg();
 }
 
 void MainWindow::showPoissonParaDlg()

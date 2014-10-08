@@ -7,14 +7,13 @@
 #include <QPoint>
 #include <QtGui>
 #include <QtOpenGL/QGLWidget>
-#include<QString>
+#include <QString>
 
 #include <wrap/gl/trimesh.h>
 #include <wrap/gui/trackball.h>
 #include <vcg/space/point3.h>
 #include <wrap/io_trimesh/import.h>
 #include <wrap/io_trimesh/export.h>
-#include <iostream>
 
 #include "Algorithm/pointcloud_normal.h"
 #include "Algorithm/NormalSmoother.h"
@@ -24,21 +23,12 @@
 #include "ParameterMgr.h"
 #include "Algorithm/PointCloudAlgorithm.h"
 #include "Algorithm/WLOP.h"
-#include "Algorithm/Upsampler.h"
 #include "Algorithm/Poisson.h"
 #include "wrap/gui/coordinateframe.h"
 #include "Algorithm/Camera.h"
 #include "Algorithm/NBV.h"
 
-//#include "Poisson/Geometry.h"
-//#include "Poisson/PoissonParam.h"
-//
-//#include "Poisson/MarchingCubes.h"
-//#include "Poisson/Octree.h"
-//#include "Poisson/SparseMatrix.h"
-//#include "Poisson/FunctionData.h"
-//#include "Poisson/PPolynomial.h"
-
+#include <iostream>
 using std::cout;
 using std::endl;
 using vcg::Point3f;
@@ -199,7 +189,6 @@ public:
 
   WLOP               wlop;
   NormalSmoother     norSmoother;
-  Upsampler          upsampler;
   Poisson            poisson;
   vcc::Camera        camera;
   NBV                nbv;
