@@ -229,21 +229,19 @@
    <addaction name="actionSnapShot"/>
    <addaction name="actionClear_Data"/>
    <addaction name="actionNormalize"/>
-   <addaction name="actionRemove_Outlier"/>
    <addaction name="actionSave_NBV"/>
-   <addaction name="actionNBV_ReOrders"/>
    <addaction name="actionSwitch_Sample_NBV"/>
    <addaction name="separator"/>
    <addaction name="actionDownSample"/>
-   <addaction name="actionUpsample_Setting"/>
    <addaction name="actionNormal_Setting"/>
    <addaction name="actionPoisson"/>
    <addaction name="actionCamera"/>
    <addaction name="separator"/>
-   <addaction name="actionShow_Confidence_Color"/>
    <addaction name="actionShow_Neighborhood_Ball"/>
    <addaction name="actionShow_Normals"/>
    <addaction name="actionShow_Box"/>
+   <addaction name="actionShow_NBV_Ball"/>
+   <addaction name="actionCull_Points"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QToolBar" name="toolBar">
@@ -265,19 +263,15 @@
    <addaction name="actionShow_Model"/>
    <addaction name="actionShow_Original"/>
    <addaction name="actionShow_Samples"/>
-   <addaction name="actionShow_Skeleton"/>
    <addaction name="actionShow_ISO"/>
+   <addaction name="actionShow_Confidence_Color"/>
    <addaction name="actionShow_View_Grids"/>
    <addaction name="actionShow_NBV_Candidates"/>
    <addaction name="actionShow_Scan_Candidates"/>
    <addaction name="actionShow_Scan_History"/>
    <addaction name="actionShow_Current_Scanned_Mesh"/>
-   <addaction name="actionShow_Poisson_Surface"/>
    <addaction name="separator"/>
    <addaction name="separator"/>
-   <addaction name="actionCull_Points"/>
-   <addaction name="actionShow_NBV_Ball"/>
-   <addaction name="actionShow_NBV_Label"/>
    <addaction name="actionSwitch_Sample_with_ISO"/>
   </widget>
   <action name="actionImport_Ply">
