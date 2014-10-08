@@ -54,7 +54,6 @@ private slots:
 
 	void showWLopDlg();
 	void showNormalDlg();
-	void showSkeletonDlg();
 	void showUpsampleDlg();
   void showPoissonParaDlg();
 	void showCameraParaDlg();
@@ -93,7 +92,6 @@ private slots:
 	void showOriginal(bool _val);
 	void showSamples(bool _val);
 	void showNormals(bool _val);
-  void showSkeleton(bool _val);
 	void cullPoints(bool _val);
 	void showNormalColor(bool _val);
 	void showNeighborhoodBall(bool _val);
@@ -145,7 +143,6 @@ private:
   QLabel * iteration_label;
 
 	ParameterMgr * paras;
-	StdParaDlg * paraDlg_Skeleton;
 	StdParaDlg * paraDlg_Upsample;
 	StdParaDlg * paraDlg_WLOP;
 	StdParaDlg * paraDlg_Normal;

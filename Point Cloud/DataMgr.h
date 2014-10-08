@@ -3,7 +3,6 @@
 #include "cmesh.h"
 #include "Parameter.h"
 #include "GlobalFunction.h"
-#include "Algorithm/Skeleton.h"
 #include "vcg\complex\trimesh\update\selection.h"
 
 #include <qfile.h>
@@ -34,36 +33,6 @@ public:
   Point3f L_to_R_translation;
 };
 
-class Boundary: public Branch{
-public:
-  Boundary()  { flag = 0x0000;}
-  ~Boundary() { }
-
-  enum{
-    UP = 0x0001,   //up boundary
-    DOWN = 0x0002, //down boundary
-    LEFT = 0x0004, //left boundary
-    RIGHT = 0x0008 //right boundary
-  };
-
-  std::vector<MyBoarderEdge> v_board_edges;
-  int flag;
-
-  inline bool isUpBoundary() const {return this->flag & UP;}
-  inline bool isDownBoundary() const {return this->flag & DOWN;}
-  inline bool isLeftBoundary() const {return this->flag & LEFT;}
-  inline bool isRightBoundary() const {return this->flag & RIGHT;}
-  inline void setUpBoundary() {this->flag |= UP;}
-  inline void setDownBoundary() {this->flag |= DOWN;}
-  inline void setLeftBoundary() {this->flag |= LEFT;}
-  inline void setRightBoundary() {this->flag |= RIGHT;}
-  inline void clearUpBoundary() {this->flag &= (~UP);}
-  inline void clearDownBoundary() {this->flag &= (~DOWN);}
-  inline void clearLeftBoundary() {this->flag &= (~LEFT);}
-  inline void clearRightBoundary() {this->flag &= (~RIGHT);}
-};
-
-
 class DataMgr
 {
 public:
@@ -86,7 +55,6 @@ public:
   bool      isModelEmpty();
   bool      isSamplesEmpty();
   bool      isOriginalEmpty();
-  bool      isSkeletonEmpty();
   bool      isIsoPointsEmpty();
   bool      isFieldPointsEmpty();
   bool      isViewCandidatesEmpty();
@@ -107,7 +75,6 @@ public:
   CMesh*                  getCurrentIsoPoints();
   CMesh*                  getCurrentFieldPoints();
   Slices*                 getCurrentSlices();
-  Skeleton*               getCurrentSkeleton();
   
   CMesh*                  getCameraModel();
   Point3f&                getCameraPos();
@@ -127,7 +94,6 @@ public:
   vector<ScanCandidate>*  getPVSFirstScanCandidates();
   CMesh*                  getCurrentScannedMesh();
   vector<CMesh* >*        getScannedResults(); 
-  vector<Boundary>*       getBoundaries(); 
   CMesh*                  getPVS();
   CMesh*                  getRIMLS();
   int*                    getScanCount();
@@ -145,8 +111,6 @@ public:
   void     clearData();
   void     recomputeQuad();
 
-	void     loadSkeletonFromSkel(QString fileName);
-	void     saveSkeletonAsSkel(QString fileName);
   void     saveFieldPoints(QString fileName);
   void     saveViewGrids(QString fileName);
   void     saveMergedMesh(QString fileName);
@@ -203,8 +167,6 @@ public:
   vector<ScanCandidate>  selected_scan_candidates;
   CMesh                  current_scanned_mesh; 
   vector<CMesh *>        scanned_results;  
-  vector<Boundary>       boundaries;         
-	Skeleton               skeleton;
   Slices                 slices;
 
 	RichParameterSet*      para;

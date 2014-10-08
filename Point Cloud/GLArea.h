@@ -24,7 +24,6 @@
 #include "ParameterMgr.h"
 #include "Algorithm/PointCloudAlgorithm.h"
 #include "Algorithm/WLOP.h"
-#include "Algorithm/Skeletonization.h"
 #include "Algorithm/Upsampler.h"
 #include "Algorithm/Poisson.h"
 #include "wrap/gui/coordinateframe.h"
@@ -70,8 +69,6 @@ public:
 
 	void runWlop();
 	void runNormalSmoothing();
-	void runSkeletonization_paralleled();
-	void runSkeletonization_linear();
 	void runUpsampling();
 	void runPoisson();
 	void runCamera();
@@ -206,7 +203,6 @@ public:
 
   WLOP               wlop;
   NormalSmoother     norSmoother;
-  Skeletonization    skeletonization;
   Upsampler          upsampler;
   Poisson            poisson;
   vcc::Camera        camera;

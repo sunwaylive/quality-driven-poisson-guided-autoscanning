@@ -13,10 +13,8 @@ void StdParaDlg::init()
 {
   para_wlop = NULL;
   para_normal = NULL;
-  para_skeleton = NULL;
   para_upsampling = NULL;
   para_camera = NULL;
-
   mainFrame = NULL;
 }
 
@@ -32,14 +30,6 @@ bool StdParaDlg::showNormalParaDlg()
 {
   createFrame();
   loadNormalFrame();
-  return true;
-}
-
-
-bool StdParaDlg::showSkeletonParaDlg()
-{
-  createFrame();
-  loadSkeletonFrame();
   return true;
 }
 
@@ -93,31 +83,6 @@ void StdParaDlg::loadWlopFrame()
   mainFrame->showNormal();
   mainFrame->adjustSize();
 
-  //set the minimum size so it will shrink down to the right size
-  this->setMinimumSize(mainFrame->sizeHint());
-
-  this->showNormal();
-  this->adjustSize();
-}
-
-void StdParaDlg::loadSkeletonFrame()
-{
-  assert(mainFrame);
-  mainFrame->hide();
-  QGridLayout *gridLayout = new QGridLayout(mainFrame);
-  //QVBoxLayout *vLayout = new QVBoxLayout(mainFrame);
-  mainFrame->setLayout(gridLayout);
-  setWindowTitle("L1-Medial Skeleton");
-
-  para_skeleton = new SkeletonParaDlg(this,paras,gla);
-  para_skeleton->setFrameConent();
-  gridLayout->setRowMinimumHeight(1,610);
-  gridLayout->setColumnMinimumWidth(0,315);
-
-  gridLayout->addWidget(para_skeleton,1,0,7,10);
-
-  mainFrame->showNormal();
-  mainFrame->adjustSize();
   //set the minimum size so it will shrink down to the right size
   this->setMinimumSize(mainFrame->sizeHint());
 
@@ -242,11 +207,7 @@ StdParaDlg::~StdParaDlg()
   if(para_normal)
     delete para_normal;
   para_normal = NULL;
-
-  if (para_skeleton)
-    delete para_skeleton;
-  para_skeleton = NULL;
-
+  
   if (para_upsampling)
     delete para_upsampling;
   para_upsampling = NULL;

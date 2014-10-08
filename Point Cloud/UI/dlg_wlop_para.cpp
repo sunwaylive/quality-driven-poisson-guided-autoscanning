@@ -136,7 +136,6 @@ void WlopParaDlg::isDensity(bool _val)
 void WlopParaDlg::isPca(bool _val)
 {
   m_paras->wLop.setValue("Need Compute PCA",BoolValue(_val));
-
 }
 
 // apply

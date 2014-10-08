@@ -19,10 +19,6 @@ void CalculationThread::run( void )
 	{
 		area->runWlop();
 	}
-	else if (running_name == QString("Skeletonization"))
-	{
-		area->runSkeletonization_paralleled();
-	}
 }
 
 void CalculationThread::setArea(GLArea* area)

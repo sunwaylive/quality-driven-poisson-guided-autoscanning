@@ -42,9 +42,6 @@ public:
 public:
   void findBoarderPoints();
   void findBoarderPointsByBallpivoting();
-  void searchNewBoundaries();
-  Boundary searchOneBoundaryFromIndex(int begin_idx);
-  Boundary searchOneBoundaryFromDirection(int begin_idx, Point3f direction);
 
   //IEEE sphere
   void buildSphereCandidatesIEEE();
@@ -56,15 +53,12 @@ public:
   void selectCandidateIEEE();
 
 private:
-  void runSearchNewBoundaries();
   void runBuildPVS();
   void runUpdatePVS();
-  void runSearchNewBoundariesByBallpivoting();
   void runComputeCandidates();
   void runSelectCandidate();
   void runPVSMerge();
   void runSphere();
-
   static bool cmp(const CVertex &v1, const CVertex &v2);
   
 private:
@@ -76,7 +70,6 @@ private:
   CMesh                 *iso_points;
   CMesh                 *pvs;
   CMesh                 *detect_result;
-  vector<Boundary>      *m_v_boundaries;
   CMesh                 *coarse_candidates;
   CMesh                 *nbv_candidates;
   vector<ScanCandidate> *scan_candidates;

@@ -141,8 +141,6 @@ signals:
     void pvsFirstScan();
     void pvsBuildPVS();
     void pvsUpdatePVS();
-    void pvsSearchNewBoundaries();
-    void pvsSearchNewBoundariesByBallpivoting();
     void pvsComputeCandidates();
     void pvsSelectCandidate();
     void pvsNBVScan();

@@ -8,7 +8,6 @@
 #include <QtOpenGL/QGLWidget>
 #include <iostream>
 #include <GL/glut.h>
-#include "Algorithm/Skeleton.h"
 #include "Algorithm/Camera.h"
 
 using namespace std;
@@ -55,7 +54,6 @@ public:
 
 	void setViewPoint(const Point3f& view){ view_point = view; }
 	void draw(DrawType type, CMesh* mesh);
-	void drawCurveSkeleton(Skeleton& skeleton);
   void drawCamera(vcc::Camera& camera, bool is_draw_border = true);
   void drawSlice(Slice& slice, double trans_value);
   void drawGrid(const CMesh *cube_mesh, const int grid_num_each_edge);
@@ -90,7 +88,6 @@ private:
 	void glDrawPoint(Point3f& p, GLColor color, double size);
 	void glDrawSphere(Point3f& p, GLColor color, double radius, int slide);
 	void glDrawCylinder(Point3f& p0, Point3f& p1, GLColor color, double width);
-	void glDrawBranches(vector<Branch>& branches, GLColor gl_color);
 	//void glDrawCurves(vector<Curve>& curves, GLColor gl_color);
 
 private:

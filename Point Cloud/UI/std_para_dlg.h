@@ -11,7 +11,6 @@
 #include "ParameterMgr.h"
 #include "UI/dlg_wlop_para.h"
 #include "UI/dlg_normal_para.h"
-#include "UI/dlg_skeleton_para.h"
 #include "UI/dlg_upsampling_para.h"
 #include "UI/dlg_poisson_para.h"
 #include "UI/dlg_camera_para.h"
@@ -29,7 +28,6 @@ public:
 
   bool showWlopParaDialog();
   bool showNormalParaDlg();
-  bool showSkeletonParaDlg();
   bool showUpsamplingParaDlg();
   bool showPoissonParaDlg();
   bool showCameraParaDlg();
@@ -39,7 +37,6 @@ private:
   void createFrame();
   void loadWlopFrame();
   void loadNormalFrame();
-  void loadSkeletonFrame();
   void loadUpsamplingFrame();
   void loadPoissonFrame();
   void loadCameraFrame();
@@ -50,13 +47,11 @@ private:
 private:
   WlopParaDlg          * para_wlop;
   NormalParaDlg        * para_normal;
-  SkeletonParaDlg      * para_skeleton;
   UpsamplingParaDlg    * para_upsampling;
   PoissonParaDlg       * para_poisson;
   CameraParaDlg        * para_camera; 
 
   ParameterMgr * paras;
-
   QFrame * mainFrame;
   GLArea * gla;
 };

@@ -41,7 +41,7 @@
      <x>0</x>
      <y>0</y>
      <width>1515</width>
-     <height>21</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -50,7 +50,6 @@
     </property>
     <addaction name="actionImport_Ply"/>
     <addaction name="actionSave_Ply"/>
-    <addaction name="actionSave_Skel"/>
     <addaction name="actionRemove_Outlier"/>
     <addaction name="actionNormalize"/>
     <addaction name="actionDownSample"/>
@@ -93,13 +92,6 @@
      <addaction name="actionNormal_Setting"/>
      <addaction name="actionReorientate"/>
     </widget>
-    <widget class="QMenu" name="menuSkeleton">
-     <property name="title">
-      <string>Skeleton</string>
-     </property>
-     <addaction name="separator"/>
-     <addaction name="actionSkeleton_Setting"/>
-    </widget>
     <widget class="QMenu" name="menuEAR">
      <property name="title">
       <string>EAR</string>
@@ -116,7 +108,6 @@
     </widget>
     <addaction name="menuWLOP"/>
     <addaction name="menuNormal"/>
-    <addaction name="menuSkeleton"/>
     <addaction name="menuEAR"/>
     <addaction name="menuPoisson"/>
     <addaction name="actionSave_Parameter"/>
@@ -188,13 +179,6 @@
      </property>
      <addaction name="actionErase_Pick"/>
     </widget>
-    <widget class="QMenu" name="menuSkeleton_Render">
-     <property name="title">
-      <string>Skeleton Render</string>
-     </property>
-     <addaction name="actionShow_Skeleton"/>
-     <addaction name="actionShow_colorful_branches"/>
-    </widget>
     <widget class="QMenu" name="menuShow_Poisson">
      <property name="title">
       <string>Show Poisson</string>
@@ -206,7 +190,6 @@
     <addaction name="separator"/>
     <addaction name="menuSample_Render"/>
     <addaction name="menuOriginal_Render"/>
-    <addaction name="menuSkeleton_Render"/>
     <addaction name="menuShow_Poisson"/>
     <addaction name="actionShow_Normals"/>
     <addaction name="actionShow_Scan_Candidates"/>
@@ -260,7 +243,6 @@
    <addaction name="actionSwitch_Sample_NBV"/>
    <addaction name="separator"/>
    <addaction name="actionDownSample"/>
-   <addaction name="actionSkeleton_Setting"/>
    <addaction name="actionUpsample_Setting"/>
    <addaction name="actionWLOP_Setting"/>
    <addaction name="actionNormal_Setting"/>

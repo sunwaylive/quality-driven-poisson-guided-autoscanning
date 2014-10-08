@@ -115,24 +115,6 @@
     <ClCompile Include="Console.cpp">
       <Filter>Helper</Filter>
     </ClCompile>
-    <ClCompile Include="Algorithm\Skeletonization.cpp">
-      <Filter>Algorithm</Filter>
-    </ClCompile>
-    <ClCompile Include="Algorithm\Skeleton.cpp">
-      <Filter>Algorithm</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\dlg_skeleton_para.cpp">
-      <Filter>UI</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_dlg_skeleton_para.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_dlg_skeleton_para.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release_debug\moc_dlg_skeleton_para.cpp">
-      <Filter>Generated Files\Release_debug</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_std_para_dlg.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -256,12 +238,6 @@
     <ClCompile Include="Poisson\PTime.cpp">
       <Filter>Poisson</Filter>
     </ClCompile>
-    <ClCompile Include="Algorithm\PVSBasedNBV.cpp">
-      <Filter>Algorithm</Filter>
-    </ClCompile>
-    <ClCompile Include="Algorithm\VisibilityBasedNBV.cpp">
-      <Filter>Algorithm</Filter>
-    </ClCompile>
     <ClCompile Include="Algorithm\RIMLS\apss.cpp">
       <Filter>Algorithm\RIMLS</Filter>
     </ClCompile>
@@ -282,6 +258,12 @@
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_OneKeyNBVBack.cpp">
       <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Algorithm\PVSBasedNBV.cpp">
+      <Filter>Algorithm</Filter>
+    </ClCompile>
+    <ClCompile Include="Algorithm\VisibilityBasedNBV.cpp">
+      <Filter>Algorithm</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -314,12 +296,6 @@
     </CustomBuild>
     <CustomBuild Include="calculationthread.h">
       <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="UI\para_skeletonization.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="UI\dlg_skeleton_para.h">
-      <Filter>UI</Filter>
     </CustomBuild>
     <CustomBuild Include="UI\upsampling_para.ui">
       <Filter>Form Files</Filter>
@@ -403,12 +379,6 @@
     </ClInclude>
     <ClInclude Include="Console.h">
       <Filter>Helper</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_para_skeletonization.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Algorithm\Skeleton.h">
-      <Filter>Algorithm</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_upsampling_para.h">
       <Filter>Generated Files</Filter>
@@ -497,16 +467,7 @@
     <ClInclude Include="GeneratedFiles\ui_camera_para.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="Algorithm\Skeletonization.h">
-      <Filter>Algorithm</Filter>
-    </ClInclude>
     <ClInclude Include="Algorithm\pointcloud_normal.h">
-      <Filter>Algorithm</Filter>
-    </ClInclude>
-    <ClInclude Include="Algorithm\PVSBasedNBV.h">
-      <Filter>Algorithm</Filter>
-    </ClInclude>
-    <ClInclude Include="Algorithm\VisibilityBasedNBV.h">
       <Filter>Algorithm</Filter>
     </ClInclude>
     <ClInclude Include="Algorithm\RIMLS\apss.h">
@@ -540,6 +501,12 @@
       <Filter>Algorithm\RIMLS</Filter>
     </ClInclude>
     <ClInclude Include="SparseICP.h">
+      <Filter>Algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="Algorithm\PVSBasedNBV.h">
+      <Filter>Algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="Algorithm\VisibilityBasedNBV.h">
       <Filter>Algorithm</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,6 +1,5 @@
 #include "UI/dlg_camera_para.h"
 
-
 CameraParaDlg::CameraParaDlg(QWidget *p, ParameterMgr * _paras, GLArea * _area) : QFrame(p)
 {
   ui = new Ui::camera_paras;
@@ -124,8 +123,6 @@ void CameraParaDlg::initConnects()
 
   /*** PVS Based NBV ***/
   connect(ui->pushButton_pvs_first_scan, SIGNAL(clicked()), this, SLOT(pvsFirstScan()));
-  connect(ui->pushButton_pvs_search_new_boundaries, SIGNAL(clicked()), this, SLOT(pvsSearchNewBoundaries()));
-  connect(ui->pushButton_pvs_search_new_boundaries_ball_pivoting, SIGNAL(clicked()), this, SLOT(pvsSearchNewBoundariesByBallpivoting()));
   connect(ui->pushButton_compute_all_candidates, SIGNAL(clicked()), this, SLOT(pvsComputeCandidates()));
   connect(ui->pushButton_select_candidate, SIGNAL(clicked()), this, SLOT(pvsSelectCandidate()));
   connect(ui->pushButton_build_pvs, SIGNAL(clicked()), this, SLOT(pvsBuildPVS()));
@@ -1236,7 +1233,6 @@ void CameraParaDlg::runOneKeyNbvIteration()
     QString s_iso;
     s_iso.sprintf("\\%d_iso.skel", ic);
     s_iso = file_location + s_iso;
-    area->dataMgr.saveSkeletonAsSkel(s_iso);
     s_iso.replace(".skel", ".View");
     area->saveView(s_iso);
     //save iso dat and raw
@@ -1252,7 +1248,6 @@ void CameraParaDlg::runOneKeyNbvIteration()
     QString s_nbv;
     s_nbv.sprintf("\\%d_nbv.skel", ic);
     s_nbv = file_location + s_nbv;
-    area->dataMgr.saveSkeletonAsSkel(s_nbv);
     s_nbv.replace(".skel", ".View");
     area->saveView(s_nbv);
 
@@ -1378,7 +1373,6 @@ void CameraParaDlg::runOneKeyNbvIterationWlop()
     QString s_iso;
     s_iso.sprintf("\\%d_iso.skel", ic);
     s_iso = file_location + s_iso;
-    area->dataMgr.saveSkeletonAsSkel(s_iso);
     s_iso.replace(".skel", ".View");
     area->saveView(s_iso);
     //save iso dat and raw
@@ -1397,7 +1391,6 @@ void CameraParaDlg::runOneKeyNbvIterationWlop()
     QString s_nbv;
     s_nbv.sprintf("\\%d_nbv.skel", ic);
     s_nbv = file_location + s_nbv;
-    area->dataMgr.saveSkeletonAsSkel(s_nbv);
     s_nbv.replace(".skel", ".View");
     area->saveView(s_nbv);
 
@@ -2083,7 +2076,6 @@ void CameraParaDlg::runVisibilityOneKeyNbvIteration()
     file_name.sprintf("\\%d_original.skel", i);
     std::cout<<i <<"th: save visibility original" <<std::endl;
     file_name = file_location + file_name;
-    area->dataMgr.saveSkeletonAsSkel(file_name);
   }
 }
 
@@ -2122,20 +2114,6 @@ void CameraParaDlg::pvsUpdatePVS()
   global_paraMgr.pvsBasedNBV.setValue("Run Update PVS", BoolValue(false));
 }
 
-void CameraParaDlg::pvsSearchNewBoundaries()
-{
-  global_paraMgr.pvsBasedNBV.setValue("Run PVS Search New Boundaries", BoolValue(true));
-  area->runPVSBasedNBV();
-  global_paraMgr.pvsBasedNBV.setValue("Run PVS Search New Boundaries", BoolValue(false));
-}
-
-void CameraParaDlg::pvsSearchNewBoundariesByBallpivoting()
-{
-  global_paraMgr.pvsBasedNBV.setValue("Run PVS Search New Boundaries By Ballpivoting", BoolValue(true));
-  area->runPVSBasedNBV();
-  global_paraMgr.pvsBasedNBV.setValue("Run PVS Search New Boundaries By Ballpivoting", BoolValue(false));
-}
-
 void CameraParaDlg::pvsComputeCandidates()
 {
   global_paraMgr.pvsBasedNBV.setValue("Run PVS Compute Candidates", BoolValue(true));
@@ -2168,46 +2146,7 @@ void CameraParaDlg::pvsMerge()
 
 void CameraParaDlg::pvsOneKeyNbvIteration()
 {
-  std::cout <<"One Key PVS NBV Begins:" <<std::endl;
-  int count = 100;
-  //save the results
-  QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
-  if (!file_location.size()) return;
-
-  for (int i = 2; i < count; ++i)
-  {
-    pvsSearchNewBoundaries();
-
-    pvsUpdatePVS();
-
-    if (global_paraMgr.pvsBasedNBV.getBool("Is PVS Stop"))
-      break;
-
-    //run poisson reconstruction
-    global_paraMgr.poisson.setValue("Run Poisson On Samples", BoolValue(true));
-    global_paraMgr.poisson.setValue("Run Extract MC Points", BoolValue(true));
-    //global_paraMgr.poisson.setValue("Run One Key PoissonConfidence", BoolValue(true));
-    area->runPoisson();
-    global_paraMgr.poisson.setValue("Run Extract MC Points", BoolValue(false));
-    global_paraMgr.poisson.setValue("Run Poisson On Samples", BoolValue(false));
-    //global_paraMgr.poisson.setValue("Run One Key PoissonConfidence", BoolValue(false));
-
-    pvsComputeCandidates();
-    if (global_paraMgr.pvsBasedNBV.getBool("Is PVS Stop"))
-      break;
-
-    pvsSelectCandidate();
-    if (global_paraMgr.pvsBasedNBV.getBool("Is PVS Stop"))
-      break;
-
-    pvsNBVScan();
-    pvsMerge();
-
-    QString file_name;
-    file_name.sprintf("\\%d_original.skel", i);
-    file_name = file_location + file_name;
-    area->dataMgr.saveSkeletonAsSkel(file_name);
-  }  
+  
 }
 
 void CameraParaDlg::runSphere()

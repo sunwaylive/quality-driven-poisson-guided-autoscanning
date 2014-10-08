@@ -39,23 +39,12 @@ void PVSBasedNBV::setInput(DataMgr *pData)
   scan_candidates = pData->getScanCandidates();
   scan_history = pData->getScanHistory();
   scan_count = pData->getScanCount();
-  m_v_boundaries = pData->getBoundaries();
   iso_points = pData->getCurrentIsoPoints();
   pvs = pData->getPVS();
 }
 
 void PVSBasedNBV::run()
 {
-  if (para->getBool("Run PVS Search New Boundaries"))
-  {
-    std::cout<< "Run PVS Search New Boundaries!" <<std::endl;
-    runSearchNewBoundaries();
-  }
-  if (para->getBool("Run PVS Search New Boundaries By Ballpivoting"))
-  {
-    std::cout<<" Run PVS Search New Boundaries By Ballpivoting "<<std::endl;
-    runSearchNewBoundariesByBallpivoting();
-  }
   if (para->getBool("Run PVS Compute Candidates"))
   {
     std::cout<<"Run PVS Compute Candidates " <<std::endl;
@@ -353,112 +342,9 @@ void PVSBasedNBV::runUpdatePVS()
   }
 }
 
-void PVSBasedNBV::runSearchNewBoundaries()
-{
-  findBoarderPoints();
-  //clear former boundaries and search for new ones
-  m_v_boundaries->clear();
-  searchNewBoundaries();
-
-  //refine the board points
-  for (int i = 0; i < m_v_boundaries->size(); ++i)
-  {
-    int curve_size = m_v_boundaries->at(i).curve.size();
-    for (int j = 0; j < curve_size; ++j)
-    {
-      detect_result->vert[m_v_boundaries->at(i).curve.at(j).m_index].is_boundary = true;
-    }
-  }
-}
-
-void PVSBasedNBV::runSearchNewBoundariesByBallpivoting()
-{
-  findBoarderPointsByBallpivoting();
-  //clear former boundaries and search for new ones
-  m_v_boundaries->clear();
-  searchNewBoundaries();
-}
-
 void PVSBasedNBV::runComputeCandidates()
 {
-  if (m_v_boundaries->empty())
-  {
-    global_paraMgr.pvsBasedNBV.setValue("Is PVS Stop", BoolValue(true));
-    std::cout<<"No Boundary Found! Algorithm Finished! " <<std::endl;
-    std::cout<<"Scan Count: " <<*scan_count <<std::endl;
-    return;
-  }
   
-  double step_aside_size = 0.0; //global_paraMgr.wLop.getDouble("CGrid Radius");
-  double camera_far_dist = global_paraMgr.camera.getDouble("Camera Far Distance") /
-    global_paraMgr.camera.getDouble("Predicted Model Size");
-
-  GlobalFun::clearCMesh(*nbv_candidates);
-  for (int i = 0; i < m_v_boundaries->size(); ++i)
-  {
-    Boundary b = m_v_boundaries->at(i);
-    int mid_curve_idx = b.curve.size() / 2;
-    int cmesh_index = b.curve[mid_curve_idx].m_index;
-    //corresponding point in CMesh
-    CVertex &v = detect_result->vert[cmesh_index];
-    //find one point which is not a board point
-    CVertex *inside_point;
-    for (int j = 0; j < v.neighbors.size(); ++j)
-    {
-      CVertex &n = detect_result->vert[v.neighbors[j]];
-      if (n.IsB()) continue;
-      else { inside_point = &n; break;}
-    }
-    
-    Point3f boder_dir = b.curve[mid_curve_idx].P() - b.curve[mid_curve_idx - 1].P();
-    Point3f mid_point_normal = b.curve[mid_curve_idx].N();
-    Point3f step_aside_direction = (boder_dir ^ mid_point_normal).Normalize();//cross product, remember always normalize
-
-    Point3f inside_direction = (*inside_point).P() - b.curve[mid_curve_idx].P();
-    if (step_aside_direction * inside_direction > 0)
-      step_aside_direction = -step_aside_direction;
-
-    //clear candidates
-    CVertex candidate = v;
-    candidate.m_index = i;
-    candidate.P() = v.P() + step_aside_direction * step_aside_size;
-    GlobalFun::printPoint3(std::cout, v.P());
-    GlobalFun::printPoint3(std::cout, candidate.P());
-    GlobalFun::printPoint3(std::cout, step_aside_direction);
-
-    nbv_candidates->vert.push_back(candidate);
-    nbv_candidates->bbox.Add(candidate.P());
-  }
-  nbv_candidates->vn = nbv_candidates->vert.size();
-
-  std::cout<< "nbv candidates size: "<< nbv_candidates->vert.size() <<std::endl;
-
-  if (nbv_candidates->vert.empty())
-  {
-    global_paraMgr.pvsBasedNBV.setValue("Is PVS Stop", BoolValue(true));
-    std::cout<<"No candidates found! Algorithm Finished Correctly !" <<std::endl;
-    std::cout<<"Scan count: " <<*scan_count <<std::endl;
-    return;
-  }
-
-  //adjust the candidates according to the poisson surface
-  if (iso_points->vert.empty())
-  {
-    std::cout<<"ERROR: Iso points empty!" <<std::endl;
-    return;
-  }
-  std::cout<<iso_points->vert.size() << std::endl;
-  GlobalFun::computeAnnNeigbhors(iso_points->vert, nbv_candidates->vert, 5, false, "PVS search nearest point on poisson surface to the given coarse candidates");
-  
-  scan_candidates->clear();
-  for (int i = 0; i < nbv_candidates->vert.size(); ++i)
-  {
-    CVertex &iso_nearest = iso_points->vert[nbv_candidates->vert[i].neighbors[0]];
-    // move outward in the normal direction and reverse the normal to get the nbv direction
-    nbv_candidates->vert[i].P() = iso_nearest.P() + iso_nearest.N() * optimalDist;
-    nbv_candidates->vert[i].N() = -iso_nearest.N();
-    scan_candidates->push_back(std::make_pair(nbv_candidates->vert[i].P(), nbv_candidates->vert[i].N()));
-  }
 }
 
 void PVSBasedNBV::findBoarderPoints()
@@ -554,140 +440,6 @@ void PVSBasedNBV::findBoarderPointsByBallpivoting()
   for (int i = 0; (i < detect_result->vert.size()); ++i)
     if(detect_result->vert[i].IsB())
       detect_result->vert[i].is_boundary = true;
-}
-
-void PVSBasedNBV::searchNewBoundaries()
-{
-  int boundary_knn = para->getInt("Boundary Search KNN");
-  GlobalFun::computeAnnNeigbhors(detect_result->vert, detect_result->vert, boundary_knn, false, "void PVSBasedNBV::search New Boundaies");
-  
-  std::cout<<"rimls result neighbors: " <<detect_result->vert[0].neighbors.size() <<std::endl;
-
-  while (true)
-  {
-    //make sure boundary search begin at boundary point
-    int begin_idx = -1;
-    for (int i = 0; i < detect_result->vert.size(); ++i)
-    {
-      if (detect_result->vert[i].is_boundary) 
-      {
-        begin_idx = i;
-        break;
-      }
-    }
-    
-    if (begin_idx < 0) break;//exit the while loop
-
-    Boundary new_boundary = searchOneBoundaryFromIndex(begin_idx);
-    int accept_boundary_size = para->getInt("Accept Boundary Size");
-    if (new_boundary.getSize() >= accept_boundary_size)
-    {
-      for (int j = 0; j < new_boundary.getSize(); ++j)
-      {
-        detect_result->vert[new_boundary.curve[j].m_index].is_boundary = false;//mark the point have been handled
-      }
-      m_v_boundaries->push_back(new_boundary);
-    }
-  }
-
-  std::cout<< m_v_boundaries->size() <<" boundaries detected!" <<std::endl;
-}
-
-Boundary PVSBasedNBV::searchOneBoundaryFromIndex(int begin_idx)
-{
-  Boundary new_boundary;
-  CVertex& begin_vert = detect_result->vert[begin_idx];
-  if (!begin_vert.is_boundary)
-  {
-    std::cout<< "start point is not a border one! " <<std::endl;
-    return new_boundary;
-  }
-  
-  if (begin_vert.neighbors.size() < 1)
-  {
-    std::cout<<"Empty neighbors of begin_vert!" <<std::endl;
-    return new_boundary;
-  }
-  //we should alter the treated point property
-  begin_vert.is_boundary = false;
-
-  int nearest_idx = -1;
-  for (int i = 0; i < begin_vert.neighbors.size(); ++i)
-  {
-    CVertex& t = detect_result->vert[begin_vert.neighbors[i]];
-    if (t.is_boundary)
-    {
-      nearest_idx = begin_vert.neighbors[i];
-      break;
-    }
-  }
-
-  if (nearest_idx < 0) return new_boundary;
-
-  CVertex &t = detect_result->vert[nearest_idx];
-  Point3f head_direction = (t.P() - begin_vert.P()).Normalize();
-  Boundary boundary_first_part = searchOneBoundaryFromDirection(begin_idx, head_direction);
-  Boundary boundary_second_part = searchOneBoundaryFromDirection(begin_idx, -head_direction);
-  
-  //combine them
-  Curve curve_first_part = boundary_first_part.curve;
-  Curve curve_second_part = boundary_second_part.curve;
-
-  Curve::reverse_iterator r_iter = curve_second_part.rbegin();
-
-  for (int i = 0; i < curve_second_part.size()-1; ++i) 
-  {
-    new_boundary.pushBackCVertex(*r_iter);
-    r_iter++;
-  }
-
-  for (int i = 0; i < curve_first_part.size(); ++i)
-  {
-    new_boundary.pushBackCVertex(curve_first_part[i]);
-  }
-
-  return new_boundary;
-}
-
-Boundary PVSBasedNBV::searchOneBoundaryFromDirection(int begin_idx, Point3f direction)
-{
-  Boundary new_boundary;
-  int curr_idx = begin_idx;
-  do 
-  {
-    CVertex curr_vertex = detect_result->vert[curr_idx];
-    new_boundary.pushBackCVertex(curr_vertex);
-    detect_result->vert[curr_idx].is_boundary = false;
-
-    Point3f new_direction;
-    int next_idx = -1;
-    for (int i = 0; i < curr_vertex.neighbors.size(); ++i)
-    {
-      CVertex &t = detect_result->vert[curr_vertex.neighbors[i]];
-
-      if (!t.is_boundary) continue;
-
-      new_direction = (t.P() - curr_vertex.P()).Normalize();
-      double angle = GlobalFun::computeRealAngleOfTwoVertor(direction, new_direction);
-      //for test
-      if (abs(angle - (-1)) < 1e-4)
-      {
-        GlobalFun::printPoint3(std::cout, new_direction);
-        GlobalFun::printPoint3(std::cout, direction);
-      }
-      if (angle > para->getDouble("Boundary Search Angle"))  continue;
-
-      next_idx = curr_vertex.neighbors[i];
-      break;
-    }
-
-    if (next_idx < 0) break;
-
-    direction = new_direction;
-    curr_idx = next_idx;
-  } while (true);
-
-  return new_boundary;
 }
 
 void PVSBasedNBV::buildSphereCandidatesIEEE()

@@ -9,7 +9,6 @@ GLArea::GLArea(QWidget *parent): QGLWidget(/*QGLFormat(QGL::DoubleBuffer | QGL::
   dataMgr(global_paraMgr.getDataParameterSet()),
   wlop(global_paraMgr.getWLopParameterSet()),
   norSmoother(global_paraMgr.getNormalSmootherParameterSet()),
-  skeletonization(global_paraMgr.getSkeletonParameterSet()),
   upsampler(global_paraMgr.getUpsamplingParameterSet()),
   poisson(global_paraMgr.getPoissonParameterSet()),
   camera(global_paraMgr.getCameraParameterSet()),
@@ -271,17 +270,6 @@ void GLArea::paintGL()
         if (para->getBool("Show Samples Sphere"))
           glDrawer.draw(GLDrawer::SPHERE, dataMgr.getCurrentSamples());	
       }
-
-      if (!dataMgr.getBoundaries()->empty())
-      {
-        for (int i = 0; i < dataMgr.getBoundaries()->size(); ++i)
-        {
-          for (int j = 0; j < dataMgr.getBoundaries()->at(i).curve.size(); ++j)
-          {
-            glDrawer.drawSphere(dataMgr.getBoundaries()->at(i).curve.at(j));
-          }
-        }
-      }
     }
 
     if (para->getBool("Show Normal")) 
@@ -356,12 +344,7 @@ void GLArea::paintGL()
           glDrawer.draw(GLDrawer::SPHERE, dataMgr.getCurrentIsoPoints());	
       }
     }
-
-    if (para->getBool("Show Skeleton"))
-    {
-      glDrawer.drawCurveSkeleton(*dataMgr.getCurrentSkeleton());
-    }
-
+    
     if (!(takeSnapTile && para->getBool("No Snap Radius")))
     {
       glDrawer.drawPickPoint(dataMgr.getCurrentSamples(), pickList, para->getBool("Show Samples Dot"));
@@ -659,7 +642,6 @@ void GLArea::initSetting()
   dataMgr.recomputeQuad();
   initView();
   wlop.setFirstIterate();
-  skeletonization.setFirstIterate();
   emit needUpdateStatus();
 }
 
@@ -733,10 +715,6 @@ void GLArea::openByDrop(QString fileName)
   {
     loadView(fileName);
   }
-  if (fileName.endsWith("skel"))
-  {
-    dataMgr.loadSkeletonFromSkel(fileName);
-  }
   else if(fileName.endsWith("RGBN"))
   {
     readRGBNormal(fileName);
@@ -788,7 +766,6 @@ void GLArea::openByDrop(QString fileName)
   //dataMgr.recomputeQuad();
   initView();
   wlop.setFirstIterate();
-  skeletonization.setFirstIterate();
   emit needUpdateStatus();
 
   updateGL();
@@ -1070,8 +1047,7 @@ void GLArea::drawNeighborhoodRadius()
     glutSolidSphere(grid_radius  / sqrt(h_Gaussian_para), 40, 40);
 
     if (para->getBool("Show Red Radius Line") 
-      && para->getBool("Show Skeleton")
-      && !dataMgr.getCurrentSkeleton()->isEmpty())
+      && para->getBool("Show Skeleton"))
     {
       double branch_merge_radius = global_paraMgr.skeleton.getDouble("Branches Merge Max Dist");
       glColor4f(0,1,0.5,0.4);
@@ -1204,10 +1180,6 @@ int GLArea::pickPoint(int x, int y, vector<int> &result, int width, int height,b
 
   int sz= samples->vert.size();
 
-  //if (global_paraMgr.drawer.getBool("Use Pick Skeleton"))
-  //{
-  //	sz = dataMgr.getCurrentSkeleton()->size;
-  //}
   GLuint *selectBuf =new GLuint[sz*5];
 
   //  static unsigned int selectBuf[16384];
@@ -1517,84 +1489,6 @@ void GLArea::runWlop()
   //}
   global_paraMgr.wLop.setValue("Run Anisotropic LOP", BoolValue(false));
 }
-
-void GLArea::runSkeletonization_linear()
-{
-  if (dataMgr.isSamplesEmpty())
-  {
-    return;
-  }
-
-  runPointCloudAlgorithm(skeletonization);
-
-  para->setValue("Running Algorithm Name",
-    StringValue(skeletonization.getParameterSet()->getString("Algorithm Name")));
-
-  emit needUpdateStatus();
-}
-
-void GLArea::runSkeletonization_paralleled()
-{
-  if (dataMgr.isOriginalEmpty() || dataMgr.isSamplesEmpty())
-  {
-    return;
-  }
-  global_paraMgr.glarea.setValue("GLarea Busying", BoolValue(true));
-
-  global_paraMgr.skeleton.setValue("The Skeletonlization Process Should Stop", BoolValue(false));
-  double current_radius = global_paraMgr.skeleton.getDouble("CGrid Radius");
-  global_paraMgr.skeleton.setValue("Initial Radius", DoubleValue(current_radius));
-
-
-  bool is_break = false;
-  int MAX_SKELETON_ITERATE = 500;
-  //if (global_paraMgr.skeleton.getBool("Run Auto Wlop One Step"))
-  //{
-  //  MAX_SKELETON_ITERATE = 1;
-  //}
-
-  for (int i = 0; i < MAX_SKELETON_ITERATE; i++)
-  {
-    if (global_paraMgr.glarea.getBool("Algorithm Stop") || is_break)
-    {
-      is_break = true;
-      break;
-    }
-    //paintMutex.lock();
-    global_paraMgr.skeleton.setValue("Run Auto Wlop One Step", BoolValue(true));
-    runPointCloudAlgorithm(skeletonization);
-    global_paraMgr.skeleton.setValue("Run Auto Wlop One Step", BoolValue(true));
-    // paintMutex.unlock();
-
-    if (global_paraMgr.skeleton.getBool("The Skeletonlization Process Should Stop"))
-    {
-      break;
-    }
-    emit needUpdateStatus();
-  }
-  global_paraMgr.glarea.setValue("GLarea Busying", BoolValue(false));
-
-  if (is_break)
-  {
-    global_paraMgr.skeleton.setValue("The Skeletonlization Process Should Stop", BoolValue(false));
-    global_paraMgr.glarea.setValue("Algorithm Stop", BoolValue(false));
-    global_paraMgr.glarea.setValue("GLarea Busying", BoolValue(false));
-    return;
-  }
-
-  if (global_paraMgr.skeleton.getBool("Run Auto Wlop One Stage"))
-  {
-    global_paraMgr.skeleton.setValue("Run Auto Wlop One Stage", BoolValue(false));
-    emit needUpdateStatus();
-    return;
-  }
-
-  para->setValue("Running Algorithm Name",
-    StringValue(skeletonization.getParameterSet()->getString("Algorithm Name")));
-
-
-}
-
 
 void GLArea::runUpsampling()
 {
@@ -2364,12 +2258,7 @@ void GLArea::wheelEvent(QWheelEvent *e)
     {
     case Qt::ControlModifier:
 
-      if (para->getBool("Show Skeleton") && !dataMgr.isSkeletonEmpty())
-      {
-        size_temp = global_paraMgr.drawer.getDouble("Skeleton Node Size");
-        global_paraMgr.drawer.setValue("Skeleton Node Size", DoubleValue(size_temp * change));
-      }
-      else if(para->getBool("Show Original") && para->getBool("Show Original Sphere") )
+      if(para->getBool("Show Original") && para->getBool("Show Original Sphere") )
       {
         size_temp = global_paraMgr.drawer.getDouble("Original Draw Width");
         global_paraMgr.drawer.setValue("Original Draw Width", DoubleValue(size_temp * change));
@@ -2452,18 +2341,9 @@ void GLArea::wheelEvent(QWheelEvent *e)
       break;
 
     case Qt::ShiftModifier:
-
-      if (para->getBool("Show Skeleton") && !dataMgr.isSkeletonEmpty())
-      {
-        size_temp = global_paraMgr.drawer.getDouble("Skeleton Bone Width");
-        global_paraMgr.drawer.setValue("Skeleton Bone Width", DoubleValue(size_temp * change));
-      }
-      else
-      {
         size_temp = global_paraMgr.data.getDouble("Down Sample Num");
         global_paraMgr.setGlobalParameter("Down Sample Num", DoubleValue(size_temp * change));
         emit needUpdateStatus();
-      }
 
       break;
 

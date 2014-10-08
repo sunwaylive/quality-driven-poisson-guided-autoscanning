@@ -105,7 +105,6 @@ void MainWindow::initConnect()
 	connect(ui.actionStop, SIGNAL(triggered()), this, SLOT(setStop()));
 	connect(ui.actionStep, SIGNAL(triggered()), this, SLOT(stepPlaySkeleton()));
 	connect(ui.actionJump, SIGNAL(triggered()), this, SLOT(jumpPlaySkeleton()));
-	connect(ui.actionSkeleton_Setting, SIGNAL(triggered()), this, SLOT(showSkeletonDlg()));	
 	connect(ui.actionRecompute_Quad,SIGNAL(triggered()),this,SLOT(recomputeQuad()));
 	
 	connect(ui.actionLight_On_Off, SIGNAL(toggled(bool)), this, SLOT(lightOnOff(bool)));
@@ -120,7 +119,6 @@ void MainWindow::initConnect()
 	connect(ui.actionShow_Normal_Color,SIGNAL(toggled(bool)),this,SLOT(showNormalColor(bool)));
 	connect(ui.actionSnap_Each_Iteration,SIGNAL(toggled(bool)),this,SLOT(setSnapshotEachIteration(bool)));
 	connect(ui.actionNo_Snap_Radius,SIGNAL(toggled(bool)),this,SLOT(setNoSnapshotWithRadius(bool)));
-  connect(ui.actionShow_Skeleton,SIGNAL(toggled(bool)),this,SLOT(showSkeleton(bool)));
   connect(ui.actionShow_colorful_branches,SIGNAL(toggled(bool)),this,SLOT(showColorfulBranches(bool)));
   connect(ui.actionShow_Box,SIGNAL(toggled(bool)),this,SLOT(showBox(bool)));  
   connect(ui.actionShow_Confidence_Color, SIGNAL(toggled(bool)), this, SLOT(showConfidenceColor(bool)));
@@ -262,10 +260,6 @@ void MainWindow::updateStatusBar()
   {
     iteration_unm = area->wlop.getIterateNum();
   }
-  else if (running_name == QString("Skeletonization"))
-  {
-    iteration_unm = area->skeletonization.getIterateNum();
-  }
   QString iterateNum= "Iterate: " + QString::number(iteration_unm);
   iteration_label->setText(iterateNum);
 
@@ -309,7 +303,6 @@ void MainWindow::createActionGroups()
 void MainWindow::init()
 {
 	strTitle = "Point Cloud";
-	paraDlg_Skeleton = NULL;
 	paraDlg_Upsample = NULL;
 	paraDlg_WLOP = NULL;
 	paraDlg_Normal = NULL;
@@ -401,23 +394,6 @@ void MainWindow::showCameraParaDlg()
   paraDlg_Camera->setFloating(false);
   paraDlg_Camera->hide();
   paraDlg_Camera->showCameraParaDlg();
-}
-
-void MainWindow::showSkeletonDlg()
-{
-	if(paraDlg_Skeleton != 0)
-	{
-		paraDlg_Skeleton->close();
-		delete paraDlg_Skeleton;
-	}
-
-	paraDlg_Skeleton = new StdParaDlg(paras, area, this);
-	paraDlg_Skeleton->setAllowedAreas(Qt::LeftDockWidgetArea
-		| Qt::RightDockWidgetArea);
-	addDockWidget(Qt::LeftDockWidgetArea,paraDlg_Skeleton);
-	paraDlg_Skeleton->setFloating(false);
-	paraDlg_Skeleton->hide();
-	paraDlg_Skeleton->showSkeletonParaDlg();	
 }
 
 void MainWindow::autoPlaySkeleton()
@@ -546,7 +522,6 @@ void MainWindow::downSample()
   }
 
 	area->dataMgr.downSamplesByNum();
-  area->dataMgr.skeleton.clear();
 	area->initSetting();
 	area->updateGL();
 }
@@ -621,7 +596,6 @@ void MainWindow::saveSkel()
 	QString file = QFileDialog::getSaveFileName(this, "Save samples as", "", "*.skel");
 	if(!file.size()) return;
 
-	area->dataMgr.saveSkeletonAsSkel(file);
 	file.replace(".skel", ".View");
 	area->saveView(file);
 
@@ -800,12 +774,6 @@ void MainWindow::showSamples(bool _val)
 	global_paraMgr.glarea.setValue("Show Samples", BoolValue(_val));
 	area->updateGL();
 }
-
- void MainWindow::showSkeleton(bool _val)
- {
-   global_paraMgr.glarea.setValue("Show Skeleton", BoolValue(_val));
-   area->updateGL();
- }
 
 void MainWindow::showNormals(bool _val)
 {
