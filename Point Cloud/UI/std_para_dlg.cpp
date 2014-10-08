@@ -151,7 +151,7 @@ void StdParaDlg::loadCameraFrame()
   para_camera->setFrameConent();
 
   gridLayout->setRowMinimumHeight(2, 380);
-  gridLayout->setColumnMinimumWidth(1, 461);
+  gridLayout->setColumnMinimumWidth(1, 210);
 
   gridLayout->addWidget(para_camera, 1, 0, 13, 12);
 

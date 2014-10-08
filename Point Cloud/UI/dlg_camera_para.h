@@ -106,26 +106,8 @@ signals:
     void runICPMeshLab();
     void runRemoveSamplesWithLowConfidence();
     void runAddSamplesToOiriginal();
-
-    void getRotateCenterX(double _val);
-    void getRotateCenterY(double _val);
-    void getRotateCenterZ(double _val);
-    void getRotateNormalX(double _val);
-    void getRotateNormalY(double _val);
-    void getRotateNormalZ(double _val);
-    void getRotateStep(double _val);
-    void getRotateAngle(double _val);
-    void needSnapShotEachIteration(bool _val);
-    void getSnapShotIndex(double _val);
-
-    void rotateStep();
-    void rotateAnimation();
-    void sliceAnimation();
-    void loadPoissonSurface();
-    void moveTranslation();
-
+    
     void getModelSize();
-
     void runTest();
 
 private:
@@ -135,15 +117,3 @@ private:
   OneKeyNBVBack m_nbv;
   QReadWriteLock nbv_mutex;
 };
-
-//class ThreadObject:public QObject 
-//{ 
-//  Q_OBJECT 
-//public: 
-//  ThreadObject(){} 
-//  public slots: 
-//    void slot() 
-//    { 
-//      qDebug()<<"from thread slot:" <<QThread::currentThreadId(); 
-//    } 
-//}; 

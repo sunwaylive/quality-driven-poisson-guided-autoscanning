@@ -86,24 +86,6 @@ void CameraParaDlg::initConnects()
   connect(ui->pushButton_test, SIGNAL(clicked()), this, SLOT(runTest()));
   connect(ui->pushButton_remove_low_confidence_samples, SIGNAL(clicked()), this, SLOT(runRemoveSamplesWithLowConfidence()));
   connect(ui->pushButton_add_samples_to_original, SIGNAL(clicked()), this, SLOT(runAddSamplesToOiriginal()));
-
-  connect(ui->rotate_center_X,SIGNAL(valueChanged(double)),this,SLOT(getRotateCenterX(double)));
-  connect(ui->rotate_center_Y,SIGNAL(valueChanged(double)),this,SLOT(getRotateCenterY(double)));
-  connect(ui->rotate_center_Z,SIGNAL(valueChanged(double)),this,SLOT(getRotateCenterZ(double)));
-  connect(ui->rotate_normal_X,SIGNAL(valueChanged(double)),this,SLOT(getRotateNormalX(double)));
-  connect(ui->rotate_normal_Y,SIGNAL(valueChanged(double)),this,SLOT(getRotateNormalY(double)));
-  connect(ui->rotate_normal_Z,SIGNAL(valueChanged(double)),this,SLOT(getRotateNormalZ(double)));
-  connect(ui->rotate_step,SIGNAL(valueChanged(double)),this,SLOT(getRotateStep(double)));
-  connect(ui->rotate_angle,SIGNAL(valueChanged(double)),this,SLOT(getRotateAngle(double)));
-
-  connect(ui->pushButton_rotate,SIGNAL(clicked()),this,SLOT(rotateStep()));
-  connect(ui->pushButton_rotate_around,SIGNAL(clicked()),this,SLOT(rotateAnimation()));
-  connect(ui->wlop_snap_shot_each_iteration,SIGNAL(clicked(bool)),this,SLOT(needSnapShotEachIteration(bool)));
-  connect(ui->wlop_snapshot_index,SIGNAL(valueChanged(double)),this,SLOT(getSnapShotIndex(double)));
-  connect(ui->pushButton_slice_animation, SIGNAL(clicked()), this, SLOT(sliceAnimation()));
-  connect(ui->pushButton_load_poisson_surface, SIGNAL(clicked()), this, SLOT(loadPoissonSurface()));
-
-  connect(ui->pushButton_pick_center, SIGNAL(clicked()), this, SLOT(moveTranslation()));
   connect(ui->pushButton_get_model_size, SIGNAL(clicked()), this, SLOT(getModelSize()));
 }
 
@@ -135,23 +117,7 @@ bool CameraParaDlg::initWidgets()
 
   state = m_paras->nbv.getBool("Need Update Direction With More Overlaps") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
   ui->need_more_overlaps->setCheckState(state);
-
-  state = m_paras->glarea.getBool("SnapShot Each Iteration") ? (Qt::CheckState::Checked): (Qt::CheckState::Unchecked);
-  ui->wlop_snap_shot_each_iteration->setCheckState(state);
-
-  ui->rotate_center_X->setValue(area->rotate_pos.X());
-  ui->rotate_center_Y->setValue(area->rotate_pos.Y());
-  ui->rotate_center_Z->setValue(area->rotate_pos.Z());
-  ui->rotate_normal_X->setValue(area->rotate_normal.X());
-  ui->rotate_normal_Y->setValue(area->rotate_normal.Y());
-  ui->rotate_normal_Z->setValue(area->rotate_normal.Z());
-  ui->rotate_step->setValue(area->rotate_delta);
-  ui->rotate_angle->setValue(area->rotate_angle);
-
-  ui->wlop_snapshot_index->setValue(m_paras->glarea.getDouble("Snapshot Index"));
-  //state = m_paras->nbv.getBool("Use NBV Test1") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
-  //ui->use_nbv_test1->setCheckState(state);
-
+  
   state = m_paras->nbv.getBool("Use Max Propagation") ? (Qt::CheckState::Checked) : (Qt::CheckState::Unchecked);
   ui->use_max_propagation->setCheckState(state);
 
@@ -1388,209 +1354,6 @@ void CameraParaDlg::runOneKeyNbvIterationWlop()
   log.close();
 }
 
-void CameraParaDlg::getRotateCenterX(double _val)
-{
-  area->rotate_pos.X() = _val;
-  update(); area->update(); //area->updateGL();
-}
-
-void CameraParaDlg::getRotateCenterY(double _val)
-{
-  area->rotate_pos.Y() = _val;
-  update(); area->update(); //area->updateGL();
-}
-
-void CameraParaDlg::getRotateCenterZ(double _val)
-{
-  area->rotate_pos.Z() = _val;
-  update(); area->update(); //area->updateGL();
-}
-
-void CameraParaDlg::getRotateNormalX(double _val)
-{
-  area->rotate_normal.X() = _val;
-  update(); area->update(); //area->updateGL();
-}
-
-void CameraParaDlg::getRotateNormalY(double _val)
-{
-  area->rotate_normal.Y() = _val;
-  update(); area->update(); //area->updateGL();
-}
-
-void CameraParaDlg::getRotateNormalZ(double _val)
-{
-  area->rotate_normal.Z() = _val;
-  update(); area->update(); //area->updateGL();
-}
-
-void CameraParaDlg::getRotateStep(double _val)
-{
-  area->rotate_delta = _val;
-  update(); area->update(); //area->updateGL();
-}
-
-void CameraParaDlg::getRotateAngle(double _val)
-{
-  area->rotate_angle = _val;
-  update(); area->update(); //area->updateGL();
-}
-
-
-void CameraParaDlg::rotateStep()
-{
-  area->rotate_angle += area->rotate_delta;
-  if (area->rotate_angle >= 360)
-  {
-    area->rotate_angle -= 360;
-  }
-  initWidgets();
-  if (m_paras->glarea.getBool("SnapShot Each Iteration"))
-  {
-    area->figureSnapShot();
-  }
-  update(); area->update(); area->updateGL();
-}
-
-void CameraParaDlg::rotateAnimation()
-{
-  if (m_paras->glarea.getBool("SnapShot Each Iteration"))
-  {
-    area->figureSnapShot();
-  }
-
-  int rotate_time  = 360 / area->rotate_delta;
-  for (int i = 0; i < rotate_time; i++)
-  {
-    rotateStep();
-  }
-  update(); area->update(); area->updateGL();
-}
-
-void CameraParaDlg::sliceAnimation()
-{
-  double step_percentage_size =  area->rotate_delta / 360.;
-  int step_number = 360. / area->rotate_delta;
-
-  //if (m_paras->glarea.getBool("SnapShot Each Iteration"))
-  //{
-  //  area->figureSnapShot();
-  //}
-
-  if (global_paraMgr.poisson.getBool("Show X Slices"))
-  {
-    double recored_pos = global_paraMgr.poisson.getDouble("Current X Slice Position");
-    for (int i = 0; i < step_number+1; i++)
-    {
-      double position = step_percentage_size * i;
-      position = (std::min)(1.0, position);
-      global_paraMgr.poisson.setValue("Current X Slice Position", DoubleValue(position));
-
-      global_paraMgr.poisson.setValue("Run Slice", BoolValue(true));
-      area->runPoisson();
-      global_paraMgr.poisson.setValue("Run Slice", BoolValue(false));
-
-      initWidgets();
-      if (m_paras->glarea.getBool("SnapShot Each Iteration"))
-      {
-        area->figureSnapShot();
-      }
-      update(); area->update(); area->updateGL();
-    }
-  }
-  else if (global_paraMgr.poisson.getBool("Show Y Slices"))
-  {
-    double recored_pos = global_paraMgr.poisson.getDouble("Current Y Slice Position");
-    for (int i = 0; i < step_number+1; i++)
-    {
-      double position = step_percentage_size * i;
-      position = (std::min)(1.0, position);
-      global_paraMgr.poisson.setValue("Current Y Slice Position", DoubleValue(position));
-
-      global_paraMgr.poisson.setValue("Run Slice", BoolValue(true));
-      area->runPoisson();
-      global_paraMgr.poisson.setValue("Run Slice", BoolValue(false));
-
-      initWidgets();
-      if (m_paras->glarea.getBool("SnapShot Each Iteration"))
-      {
-        area->figureSnapShot();
-      }
-      update(); area->update(); area->updateGL();
-    }
-  }
-  else if (global_paraMgr.poisson.getBool("Show Z Slices"))
-  {
-    double recored_pos = global_paraMgr.poisson.getDouble("Current Z Slice Position");
-    for (int i = 0; i < step_number+1; i++)
-    {
-      double position = step_percentage_size * i;
-      position = (std::min)(1.0, position);
-      global_paraMgr.poisson.setValue("Current Z Slice Position", DoubleValue(position));
-
-      global_paraMgr.poisson.setValue("Run Slice", BoolValue(true));
-      area->runPoisson();
-      global_paraMgr.poisson.setValue("Run Slice", BoolValue(false));
-
-      initWidgets();
-      if (m_paras->glarea.getBool("SnapShot Each Iteration"))
-      {
-        area->figureSnapShot();
-      }
-      update(); area->update(); area->updateGL();
-    }
-  }
-}
-
-void CameraParaDlg::loadPoissonSurface()
-{
-  QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
-  if (!file_location.size()) 
-    return;
-
-  QDir dir(file_location);
-  if (!dir.exists()) 
-    return;
-
-  dir.setFilter(QDir::Files);
-  dir.setSorting(QDir::Name);
-
-  CMesh *poisson_surface = area->dataMgr.getCurrentPoissonSurface();
-  global_paraMgr.glarea.setValue("Show Poisson Surface", BoolValue(true));
-  initWidgets();
-
-  QFileInfoList list = dir.entryInfoList();
-  for (int i = 0; i < list.size(); ++i)
-  {
-    QFileInfo fileInfo = list.at(i);
-    QString f_name = fileInfo.fileName();
-
-    if (!f_name.endsWith(".ply"))
-      continue;
-
-    f_name = file_location + "\\" + f_name;
-
-    int mask = tri::io::Mask::IOM_FACENORMAL + tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL;
-    tri::io::ImporterPLY<CMesh>::Open(*poisson_surface, f_name.toAscii().data(), mask);
-    tri::UpdateNormals<CMesh>::PerVertexPerFace(*poisson_surface);
-    tri::io::ExporterPLY<CMesh>::Save(*poisson_surface, f_name.toAscii().data(), mask, false);
-    //do something, like snapshot
-    cout << i <<"th poisson surface vertices num: " << poisson_surface->vert.size() <<endl;
-  }
-}
-
-void CameraParaDlg::needSnapShotEachIteration(bool _val)
-{
-  global_paraMgr.glarea.setValue("SnapShot Each Iteration",BoolValue(_val));
-}
-
-void CameraParaDlg::getSnapShotIndex(double _val)
-{
-  m_paras->glarea.setValue("Snapshot Index", DoubleValue(_val));
-  area->updateGL();
-}
-
-
 void CameraParaDlg::runRemoveSampleOutliers()
 {
   //area->removeOutliers();
@@ -1939,23 +1702,6 @@ void CameraParaDlg::runICPMeshLab()
     area->saveSnapshot();
     area->update();
   }
-}
-
-void CameraParaDlg::moveTranslation()
-{
-  ifstream infile("artect_movement.txt");
-  CMesh* samples = area->dataMgr.getCurrentSamples();
-  Point3f movement;
-  infile >> movement.X() >> movement.Y() >> movement.Z();
-  cout << "movement " << endl;
-  GlobalFun::printPoint3(cout, movement);
-  for (int i = 0; i < samples->vert.size(); i++)
-  {
-    CVertex& v = samples->vert[i];
-
-    v.P() -= movement;
-  }
-  return;
 }
 
 void CameraParaDlg::getModelSize()
