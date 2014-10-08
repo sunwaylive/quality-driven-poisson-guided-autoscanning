@@ -100,10 +100,6 @@ signals:
     void runRemoveSampleOutliers();
     void runAddOutlierToOriginal();
     void runAddNoiseToOriginal();
-    void runICP();
-    void runICPWithNormalNoWlop();
-    void runICPNoWlop();
-    void runICPMeshLab();
     void runRemoveSamplesWithLowConfidence();
     void runAddSamplesToOiriginal();
     

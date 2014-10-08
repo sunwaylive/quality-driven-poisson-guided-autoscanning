@@ -609,7 +609,6 @@
     <ClInclude Include="Poisson\PPolynomial.h" />
     <ClInclude Include="Poisson\SparseMatrix.h" />
     <ClInclude Include="Poisson\Vector.h" />
-    <ClInclude Include="SparseICP.h" />
     <ClInclude Include="trackball.h" />
     <ClInclude Include="trackmode.h" />
     <CustomBuild Include="UI\dlg_camera_para.h">

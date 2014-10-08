@@ -494,9 +494,6 @@
     <ClInclude Include="Algorithm\RIMLS\smallcomponentselection.h">
       <Filter>Algorithm\RIMLS</Filter>
     </ClInclude>
-    <ClInclude Include="SparseICP.h">
-      <Filter>Algorithm</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Poisson\FunctionData.inl">

@@ -76,10 +76,6 @@ void CameraParaDlg::initConnects()
   connect(ui->step3_run_NBV, SIGNAL(clicked()), this, SLOT(runStep3NBVcandidates()));
   connect(ui->step4_run_New_Scan, SIGNAL(clicked()), this, SLOT(runStep4NewScans()));
   connect(ui->pushButton_wlop_on_scanned_mesh, SIGNAL(clicked()), this, SLOT(runWlopOnScannedMesh()));
-  connect(ui->pushButton_ICP, SIGNAL(clicked()), this, SLOT(runICP()));
-  connect(ui->pushButton_ICP_With_Normal_No_WLop, SIGNAL(clicked()), this, SLOT(runICPWithNormalNoWlop()));
-  connect(ui->pushButton_ICP_No_Wlop, SIGNAL(clicked()), this, SLOT(runICPNoWlop()));  
-  connect(ui->pushButton_ICP_MeshLab, SIGNAL(clicked()), this, SLOT(runICPMeshLab()));
   connect(ui->pushButton_remove_sample_outliers, SIGNAL(clicked()), this, SLOT(runRemoveSampleOutliers()));
   connect(ui->pushButton_add_outlier_to_original, SIGNAL(clicked()), this, SLOT(runAddOutlierToOriginal()));
   connect(ui->pushButton_add_noise_to_original, SIGNAL(clicked()), this, SLOT(runAddNoiseToOriginal()));
@@ -1101,7 +1097,6 @@ void CameraParaDlg::runOneKeyNbvIteration()
   const int holeFrequence = 3; //once every holeFrequence(2, 3, ...)
   bool use_hole_confidence = false;
   CMesh *original = area->dataMgr.getCurrentOriginal();
-  //run wlop 
 
   for (int ic = 0; ic < iteration_cout; ++ic)
   {
@@ -1206,8 +1201,6 @@ void CameraParaDlg::runOneKeyNbvIteration()
   QString last_original = "\\ultimate_original.ply";
   last_original = file_location + last_original;
   area->dataMgr.savePly(last_original, *area->dataMgr.getCurrentOriginal());
-
-  cout << "All is done!" <<endl;
   log.close();
 }
 
@@ -1482,226 +1475,6 @@ void CameraParaDlg::runAddSamplesToOiriginal()
     original->bbox.Add(t.P());
   }
   original->vn = original->vert.size();
-}
-
-void CameraParaDlg::runICP()
-{
-  QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
-  if (!file_location.size()) 
-    return;
-
-  QDir dir(file_location);
-  if (!dir.exists()) 
-    return;
-
-  dir.setFilter(QDir::Files);
-  dir.setSorting(QDir::Name);
-  QFileInfoList list = dir.entryInfoList();
-  const float sample_ratio = 0.05;
-  const int sample_num = 5000;
-  const int rewlop_cnt = 8;
-  //pre-process data for wlop
-  CMesh *target = area->dataMgr.getCurrentOriginal();
-  CMesh *target_wlop = new CMesh;
-  CMesh *src = area->dataMgr.getCurrentSamples();
-  CMesh *src_wlop = new CMesh;
-
-  for (int i = 0; i < list.size(); ++i)
-  {
-    QFileInfo fileInfo = list.at(i);
-    QString f_name = fileInfo.fileName();
-    std::cout<<"file name: " << f_name.toStdString() <<std::endl;
-
-    if (!f_name.endsWith(".ply"))
-      continue;
-
-    f_name = file_location + "\\" + f_name;
-    int mask = tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL;
-    area->dataMgr.loadPlyToSample(f_name);
-    //snapshot
-    area->update();
-    area->saveSnapshot();
-    area->update();
-
-    //every 8 times, we do a wlop
-    if(i % rewlop_cnt == 0){
-      //compute the wlop result for the first 360бу mesh
-      GlobalFun::clearCMesh(*target_wlop);
-      GlobalFun::downSample(target_wlop, target, sample_num * 1.0f / target->vert.size());
-      area->dataMgr.temperal_original = target;
-      area->dataMgr.temperal_sample = target_wlop;
-      global_paraMgr.wLop.setValue("Run Wlop On Scanned Mesh", BoolValue(true));
-      area->runWlop();
-      global_paraMgr.wLop.setValue("Run Wlop On Scanned Mesh", BoolValue(false));
-    }
-
-    GlobalFun::clearCMesh(*src_wlop);
-    GlobalFun::downSample(src_wlop, src, sample_num * 1.0f / src->vert.size());
-    area->dataMgr.temperal_original = src;
-    area->dataMgr.temperal_sample = src_wlop;
-    global_paraMgr.wLop.setValue("Run Wlop On Scanned Mesh", BoolValue(true));
-    area->runWlop();
-    global_paraMgr.wLop.setValue("Run Wlop On Scanned Mesh", BoolValue(false));
-
-    //do the registration
-    GlobalFun::computeICP(src_wlop, target_wlop, src);
-    GlobalFun::mergeMesh(src_wlop, target_wlop); //we should do sth.
-    GlobalFun::mergeMesh(src, target);//we should do sth.
-    GlobalFun::clearCMesh(*src);
-
-    area->update();
-    area->saveSnapshot();
-    area->update();
-  }
-  delete src_wlop; 
-  delete target_wlop;
-}
-
-void CameraParaDlg::runICPWithNormalNoWlop()
-{
-  QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
-  if (!file_location.size()) 
-    return;
-
-  QDir dir(file_location);
-  if (!dir.exists()) 
-    return;
-
-  dir.setFilter(QDir::Files);
-  dir.setSorting(QDir::Name);
-  QFileInfoList list = dir.entryInfoList();
-  const float sample_ratio = 0.05;
-  const int sample_num = 5000;
-  CMesh *original = area->dataMgr.getCurrentOriginal();
-  CMesh *sample = area->dataMgr.getCurrentSamples();
-
-  for (int i = 0; i < list.size(); ++i)
-  {
-    QFileInfo fileInfo = list.at(i);
-    QString f_name = fileInfo.fileName();
-    std::cout<<"file name: " << f_name.toStdString() <<std::endl;
-
-    if (!f_name.endsWith(".ply"))
-      continue;
-
-    f_name = file_location + "\\" + f_name;
-    int mask = tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL;
-    area->dataMgr.loadPlyToSample(f_name);
-    area->update();
-    area->saveSnapshot();
-    area->update();
-
-    GlobalFun::computerICPWithNormal(sample, original);
-    GlobalFun::mergeMesh(sample, original);
-    area->update();
-    area->saveSnapshot();
-    area->update();
-  }
-}
-
-void CameraParaDlg::runICPNoWlop()
-{
-  QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
-  if (!file_location.size()) 
-    return;
-
-  QDir dir(file_location);
-  if (!dir.exists()) 
-    return;
-
-  QString s_log = "\\log.txt";
-  s_log = file_location + s_log;
-  ofstream log;
-  log.open(s_log.toAscii().data());
-  cout.rdbuf(log.rdbuf());
-
-  dir.setFilter(QDir::Files);
-  dir.setSorting(QDir::Name);
-  QFileInfoList list = dir.entryInfoList();
-  const float sample_ratio = 0.05;
-  const int sample_num = 5000;
-  CMesh *original = area->dataMgr.getCurrentOriginal();
-  CMesh *sample = area->dataMgr.getCurrentSamples();
-
-  for (int i = 0; i < list.size(); ++i)
-  {
-    QFileInfo fileInfo = list.at(i);
-    QString f_name = fileInfo.fileName();
-    if (!f_name.endsWith(".ply"))
-      continue;
-
-    std::cout<<"file name: " << f_name.toStdString() <<std::endl;
-    f_name = file_location + "\\" + f_name;
-    int mask = tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL;
-    area->dataMgr.loadPlyToSample(f_name);
-    //remove outlier
-    double outlier_percentage = global_paraMgr.wLop.getDouble("Outlier Percentage");
-    std::cout<<"Outlier percentage: " <<outlier_percentage <<endl;
-    GlobalFun::removeOutliers(area->dataMgr.getCurrentSamples(), global_paraMgr.data.getDouble("CGrid Radius"), outlier_percentage);
-    cout<<"Has removed samples outliers."<<endl;
-
-    area->update();
-    area->saveSnapshot();
-    area->update();
-
-    double error = 0.0f;
-    GlobalFun::computeICP(sample, original, error);
-    cout<<" ICP error: " <<error <<endl;
-    if(error > 0.6f){
-      cout<<"Error two big, skip this scan"<<endl;
-      continue;
-    }else{
-      GlobalFun::mergeMesh(sample, original);
-    }
-    //area->update();
-    //area->saveSnapshot();
-    //area->update();
-  }
-  log.close();
-}
-
-void CameraParaDlg::runICPMeshLab()
-{
-  QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
-  if (!file_location.size()) 
-    return;
-
-  QDir dir(file_location);
-  if (!dir.exists()) 
-    return;
-
-  CMesh *original = area->dataMgr.getCurrentOriginal();
-  CMesh *sample = area->dataMgr.getCurrentSamples();
-  assert(original != NULL);
-  dir.setFilter(QDir::Files);
-  dir.setSorting(QDir::Name);
-  QFileInfoList list = dir.entryInfoList();
-  for (int i = 0; i < list.size(); ++i)
-  {
-    QFileInfo fileInfo = list.at(i);
-    QString f_name = fileInfo.fileName();
-    std::cout<<"file name: " << f_name.toStdString() <<std::endl;
-
-    if (!f_name.endsWith(".ply"))
-      continue;
-
-    f_name = file_location + "\\" + f_name;
-    int mask = tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL;
-    area->dataMgr.loadPlyToSample(f_name);
-
-    area->update();
-    area->saveSnapshot();
-    area->update();
-
-    //do the registration
-    GlobalFun::computeICPMeshlab(sample, original);
-    //merge
-    GlobalFun::mergeMesh(sample, original);
-
-    area->update();
-    area->saveSnapshot();
-    area->update();
-  }
 }
 
 void CameraParaDlg::getModelSize()

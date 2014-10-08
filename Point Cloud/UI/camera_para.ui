@@ -21,12 +21,12 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>261</width>
-     <height>961</height>
+     <width>271</width>
+     <height>821</height>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -1141,7 +1141,7 @@
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>722</y>
+       <y>562</y>
        <width>191</width>
        <height>31</height>
       </rect>
@@ -1154,26 +1154,13 @@
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>762</y>
+       <y>602</y>
        <width>191</width>
        <height>31</height>
       </rect>
      </property>
      <property name="text">
       <string>Add samples to Original</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_ICP">
-     <property name="geometry">
-      <rect>
-       <x>30</x>
-       <y>560</y>
-       <width>191</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>ICP With Wlop</string>
      </property>
     </widget>
     <widget class="QPushButton" name="pushButton_remove_sample_outliers">
@@ -1189,50 +1176,11 @@
       <string>Remove samples outliers</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_ICP_MeshLab">
-     <property name="geometry">
-      <rect>
-       <x>30</x>
-       <y>682</y>
-       <width>191</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>ICP using MeshLab</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_ICP_No_Wlop">
-     <property name="geometry">
-      <rect>
-       <x>30</x>
-       <y>640</y>
-       <width>191</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>ICP No Wlop</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_ICP_With_Normal_No_WLop">
-     <property name="geometry">
-      <rect>
-       <x>30</x>
-       <y>599</y>
-       <width>191</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>ICP With Normal No Wlop</string>
-     </property>
-    </widget>
     <widget class="QPushButton" name="pushButton_add_outlier_to_original">
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>800</y>
+       <y>640</y>
        <width>191</width>
        <height>31</height>
       </rect>
@@ -1245,7 +1193,7 @@
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>840</y>
+       <y>680</y>
        <width>191</width>
        <height>31</height>
       </rect>
@@ -1258,7 +1206,7 @@
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>880</y>
+       <y>720</y>
        <width>191</width>
        <height>31</height>
       </rect>
