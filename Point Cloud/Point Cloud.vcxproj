@@ -29,6 +29,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{EF329182-96B1-434A-A68B-C2923AE6CC94}</ProjectGuid>
     <Keyword>Qt4VSv1.0</Keyword>
+    <ProjectName>Quality-Driven-Poisson-Guided-Autoscanning</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

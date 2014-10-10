@@ -272,7 +272,7 @@ void MainWindow::createActionGroups()
 
 void MainWindow::init()
 {
-	strTitle = "Point Cloud";
+	strTitle = "Quality-Driven-Poisson-Guided-Autoscanning";
   paraDlg_Poisson = NULL;
   paraDlg_Camera = NULL;
 	paras = &global_paraMgr;
