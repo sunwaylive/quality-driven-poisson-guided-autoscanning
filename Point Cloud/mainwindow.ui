@@ -50,51 +50,24 @@
     </property>
     <addaction name="actionImport_Ply"/>
     <addaction name="actionSave_Ply"/>
-    <addaction name="actionRemove_Outlier"/>
     <addaction name="actionNormalize"/>
     <addaction name="actionDownSample"/>
-    <addaction name="actionSubSample"/>
     <addaction name="actionQianSample"/>
     <addaction name="actionClear_Data"/>
     <addaction name="actionImport_Image"/>
-    <addaction name="actionSave_View"/>
-    <addaction name="actionSave_Field_Points"/>
-    <addaction name="actionSave_NBV_Grids"/>
     <addaction name="actionSave_NBV"/>
-    <addaction name="actionSwitch_Sample_Original"/>
-    <addaction name="actionSwitch_Sample_with_ISO"/>
-    <addaction name="actionSwitch_Sample_NBV"/>
-    <addaction name="actionAdd_Sample_To_Original"/>
-    <addaction name="actionRemove_Ignore"/>
-    <addaction name="actionRecover_Ignore"/>
-    <addaction name="actionAdd_NBV_To_History"/>
    </widget>
    <widget class="QMenu" name="menuAlgorithom">
     <property name="title">
      <string>Algorithom</string>
     </property>
-    <widget class="QMenu" name="menuNormal">
-     <property name="title">
-      <string>Normal</string>
-     </property>
-     <addaction name="actionRun_PCA"/>
-     <addaction name="actionNormal_Setting"/>
-     <addaction name="actionReorientate"/>
-    </widget>
     <widget class="QMenu" name="menuPoisson">
      <property name="title">
       <string>Poisson</string>
      </property>
      <addaction name="actionPoisson"/>
-     <addaction name="actionPoisson_test"/>
-     <addaction name="actionPoisson_test_all"/>
     </widget>
-    <addaction name="menuNormal"/>
     <addaction name="menuPoisson"/>
-    <addaction name="actionSave_Parameter"/>
-    <addaction name="actionConvert_ply_to_obj"/>
-    <addaction name="actionCompute_Normal_For_Poisson_Surface"/>
-    <addaction name="actionEvaluation"/>
    </widget>
    <widget class="QMenu" name="menuRender">
     <property name="title">
@@ -178,11 +151,9 @@
     <addaction name="actionShow_Box"/>
     <addaction name="actionCull_Points"/>
     <addaction name="actionRecompute_Quad"/>
-    <addaction name="actionShow_Normal_Color"/>
     <addaction name="menuSnap_Shot"/>
     <addaction name="menuShow_Neighbor_Size"/>
     <addaction name="menuPick_Point"/>
-    <addaction name="actionCamera"/>
     <addaction name="actionShow_View_Grids"/>
     <addaction name="actionShow_NBV_Candidates"/>
     <addaction name="actionShow_NBV_Label"/>
