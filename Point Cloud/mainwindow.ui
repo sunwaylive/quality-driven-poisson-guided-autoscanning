@@ -391,7 +391,7 @@
   </action>
   <action name="actionRun_Wlop">
    <property name="icon">
-    <iconset resource="mainwindow.qrc">
+    <iconset>
      <normaloff>:/mainwindow/Icons/gowalla_128x128-32.png</normaloff>:/mainwindow/Icons/gowalla_128x128-32.png</iconset>
    </property>
    <property name="text">
@@ -400,7 +400,7 @@
   </action>
   <action name="actionWLOP_Setting">
    <property name="icon">
-    <iconset resource="mainwindow.qrc">
+    <iconset>
      <normaloff>:/mainwindow/Icons/gameboid_128x128-32.png</normaloff>:/mainwindow/Icons/gameboid_128x128-32.png</iconset>
    </property>
    <property name="text">
@@ -420,7 +420,7 @@
   </action>
   <action name="actionNormal_Setting">
    <property name="icon">
-    <iconset resource="mainwindow.qrc">
+    <iconset>
      <normaloff>:/mainwindow/Icons/sleepbot_128x128-32.png</normaloff>:/mainwindow/Icons/sleepbot_128x128-32.png</iconset>
    </property>
    <property name="text">
@@ -528,7 +528,7 @@
   </action>
   <action name="actionUpsample_Setting">
    <property name="icon">
-    <iconset resource="mainwindow.qrc">
+    <iconset>
      <normaloff>:/mainwindow/Icons/upsample-xw.png</normaloff>:/mainwindow/Icons/upsample-xw.png</iconset>
    </property>
    <property name="text">
@@ -621,7 +621,7 @@
   </action>
   <action name="actionSave_Skel">
    <property name="icon">
-    <iconset resource="mainwindow.qrc">
+    <iconset>
      <normaloff>:/mainwindow/Icons/folder_128x128-32.png</normaloff>:/mainwindow/Icons/folder_128x128-32.png</iconset>
    </property>
    <property name="text">
