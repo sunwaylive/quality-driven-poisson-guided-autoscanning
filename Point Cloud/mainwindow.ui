@@ -41,7 +41,7 @@
      <x>0</x>
      <y>0</y>
      <width>1515</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -184,7 +184,6 @@
    <addaction name="actionImport_Ply"/>
    <addaction name="actionSave_Ply"/>
    <addaction name="actionCamera"/>
-   <addaction name="actionPoisson"/>
    <addaction name="actionSnapShot"/>
    <addaction name="actionClear_Data"/>
    <addaction name="actionNormalize"/>
@@ -194,7 +193,6 @@
    <addaction name="actionShow_Neighborhood_Ball"/>
    <addaction name="actionShow_Normals"/>
    <addaction name="actionShow_Box"/>
-   <addaction name="actionShow_NBV_Ball"/>
    <addaction name="actionCull_Points"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -218,15 +216,12 @@
    <addaction name="actionShow_Original"/>
    <addaction name="actionShow_Samples"/>
    <addaction name="actionShow_ISO"/>
-   <addaction name="actionShow_Confidence_Color"/>
    <addaction name="actionShow_NBV_Candidates"/>
    <addaction name="actionShow_Scan_Candidates"/>
    <addaction name="actionShow_Scan_History"/>
-   <addaction name="actionShow_Current_Scanned_Mesh"/>
    <addaction name="actionShow_View_Grids"/>
    <addaction name="separator"/>
    <addaction name="separator"/>
-   <addaction name="actionSwitch_Sample_with_ISO"/>
   </widget>
   <action name="actionImport_Ply">
    <property name="icon">

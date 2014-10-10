@@ -81,7 +81,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>Step2: Poisson-Confidence(Original)</string>
+      <string>Step2: Poisson-Confidence</string>
      </property>
     </widget>
     <widget class="Line" name="line_5">
