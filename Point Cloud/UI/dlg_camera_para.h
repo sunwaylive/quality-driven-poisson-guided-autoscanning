@@ -36,16 +36,15 @@ signals:
     void initialScan();
     void NBVCandidatesScan();
     void NBVCandidatesScanByHand();
-    void loadRealScans();
     void loadRealInitialScan();
     void loadToOriginal();
     void loadToModel();
+
     void showInitCameras(bool is_show);
     void showCameraBorder(bool is_show);
     void useOtherInsideSegment(bool _val);
     void useConfidenceSeparation(bool _val);
     void needMoreOverlaps(bool _val);
-    void useNbvTest1(bool _val);
     void useMaxConfidencePropagation(bool _val);
     void showCandidateIndex();
 
@@ -94,14 +93,7 @@ signals:
     void runStep4NewScans();
     void runOneKeyNbvIteration();
     void runOneKeyNbvIterationBack();
-
-    //add samples
-    void runRemoveSampleOutliers();
-    void runAddOutlierToOriginal();
-    void runAddNoiseToOriginal();
-    void runRemoveSamplesWithLowConfidence();
-    void runAddSamplesToOiriginal();
-    
+        
     void getModelSize();
 
 private:

@@ -59,18 +59,17 @@ void CameraParaDlg::initConnects()
   connect(ui->use_other_inside_segment,SIGNAL(clicked(bool)),this,SLOT(useOtherInsideSegment(bool)));
   connect(ui->use_confidence_Separation,SIGNAL(clicked(bool)),this,SLOT(useConfidenceSeparation(bool)));
   connect(ui->need_more_overlaps,SIGNAL(clicked(bool)),this,SLOT(needMoreOverlaps(bool)));
-  //connect(ui->use_nbv_test1, SIGNAL(clicked(bool)), this, SLOT(useNbvTest1(bool)));
   connect(ui->use_max_propagation, SIGNAL(clicked(bool)), this, SLOT(useMaxConfidencePropagation(bool)));
   connect(ui->doubleSpinBox_bottom_delta, SIGNAL(valueChanged(double)), this, SLOT(getIsoBottomDelta(double)));
   connect(ui->pushButton_set_iso_bottom_confidence, SIGNAL(clicked()), this, SLOT(runSetIsoBottomConfidence()));
   connect(ui->update_view_directions, SIGNAL(clicked()), this, SLOT(runUpdateViewDirections()));
 
   connect(ui->pushButton_setup_initial_scans, SIGNAL(clicked()), this, SLOT(runSetupInitialScanns()));
-  //connect(ui->step2_run_Poisson_Confidence, SIGNAL(clicked()), this, SLOT(runStep2CombinedPoissonConfidence()));
   connect(ui->step2_run_Poisson_Confidence_original, SIGNAL(clicked()), this, SLOT(runStep2PoissonConfidenceViaOiginal()));
+  connect(ui->step2_run_Poisson_Confidence_original_2, SIGNAL(clicked()), this, SLOT(runStep2PoissonConfidenceViaOiginal()));
   connect(ui->step3_run_NBV, SIGNAL(clicked()), this, SLOT(runStep3NBVcandidates()));
+  connect(ui->step3_run_NBV_2, SIGNAL(clicked()), this, SLOT(runStep3NBVcandidates()));
   connect(ui->step4_run_New_Scan, SIGNAL(clicked()), this, SLOT(runStep4NewScans()));
-  
   connect(ui->pushButton_get_model_size, SIGNAL(clicked()), this, SLOT(getModelSize()));
 }
 
@@ -246,80 +245,6 @@ void CameraParaDlg::NBVCandidatesScanByHand()
   updateTabelViewScanResults();
 }
 
-void CameraParaDlg::loadRealScans()
-{
-  QString file_location = QFileDialog::getExistingDirectory(this, "choose a directory...", "",QFileDialog::ShowDirsOnly);
-  if (!file_location.size()) 
-    return;
-
-  QDir dir(file_location);
-  if (!dir.exists()) 
-    return;
-
-  dir.setFilter(QDir::Files);
-  dir.setSorting(QDir::Name);
-  QFileInfoList list = dir.entryInfoList();
-
-  CMesh *sample = area->dataMgr.getCurrentSamples();
-  //compute radius
-  area->dataMgr.downSamplesByNum();
-  area->initSetting();
-
-  for (int i = 0; i < list.size(); ++i)
-  {
-    //snapshot original points
-    area->update();
-    area->saveSnapshot();
-    area->update();
-    Sleep(1500);
-    //save poisson surface reconstruction
-    //global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(true));
-    ////global_paraMgr.poisson.setValue("Run Generate Poisson Field", BoolValue(true));
-    //area->runPoisson();
-    ////global_paraMgr.poisson.setValue("Run Generate Poisson Field", BoolValue(false));
-    //global_paraMgr.poisson.setValue("Run Poisson On Original", BoolValue(false));
-
-    ////save poisson surface "copy poisson_out.ply file_location\\%d_poisson_out.ply"
-    //cout<<"Begin to copy poisson_surface" <<endl;
-    //QString s_poisson_surface;
-    //s_poisson_surface.sprintf("\\..\\poisson\\%d_poisson_out.ply", i);
-    //QString s_cmd_copy_poisson = "copy poisson_out.ply ";
-    //s_cmd_copy_poisson += file_location;
-    //s_cmd_copy_poisson += s_poisson_surface;
-    //cout << s_cmd_copy_poisson.toStdString() <<endl;
-    //system(s_cmd_copy_poisson.toAscii().data());
-    //cout<<"End to copy poisson_surface" <<endl;
-
-    QFileInfo fileInfo = list.at(i);
-    QString f_name = fileInfo.fileName();
-    std::cout<<"file name: " << f_name.toStdString() <<std::endl;
-
-    if (!f_name.endsWith(".ply"))
-      continue;
-
-    f_name = file_location + "\\" + f_name;
-    int mask = tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL;
-    area->dataMgr.loadPlyToSample(f_name);
-    //snapshot sample points
-    area->update();
-    area->saveSnapshot();
-    area->update();
-    Sleep(1500);
-    /*for (int s_i = 0; s_i < sample->vert.size(); ++s_i)
-    sample->vert[s_i].N().Normalize();*/
-
-    //save after-merge original points
-    runAddSamplesToOiriginal();
-    GlobalFun::clearCMesh(*sample);
-    //tri::io::ImporterPLY<CMesh>::Open(*sample, f_name.toAscii().data(), mask);
-
-    /*QString s_original;
-    s_original.sprintf("\\..\\original\\%d_original.ply", i);
-    s_original = file_location + s_original;
-    area->dataMgr.savePly(s_original, *area->dataMgr.getCurrentOriginal());*/
-  }
-}
-
 void CameraParaDlg::showCandidateIndex()
 {
   global_paraMgr.nbv.setValue("Run Compute View Candidate Index", BoolValue(true));
@@ -451,12 +376,6 @@ void CameraParaDlg::useMaxConfidencePropagation(bool _val)
 {
   global_paraMgr.nbv.setValue("Use Max Propagation", BoolValue(_val));
   cout << "Use Max Propagation" << endl;
-}
-
-void CameraParaDlg::useNbvTest1(bool _val)
-{
-  global_paraMgr.nbv.setValue("Use NBV Test1", BoolValue(_val));
-  cout << "Use NBV Test1" << endl;
 }
 
 void CameraParaDlg::showSelectedScannCandidates(QModelIndex index)
@@ -1173,136 +1092,6 @@ void CameraParaDlg::runOneKeyNbvIteration()
   last_original = file_location + last_original;
   area->dataMgr.savePly(last_original, *area->dataMgr.getCurrentOriginal());
   log.close();
-}
-
-void CameraParaDlg::runRemoveSampleOutliers()
-{
-  //area->removeOutliers();
-  double outlier_percentage = global_paraMgr.data.getDouble("Outlier Percentage");
-  GlobalFun::removeOutliers(area->dataMgr.getCurrentSamples(), global_paraMgr.data.getDouble("CGrid Radius"), outlier_percentage);//
-  cout<<"has removed samples outliers"<<endl;
-
-  area->initView();
-  area->updateGL();
-}
-
-void CameraParaDlg::runAddOutlierToOriginal()
-{
-  CMesh *original = area->dataMgr.getCurrentOriginal();
-  assert(original != NULL);
-  double max_distance = global_paraMgr.camera.getDouble("Camera Far Distance") 
-    / global_paraMgr.camera.getDouble("Predicted Model Size");
-  GlobalFun::addOutliers(original, 100 , max_distance);
-  cout<<"Outliers added!" <<endl;
-}
-
-void CameraParaDlg::runAddNoiseToOriginal()
-{
-  CMesh *original = area->dataMgr.getCurrentOriginal();
-  assert(original != NULL);
-  double noise_size = global_paraMgr.camera.getDouble("Camera Resolution");
-  GlobalFun::addBenchmarkNoiseAfterwards(original, 0.75f);
-}
-
-void CameraParaDlg::runRemoveSamplesWithLowConfidence()
-{
-  if (area->dataMgr.isIsoPointsEmpty() || area->dataMgr.isSamplesEmpty())
-  {
-    cout << "it required Sample and ISO points!" << endl;
-    return;
-  }
-
-  vector<CMesh* > *scanned_results = area->dataMgr.getScannedResults();
-  double merge_confidence_threshold = global_paraMgr.camera.getDouble("Merge Confidence Threshold");
-  int merge_pow = static_cast<int>(global_paraMgr.nbv.getDouble("Merge Probability Pow"));
-
-  double radius_threshold = global_paraMgr.data.getDouble("CGrid Radius");
-  double radius2 = radius_threshold * radius_threshold;
-  double iradius16 = -4/radius2;
-
-  double sigma = global_paraMgr.norSmooth.getDouble("Sharpe Feature Bandwidth Sigma");
-  double sigma_threshold = pow(max(1e-8,1-cos(sigma/180.0*3.1415926)), 2);
-  CMesh* iso_points = area->dataMgr.getCurrentIsoPoints();
-
-  CMesh* samples = area->dataMgr.getCurrentSamples();
-
-  Timer time;
-  time.start("Sample ISO points Neighbor Tree!!");
-  GlobalFun::computeBallNeighbors(samples, iso_points, radius_threshold, samples->bbox);
-  time.end();
-
-  double max_confidence = 0.0f;
-  double min_confidence = BIG;
-
-  for (int i = 0; i < samples->vert.size(); i++)
-  {
-    CVertex& v = samples->vert[i];
-
-    double sum_confidence = 0.0;
-    double sum_w = 0.0;
-
-    for (int j = 0; j < v.original_neighbors.size(); j++)
-    {
-      int iso_index = v.original_neighbors[j];
-      CVertex& t = iso_points->vert[iso_index];
-
-      double dist2 = GlobalFun::computeEulerDistSquare(v.P(), t.P());
-      double dist_diff = exp(dist2 * iradius16);
-
-      sum_confidence += dist_diff * t.eigen_confidence;
-      sum_w += 1;
-    }
-
-    if (v.original_neighbors.size() > 0 )
-      sum_confidence /= sum_w;
-
-    v.eigen_confidence = sum_confidence;
-
-    max_confidence = sum_confidence > max_confidence ? sum_confidence : max_confidence;
-    min_confidence = sum_confidence < min_confidence ? sum_confidence : min_confidence;
-  }
-
-  for (int i = 0; i < samples->vert.size(); i++)
-  {
-    CVertex& v = samples->vert[i];
-
-    v.eigen_confidence = (v.eigen_confidence - min_confidence) / (max_confidence - min_confidence);
-
-    if (v.eigen_confidence > merge_confidence_threshold 
-      || (1.0f * rand() / (RAND_MAX+1.0) > pow((1 - v.eigen_confidence), merge_pow)))
-    {
-      v.is_ignore = true;
-      continue;
-    }
-  }
-
-  GlobalFun::deleteIgnore(samples);
-
-  area->updateUI();
-}
-
-void CameraParaDlg::runAddSamplesToOiriginal()
-{
-  CMesh* samples = area->dataMgr.getCurrentSamples();
-  CMesh* original = area->dataMgr.getCurrentOriginal();
-
-  samples->face.clear();
-  samples->fn = 0;
-  original->face.clear();
-  original->fn = 0;
-
-  int idx = original->vert.back().m_index + 1;
-
-  for (int i = 0; i < samples->vert.size(); i++)
-  {
-    CVertex t = samples->vert[i];
-    t.is_original = true;
-    t.m_index = idx++;
-
-    original->vert.push_back(t);
-    original->bbox.Add(t.P());
-  }
-  original->vn = original->vert.size();
 }
 
 void CameraParaDlg::getModelSize()

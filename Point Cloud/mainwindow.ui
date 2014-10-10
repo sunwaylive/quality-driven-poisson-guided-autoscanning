@@ -248,11 +248,11 @@
    <addaction name="actionShow_Samples"/>
    <addaction name="actionShow_ISO"/>
    <addaction name="actionShow_Confidence_Color"/>
-   <addaction name="actionShow_View_Grids"/>
    <addaction name="actionShow_NBV_Candidates"/>
    <addaction name="actionShow_Scan_Candidates"/>
    <addaction name="actionShow_Scan_History"/>
    <addaction name="actionShow_Current_Scanned_Mesh"/>
+   <addaction name="actionShow_View_Grids"/>
    <addaction name="separator"/>
    <addaction name="separator"/>
    <addaction name="actionSwitch_Sample_with_ISO"/>
@@ -361,6 +361,10 @@
    </property>
   </action>
   <action name="actionNormalize">
+   <property name="icon">
+    <iconset resource="mainwindow.qrc">
+     <normaloff>:/mainwindow/Icons/normalize.png</normaloff>:/mainwindow/Icons/normalize.png</iconset>
+   </property>
    <property name="text">
     <string>Normalize</string>
    </property>

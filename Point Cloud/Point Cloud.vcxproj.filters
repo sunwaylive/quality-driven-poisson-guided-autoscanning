@@ -50,9 +50,6 @@
     <Filter Include="Poisson">
       <UniqueIdentifier>{1d280414-d4ea-4cae-b569-8a85e11ed8ad}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Algorithm\RIMLS">
-      <UniqueIdentifier>{2c1c8bdf-f3cc-41b1-b364-215dffe06f57}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -183,15 +180,6 @@
     </ClCompile>
     <ClCompile Include="Poisson\PTime.cpp">
       <Filter>Poisson</Filter>
-    </ClCompile>
-    <ClCompile Include="Algorithm\RIMLS\apss.cpp">
-      <Filter>Algorithm\RIMLS</Filter>
-    </ClCompile>
-    <ClCompile Include="Algorithm\RIMLS\kdtree.cpp">
-      <Filter>Algorithm\RIMLS</Filter>
-    </ClCompile>
-    <ClCompile Include="Algorithm\RIMLS\rimls.cpp">
-      <Filter>Algorithm\RIMLS</Filter>
     </ClCompile>
     <ClCompile Include="OneKeyNBVBack.cpp">
       <Filter>Source Files</Filter>
@@ -374,36 +362,6 @@
     <ClInclude Include="Algorithm\pointcloud_normal.h">
       <Filter>Algorithm</Filter>
     </ClInclude>
-    <ClInclude Include="Algorithm\RIMLS\apss.h">
-      <Filter>Algorithm\RIMLS</Filter>
-    </ClInclude>
-    <ClInclude Include="Algorithm\RIMLS\balltree.h">
-      <Filter>Algorithm\RIMLS</Filter>
-    </ClInclude>
-    <ClInclude Include="Algorithm\RIMLS\implicits.h">
-      <Filter>Algorithm\RIMLS</Filter>
-    </ClInclude>
-    <ClInclude Include="Algorithm\RIMLS\kdtree.h">
-      <Filter>Algorithm\RIMLS</Filter>
-    </ClInclude>
-    <ClInclude Include="Algorithm\RIMLS\mlsmarchingcube.h">
-      <Filter>Algorithm\RIMLS</Filter>
-    </ClInclude>
-    <ClInclude Include="Algorithm\RIMLS\mlssurface.h">
-      <Filter>Algorithm\RIMLS</Filter>
-    </ClInclude>
-    <ClInclude Include="Algorithm\RIMLS\mlsutils.h">
-      <Filter>Algorithm\RIMLS</Filter>
-    </ClInclude>
-    <ClInclude Include="Algorithm\RIMLS\priorityqueue.h">
-      <Filter>Algorithm\RIMLS</Filter>
-    </ClInclude>
-    <ClInclude Include="Algorithm\RIMLS\rimls.h">
-      <Filter>Algorithm\RIMLS</Filter>
-    </ClInclude>
-    <ClInclude Include="Algorithm\RIMLS\smallcomponentselection.h">
-      <Filter>Algorithm\RIMLS</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Poisson\FunctionData.inl">
@@ -441,18 +399,6 @@
     </None>
     <None Include="Poisson\Array.inl">
       <Filter>Poisson</Filter>
-    </None>
-    <None Include="Algorithm\RIMLS\apss.tpp">
-      <Filter>Algorithm\RIMLS</Filter>
-    </None>
-    <None Include="Algorithm\RIMLS\mlssurface.tpp">
-      <Filter>Algorithm\RIMLS</Filter>
-    </None>
-    <None Include="Algorithm\RIMLS\rimls.tpp">
-      <Filter>Algorithm\RIMLS</Filter>
-    </None>
-    <None Include="Algorithm\RIMLS\balltree.tpp">
-      <Filter>Algorithm\RIMLS</Filter>
     </None>
   </ItemGroup>
 </Project>

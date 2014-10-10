@@ -68,7 +68,7 @@ void ParameterMgr::initGlareaParameter()
 
 	glarea.addParam(new RichBool("Show View Grids", false));
 	glarea.addParam(new RichBool("Show NBV Candidates", true));
-	glarea.addParam(new RichBool("Show Scan Candidates", false));
+	glarea.addParam(new RichBool("Show Scan Candidates", true));
   glarea.addParam(new RichBool("Show Scan History", false));
 	glarea.addParam(new RichBool("Show Scanned Mesh", false));
 
