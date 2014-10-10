@@ -58,22 +58,22 @@ void ParameterMgr::initGlareaParameter()
 	glarea.addParam(new RichString("Running Algorithm Name", "") );
 	glarea.addParam(new RichBool("Light On or Off", true) );
 	glarea.addParam(new RichBool("Show Normal", false) );
-	glarea.addParam(new RichBool("Show Samples", false) );
+	glarea.addParam(new RichBool("Show Samples", true) );
 	glarea.addParam(new RichBool("Show Samples Quad", false) );
 	glarea.addParam(new RichBool("Show Samples Dot", true) );
 	glarea.addParam(new RichBool("Show Samples Circle", false) );
 	glarea.addParam(new RichBool("Show Samples Sphere", false) );
-	glarea.addParam(new RichBool("Show ISO Points", false) );
+	glarea.addParam(new RichBool("Show ISO Points", true) );
 	glarea.addParam(new RichBool("Use ISO Interval", false) );
 
 	glarea.addParam(new RichBool("Show View Grids", false));
-	glarea.addParam(new RichBool("Show NBV Candidates", false));
+	glarea.addParam(new RichBool("Show NBV Candidates", true));
 	glarea.addParam(new RichBool("Show Scan Candidates", false));
   glarea.addParam(new RichBool("Show Scan History", false));
 	glarea.addParam(new RichBool("Show Scanned Mesh", false));
 
-	glarea.addParam(new RichBool("Show Model", false));
-	glarea.addParam(new RichBool("Show Original", false) );
+	glarea.addParam(new RichBool("Show Model", true));
+	glarea.addParam(new RichBool("Show Original", true) );
 	glarea.addParam(new RichBool("Show Original Quad", false) );
 	glarea.addParam(new RichBool("Show Original Dot", true) );
 	glarea.addParam(new RichBool("Show Original Circle", false) );
@@ -87,7 +87,7 @@ void ParameterMgr::initGlareaParameter()
 	glarea.addParam(new RichBool("Show Red Radius Line", true));
 	glarea.addParam(new RichBool("Multiply Pick Point", true) );
 
-	glarea.addParam(new RichBool("Show Bounding Box", false));
+	glarea.addParam(new RichBool("Show Bounding Box", true));
   glarea.addParam(new RichBool("Show NBV Label", false));
   glarea.addParam(new RichBool("Show NBV Ball", false));
 
@@ -138,7 +138,7 @@ void ParameterMgr::initDrawerParameter()
 	drawer.addParam(new RichBool("Show Individual Color", true));
 	drawer.addParam(new RichBool("Use Color From Normal", false));
 	drawer.addParam(new RichBool("Use Differ Branch Color", false));
-	drawer.addParam(new RichBool("Show Confidence Color", false));
+	drawer.addParam(new RichBool("Show Confidence Color", true));
 
 	drawer.addParam(new RichDouble("Original Draw Width", 0.0015));
 	drawer.addParam(new RichDouble("Sample Draw Width", 0.005));

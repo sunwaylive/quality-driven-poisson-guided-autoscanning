@@ -81,12 +81,6 @@
      <addaction name="actionNormal_Setting"/>
      <addaction name="actionReorientate"/>
     </widget>
-    <widget class="QMenu" name="menuEAR">
-     <property name="title">
-      <string>EAR</string>
-     </property>
-     <addaction name="actionUpsample_Setting"/>
-    </widget>
     <widget class="QMenu" name="menuPoisson">
      <property name="title">
       <string>Poisson</string>
@@ -96,7 +90,6 @@
      <addaction name="actionPoisson_test_all"/>
     </widget>
     <addaction name="menuNormal"/>
-    <addaction name="menuEAR"/>
     <addaction name="menuPoisson"/>
     <addaction name="actionSave_Parameter"/>
     <addaction name="actionConvert_ply_to_obj"/>

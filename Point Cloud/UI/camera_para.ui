@@ -26,8 +26,144 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>0</number>
    </property>
+   <widget class="QWidget" name="tab_3">
+    <attribute name="title">
+     <string>AutoScan</string>
+    </attribute>
+    <widget class="QPushButton" name="step3_run_NBV">
+     <property name="geometry">
+      <rect>
+       <x>27</x>
+       <y>148</y>
+       <width>221</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Step3: Compute NBV</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="step4_run_New_Scan">
+     <property name="geometry">
+      <rect>
+       <x>27</x>
+       <y>188</y>
+       <width>221</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Step4: Run New Scan</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_setup_initial_scans">
+     <property name="geometry">
+      <rect>
+       <x>27</x>
+       <y>68</y>
+       <width>221</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Step1: Inital Scans</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="step2_run_Poisson_Confidence_original">
+     <property name="geometry">
+      <rect>
+       <x>27</x>
+       <y>108</y>
+       <width>221</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Step2: Poisson-Confidence(Original)</string>
+     </property>
+    </widget>
+    <widget class="Line" name="line_5">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>230</y>
+       <width>231</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_3">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>10</y>
+       <width>231</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+       <underline>false</underline>
+       <strikeout>false</strikeout>
+      </font>
+     </property>
+     <property name="text">
+      <string>Way 1: Virtual Scan</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_19">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>250</y>
+       <width>241</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Way 2: Compute NBV For Real Scan</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_load_to_model">
+     <property name="geometry">
+      <rect>
+       <x>29</x>
+       <y>29</y>
+       <width>81</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Load Model</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_load_to_mesh">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>270</y>
+       <width>81</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Load Mesh</string>
+     </property>
+    </widget>
+   </widget>
    <widget class="QWidget" name="tab">
     <attribute name="title">
      <string>camera </string>
@@ -880,313 +1016,6 @@
      </property>
      <property name="singleStep">
       <double>0.200000000000000</double>
-     </property>
-    </widget>
-   </widget>
-   <widget class="QWidget" name="tab_3">
-    <attribute name="title">
-     <string>AutoScan</string>
-    </attribute>
-    <widget class="QPushButton" name="step2_run_Poisson_Confidence">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>80</y>
-       <width>221</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Step1: Poisson-Confidence(Sample)</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="step3_run_NBV">
-     <property name="geometry">
-      <rect>
-       <x>40</x>
-       <y>170</y>
-       <width>181</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Step3: NBV</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="step4_run_New_Scan">
-     <property name="geometry">
-      <rect>
-       <x>40</x>
-       <y>220</y>
-       <width>181</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Step4: Run New Scan</string>
-     </property>
-    </widget>
-    <widget class="Line" name="line_3">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>60</y>
-       <width>221</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_setup_initial_scans">
-     <property name="geometry">
-      <rect>
-       <x>30</x>
-       <y>20</y>
-       <width>181</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Setup Inital Scans</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="step2_run_Poisson_Confidence_original">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>120</y>
-       <width>221</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Step1: Poisson-Confidence(Original)</string>
-     </property>
-    </widget>
-    <widget class="Line" name="line_5">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>260</y>
-       <width>231</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_one_key_nbv_iteration">
-     <property name="geometry">
-      <rect>
-       <x>40</x>
-       <y>340</y>
-       <width>191</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>One Key NBV Iteration</string>
-     </property>
-    </widget>
-    <widget class="QSpinBox" name="spinBox_nbv_iteration_count">
-     <property name="geometry">
-      <rect>
-       <x>90</x>
-       <y>280</y>
-       <width>42</width>
-       <height>22</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="Line" name="line_6">
-     <property name="geometry">
-      <rect>
-       <x>30</x>
-       <y>370</y>
-       <width>221</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_load_real_scan">
-     <property name="geometry">
-      <rect>
-       <x>40</x>
-       <y>430</y>
-       <width>191</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Load Real NBV Scans</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_load_real_initial_scan">
-     <property name="geometry">
-      <rect>
-       <x>40</x>
-       <y>390</y>
-       <width>191</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Load Real Initial Scan</string>
-     </property>
-    </widget>
-    <widget class="QSpinBox" name="spinBox_nbv_top_n">
-     <property name="geometry">
-      <rect>
-       <x>210</x>
-       <y>280</y>
-       <width>42</width>
-       <height>22</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_16">
-     <property name="geometry">
-      <rect>
-       <x>150</x>
-       <y>280</y>
-       <width>51</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>top n ：</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_17">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>280</y>
-       <width>71</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>iter num ：</string>
-     </property>
-    </widget>
-    <widget class="QDoubleSpinBox" name="nbv_confidence_threshold">
-     <property name="geometry">
-      <rect>
-       <x>190</x>
-       <y>310</y>
-       <width>62</width>
-       <height>22</height>
-      </rect>
-     </property>
-     <property name="decimals">
-      <number>10</number>
-     </property>
-     <property name="maximum">
-      <double>100.000000000000000</double>
-     </property>
-     <property name="singleStep">
-      <double>0.500000000000000</double>
-     </property>
-     <property name="value">
-      <double>35.500000000000000</double>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_18">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>310</y>
-       <width>161</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>nbv confidence threshold</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_remove_low_confidence_samples">
-     <property name="geometry">
-      <rect>
-       <x>40</x>
-       <y>512</y>
-       <width>191</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Remove samples(low confidence</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_add_samples_to_original">
-     <property name="geometry">
-      <rect>
-       <x>40</x>
-       <y>552</y>
-       <width>191</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Add samples to Original</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_remove_sample_outliers">
-     <property name="geometry">
-      <rect>
-       <x>40</x>
-       <y>470</y>
-       <width>191</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Remove samples outliers</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_add_outlier_to_original">
-     <property name="geometry">
-      <rect>
-       <x>40</x>
-       <y>590</y>
-       <width>191</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Add outlier to Original</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_add_noise_to_original">
-     <property name="geometry">
-      <rect>
-       <x>40</x>
-       <y>630</y>
-       <width>191</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Add Noise to Original</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_test">
-     <property name="geometry">
-      <rect>
-       <x>40</x>
-       <y>670</y>
-       <width>191</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Test</string>
      </property>
     </widget>
    </widget>

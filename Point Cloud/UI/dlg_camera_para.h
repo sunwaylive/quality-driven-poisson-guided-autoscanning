@@ -38,6 +38,8 @@ signals:
     void NBVCandidatesScanByHand();
     void loadRealScans();
     void loadRealInitialScan();
+    void loadToOriginal();
+    void loadToModel();
     void showInitCameras(bool is_show);
     void showCameraBorder(bool is_show);
     void useOtherInsideSegment(bool _val);

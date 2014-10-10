@@ -21,14 +21,11 @@ void CameraParaDlg::initConnects()
   {
     cout << "can not connect signal" << endl;
   }
-  connect(ui->nbv_confidence_threshold, SIGNAL(valueChanged(double)), this, SLOT(getNBVConfidenceThreshold(double)));
   connect(ui->doubleSpinBox_view_prune_confidence_threshold, SIGNAL(valueChanged(double)), this, SLOT(getViewPruneConfidenceThreshold(double)));
   connect(ui->pushButton_view_prune, SIGNAL(clicked()), this, SLOT(runViewPrune()));
   connect(ui->pushButton_show_candidate_index, SIGNAL(clicked()), this, SLOT(showCandidateIndex()));
-  connect(ui->pushButton_load_real_initial_scan, SIGNAL(clicked()), this, SLOT(loadRealInitialScan()));
-  connect(ui->pushButton_load_real_scan, SIGNAL(clicked()), this, SLOT(loadRealScans()));
-  connect(ui->spinBox_nbv_iteration_count, SIGNAL(valueChanged(int)), this, SLOT(getNbvIterationCount(int)));
-  connect(ui->spinBox_nbv_top_n, SIGNAL(valueChanged(int)), this, SLOT(getNBVTopN(int)));
+  connect(ui->pushButton_load_to_mesh, SIGNAL(clicked()), this, SLOT(loadToOriginal()));
+  connect(ui->pushButton_load_to_model, SIGNAL(clicked()), this, SLOT(loadToModel()));
   connect(ui->checkBox_show_init_cameras,SIGNAL(clicked(bool)),this,SLOT(showInitCameras(bool)));
   connect(ui->checkBox_show_camera_border, SIGNAL(clicked(bool)), this, SLOT(showCameraBorder(bool)));
   connect(ui->pushButton_scan, SIGNAL(clicked()), this, SLOT(NBVCandidatesScanByHand()));
@@ -69,31 +66,24 @@ void CameraParaDlg::initConnects()
   connect(ui->update_view_directions, SIGNAL(clicked()), this, SLOT(runUpdateViewDirections()));
 
   connect(ui->pushButton_setup_initial_scans, SIGNAL(clicked()), this, SLOT(runSetupInitialScanns()));
-  connect(ui->step2_run_Poisson_Confidence, SIGNAL(clicked()), this, SLOT(runStep2CombinedPoissonConfidence()));
+  //connect(ui->step2_run_Poisson_Confidence, SIGNAL(clicked()), this, SLOT(runStep2CombinedPoissonConfidence()));
   connect(ui->step2_run_Poisson_Confidence_original, SIGNAL(clicked()), this, SLOT(runStep2PoissonConfidenceViaOiginal()));
   connect(ui->step3_run_NBV, SIGNAL(clicked()), this, SLOT(runStep3NBVcandidates()));
   connect(ui->step4_run_New_Scan, SIGNAL(clicked()), this, SLOT(runStep4NewScans()));
-  connect(ui->pushButton_remove_sample_outliers, SIGNAL(clicked()), this, SLOT(runRemoveSampleOutliers()));
-  connect(ui->pushButton_add_outlier_to_original, SIGNAL(clicked()), this, SLOT(runAddOutlierToOriginal()));
-  connect(ui->pushButton_add_noise_to_original, SIGNAL(clicked()), this, SLOT(runAddNoiseToOriginal()));
-  connect(ui->pushButton_remove_low_confidence_samples, SIGNAL(clicked()), this, SLOT(runRemoveSamplesWithLowConfidence()));
-  connect(ui->pushButton_add_samples_to_original, SIGNAL(clicked()), this, SLOT(runAddSamplesToOiriginal()));
+  
   connect(ui->pushButton_get_model_size, SIGNAL(clicked()), this, SLOT(getModelSize()));
 }
 
 bool CameraParaDlg::initWidgets()
 {
-  ui->nbv_confidence_threshold->setValue(m_paras->nbv.getDouble("View Prune Confidence Threshold"));
   ui->checkBox_show_camera_border->setChecked(m_paras->camera.getBool("Show Camera Border"));
   ui->doubleSpinBox_view_prune_confidence_threshold->setValue(m_paras->nbv.getDouble("View Prune Confidence Threshold"));
   ui->doubleSpinBox_merge_confidence_threshold->setValue(m_paras->camera.getDouble("Merge Confidence Threshold"));
-  ui->spinBox_nbv_iteration_count->setValue(m_paras->nbv.getInt("NBV Iteration Count"));
   ui->horizon_dist->setValue(m_paras->camera.getDouble("Camera Horizon Dist"));
   ui->vertical_dist->setValue(m_paras->camera.getDouble("Camera Vertical Dist"));
   ui->dist_to_model->setValue(m_paras->camera.getDouble("Camera Dist To Model"));
   ui->view_grid_resolution->setValue(m_paras->nbv.getDouble("View Grid Resolution"));
   ui->max_ray_steps->setValue(m_paras->nbv.getDouble("Max Ray Steps Para"));
-  ui->spinBox_nbv_top_n->setValue(m_paras->nbv.getInt("NBV Top N"));
   ui->doubleSpinBox_far_distance->setValue(m_paras->camera.getDouble("Camera Far Distance"));
   ui->doubleSpinBox_near_distance->setValue(m_paras->camera.getDouble("Camera Near Distance"));
   ui->doubleSpinBox_predicted_model_size->setValue(m_paras->camera.getDouble("Predicted Model Size"));
@@ -376,6 +366,32 @@ void CameraParaDlg::loadRealInitialScan()
       //GlobalFun::computeICP(original, &initial_scan);
     }
   }
+}
+
+void CameraParaDlg::loadToOriginal()
+{
+  QString file = QFileDialog::getOpenFileName(this, "Select a ply file", "", "*.ply");
+  if(!file.size()) return;
+  
+  area->dataMgr.loadPlyToOriginal(file);
+
+  area->dataMgr.normalizeAllMesh();
+  area->initView();
+  area->initAfterOpenFile();
+  area->updateGL();
+}
+
+void CameraParaDlg::loadToModel()
+{
+  QString file = QFileDialog::getOpenFileName(this, "Select a ply file", "", "*.ply");
+  if(!file.size()) return;
+
+  area->dataMgr.loadPlyToModel(file);
+
+  area->dataMgr.normalizeAllMesh();
+  area->initView();
+  area->initAfterOpenFile();
+  area->updateGL();
 }
 
 void CameraParaDlg::virtualScan()
