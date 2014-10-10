@@ -100,8 +100,8 @@
     <widget class="QLabel" name="label_3">
      <property name="geometry">
       <rect>
-       <x>13</x>
-       <y>192</y>
+       <x>0</x>
+       <y>190</y>
        <width>231</width>
        <height>16</height>
       </rect>
@@ -115,7 +115,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Way 2: Virtual Scan</string>
+      <string>                           Virtual Scaning</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_19">
@@ -134,7 +134,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Way 1: Compute NBV For Real Scan</string>
+      <string>             Compute NBV For Real Scan</string>
      </property>
     </widget>
     <widget class="QPushButton" name="pushButton_load_to_model">
@@ -142,12 +142,12 @@
       <rect>
        <x>22</x>
        <y>211</y>
-       <width>81</width>
+       <width>211</width>
        <height>31</height>
       </rect>
      </property>
      <property name="text">
-      <string>Load Model</string>
+      <string>Load Model (*.ply)</string>
      </property>
     </widget>
     <widget class="QPushButton" name="pushButton_load_to_mesh">
@@ -155,12 +155,12 @@
       <rect>
        <x>23</x>
        <y>32</y>
-       <width>81</width>
+       <width>211</width>
        <height>31</height>
       </rect>
      </property>
      <property name="text">
-      <string>Load Mesh</string>
+      <string>Load Point Cloud Data (*.ply)</string>
      </property>
     </widget>
     <widget class="QPushButton" name="step2_run_Poisson_Confidence_original_2">
