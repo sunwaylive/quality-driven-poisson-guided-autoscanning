@@ -100,10 +100,10 @@
     <widget class="QLabel" name="label_3">
      <property name="geometry">
       <rect>
-       <x>0</x>
-       <y>190</y>
-       <width>231</width>
-       <height>16</height>
+       <x>120</x>
+       <y>180</y>
+       <width>111</width>
+       <height>20</height>
       </rect>
      </property>
      <property name="font">
@@ -115,15 +115,18 @@
       </font>
      </property>
      <property name="text">
-      <string>                           Virtual Scaning</string>
+      <string>Virtual Scaning</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
     </widget>
     <widget class="QLabel" name="label_19">
      <property name="geometry">
       <rect>
-       <x>13</x>
-       <y>12</y>
-       <width>241</width>
+       <x>-30</x>
+       <y>10</y>
+       <width>281</width>
        <height>16</height>
       </rect>
      </property>
@@ -142,7 +145,7 @@
       <rect>
        <x>22</x>
        <y>211</y>
-       <width>211</width>
+       <width>221</width>
        <height>31</height>
       </rect>
      </property>
@@ -155,7 +158,7 @@
       <rect>
        <x>23</x>
        <y>32</y>
-       <width>211</width>
+       <width>221</width>
        <height>31</height>
       </rect>
      </property>

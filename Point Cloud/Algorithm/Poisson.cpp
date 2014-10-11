@@ -2212,37 +2212,11 @@ void Poisson::runComputeIsoSmoothnessConfidence()
  
   time.start("ending");
   GlobalFun::normalizeConfidence(iso_points->vert, 0);
-
-  //if (para->getBool("Use Confidence 1"))
-  //{
-  //  for (int i = 0; i < iso_points->vn; i++)
-  //  {
-  //    CVertex& v = iso_points->vert[i];
-  //    v.eigen_confidence -= float(0.98);
-  //    //outfile_iso << v.eigen_confidence << endl;
-  //    v.eigen_confidence = (std::max)(float(0.0), v.eigen_confidence);
-  //  }
-
-  //  normalizeConfidence(iso_points->vert, 0);
-  //}
-  //time.end();
-  
-  ofstream outfile_iso("iso_confidences.txt");
-  for (int i = 0; i < iso_points->vn; i++)
-  {
-    CVertex& v = iso_points->vert[i];
-    outfile_iso << v.eigen_confidence << endl;
-  }
-  outfile_iso.close();
   time.end();
 }
 
 void Poisson::runComputeIsoGradientConfidence()
 {
-  //ofstream file1("confidence_1_wlop.txt");
-  //ofstream file2("confidence_2_gradient.txt");
-  //ofstream file3("confidence_3_combine.txt");
-
   if (para->getBool("Use Confidence 1"))
   {
     for (int i = 0; i < iso_points->vn; i++)
@@ -2254,14 +2228,12 @@ void Poisson::runComputeIsoGradientConfidence()
 
   if (para->getBool("Use Confidence 4"))
   {
-    //runLabelISO();
     GlobalFun::normalizeConfidence(iso_points->vert, 0);
   }
   vector<float> confidences_temp;
   iso_points->vn = iso_points->vert.size();
   for (int i = 0; i < iso_points->vn; i++)
   {
-    //file1 << iso_points->vert[i].eigen_confidence << endl;
     confidences_temp.push_back(iso_points->vert[i].eigen_confidence);
   }
 

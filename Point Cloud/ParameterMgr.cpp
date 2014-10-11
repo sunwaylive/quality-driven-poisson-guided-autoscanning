@@ -70,7 +70,7 @@ void ParameterMgr::initGlareaParameter()
 	glarea.addParam(new RichBool("Show NBV Candidates", true));
 	glarea.addParam(new RichBool("Show Scan Candidates", true));
   glarea.addParam(new RichBool("Show Scan History", false));
-	glarea.addParam(new RichBool("Show Scanned Mesh", false));
+	glarea.addParam(new RichBool("Show Scanned Mesh", true));
 
 	glarea.addParam(new RichBool("Show Model", true));
 	glarea.addParam(new RichBool("Show Original", true) );
@@ -263,19 +263,9 @@ void ParameterMgr::initCameraParameter()
   camera.addParam(new RichDouble("Camera FOV Angle", 28.07)); // tan-1(Vert_dist/2 / far_dist)
   //20 for sphere test, 30 for dancing children
 
-  camera.addParam(new RichDouble("Camera Resolution",1.0f / 30.0f));
+  camera.addParam(new RichDouble("Camera Resolution",1.0f / 50.0f));
   camera.addParam(new RichDouble("Merge Confidence Threshold", 0.9f));
   camera.addParam(new RichDouble("Grid Step Size", -1));
-
-  /*** Visibility Based NBV ***/
-  camera.addParam(new RichBool("Run Visibility First Scan", false));
- 
-
-  /*** Visibility Based NBV ***/
-
-  /***pvs based NBV ***/
-  camera.addParam(new RichBool("Run PVS First Scan", false));
-  /***pvs based NBV ***/
 }
 
 void ParameterMgr::initNBVParameter()
@@ -311,7 +301,7 @@ void ParameterMgr::initNBVParameter()
   nbv.addParam(new RichDouble("Propagate One Point Index", 0));
   nbv.addParam(new RichInt("View Bin Each Axis", 10));
   nbv.addParam(new RichDouble("View Prune Confidence Threshold", 0.9));
-  nbv.addParam(new RichInt("NBV Top N", 90));
+  nbv.addParam(new RichInt("NBV Top N", 10));
   nbv.addParam(new RichBool("Need Update Direction With More Overlaps", true));
   nbv.addParam(new RichDouble("Max Displacement", 0.05));
   nbv.addParam(new RichBool("NBV Lock PaintGL", false));

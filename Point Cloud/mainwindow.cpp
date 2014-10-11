@@ -14,7 +14,11 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 	iniStatusBar();
 	initConnect();
 
-	area->loadDefaultModel();
+  area->loadDefaultModel();
+  //to avoid unclear UI at start
+  lightOnOff(false);
+  lightOnOff(true);
+  lightOnOff(false);
 }
 
 MainWindow::~MainWindow()
