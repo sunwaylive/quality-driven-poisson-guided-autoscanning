@@ -274,6 +274,16 @@ void MainWindow::createActionGroups()
 	setWindowTitle(str);
 }
 
+void MainWindow::keyPressEvent(QKeyEvent *e)
+{
+  area->keyPressEvent(e);
+}
+
+void MainWindow::keyReleaseEvent(QKeyEvent *e)
+{
+  area->keyReleaseEvent(e);
+}
+
 void MainWindow::init()
 {
 	strTitle = "Quality-Driven-Poisson-Guided-Autoscanning";

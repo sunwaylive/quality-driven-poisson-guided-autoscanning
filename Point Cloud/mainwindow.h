@@ -22,6 +22,8 @@ private:
 	void initConnect();
 	void iniStatusBar();
 	void createActionGroups();
+  void keyPressEvent(QKeyEvent *e);
+  void keyReleaseEvent(QKeyEvent *e);
 
 private slots:
 	void updateStatusBar();

@@ -1252,7 +1252,7 @@ void GlobalFun::printMatrix33(ostream& out, vcg::Matrix33f mat33)
   {
     for (int j = 0; j < 3; j++)
     {
-      out << mat33[i][j] << "   ";
+      out << mat33[i][j] << "   ";  
     }
     out << endl;
   }

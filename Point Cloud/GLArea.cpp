@@ -17,9 +17,13 @@ GLArea::GLArea(QWidget *parent): QGLWidget(/*QGLFormat(QGL::DoubleBuffer | QGL::
   isDragging = false;
   isRightPressed = false;
 
-  trackball_light.center=Point3f(0, 0, 0);
+  trackball_light.center = Point3f(0, 0, 0);
   trackball_light.radius= 1;
   activeDefaultTrackball=true;
+  isMovePointsInPickList = false;
+  isMoveXAxis = false;
+  isMoveYAxis = false;
+  isMoveZAxis = false;
 
   fov = 60;
   clipRatioFar = 1;
@@ -2086,8 +2090,52 @@ void GLArea::wheelEvent(QWheelEvent *e)
 
 void GLArea::mouseMoveEvent(QMouseEvent *e)
 {
-  if (isRightPressed)
+  //move points in pickList
+  if (isMovePointsInPickList)
   {
+    //useful code for convert 2D pos to 3D pos
+
+    //GLint viewport[4];
+    //GLdouble modelview[16];
+    //GLdouble projection[16];
+    //GLfloat winX, winY, winZ;
+    ////GLdouble posX, posY, posZ;
+    //glPushMatrix();
+    //glGetIntegerv (GL_VIEWPORT, viewport);
+    //glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+    //glGetDoublev(GL_PROJECTION_MATRIX, projection);
+    //glPopMatrix();
+
+    //winX = (float)e->x();
+    //winY = viewport[3] - (float)e->y();
+    //glReadPixels((int)winX, (int)winY, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
+    //gluUnProject(winX, winY, winZ, modelview, projection, viewport, &posX2, &posY2, &posZ2);
+    //cout<<"end pos: " <<posX2 <<" " <<posY2 <<" " <<posZ2 <<endl;
+
+    //current mouse pos
+    posX2 = e->x();
+    posY2 = e->y();
+    Point2d move_dir = Point2d(posX2 - posX1, posY2 - posY1).Normalize();
+    float move_step = 0.02f;
+    cout<<move_dir.X() <<endl;
+
+    CMesh* samples = dataMgr.getCurrentSamples();
+    for (int i = 0; i < pickList.size(); ++i)
+    {
+      CVertex &v = samples->vert[pickList[i]];
+      if (isMoveXAxis) v.P().X() += move_dir.X() * move_step;
+      if (isMoveYAxis) v.P().Y() += -1 * move_dir.Y() * move_step;
+      if (isMoveZAxis) v.P().Z() += move_dir.X() * move_step;
+    }
+
+    updateGL();
+    //update start pos 
+    posX1 = posX2;
+    posY1 = posY2;
+    return;
+  }
+
+  if (isRightPressed){
     isDragging = true;
   }
 
@@ -2097,12 +2145,9 @@ void GLArea::mouseMoveEvent(QMouseEvent *e)
   x2 = e->x();
   y2 = viewport[3] - e->y();
 
-  if (isDefaultTrackBall())
-  {
+  if (isDefaultTrackBall()){
     trackball.MouseMove(e->x(),height()-e->y());
-  }
-  else 
-  {
+  }else {
     trackball_light.MouseMove(e->x(),height()-e->y());
   }
 
@@ -2124,14 +2169,24 @@ vcg::Trackball::Button QT2VCG(Qt::MouseButton qtbt,  Qt::KeyboardModifiers modif
 void GLArea::mousePressEvent(QMouseEvent *e)
 {
   if ((e->modifiers() & Qt::ShiftModifier) && (e->modifiers() & Qt::ControlModifier) &&
-    (e->button()==Qt::LeftButton) )
-    activeDefaultTrackball=false;
-  else activeDefaultTrackball=true;
+    (e->button()==Qt::LeftButton) ){
+    activeDefaultTrackball = false;  //for light control
+  }else{
+    activeDefaultTrackball = true;//for normal trackball control
+  }
 
   if (isDefaultTrackBall())
   {
-    if(e->button() == Qt::LeftButton)
-      trackball.MouseDown(e->x(), height() - e->y(), QT2VCG(e->button(), e->modifiers() ) );     
+    //add ctrl at the same time
+    if(e->button() == Qt::LeftButton){
+      if (!pickList.empty() && (e->modifiers() & Qt::ControlModifier)){
+        isMovePointsInPickList = true;
+        posX1 = e->x();
+        posY1 = e->y();
+      }else{
+        trackball.MouseDown(e->x(), height() - e->y(), QT2VCG(e->button(), e->modifiers() ) );     
+      }
+    }
 
     if(e->button() == Qt::RightButton) 
     {
@@ -2153,6 +2208,9 @@ void GLArea::mousePressEvent(QMouseEvent *e)
 void GLArea::mouseReleaseEvent(QMouseEvent *e)
 {
   isDragging = false;
+  isMovePointsInPickList = false;
+  posX1 = 0;
+  posY1 = 0;
 
   if(e->button() == Qt::LeftButton)
     trackball.MouseUp(e->x(),height()-e->y(), QT2VCG(e->button(), e->modifiers() ) );
@@ -2198,6 +2256,7 @@ void GLArea::mouseReleaseEvent(QMouseEvent *e)
         int index = pickList[0];
         CVertex v = samples->vert.at(index);
         //cout << "iso value: " << v.eigen_confidence << endl;
+        cout<<pickList.size() <<" points selected" <<endl;
         cout << "Index: " << v.m_index << endl;
 
         cout << "Pos: " << v.P()[0] << ", " 
@@ -2211,17 +2270,25 @@ void GLArea::mouseReleaseEvent(QMouseEvent *e)
   updateGL();
 }
 
-
-
 void GLArea::keyReleaseEvent ( QKeyEvent * e )
 {
   if(e->key()==Qt::Key_Control) trackball.MouseUp(0,0, QT2VCG(Qt::NoButton, Qt::ControlModifier ) );
   if(e->key()==Qt::Key_Shift) trackball.MouseUp(0,0, QT2VCG(Qt::NoButton, Qt::ShiftModifier ) );
   if(e->key()==Qt::Key_Alt) trackball.MouseUp(0,0, QT2VCG(Qt::NoButton, Qt::AltModifier ) );
+
+  isMoveXAxis = false;
+  isMoveYAxis = false;
+  isMoveZAxis = false;
 }
 
-void
-  GLArea::removeOutliers()
+void GLArea::keyPressEvent(QKeyEvent *e)
+{
+  if (e->key() == Qt::Key_X) isMoveXAxis = true;
+  if (e->key() == Qt::Key_Y) isMoveYAxis = true;
+  if (e->key() == Qt::Key_Z) isMoveZAxis = true;
+}
+
+void  GLArea::removeOutliers()
 {
   double outlier_percentage = global_paraMgr.data.getDouble("Outlier Percentage");
   int outlie_num = 20;

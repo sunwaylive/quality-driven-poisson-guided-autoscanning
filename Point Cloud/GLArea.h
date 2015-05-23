@@ -89,14 +89,25 @@ private:
   double nbv_ball_slice;
 
 
-private: // For Light Control Ball: Shift + Ctrl + mouse drag
+private: 
+  // For Light Control Ball: Shift + Ctrl + mouse drag
 	bool activeDefaultTrackball; 
+  //For Move points in pickList
+  bool isMovePointsInPickList;
+  bool isMoveXAxis;
+  bool isMoveYAxis;
+  bool isMoveZAxis;
+
 	bool isDefaultTrackBall()   { return activeDefaultTrackball; }
 	vcg::Trackball trackball_light;
 	void drawLightBall();
 
-private: // For pick points function
+private: 
+  // For pick points function
 	int x1, y1, x2, y2;
+  // For move points
+  double posX1, posY1, posX2, posY2;
+
 	bool doPick;
 	vector<int> pickList;
 	int pickPoint(int x, int y, vector<int> &result, int width=4, int height=4, bool only_one = true);
@@ -175,7 +186,10 @@ private:
 	void mouseMoveEvent(QMouseEvent *e);
 	void mousePressEvent(QMouseEvent *e);
 	void mouseReleaseEvent(QMouseEvent *e); 
-	void keyReleaseEvent ( QKeyEvent *e);
+
+public:
+	void keyReleaseEvent(QKeyEvent *e);
+  void keyPressEvent(QKeyEvent *e);
 
 private:
 	QMutex paintMutex;
