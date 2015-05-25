@@ -505,7 +505,7 @@ void GLDrawer::drawCamera(vcc::Camera& camera, bool is_draw_border)
 
   if (is_draw_border)
   {
-    glColor3f(1.0, 0.0, 0.0);
+    glColor3f(87 / 255.f, 90 / 255.f, 5 / 255.f);
     glVertex(camera.pos); glVertex(far_top_left);
     glVertex(camera.pos); glVertex(far_top_right);
     glVertex(camera.pos); glVertex(far_bottom_left);
@@ -520,8 +520,24 @@ void GLDrawer::drawCamera(vcc::Camera& camera, bool is_draw_border)
     glVertex(near_top_left); glVertex(near_bottom_left);
     glVertex(near_bottom_left); glVertex(near_bottom_right);
     glVertex(near_bottom_right); glVertex(near_top_right);
+
+    
   }
 	glEnd();
+
+  glBegin(GL_TRIANGLES);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glDisable(GL_DEPTH_TEST); 
+
+  glColor4f(244 / 255.f, 251 / 255.f , 54 / 255.f, 0.7);
+  glVertex(camera.pos); glVertex(far_bottom_left); glVertex(far_top_left);
+  glVertex(camera.pos); glVertex(far_bottom_right); glVertex(far_top_right);
+  glVertex(camera.pos); glVertex(far_top_left); glVertex(far_top_right);
+  glVertex(camera.pos); glVertex(far_bottom_left); glVertex(far_bottom_right);
+  glDisable(GL_BLEND);
+  glEnable(GL_DEPTH_TEST);
+  glEnd();
 }
 
 void GLDrawer::drawPickPoint(CMesh* samples, vector<int>& pickList, bool bShow_as_dot)

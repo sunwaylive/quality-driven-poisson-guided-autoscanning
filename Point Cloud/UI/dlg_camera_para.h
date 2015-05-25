@@ -39,6 +39,7 @@ signals:
     void loadRealInitialScan();
     void loadToOriginal();
     void loadToModel();
+    void loadToNBV();
 
     void showInitCameras(bool is_show);
     void showCameraBorder(bool is_show);

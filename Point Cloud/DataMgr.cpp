@@ -277,6 +277,14 @@ void DataMgr::loadPlyToNBV(QString fileName)
     nbv_candidates.bbox.Add(vi->P());
   }
   nbv_candidates.vn = nbv_candidates.vert.size();
+
+  //put nbv_candidates into scan_candidates
+  vector<ScanCandidate> *scan_candidate = getScanCandidates();
+  for (int i = 0; i < nbv_candidates.vert.size(); ++i){
+    CVertex &v = nbv_candidates.vert[i];
+    scan_candidate->push_back(make_pair(Point3f(v.P()[0], v.P()[1], v.P()[2]),  
+                                        Point3f(v.N()[0], v.N()[2], v.N()[2])));
+  }
 }
 
 void DataMgr::loadXYZN(QString fileName)

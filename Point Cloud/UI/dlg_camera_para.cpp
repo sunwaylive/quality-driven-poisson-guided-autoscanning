@@ -26,6 +26,7 @@ void CameraParaDlg::initConnects()
   connect(ui->pushButton_show_candidate_index, SIGNAL(clicked()), this, SLOT(showCandidateIndex()));
   connect(ui->pushButton_load_to_mesh, SIGNAL(clicked()), this, SLOT(loadToOriginal()));
   connect(ui->pushButton_load_to_model, SIGNAL(clicked()), this, SLOT(loadToModel()));
+  connect(ui->pushButton_load_to_nbv, SIGNAL(clicked()), this, SLOT(loadToNBV()));
   connect(ui->checkBox_show_init_cameras,SIGNAL(clicked(bool)),this,SLOT(showInitCameras(bool)));
   connect(ui->checkBox_show_camera_border, SIGNAL(clicked(bool)), this, SLOT(showCameraBorder(bool)));
   connect(ui->pushButton_scan, SIGNAL(clicked()), this, SLOT(NBVCandidatesScanByHand()));
@@ -316,6 +317,20 @@ void CameraParaDlg::loadToModel()
   area->dataMgr.normalizeAllMesh();
   area->initView();
   area->initAfterOpenFile();
+  area->updateGL();
+}
+
+void CameraParaDlg::loadToNBV()
+{
+  QString file = QFileDialog::getOpenFileName(this, "Select a ply file", "", "*.ply");
+  if(!file.size()) return;
+
+  area->dataMgr.loadPlyToNBV(file);
+
+  area->dataMgr.normalizeAllMesh();
+  area->initView();
+  area->initAfterOpenFile();
+  updateTableViewNBVCandidate();
   area->updateGL();
 }
 
