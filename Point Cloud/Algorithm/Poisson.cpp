@@ -2230,6 +2230,7 @@ void Poisson::runComputeIsoGradientConfidence()
   {
     GlobalFun::normalizeConfidence(iso_points->vert, 0);
   }
+
   vector<float> confidences_temp;
   iso_points->vn = iso_points->vert.size();
   for (int i = 0; i < iso_points->vn; i++)

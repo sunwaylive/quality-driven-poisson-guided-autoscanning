@@ -20,7 +20,8 @@ GLArea::GLArea(QWidget *parent): QGLWidget(/*QGLFormat(QGL::DoubleBuffer | QGL::
   trackball_light.center = Point3f(0, 0, 0);
   trackball_light.radius= 1;
   activeDefaultTrackball=true;
-  isMovePointsInPickList = false;
+  isMovePointsPosInPickList = false;
+  isMovePointsNormalInPickList = false;
   isMoveXAxis = false;
   isMoveYAxis = false;
   isMoveZAxis = false;
@@ -2091,7 +2092,7 @@ void GLArea::wheelEvent(QWheelEvent *e)
 void GLArea::mouseMoveEvent(QMouseEvent *e)
 {
   //move points in pickList
-  if (isMovePointsInPickList)
+  if (isMovePointsPosInPickList)
   {
     //useful code for convert 2D pos to 3D pos
 
@@ -2126,14 +2127,41 @@ void GLArea::mouseMoveEvent(QMouseEvent *e)
       if (isMoveXAxis) v.P().X() += move_dir.X() * move_step;
       if (isMoveYAxis) v.P().Y() += -1 * move_dir.Y() * move_step;
       if (isMoveZAxis) v.P().Z() += move_dir.X() * move_step;
-    }
 
+      /*if (isMoveXAxis) v.N().X() += move_dir.X() * move_step;
+      if (isMoveYAxis) v.N().Y() += -1 * move_dir.Y() * move_step;
+      if (isMoveZAxis) v.N().Z() += move_dir.X() * move_step;*/
+    }
     updateGL();
     //update start pos 
     posX1 = posX2;
     posY1 = posY2;
     return;
   }
+
+  //if (isMovePointsPosInPickList && isMovePointsNormalInPickList)
+  //{
+  //  posX2 = e->x();
+  //  posY2 = e->y();
+  //  Point2d move_dir = Point2d(posX2 - posX1, posY2 - posY1).Normalize();
+  //  float move_step = 0.02f;
+  //  cout<<move_dir.X() <<endl;
+
+  //  CMesh* samples = dataMgr.getCurrentSamples();
+  //  for (int i = 0; i < pickList.size(); ++i)
+  //  {
+  //    CVertex &v = samples->vert[pickList[i]];
+
+  //    if (isMoveXAxis) v.N().X() += move_dir.X() * move_step;
+  //    if (isMoveYAxis) v.N().Y() += -1 * move_dir.Y() * move_step;
+  //    if (isMoveZAxis) v.N().Z() += move_dir.X() * move_step;
+  //  }
+
+  //  updateGL();
+  //  //update start pos 
+  //  posX1 = posX2;
+  //  posY1 = posY2;
+  //}
 
   if (isRightPressed){
     isDragging = true;
@@ -2180,7 +2208,7 @@ void GLArea::mousePressEvent(QMouseEvent *e)
     //add ctrl at the same time
     if(e->button() == Qt::LeftButton){
       if (!pickList.empty() && (e->modifiers() & Qt::ControlModifier)){
-        isMovePointsInPickList = true;
+        isMovePointsPosInPickList = true;
         posX1 = e->x();
         posY1 = e->y();
       }else{
@@ -2208,7 +2236,8 @@ void GLArea::mousePressEvent(QMouseEvent *e)
 void GLArea::mouseReleaseEvent(QMouseEvent *e)
 {
   isDragging = false;
-  isMovePointsInPickList = false;
+  isMovePointsPosInPickList = false;
+  isMovePointsNormalInPickList = false;
   posX1 = 0;
   posY1 = 0;
 
@@ -2276,9 +2305,11 @@ void GLArea::keyReleaseEvent ( QKeyEvent * e )
   if(e->key()==Qt::Key_Shift) trackball.MouseUp(0,0, QT2VCG(Qt::NoButton, Qt::ShiftModifier ) );
   if(e->key()==Qt::Key_Alt) trackball.MouseUp(0,0, QT2VCG(Qt::NoButton, Qt::AltModifier ) );
 
-  isMoveXAxis = false;
-  isMoveYAxis = false;
-  isMoveZAxis = false;
+  if (e->key() == Qt::Key_X) isMoveXAxis = false;
+  if (e->key() == Qt::Key_Y) isMoveYAxis = false;
+  if (e->key() == Qt::Key_Z) isMoveZAxis = false;
+
+  if (e->key() == Qt::Key_N) isMovePointsNormalInPickList = false;
 }
 
 void GLArea::keyPressEvent(QKeyEvent *e)
@@ -2286,6 +2317,8 @@ void GLArea::keyPressEvent(QKeyEvent *e)
   if (e->key() == Qt::Key_X) isMoveXAxis = true;
   if (e->key() == Qt::Key_Y) isMoveYAxis = true;
   if (e->key() == Qt::Key_Z) isMoveZAxis = true;
+
+  if (e->key() == Qt::Key_N) isMovePointsNormalInPickList = true;
 }
 
 void  GLArea::removeOutliers()

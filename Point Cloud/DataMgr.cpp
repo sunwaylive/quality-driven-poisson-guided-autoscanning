@@ -144,7 +144,8 @@ void DataMgr::loadPlyToOriginal(QString fileName)
   clearCMesh(original);
   curr_file_name = fileName;
 
-  int mask= tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL; 
+  int mask= tri::io::Mask::IOM_VERTCOORD + tri::io::Mask::IOM_VERTNORMAL
+    + tri::io::Mask::IOM_VERTCOLOR; 
     //+ tri::io::Mask::IOM_ALL + tri::io::Mask::IOM_FACEINDEX;
 
   int err = tri::io::Importer<CMesh>::Open(original, curr_file_name.toAscii().data(), mask);  
@@ -168,6 +169,7 @@ void DataMgr::loadPlyToOriginal(QString fileName)
     original.bbox.Add(vi->P());
   }
   original.vn = original.vert.size();
+  cout<<"original vert size: " <<original.vert.size() <<endl;
 }
 
 void DataMgr::loadPlyToSample(QString fileName)

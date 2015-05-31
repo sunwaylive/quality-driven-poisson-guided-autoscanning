@@ -57,18 +57,18 @@ void ParameterMgr::initGlareaParameter()
 {
 	glarea.addParam(new RichString("Running Algorithm Name", "") );
 	glarea.addParam(new RichBool("Light On or Off", true) );
-	glarea.addParam(new RichBool("Show Normal", false) );
+	glarea.addParam(new RichBool("Show Normal", true) );
 	glarea.addParam(new RichBool("Show Samples", true) );
 	glarea.addParam(new RichBool("Show Samples Quad", false) );
 	glarea.addParam(new RichBool("Show Samples Dot", true) );
 	glarea.addParam(new RichBool("Show Samples Circle", false) );
 	glarea.addParam(new RichBool("Show Samples Sphere", false) );
-	glarea.addParam(new RichBool("Show ISO Points", true) );
+	glarea.addParam(new RichBool("Show ISO Points", false) );
 	glarea.addParam(new RichBool("Use ISO Interval", false) );
 
 	glarea.addParam(new RichBool("Show View Grids", false));
-	glarea.addParam(new RichBool("Show NBV Candidates", true));
-	glarea.addParam(new RichBool("Show Scan Candidates", true));
+	glarea.addParam(new RichBool("Show NBV Candidates", false));
+	glarea.addParam(new RichBool("Show Scan Candidates", false));
   glarea.addParam(new RichBool("Show Scan History", false));
 	glarea.addParam(new RichBool("Show Scanned Mesh", true));
 
@@ -246,12 +246,12 @@ void ParameterMgr::initCameraParameter()
   camera.addParam(new RichBool("Show Camera Border", true));
 
 
-  camera.addParam(new RichDouble("Camera Far Distance", 30.0f));   //cm anno 25
-  camera.addParam(new RichDouble("Camera Near Distance", 10.0f));  //cm anno: 10
-  camera.addParam(new RichDouble("Predicted Model Size", 37.0f));  //cm anno: 37 lion:20
+  camera.addParam(new RichDouble("Camera Far Distance", 40.0f));   //cm anno 25
+  camera.addParam(new RichDouble("Camera Near Distance", 20.0f));  //cm anno: 10
+  camera.addParam(new RichDouble("Predicted Model Size", 20.0f));  //cm anno: 37 lion:20
   camera.addParam(new RichDouble("Camera Horizon Dist", 20.0f));   //cm anno: 14
   camera.addParam(new RichDouble("Camera Vertical Dist", 18.0f));  //cm anno: 18
-  camera.addParam(new RichDouble("Camera Dist To Model", 30.0f)); //cm  anno: 30 ((30.0f + 17.0f)/2 + 0.6 * 20.0f)
+  camera.addParam(new RichDouble("Camera Dist To Model", 20.0f)); //cm  anno: 30 ((30.0f + 17.0f)/2 + 0.6 * 20.0f)
   //camera.addParam(new RichDouble("Camera Far Distance", 24.8f));   //cm
   //camera.addParam(new RichDouble("Camera Near Distance", 19.6f));  //cm
   //camera.addParam(new RichDouble("Camera Far Distance", 22.2f));   //cm
@@ -301,7 +301,7 @@ void ParameterMgr::initNBVParameter()
   nbv.addParam(new RichDouble("Propagate One Point Index", 0));
   nbv.addParam(new RichInt("View Bin Each Axis", 10));
   nbv.addParam(new RichDouble("View Prune Confidence Threshold", 0.9));
-  nbv.addParam(new RichInt("NBV Top N", 10));
+  nbv.addParam(new RichInt("NBV Top N", 100));
   nbv.addParam(new RichBool("Need Update Direction With More Overlaps", true));
   nbv.addParam(new RichDouble("Max Displacement", 0.05));
   nbv.addParam(new RichBool("NBV Lock PaintGL", false));

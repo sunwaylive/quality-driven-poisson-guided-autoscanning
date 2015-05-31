@@ -93,7 +93,8 @@ private:
   // For Light Control Ball: Shift + Ctrl + mouse drag
 	bool activeDefaultTrackball; 
   //For Move points in pickList
-  bool isMovePointsInPickList;
+  bool isMovePointsPosInPickList;
+  bool isMovePointsNormalInPickList;
   bool isMoveXAxis;
   bool isMoveYAxis;
   bool isMoveZAxis;

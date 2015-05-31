@@ -217,7 +217,8 @@ GLColor GLDrawer::getColorByType(CVertex& v)
     if (v.is_barely_visible)
        return cYellow;
 
-    return original_color;
+    return GLColor(v.C()[0] / 255., v.C()[1] / 255., v.C()[2] / 255.);
+    //return original_color;
   }
 
 	if (v.is_scanned && v.is_scanned_visible)
@@ -530,7 +531,7 @@ void GLDrawer::drawCamera(vcc::Camera& camera, bool is_draw_border)
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glDisable(GL_DEPTH_TEST); 
 
-  glColor4f(244 / 255.f, 251 / 255.f , 54 / 255.f, 0.7);
+  glColor4f(244 / 255.f, 251 / 255.f , 54 / 255.f, 0.5);
   glVertex(camera.pos); glVertex(far_bottom_left); glVertex(far_top_left);
   glVertex(camera.pos); glVertex(far_bottom_right); glVertex(far_top_right);
   glVertex(camera.pos); glVertex(far_top_left); glVertex(far_top_right);
